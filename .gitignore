@@ -30,8 +30,7 @@ fp-info-cache
 *.ses
 
 # Exported BOM files
-*.xml
-*.csv
+!*.csv
 
 # Archived Backups (KiCad 6.0)
 **/*-backups/*.zip
@@ -40,4 +39,9 @@ fp-info-cache
 .history
 
 # Local project settings
-*.kicad_prl
+!*.kicad_prl
+
+#----------------------------------
+# macOS System Files to Ignore
+.DS_Store
+._*
