@@ -9,7 +9,7 @@
 
 ## Commits
 - Format: <type>(<scope>): <description>
-- Types: feat, fix, refactor, docs, chore, test.
+- Types: feature, fix, refactor, docs, chore, test.
 - Use lowercase types and imperative descriptions.
 - Use a meaningful scope when applicable.
 - Keep the subject within 72 characters.
