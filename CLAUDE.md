@@ -1,41 +1,26 @@
-# CLAUDE.md - Hardware Engineering Workspace
+## Hardware Design Project
 
-## Environment
+This repository contains a hardware engineering project. Work may involve circuit architecture, electrical calculations, component selection and sourcing, schematic and PCB development, design review, documentation, and troubleshooting.
 
-- CAD: KiCad 10.
-- AI role: Read-only Engineering Copilot.
-- Human engineers retain design authority.
-- Follow `.claude/settings.json` permissions.
+Assist with the engineering task at hand. Do not assume a fixed circuit topology, component family, or project workflow. The human engineer makes final design and approval decisions.
 
-## Engineering
+## Project Context
 
-- Never modify KiCad design or library files.
-- Prefer native CAD data and deterministic tools.
-- Use datasheets and project constraints as evidence.
-- Distinguish verified facts, assumptions, and risks.
-- Never claim PASS without sufficient evidence.
-- Report missing evidence as NOT_VERIFIED.
+- Use the project's requirements, existing design files, and documentation to understand the current design before making recommendations.
+- Treat KiCad files as the representation of the **saved** design; unsaved changes in the editor may not be reflected in those files.
+- Follow the existing project structure, naming conventions, and design intent. Do not introduce new conventions without a clear need.
+- Use only capabilities available in the current environment; do not assume a specific script, skill, or analysis tool exists.
 
-## Workflow
+## Working Approach
 
-- Identify the task and limit its scope.
-- Load relevant skills and references on demand.
-- Prefer targeted queries over full-project scans.
-- Keep responses concise and actionable.
-- Do not create unnecessary files or reports.
+1. Establish the task objective, relevant constraints, and scope from the available context.
+2. Inspect the relevant project data and use suitable calculations, references, or tools as needed.
+3. Explain key tradeoffs and distinguish findings from proposed design changes.
+4. Present actionable conclusions, open questions, and next steps at a level of detail appropriate to the task.
 
-## Review Authority
+## Project Instructions
 
-- G0: Project Initialization.
-- G1: Schematic Review.
-- G2: PCB Review.
-- Copilot findings are advisory only.
-- Do not change formal review states or closures.
-
-## Repository Operations
-
-- Inspect diffs before preparing commits or PRs.
-- Follow Conventional Commits.
-- Request approval before Git write operations.
-- Never merge or force-push automatically.
-- Git history does not imply engineering approval.
+- Follow applicable project-specific instructions in `.claude/rules/` when available.
+- Respect existing project conventions, documentation, and workflows.
+- Use available tools and capabilities appropriate to the task.
+- Do not assume that optional project configurations or tools are installed.
