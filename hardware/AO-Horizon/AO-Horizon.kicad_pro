@@ -492,7 +492,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "my_Kicad10_Template_Rev4.kicad_pro",
+    "filename": "AO-Horizon.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -644,15 +644,15 @@
     "meta": {
       "version": 1
     },
-    "page_layout_descr_file": "kicad-embed://V2-0_MyCustomTemplate_A3_CGFont_Sche.kicad_wks",
+    "page_layout_descr_file": "kicad-embed://V2-1_MyCustomTemplate_A3_CGFont_Sche.kicad_wks",
     "plot_directory": "",
     "reuse_designators": true,
     "subpart_first_id": 65,
     "subpart_id_separator": 0,
     "top_level_sheets": [
       {
-        "filename": "my_Kicad10_Template_Rev4.kicad_sch",
-        "name": "my_Kicad10_Template_Rev4",
+        "filename": "AO-Horizon.kicad_sch",
+        "name": "AO-Horizon",
         "uuid": "76162bf1-0d95-48cb-b65a-4de551455d04"
       }
     ],
@@ -661,20 +661,36 @@
   },
   "sheets": [
     [
+      "5920cc04-6cd8-462c-b523-fb850d762b0c",
+      "Power Supplies"
+    ],
+    [
       "76162bf1-0d95-48cb-b65a-4de551455d04",
-      "my_Kicad10_Template_Rev4"
+      "AO-Horizon"
+    ],
+    [
+      "17665a85-0556-47eb-a9f4-5d108a804d53",
+      "Block Diagram"
+    ],
+    [
+      "85f6b8f0-e85e-4d9f-8681-ac148f93be5a",
+      "Top"
+    ],
+    [
+      "fb8a69c4-8bba-427c-95f1-1a67e4389bd6",
+      "Revision History"
     ]
   ],
   "text_variables": {
     "AUTHOR": "NATCHANON THUENTHAM",
-    "DRAWING_DATE": "DRAWING_DATE ",
-    "DRAWING_NAME": "DRAWING_NAME",
-    "EX_PAGE": "0",
-    "PROJECT_ID": "PROJECT_ID",
-    "PROJECT_NAME": "PROJECT_NAME",
-    "RELEASE_DATE": "RELEASE_DATE",
-    "REVIEW_DATE": "REVIEW_DATE",
-    "REVIEW_NAME": "REVIEW_NAME"
+    "DRAWING_DATE": "",
+    "DRAWING_NAME": "",
+    "EX_PAGE": "1",
+    "PROJECT_ID": "",
+    "PROJECT_NAME": "AeroOptix - Horizon",
+    "RELEASE_DATE": "DD MM 202X",
+    "REVIEW_DATE": "",
+    "REVIEW_NAME": ""
   },
   "tuning_profiles": {
     "meta": {
