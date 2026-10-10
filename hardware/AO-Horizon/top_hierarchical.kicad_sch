@@ -1,0 +1,72 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "25bf9015-2d31-436d-bf0f-5dbf0bf9c72d")
+	(paper "A3")
+	(title_block
+		(rev "1.0")
+		(comment 1 "Top Hierarchical")
+	)
+	(lib_symbols)
+	(text "[${#}] ${COMMENT1}"
+		(exclude_from_sim no)
+		(at 209.55 25.4 0)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 5.08 5.08)
+				(bold yes)
+			)
+		)
+		(uuid "2ddff602-9dd2-4926-89da-45842ef0cd90")
+	)
+	(sheet
+		(at 120.65 97.79)
+		(size 38.1 25.4)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "5920cc04-6cd8-462c-b523-fb850d762b0c")
+		(property "Sheetname" "Power Supplies"
+			(at 120.65 97.0784 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(face "Century Gothic")
+					(size 2.54 2.54)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "power_supplies.kicad_sch"
+			(at 120.65 123.7746 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a"
+					(page "1")
+				)
+			)
+		)
+	)
+)
