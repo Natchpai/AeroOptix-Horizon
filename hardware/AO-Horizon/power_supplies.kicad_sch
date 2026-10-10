@@ -1,0 +1,24 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "04d7d06d-5c15-4ea1-a014-7d73e137ede5")
+	(paper "A3")
+	(title_block
+		(rev "1.0")
+		(comment 1 "Power Supplies")
+	)
+	(lib_symbols)
+	(text "[${#}] ${COMMENT1}"
+		(exclude_from_sim no)
+		(at 209.55 25.4 0)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 5.08 5.08)
+				(bold yes)
+			)
+		)
+		(uuid "db294ad8-49aa-4080-864f-19e3f92255c6")
+	)
+)
