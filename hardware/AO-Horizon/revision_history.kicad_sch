@@ -1,0 +1,24 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "d71fbb16-4f1f-42ed-9616-1d19d9b32465")
+	(paper "A3")
+	(title_block
+		(rev "1.0")
+		(comment 1 "Revision History")
+	)
+	(lib_symbols)
+	(text "[${#}] ${COMMENT1}"
+		(exclude_from_sim no)
+		(at 209.55 25.4 0)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 5.08 5.08)
+				(bold yes)
+			)
+		)
+		(uuid "f3c6b408-094f-46e1-9dc7-c781255567ca")
+	)
+)
