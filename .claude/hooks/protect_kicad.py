@@ -40,7 +40,7 @@ def check(event):
     if tool in ('Bash', 'PowerShell'):
         command = args.get('command', '')
         if isinstance(command, str) and PATHISH.search(command) and MUTATING.search(command):
-            return 'Potential shell modification of KiCad/Library files blocked (heuristic).'
+            return 'Potential shell modification of KiCad/library files blocked (heuristic).'
     return None
 
 def main():

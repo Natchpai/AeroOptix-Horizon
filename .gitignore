@@ -1,3 +1,7 @@
+# Dev files
+settings.local.json
+
+
 # For PCBs designed using KiCad: https://www.kicad.org/
 # Format documentation: https://kicad.org/help/file-formats/
 
@@ -45,3 +49,4 @@ fp-info-cache
 # macOS System Files to Ignore
 .DS_Store
 ._*
+

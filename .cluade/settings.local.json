@@ -1,7 +1,0 @@
-{
-  "enabledPlugins": {
-    "token-weather@token-weather": true,
-    "claudemeter@ariful-plugins": true,
-    "session-vitals@iegui-ops": false
-  }
-}
