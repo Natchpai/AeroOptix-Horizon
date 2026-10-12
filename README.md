@@ -46,6 +46,8 @@ Pixhawk 6C is used as a conceptual and functional reference only. Its schematic,
 
 ## Project Status
 
+**Current Phase:** `DRAFT`
+
 | Phase | Description |
 |---|---|
 | DRAFT | Schematic design in progress |
