@@ -1,0 +1,20 @@
+# Development context
+.claude/ export-ignore
+CLAUDE.md export-ignore
+README.md export-ignore
+
+# Repository automation
+.github/ export-ignore
+.gitignore export-ignore
+.gitattributes export-ignore
+
+# Development-only files
+.vscode/ export-ignore
+.idea/ export-ignore
+tests/ export-ignore
+fixtures/ export-ignore
+__pycache__/ export-ignore
+.pytest_cache/ export-ignore
+
+# KiCAD files & directories
+templates/ export-ignore
