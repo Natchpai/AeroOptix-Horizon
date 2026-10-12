@@ -19,7 +19,7 @@ Manage Git changes without modifying engineering design content.
 ## Local safeguards
 - Read `.claude/settings.json` first.
 - Treat `.claude/hooks/protect_kicad.py` as defense-in-depth for native KiCad
-  and `Library/` writes. A Git operation does not grant design-write access;
+  and `library/` writes. A Git operation does not grant design-write access;
   inspecting or staging an existing design change is separate from editing it.
 - For PRs, read `.github/pull_request_template.md` and preserve its sections
   and checkboxes.

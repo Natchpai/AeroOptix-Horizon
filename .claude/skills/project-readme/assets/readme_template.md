@@ -85,7 +85,7 @@ Project/
 ├── Project.kicad_pro
 ├── Project.kicad_sch
 ├── Project.kicad_pcb
-├── Library/
+├── library/
 └── ...
 ```
 

@@ -29,7 +29,7 @@
       "Edit(**/*.step)",
       "Edit(**/*.wrl)",
       "Edit(**/*.kicad_wks)",
-      "Edit(**/Library/**)",
+      "Edit(**/library/**)",
       "Bash(git push --force *)",
       "Bash(git push -f *)",
       "Bash(git reset --hard *)",
