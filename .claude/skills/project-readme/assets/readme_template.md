@@ -43,25 +43,30 @@
 flowchart LR
     A["DRAFT<br/>Schematic Design"]
     B["PRELIMINARY<br/>Schematic Finalization<br/>PCB Design"]
-    C["CHECK<br/>Design Documentation<br/>ERC / DRC<br/>Human Review"]
+    C["CHECK<br/>Design Docs<br/>ERC / DRC<br/>Human Review"]
     D["RELEASE<br/>Approved Design<br/>Baseline Publication"]
 
     A --> B
     B --> C
     C --> D
 
-    classDef active fill:#334155,color:#ffffff,stroke:#64748b
+    classDef inactive fill:#334155,color:#ffffff,stroke:#64748b
     classDef review fill:#b45309,color:#ffffff,stroke:#92400e
-    classDef released fill:#15803d,color:#ffffff,stroke:#166534
+    classDef done fill:#15803d,color:#ffffff,stroke:#166534
 
-    class A,B active
-    class C review
-    class D released
+    class A inactive
+    class B inactive
+    class C inactive
+    class D inactive
 ```
 
-Phase transitions require an explicit human declaration. The diagram describes
-typical phase activities only; it does not highlight the current phase,
-automate transitions, enforce gates, or authorize Git tags or GitHub releases.
+Phase changes are declared by a human engineer.
+
+- Slate: not started
+- Amber: current phase, under review
+- Green: completed
+
+The diagram is for reference only. It does not enforce gates or approve releases.
 
 ## Hardware Design
 
