@@ -48,10 +48,6 @@ my_Kicad10_Template_Rev4/
 │   │   └── README.md
 │   └── symbols/
 │       └── README.md
-├── meta/
-│   ├── README.md
-│   ├── icon.png
-│   └── info.html
 ├── templates/
 │   ├── README.md
 │   ├── assembly_notes.txt
