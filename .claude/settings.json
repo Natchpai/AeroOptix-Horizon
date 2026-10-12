@@ -1,7 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
-    "defaultMode": "default",
     "allow": [
       "Read",
       "Glob",
@@ -11,14 +10,6 @@
       "Bash(git diff *)",
       "Bash(git log *)",
       "Bash(git branch *)"
-    ],
-    "ask": [
-      "Edit",
-      "Write",
-      "Bash(git add *)",
-      "Bash(git commit *)",
-      "Bash(git push *)",
-      "Bash(gh pr create *)"
     ],
     "deny": [
       "Edit(**/*.kicad_sch)",
@@ -36,7 +27,17 @@
       "Bash(git clean -fd *)",
       "Bash(git merge *)",
       "Bash(gh pr merge *)"
-    ]
+    ],
+    "ask": [
+      "Edit",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(gh pr create *)",
+      "Edit(**/documents/**)",
+      "Write"
+    ],
+    "defaultMode": "default"
   },
   "hooks": {
     "PreToolUse": [
