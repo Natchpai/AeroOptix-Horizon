@@ -186,10 +186,10 @@ Ten open items (OPEN-001 to OPEN-010) are tracked in the specification: pin and 
 
 Copyright (c) 2026 AeroOptix Club.
 
-The hardware design files are licensed under CERN-OHL-W-2.0.
+The hardware design files are licensed under CERN-OHL-S-2.0.
 
 The complete licence text is available in: </br>
-[CERN Open Hardware Licence Version 2 - Weakly Reciprocal](LICENSE)
+[CERN Open Hardware Licence Version 2 - Strongly Reciprocal](LICENSE)
 
 ## Changelog
 

@@ -22,6 +22,7 @@ Notable changes to this hardware project are documented here.
 - Root `README.md` rewritten from the draft specification: overview, key features, specifications, architecture, logical interface allocations, design considerations and open items. Undecided values are marked `TBD`; all verification checks are `NOT_VERIFIED`.
 - `.gitignore` now ignores `settings.local.json`.
 - Library folder references in `.claude/` (permission deny rule, hook message, skills, README template) changed from `Library/` to lowercase `library/` to match the actual directory.
+- Licence changed from CERN-OHL-W-2.0 (weakly reciprocal) to CERN-OHL-S-2.0 (strongly reciprocal); `LICENSE` text and the README licence section updated.
 - Removed the stale `meta/` entry from the repository tree in `hardware/AO-Horizon/README.md`.
 
 ### Fixed
