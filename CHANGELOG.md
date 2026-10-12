@@ -13,13 +13,25 @@ Notable changes to this hardware project are documented here.
 - Documentation folder structure with README stubs for manufacturing, schematic, verification and images.
 - Project README, CERN-OHL-W-2.0 licence, and a pull request template.
 - Claude Code project configuration (rules, skills, KiCad file-protection hook, permissions).
-### Fixed
-
-- Renamed the misspelled `.cluade/` configuration folder to `.claude/` so rules, skills, hook and permissions load.
+- `.gitattributes` marking development-only files (`.claude/`, `CLAUDE.md`, `README.md`, `.github/`, `.gitignore`, `.gitattributes`, `.vscode/`) as `export-ignore`.
+- `CLAUDE.md` with repository layout, read-only design rules and git approval rules.
+- `CHANGELOG.md`.
 
 ### Changed
 
-- README overview, key features, repository tree and documentation links updated from the draft specification.
+- Root `README.md` rewritten from the draft specification: overview, key features, specifications, architecture, logical interface allocations, design considerations and open items. Undecided values are marked `TBD`; all verification checks are `NOT_VERIFIED`.
+- `.gitignore` now ignores `settings.local.json`.
+- Library folder references in `.claude/` (permission deny rule, hook message, skills, README template) changed from `Library/` to lowercase `library/` to match the actual directory.
+- Removed the stale `meta/` entry from the repository tree in `hardware/AO-Horizon/README.md`.
+
+### Fixed
+
+- Renamed the misspelled `.cluade/` configuration folder to `.claude/` so rules, skills, hook and permissions load.
+- The `Edit(**/Library/**)` deny rule did not match the lowercase `library/` directory; it now uses `library`.
+
+### Removed
+
+- `.claude/settings.local.json` is no longer tracked (local-only file, now git-ignored).
 
 ### Verification
 
