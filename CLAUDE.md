@@ -24,7 +24,7 @@ AeroOptix-Horizon is a KiCad 10 hardware design (no firmware, no build/test/lint
 
 ## Claude config
 
-`.claude/` holds the rules, skills (`project-readme`, `project-changelog`, `git-workflow`, `phase-record`, `session-log`), the `protect_kicad.py` PreToolUse hook (advisory, heuristic) and the permission deny-list. It was renamed from the typo `.cluade/`; the rename takes effect after restarting Claude Code. The `Edit(**/Library/**)` deny rule is case-sensitive and does not match the lowercase `library/` folder; the hook is case-insensitive.
+`.claude/` holds the rules, skills (`project-readme`, `project-changelog`, `git-workflow`, `phase-record`, `session-log`), the `protect_kicad.py` PreToolUse hook (advisory, heuristic) and the permission deny-list. It was renamed from the typo `.cluade/`; the rename takes effect after restarting Claude Code.
 
 ## Working approach
 
