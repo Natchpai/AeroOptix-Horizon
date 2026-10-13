@@ -14,26 +14,24 @@ argument-hint: "status | commit [scope] | pr [base]"
 
 # Git Workflow
 
-Manage Git changes without modifying engineering design content.
+Manage Git and GitHub changes without modifying project content except as
+explicitly approved by the user.
 
 ## Local safeguards
-- Read `.claude/settings.json` first.
-- Treat `.claude/hooks/protect_kicad.py` as defense-in-depth for native KiCad
-  and `library/` writes. A Git operation does not grant design-write access;
-  inspecting or staging an existing design change is separate from editing it.
-- For PRs, read `.github/pull_request_template.md` and preserve its sections
-  and checkboxes.
+- Read repository-local instructions and configuration that apply to the
+  requested operation.
+- A Git operation does not grant permission to edit source files, generated
+  artifacts, or repository configuration; inspecting or staging an existing
+  change is separate from editing it.
+- For PRs, use a repository pull-request template when one exists, preserving
+  its applicable sections and checkboxes.
 - Tool permissions and branch protection still apply; this skill grants none.
 
-## Approval boundary
-- Read-only inspection may proceed without approval.
-- Obtain explicit, action-specific user approval before staging, committing,
-  changing branches, merging, rebasing, resetting, restoring, cleaning,
-  creating or deleting tags/releases, pushing, or changing a pull request.
-- Do not infer approval from an earlier request, a proposed message, or a tool
-  permission prompt. Never merge a pull request automatically.
-- Do not force-push, rewrite history, delete branches, or use destructive
-  reset/clean operations unless explicitly authorized and permitted by tooling.
+## Execution gate
+- Perform read-only inspection without changing repository state.
+- Before any requested state-changing operation, present the exact proposed
+  action and paths, then stop for explicit, action-specific user approval.
+- After approval, perform only the approved action and report its result.
 
 ## Dispatch
 Interpret `$ARGUMENTS` as one of:
@@ -48,13 +46,14 @@ Interpret `$ARGUMENTS` as one of:
 1. Establish repository root, current branch, upstream, and working-tree state.
 2. Separate staged, unstaged, and untracked changes; inspect only relevant
    diffs and files.
-3. For binary KiCad files, report paths and metadata rather than claiming a
-   textual diff. Detect secrets, caches, generated exports, and unrelated files.
+3. For binary or otherwise non-reviewable files, report paths and available
+   metadata rather than claiming a textual diff. Detect secrets, caches,
+   generated artifacts, and unrelated files.
 4. Preserve user changes and review state. Never edit, discard, or rewrite
-   KiCad design/library files during Git work.
-5. Report unavailable evidence as `NOT_VERIFIED`; do not invent ERC, DRC, or
-   test results. If inspection itself fails, report the failure and do not
-   mutate repository state.
+   source files or artifacts during Git work unless explicitly requested.
+5. Report unavailable evidence as `NOT_VERIFIED`; do not invent validation,
+   test, build, or CI results. If inspection itself fails, report the failure
+   and do not mutate repository state.
 
 ## status
 - Report branch, upstream when available, clean/dirty state, and concise
