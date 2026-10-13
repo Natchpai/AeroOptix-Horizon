@@ -4,8 +4,8 @@
 |---|---|
 | Project | AeroOptix-Horizon |
 | Document owner | Human engineering owner / TO BE DECIDED |
-| Document revision | 0.1 |
-| Last updated | 2026-10-12 |
+| Document revision | 0.2 |
+| Last updated | 2026-10-13 |
 | Design tool | TO BE DECIDED |
 | Hardware phase | TO BE DECIDED BY HUMAN |
 | Related baseline | FC_H743 rev2 reference from user-provided diagrams; native design baseline not established |
@@ -62,7 +62,7 @@ The platform uses Pixhawk 6C as a conceptual and functional reference. The refer
 | REF-01 | Pixhawk 6C reference architecture | Not specified | Conceptual and functional reference only |
 | REF-02 | User-provided FC_H743 architecture diagram | 2026-10-12 | Source for diagram-derived candidate architecture; not native design authority |
 | REF-03 | User-provided power architecture diagram | 2026-10-12 | Source for diagram-derived power candidates; not an approved power specification |
-| REF-04 | `AO-HORIZON_EXECUTION_CHECKLIST_EN.md` | 0.1 | Execution and evidence checklist |
+| REF-04 | `AO-HORIZON_EXECUTION_CHECKLIST_EN.md` | 0.2 | Execution and evidence checklist |
 
 ## 2. Requirements Management
 
@@ -85,13 +85,13 @@ The platform uses Pixhawk 6C as a conceptual and functional reference. The refer
 | SYS-002 | Pixhawk 6C shall be used as a conceptual and functional reference only. | No copied schematic, PCB, or pinout is assumed. | Architecture review. | CONFIRMED / user request |
 | MCU-001 | The main MCU shall be STM32H743VIT6. | Exact package placement and native design implementation remain open. | Native schematic inspection. | CONFIRMED PART NUMBER / NOT_VERIFIED |
 | MCU-002 | The operational auxiliary MCU shall be STM32F103C8T6. | Required during operation for auxiliary I/O, PWM/ESC, expanded I/O, and safety. | Native schematic and responsibility review. | CONFIRMED PART NUMBER / NOT_VERIFIED |
-| IF-001 | The H743↔F103 interface protocol shall be USART. | Instance, pins, electrical levels, rate, timeout, and message details remain open. | Allocation review and hardware test. | CONFIRMED PROTOCOL / NOT_VERIFIED |
+| IF-001 | The H743↔F103 interface protocol shall be USART. | Used as the path for F103 to monitor H743 availability; instance, pins, electrical levels, rate, timeout, and message details remain open. Software owns detailed detection and command behavior. | Allocation review and hardware test. | CONFIRMED PROTOCOL / NOT_VERIFIED |
 | SEN-001 | The design shall provide 2 × SPI IMU interfaces. | Parts and exact resource allocation are TO BE DECIDED. | Schematic inspection and hardware test. | CONFIRMED INTERFACE / NOT_VERIFIED |
 | SEN-002 | The design shall provide 2 × I2C barometer interfaces. | Parts, addresses, and bus allocation are TO BE DECIDED. | Schematic inspection and hardware test. | CONFIRMED INTERFACE / NOT_VERIFIED |
 | SEN-003 | The design shall provide 2 × I2C magnetometer interfaces. | The second magnetometer allocation is TO BE DECIDED. | Architecture and hardware test. | CONFIRMED INTERFACE / NOT_VERIFIED |
-| PWR-001 | The flight-controller board shall receive 5 V from the power module. | Input tolerance, current budget, transients, and protection are TO BE DECIDED. | Power-tree inspection and measurement. | CONFIRMED REQUIREMENT / NOT_VERIFIED |
-| PWR-002 | The servo supply shall be 6 V. | Current budget, protection, and distribution are TO BE DECIDED. | Power-tree inspection and measurement. | CONFIRMED REQUIREMENT / NOT_VERIFIED |
-| SAF-001 | If H743 is not operating, F103 shall command immediate landing. | Detection method, timing, output ownership, and F103-failure behavior are TO BE DECIDED. | Fault-injection test. | CONFIRMED SAFETY REQUIREMENT / NOT_VERIFIED |
+| PWR-001 | The flight-controller board shall receive 5 V from the power module. | Input range 4.5–5.5 V; source current capacity 2 A. Transients and protection remain TO BE DECIDED. | Power-tree inspection and measurement. | CONFIRMED REQUIREMENT / NOT_VERIFIED |
+| PWR-002 | The servo supply shall be 6 V. | 10 A continuous and 15 A instantaneous, based on the user-provided UBEC-10A specification reference; pulse duration, protection, and distribution remain TO BE DECIDED. This does not approve a specific UBEC part. | Power-tree inspection and measurement. | CONFIRMED REQUIREMENT / NOT_VERIFIED |
+| SAF-001 | If H743 is not operating, F103 shall command immediate landing. | H743 availability monitoring uses the USART path. Software owns the detailed detection, landing-command behavior, and timing; electrical path and test access remain hardware requirements. | Fault-injection test. | CONFIRMED SAFETY REQUIREMENT / NOT_VERIFIED |
 
 ## 3. System Requirements
 
@@ -119,8 +119,8 @@ The platform uses Pixhawk 6C as a conceptual and functional reference. The refer
 
 | ID | Parameter | Minimum | Nominal | Maximum | Unit | Conditions / note |
 |---|---|---:|---:|---:|---|---|
-| PWR-010 | Flight-controller board input | TO BE DECIDED | 5 | TO BE DECIDED | V | Supplied by power module; input tolerance and transient profile open. |
-| PWR-011 | Servo supply | TO BE DECIDED | 6 | TO BE DECIDED | V | Current budget, distribution, and protection open. |
+| PWR-010 | Flight-controller board input | 4.5 | 5 | 5.5 | V | ±10%; power-module source current capacity 2 A. Transient profile and protection remain open. |
+| PWR-011 | Servo supply | TO BE DECIDED | 6 | TO BE DECIDED | V | 10 A continuous and 15 A instantaneous per user-provided UBEC-10A specification reference; pulse duration, distribution, and protection remain open. |
 | PWR-012 | Board continuous current | TO BE DECIDED | TO BE DECIDED | TO BE DECIDED | A | Separate MCU, sensor, external-I/O, and servo budgets required. |
 | PWR-013 | Sensor/MCU rail tolerance | TO BE DECIDED | TO BE DECIDED | TO BE DECIDED | V / % | Candidate rails in diagrams are not approved specifications. |
 | PWR-014 | Brownout/reset threshold | TO BE DECIDED | TO BE DECIDED | TO BE DECIDED | V | Per MCU and rail; verification method TO BE DECIDED. |
@@ -176,8 +176,8 @@ The logical allocation below is user-confirmed. Timer/channel labels are capture
 
 | ID | Hazard / fault | Required response | Recovery method | Verification |
 |---|---|---|---|---|
-| SAF-010 | H743 unavailable | F103 commands immediate landing. | Timeout, reset, recovery, and F103-failure behavior TO BE DECIDED. | Fault-injection test; NOT_VERIFIED. |
-| SAF-011 | H743↔F103 USART loss | Safe response and output ownership TO BE DECIDED. | TO BE DECIDED. | Fault-injection test; NOT_VERIFIED. |
+| SAF-010 | H743 unavailable | F103 monitors H743 availability through the USART path; detailed detection and landing-command behavior are Software-owned. | Timing, reset, recovery, and F103-failure behavior TO BE DECIDED by Software. | Fault-injection test; NOT_VERIFIED. |
+| SAF-011 | H743↔F103 USART loss | Safe response and output ownership are Software-owned and TO BE DECIDED. | TO BE DECIDED by Software. | Fault-injection test; NOT_VERIFIED. |
 | SAF-012 | 5 V input abnormality | Safe reset/output state TO BE DECIDED. | Power recovery procedure TO BE DECIDED. | Measurement and fault test; NOT_VERIFIED. |
 | SAF-013 | 6 V servo rail fault | Protection and safe actuator state TO BE DECIDED. | TO BE DECIDED. | Measurement and fault test; NOT_VERIFIED. |
 | SAF-014 | ESD, reverse polarity, overvoltage, and short circuit | Protection requirements TO BE DECIDED. | Service/recovery method TO BE DECIDED. | Analysis/test; NOT_VERIFIED. |
@@ -204,8 +204,8 @@ The user-provided architecture diagrams show an H743 main MCU, an F103 auxiliary
 
 ### 4.3 Power architecture
 
-- Confirmed board input requirement: 5 V from the power module.
-- Confirmed servo supply requirement: 6 V.
+- Confirmed board input requirement: 5 V ±10% (4.5–5.5 V), with a 2 A source current capacity from the power module.
+- Confirmed servo supply requirement: 6 V, 10 A continuous and 15 A instantaneous, based on the user-provided UBEC-10A specification reference. Pulse duration and protection requirements remain open; this reference does not select or approve a UBEC part.
 - The diagram-derived upstream 6S battery, XT90-S, PM02D, CRIUS PDB v1.0, 5 V, 3.3 V, 3.3 V_IMU, and 6 V UBEC arrangement is a candidate architecture only.
 - Rail dependencies, current budgets, load steps, sequencing, brownout, reverse-polarity protection, overvoltage protection, transient handling, grounding, filtering, and thermal limits are TO BE DECIDED.
 
@@ -250,7 +250,7 @@ The user-provided architecture diagrams show an H743 main MCU, an F103 auxiliary
 
 | ID | Item | Requirement / limit | Verification |
 |---|---|---|---|
-| MEC-001 | Board outline | Diagram reference is approximately `90 mm × 95 mm`; exact outline TO BE DECIDED. | Native PCB inspection / measurement. |
+| MEC-001 | Board outline | Each board dimension shall be less than `80 mm × 80 mm`; exact outline and shape remain TO BE DECIDED. The older diagram's approximately `90 mm × 95 mm` size is superseded by the user's current limit. | Native PCB inspection / measurement. |
 | MEC-002 | Mounting pattern | TO BE DECIDED. | Native PCB inspection / measurement. |
 | MEC-003 | Connector orientation and service access | TO BE DECIDED. | Mechanical inspection. |
 | MEC-004 | Height, keepouts, enclosure, and environmental constraints | TO BE DECIDED. | Mechanical inspection / analysis. |
@@ -343,6 +343,9 @@ No automatic gates: this table plans how requirements could be checked. It does 
 | DEC-002 | Auxiliary MCU part number | STM32F103C8T6 | Confirmed by user; implementation not verified. | 2026-10-12 / Human owner |
 | DEC-003 | H743↔F103 physical interface protocol | USART | Detailed instance, pins, electrical levels, and message protocol TO BE DECIDED. | 2026-10-12 / Human owner |
 | DEC-004 | Firmware implementation boundary | Deferred and non-blocking for current hardware path | Software team will decide firmware details later. | 2026-10-12 / Human owner |
+| DEC-005 | H743 availability monitoring path | USART | Software owns detailed detection, landing-command behavior, and timing; hardware shall preserve the physical path and test access. | 2026-10-13 / Human owner |
+| DEC-006 | Maximum PCB dimensions | Each dimension less than `80 mm × 80 mm` | Exact outline, mounting pattern, and connector orientation remain TO BE DECIDED; this supersedes the older diagram dimension. | 2026-10-13 / Human owner |
+| DEC-007 | Power input and servo rail limits | 5 V ±10%, 2 A input source capacity; 6 V servo rail, 10 A continuous and 15 A instantaneous | Servo current reference is the user-provided UBEC-10A specification; pulse duration, protection, detailed budgets, and component selection remain open. | 2026-10-13 / Human owner |
 
 ### 8.2 Open questions and assumptions
 
@@ -353,10 +356,10 @@ No automatic gates: this table plans how requirements could be checked. It does 
 | OPEN-003 | Timer/channel validity for all H743/F103 labels | May require reassignment or logical-to-physical mapping. | Hardware review / P1. |
 | OPEN-004 | Sensor MFR/MPN and electrical properties | Affects footprint, rail, layout, drivers, and verification. | Human owner / P0. |
 | OPEN-005 | Second magnetometer allocation | Affects sensor redundancy and connector/bus architecture. | Human owner / P0. |
-| OPEN-006 | 5 V input tolerance, board current, and rail budgets | Affects power design and protection. | Hardware review / P0/P2. |
-| OPEN-007 | 6 V servo current, protection, and distribution | Affects power and actuator safety. | Hardware review / P0/P2. |
-| OPEN-008 | Safety detection timing and immediate-landing boundary | Affects F103 logic, output ownership, and test method. | Human owner / P0/P2/P4. |
-| OPEN-009 | Board outline, mounting, connector orientation, and environment | Affects PCB and mechanical release. | Human owner / P0/P3. |
+| OPEN-006 | 5 V input transient/protection behavior, actual board current budget, and downstream rail budgets | Affects power design and protection. | Hardware review / P0/P2. |
+| OPEN-007 | 6 V servo rail pulse duration, protection, distribution, and actuator load profile | Affects power and actuator safety. | Hardware review / P0/P2. |
+| OPEN-008 | Software-owned safety detection timing, immediate-landing behavior, and F103-failure response | Affects F103 behavior, output ownership, and test method. | Software / P2/P4. |
+| OPEN-009 | Exact board outline under the 80 mm × 80 mm limit, mounting, connector orientation, and environment | Affects PCB and mechanical release. | Human owner / P0/P3. |
 | OPEN-010 | All non-MCU part numbers | No non-MCU part is approved by this document. | Human owner / component selection gate. |
 
 ## 9. Specification Change Notes
@@ -364,10 +367,11 @@ No automatic gates: this table plans how requirements could be checked. It does 
 | Revision | Date | Description | Human-approved by (if applicable) |
 |---|---|---|---|
 | 0.1 | 2026-10-12 | Initial advanced hardware specification draft based on confirmed H743/F103 part numbers, confirmed USART protocol, user-provided interface requirements, and diagram-derived references. | TO BE DECIDED |
+| 0.2 | 2026-10-13 | Recorded user-confirmed power limits, maximum PCB dimensions, USART safety-monitoring path, and Software ownership of detailed safety behavior; sensor part selection remains TBD. | Human owner |
 
 ## Current verdict
 
 **Draft only — NOT_VERIFIED and NOT FOR FABRICATION.**
 
-The specification is sufficiently structured for hardware P1 allocation and conflict review. It does not approve any non-MCU part number, exact pin mapping, timer allocation, power limit, safety timing, schematic, PCB, or fabrication release.
+The specification is sufficiently structured for hardware P1 allocation and conflict review. It does not approve any non-MCU part number, exact pin mapping, timer allocation, unresolved power protection or rail details, safety timing, schematic, PCB, or fabrication release. Sensor selection remains TBD; diagram-listed sensor parts are not approved.
 
