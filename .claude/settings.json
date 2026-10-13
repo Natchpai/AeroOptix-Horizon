@@ -14,16 +14,10 @@
       "Bash(git commit *)"
     ],
     "deny": [
-      "Edit(**/*.kicad_sch)",
-      "Edit(**/*.kicad_pcb)",
       "Edit(**/*.kicad_pro)",
-      "Edit(**/*.kicad_sym)",
-      "Edit(**/*.kicad_mod)",
-      "Edit(**/*.step)",
-      "Edit(**/*.wrl)",
       "Edit(**/*.kicad_wks)",
-      "Edit(**/library/**)",
       "Edit(**/templates/**)",
+      "Edit(**/*.wrl)",
 
       "Bash(git push --force *)",
       "Bash(git push -f *)",
@@ -33,7 +27,17 @@
       "Bash(gh pr merge *)"
     ],
     "ask": [
+      "Edit(**/*.kicad_pcb)",
+      "Edit(**/*.kicad_sch)",
+      "Edit(**/*.kicad_sym)",
+      "Edit(**/*.kicad_mod)",
+
+      "Edit(**/*.step)",
+      "Edit(**/*.stp)",
+
+      "Edit(**/library/**)",
       "Edit(**/documents/**)",
+
       "Bash(git push *)",
       "Bash(gh pr create *)"
     ],
@@ -46,7 +50,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"${CLAUDE_PROJECT_DIR}/.claude/hooks/protect_kicad.py\"",
+            "command": "python \"${CLAUDE_PROJECT_DIR}/.claude/hooks/protect_kicad_v2.py\"",
             "timeout": 10
           }
         ]
