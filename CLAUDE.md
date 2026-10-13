@@ -29,3 +29,7 @@ AeroOptix-Horizon is a KiCad 10 hardware design (no firmware, no build/test/lint
 ## Working approach
 
 Establish objective and scope, inspect only the relevant saved design data, separate findings from proposed changes, and state assumptions and verification gaps. Keep answers concise and technical, citing refs/nets/sources.
+
+## Language Rules
+- Use English for all files, code, error messages, and git's activity messages.
+- Use English for all explanations and conversational text communicated to users, unless otherwise specified.
