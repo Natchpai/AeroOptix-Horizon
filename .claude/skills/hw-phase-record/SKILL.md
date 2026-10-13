@@ -1,5 +1,5 @@
 ---
-name: phase-record
+name: hw-phase-record
 description: >-
   Acknowledges a hardware project phase explicitly declared by a human engineer
   and, only when requested, records it in README.md.

@@ -1,5 +1,5 @@
 ---
-name: session-log
+name: hw-session-log
 description: >-
   Summarizes significant engineering discussions, confirmed design decisions,
   unresolved findings, and follow-up actions into a concise project log.

@@ -1,5 +1,5 @@
 ---
-name: project-changelog
+name: hw-project-changelog
 description: Create or maintain a human-readable CHANGELOG.md for a hardware engineering repository when explicitly asked. Curate confirmed changes from user instructions and targeted Git history; do not commit, push, tag, or release.
 ---
 

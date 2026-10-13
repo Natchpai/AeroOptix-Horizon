@@ -1,5 +1,5 @@
 ---
-name: project-readme
+name: hw-project-readme
 description: >-
   Creates or updates a concise, general-purpose README for a hardware project
   using confirmed information and explicit user direction.
