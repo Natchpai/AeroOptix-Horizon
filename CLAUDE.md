@@ -32,4 +32,4 @@ Establish objective and scope, inspect only the relevant saved design data, sepa
 
 ## Language Rules
 - Use English for all files, code, error messages, and git's activity messages.
-- Use English for all explanations and conversational text communicated to users, unless otherwise specified by the user.
+- Use English for user-facing explanations, conversational text in CLI, unless otherwise specified by the user.
