@@ -9,7 +9,9 @@
       "Bash(git status *)",
       "Bash(git diff *)",
       "Bash(git log *)",
-      "Bash(git branch *)"
+      "Bash(git branch *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
     ],
     "deny": [
       "Edit(**/*.kicad_sch)",
@@ -21,6 +23,8 @@
       "Edit(**/*.wrl)",
       "Edit(**/*.kicad_wks)",
       "Edit(**/library/**)",
+      "Edit(**/templates/**)",
+
       "Bash(git push --force *)",
       "Bash(git push -f *)",
       "Bash(git reset --hard *)",
@@ -29,13 +33,9 @@
       "Bash(gh pr merge *)"
     ],
     "ask": [
-      "Edit",
-      "Bash(git add *)",
-      "Bash(git commit *)",
-      "Bash(git push *)",
-      "Bash(gh pr create *)",
       "Edit(**/documents/**)",
-      "Write"
+      "Bash(git push *)",
+      "Bash(gh pr create *)"
     ],
     "defaultMode": "default"
   },
