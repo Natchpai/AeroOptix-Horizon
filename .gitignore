@@ -51,4 +51,5 @@ fp-info-cache
 ._*
 
 **/skills/*
-!**/skills/git-workflow/*
+
+# !**/skills/git-workflow/*
