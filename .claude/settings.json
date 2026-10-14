@@ -1,6 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
+    "defaultMode": "default",
     "allow": [
       "Read",
       "Glob",
@@ -11,37 +12,40 @@
       "Bash(git log *)",
       "Bash(git branch *)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(gh pr create *)",
+      "Bash(git push *)"
+    ],
+    "ask": [
+      "Edit",
+      "Write",
+      "Edit(**/*.kicad_pcb)",
+      "Edit(**/*.kicad_sch)",
+      "Edit(**/*.kicad_sym)",
+      "Edit(**/*.kicad_mod)",
+      "Edit(**/*.step)",
+      "Edit(**/*.stp)",
+      "Edit(**/library/**)"
     ],
     "deny": [
+      "Read(**/*.pdf)",
+      "Read(~/.notebooklm/**)",
+      "Bash(pdftotext *)",
       "Edit(**/*.kicad_pro)",
       "Edit(**/*.kicad_wks)",
       "Edit(**/templates/**)",
       "Edit(**/*.wrl)",
-
+      "Bash(git push origin main*)",
+      "Bash(git push origin master*)",
+      "Bash(git push * HEAD:main*)",
+      "Bash(git push * HEAD:master*)",
       "Bash(git push --force *)",
       "Bash(git push -f *)",
       "Bash(git reset --hard *)",
       "Bash(git clean -fd *)",
       "Bash(git merge *)",
       "Bash(gh pr merge *)"
-    ],
-    "ask": [
-      "Edit(**/*.kicad_pcb)",
-      "Edit(**/*.kicad_sch)",
-      "Edit(**/*.kicad_sym)",
-      "Edit(**/*.kicad_mod)",
-
-      "Edit(**/*.step)",
-      "Edit(**/*.stp)",
-
-      "Edit(**/library/**)",
-      "Edit(**/documents/**)",
-
-      "Bash(git push *)",
-      "Bash(gh pr create *)"
-    ],
-    "defaultMode": "default"
+    ]
   },
   "hooks": {
     "PreToolUse": [
