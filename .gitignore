@@ -50,6 +50,6 @@ fp-info-cache
 .DS_Store
 ._*
 
-**/skills/*
+# **/skills/*
 
 # !**/skills/git-workflow/*
