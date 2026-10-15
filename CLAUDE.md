@@ -17,8 +17,6 @@ AeroOptix-Horizon is a KiCad 10 hardware design (no firmware, no build/test/lint
 ## Rules that matter
 
 - **Native KiCad files and `library/` are protected** (enforced by the hook and `settings.json`; the rules in `.claude/hooks/protect.json` are authoritative). Never edit without the engineer's explicit authorization, and propose changes with justification first; never silently alter connectivity, values, footprints, net names or geometry.
-  - **Ask** (edit only after the engineer's explicit approval, one action at a time): `.kicad_sch`, `.kicad_pcb`, `.kicad_sym`, `.kicad_mod`, `library/**`.
-  - **Deny** (do not edit; the engineer changes these): `.kicad_pro`, `.kicad_wks`, `templates/**`, `.step/.stp/.wrl`.
 - KiCad files reflect only the **saved** design; the editor may hold unsaved changes.
 - Inspect natively and narrowly (specific sheets/components/nets), not whole schematics or netlists. Verify component claims against datasheets. ERC/DRC PASS is not proof of correctness. Report `NOT_VERIFIED` when evidence is insufficient; do not invent specs or measurements.
 - Never generate, open, read or assess PDFs. If asked about documents, check only file existence (`EXISTS` / `MISSING` / `NOT_VERIFIED`). Create Markdown docs only when explicitly asked.
@@ -27,7 +25,7 @@ AeroOptix-Horizon is a KiCad 10 hardware design (no firmware, no build/test/lint
 
 ## Claude config
 
-`.claude/` holds the rules, project skills (`git-workflow`, `hw-phase-record`, `hw-git-changelog`, `hw-git-readme`, `hw-git-session-log`; global KiCad library skills `hw-footprint-sync`, `hw-symbol-sync`, `hw-link-audit` live in `.claude/skills/`), the `protect_kicad_v2.py` PreToolUse hook (advisory, heuristic; rules in `hooks/protect.json`: deny / ask / allow globs) and the permission deny/ask lists in `settings.json`, which should be kept in sync with `protect.json`. It was renamed from the typo `.cluade/`; the rename takes effect after restarting Claude Code.
+The `protect_kicad_v2.py` PreToolUse hook (advisory, heuristic; rules in `hooks/protect.json`: deny / ask / allow globs) and the permission deny/ask lists in `settings.json`, which should be kept in sync with `protect.json`. It was renamed from the typo `.cluade/`; the rename takes effect after restarting Claude Code.
 
 ## Working approach
 
