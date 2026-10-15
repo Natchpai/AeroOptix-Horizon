@@ -1,6 +1,6 @@
 # AeroOptix-Horizon
 
-High-performance dual-MCU flight controller powered by STM32H7 & STM32F1 by AeroOptix Club.
+Dual-MCU flight controller based on an STM32H7 and an STM32F1, by AeroOptix Club.
 
 > **Status:** `CONCEPT`
 > **Revision:** `v1.0`
@@ -13,7 +13,7 @@ AeroOptix-Horizon is a custom PX4 flight controller hardware platform with a dua
 
 Pixhawk 6C is used as a conceptual and functional reference only. Its schematic, PCB and pinout are not copied.
 
-> **Draft specification (rev 0.1, 2026-10-12): NOT FOR FABRICATION.** Everything below is a design target taken from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.2, 2026-10-13): NOT FOR FABRICATION.** Everything below is a design target taken from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Key Features
 
@@ -88,11 +88,6 @@ Phase changes are declared by a human engineer.
 
 The diagram is for reference only. It does not enforce gates or approve releases.
 
-<!-- Suggested STATUS_TOKEN values: CONCEPT, SCHEMATIC_IN_PROGRESS,
-SCHEMATIC_REVIEW_REQUIRED, READY_FOR_PCB_DESIGN, PCB_LAYOUT_IN_PROGRESS,
-PCB_REVIEW_REQUIRED, READY_FOR_FABRICATION, PROTOTYPE_BUILT, VALIDATED,
-RELEASED, NOT_READY, NOT_VERIFIED -->
-
 ## Hardware Design
 
 ### Architecture
@@ -155,6 +150,7 @@ Ten open items (OPEN-001 to OPEN-010) are tracked in the specification: pin and 
 ## Repository Structure
 
 ```text
+AeroOptix-Horizon/
 ├── hardware/AO-Horizon/
 │   ├── AO-Horizon.kicad_pro           # KiCad project settings
 │   ├── AO-Horizon.kicad_sch           # Root schematic
@@ -164,15 +160,14 @@ Ten open items (OPEN-001 to OPEN-010) are tracked in the specification: pin and 
 │   ├── library/
 │   │   ├── symbols/                   # Project-specific symbols
 │   │   ├── footprints/                # Project-specific footprints
-│   │   └── 3D/                        # Project-specific 3Ds
+│   │   └── 3D/                        # Project-specific 3D models
 │   ├── documents/
-│   │   ├── design/                    # Specification, handoff, execution checklist
+│   │   ├── design/                    # Specification and execution checklist
 │   │   ├── manufacturing/             # Fab/assembly notes and outputs
 │   │   ├── schematic/                 # Schematic diagram outputs
 │   │   ├── verification/              # Review reports and test evidence
 │   │   └── images/                    # Documentation images
 │   └── templates/                     # Worksheets, theme, fab/assembly notes
-│
 ├── .github/                           # Pull request template
 ├── LICENSE
 ├── CHANGELOG.md
@@ -183,9 +178,8 @@ Ten open items (OPEN-001 to OPEN-010) are tracked in the specification: pin and 
 
 | Resource | Description |
 |---|---|
-| [Advanced specification](hardware/AO-Horizon/documents/design/AO-HORIZON_ADVANCED_SPEC_EN.md) | Draft requirements, interfaces and open items |
-| [Handoff](hardware/AO-Horizon/documents/design/AO-HORIZON_HANDOFF_EN.md) | Design handoff notes |
-| [Execution checklist](hardware/AO-Horizon/documents/design/AO-HORIZON_EXECUTION_CHECKLIST_EN.md) | Execution checklist |
+| [Specification](hardware/AO-Horizon/documents/design/AO-HORIZON_SPEC_EN.md) | Draft requirements, interfaces and open items |
+| [Execution checklist](hardware/AO-Horizon/documents/design/AO-HORIZON_EXECUTION_CHECKLIST_EN.md) | Work plan and evidence tracker |
 
 ## License
 
@@ -193,7 +187,8 @@ Copyright (c) 2026 AeroOptix Club.
 
 The hardware design files are licensed under CERN-OHL-S-2.0.
 
-The complete licence text is available in: </br>
+The complete license text is available in:
+
 [CERN Open Hardware Licence Version 2 - Strongly Reciprocal](LICENSE)
 
 ## Changelog
