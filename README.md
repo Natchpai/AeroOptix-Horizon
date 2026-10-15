@@ -9,9 +9,9 @@ Dual-MCU flight controller based on an STM32H7 and an STM32F1, by AeroOptix Club
 
 ## Overview
 
-AeroOptix-Horizon is a custom PX4 flight controller hardware platform with a dual-MCU architecture. The STM32H743VIT6 is the main flight-controller MCU. The STM32F103C8T6 is an auxiliary MCU for expanded I/O, PWM/ESC control and safety behavior. The two MCUs are linked by USART.
+AeroOptix-Horizon is a custom PX4 flight controller hardware platform with a dual-MCU architecture. The STM32H743VIT6 is the main flight-controller MCU. The STM32F103C8T6 is an auxiliary MCU for expanded I/O, PWM/ESC control and safety behavior. A USART link connects the two MCUs.
 
-Pixhawk 6C is used as a conceptual and functional reference only. Its schematic, PCB and pinout are not copied.
+Pixhawk 6C is only a conceptual and functional reference. Its schematic, PCB and pinout are not copied.
 
 > **Draft specification (rev 0.2, 2026-10-13): NOT FOR FABRICATION.** Everything below is a design target taken from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
@@ -55,7 +55,7 @@ Pixhawk 6C is used as a conceptual and functional reference only. Its schematic,
 | CHECK | Design mostly finalized; human-led verification |
 | RELEASE | Human-approved design baseline released |
 
-*The current phase is declared by the project owner. It does not independently establish design correctness or approval.*
+*The project owner declares the current phase. It does not independently establish design correctness or approval.*
 
 ### Project Workflow Diagram
 
@@ -80,7 +80,7 @@ flowchart LR
     class D inactive
 ```
 
-Phase changes are declared by a human engineer.
+A human engineer declares phase changes.
 
 - Slate: not started
 - Amber: current phase, under review
@@ -145,7 +145,7 @@ Allocations below are user-confirmed at the logical level only. Exact pins, alte
 
 ## Open Items
 
-Ten open items (OPEN-001 to OPEN-010) are tracked in the specification: pin and alternate-function validity, USART details, timer validity, sensor part numbers, second magnetometer allocation, 5 V and 6 V budgets, safety timing, board outline and mounting, and all non-MCU part numbers.
+The specification tracks ten open items (OPEN-001 to OPEN-010): pin and alternate-function validity, USART details, timer validity, sensor part numbers, second magnetometer allocation, 5 V and 6 V budgets, safety timing, board outline and mounting, and all non-MCU part numbers.
 
 ## Repository Structure
 
