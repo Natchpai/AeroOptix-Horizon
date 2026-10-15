@@ -8,6 +8,7 @@ token-based and cannot see paths built at runtime or relative to a `cd`.
 """
 import json
 import os
+import posixpath
 import re
 import shlex
 import sys
@@ -18,8 +19,11 @@ SHELLS = ('Bash', 'PowerShell')
 # commands whose every path argument is modified
 WRITE_ALL = {'rm', 'mv', 'touch', 'truncate', 'tee', 'patch', 'rmdir', 'unlink',
              'remove-item', 'move-item', 'rename-item', 'set-content',
-             'add-content', 'clear-content', 'out-file', 'new-item'}
-WRITE_LAST = {'cp', 'install', 'copy-item', 'ln'}      # only the destination
+             'add-content', 'clear-content', 'out-file', 'new-item',
+             # PowerShell aliases of the cmdlets above
+             'del', 'erase', 'ri', 'rd', 'move', 'mi', 'ren', 'rni', 'sc', 'ac',
+             'clc', 'ni'}
+WRITE_LAST = {'cp', 'install', 'copy-item', 'ln', 'copy', 'cpi'}  # only the destination
 INPLACE = {'sed', 'perl'}                              # only with -i
 GIT_WRITE = {'checkout', 'restore', 'reset', 'clean', 'apply', 'rm', 'mv'}
 OUTPUT_FLAGS = {'-o', '--output'}                      # e.g. kicad-cli ... -o PATH
@@ -62,7 +66,9 @@ def classify(path, rules):
     """Return (level, glob) for a path; level is None when nothing matches."""
     if not isinstance(path, str) or not path.strip():
         return None, None
-    p = path.strip().strip('"\'').replace('\\', '/').lower()
+    # resolve ".." so an allow glob (for example scratchpad/**) cannot hide a
+    # protected file behind a "scratchpad/../" segment
+    p = posixpath.normpath(path.strip().strip('"\'').replace('\\', '/')).lower()
     for level in ('allow', 'deny', 'ask'):
         for g, rx in rules[level]:
             if rx.match(p) or rx.match(p + '/'):
