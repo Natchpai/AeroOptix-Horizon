@@ -11,7 +11,7 @@ AeroOptix-Horizon is a KiCad 10 hardware design (no firmware, no build/test/lint
 - `hardware/AO-Horizon/` is the KiCad project. The schematic is hierarchical: `AO-Horizon.kicad_sch` is the root, with sheet files `top_hierarchical`, `block_diagram`, `power_supplies`, `revision_history` (`*.kicad_sch`) alongside it. Check how sheets are linked before assuming which one is the root.
 - `hardware/AO-Horizon/documents/` holds `design/` (spec, handoff, execution checklist, all Markdown), `manufacturing/`, `schematic/`, `verification/`, `images/`. Engineering PDFs and release documents live here and are human-generated.
 - `hardware/AO-Horizon/library/` (`symbols`, `footprints`, `3D`) holds project-specific libraries; `templates/` holds title-block worksheets (`.kicad_wks`), notes and the board theme.
-- `README.md` and `CHANGELOG.md` are project-level docs, written from the templates under `.claude/skills/hw-project-readme/assets` and `.claude/skills/hw-project-changelog/assets`.
+- `README.md` and `CHANGELOG.md` are project-level docs, written from the templates under `.claude/skills/hw-git-readme/assets` and `.claude/skills/hw-git-changelog/assets`.
 - Treat the `documents/design/` spec files as the source of requirements; read them before proposing design changes.
 
 ## Rules that matter
@@ -22,11 +22,11 @@ AeroOptix-Horizon is a KiCad 10 hardware design (no firmware, no build/test/lint
 - KiCad files reflect only the **saved** design; the editor may hold unsaved changes.
 - Inspect natively and narrowly (specific sheets/components/nets), not whole schematics or netlists. Verify component claims against datasheets. ERC/DRC PASS is not proof of correctness. Report `NOT_VERIFIED` when evidence is insufficient; do not invent specs or measurements.
 - Never generate, open, read or assess PDFs. If asked about documents, check only file existence (`EXISTS` / `MISSING` / `NOT_VERIFIED`). Create Markdown docs only when explicitly asked.
-- **Git:** Conventional Commits (`feat|fix|refactor|docs|chore|test`, `<type>(<scope>): <desc>`, ≤72 chars, English). Every mutation (stage, commit, branch, push, PR, tag) needs explicit, action-specific approval; never merge PRs, force-push or reset --hard. PRs follow `.github/pull_request_template.md`.
+- **Git:** Conventional Commits (`feat|fix|refactor|docs|chore|test|perf|build|ci`, `<type>(<scope>): <desc>`, ≤72 chars, English). Every mutation (stage, commit, branch, push, PR, tag) needs explicit, action-specific approval; never merge PRs, force-push or reset --hard. PRs follow `.github/pull_request_template.md`.
 
 ## Claude config
 
-`.claude/` holds the rules, project skills (`git-workflow`, `hw-phase-record`, `hw-project-changelog`, `hw-project-readme`, `hw-session-log`; global KiCad library skills `hw-footprint-sync`, `hw-symbol-sync`, `hw-link-audit` live in `~/.claude/skills/`), the `protect_kicad_v2.py` PreToolUse hook (advisory, heuristic; rules in `hooks/protect.json`: deny / ask / allow globs) and the permission deny/ask lists in `settings.json`, which should be kept in sync with `protect.json`. It was renamed from the typo `.cluade/`; the rename takes effect after restarting Claude Code.
+`.claude/` holds the rules, project skills (`git-workflow`, `hw-phase-record`, `hw-git-changelog`, `hw-git-readme`, `hw-git-session-log`; global KiCad library skills `hw-footprint-sync`, `hw-symbol-sync`, `hw-link-audit` live in `.claude/skills/`), the `protect_kicad_v2.py` PreToolUse hook (advisory, heuristic; rules in `hooks/protect.json`: deny / ask / allow globs) and the permission deny/ask lists in `settings.json`, which should be kept in sync with `protect.json`. It was renamed from the typo `.cluade/`; the rename takes effect after restarting Claude Code.
 
 ## Working approach
 
