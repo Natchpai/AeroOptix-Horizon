@@ -46,12 +46,12 @@ when drafting a proposal, commit message or PR body.
 
 ## Dispatch
 Interpret `$ARGUMENTS` as one of:
-- `status` — inspect only.
-- `branch [name]` — propose creating or switching a branch.
-- `commit [scope]` — propose and, after approval, create focused commit(s).
+- `status` : inspect only.
+- `branch [name]` : propose creating or switching a branch.
+- `commit [scope]` : propose and, after approval, create focused commit(s).
   `scope` is an optional commit-scope hint (for example `uart`), not a path.
-- `pr [base]` — propose and, after approval, push and open a PR.
-- Omitted or unsupported — list these choices; change nothing.
+- `pr [base]` : propose and, after approval, push and open a PR.
+- Omitted or unsupported : list these choices; change nothing.
 - Tag, release, merge, rebase, reset and deletion requests need their own
   proposal; never fold them into a commit or PR workflow.
 
@@ -81,22 +81,22 @@ Interpret `$ARGUMENTS` as one of:
 
 ## Repository states
 Detect these during inspection and adapt the proposal:
-- **Merge, rebase, cherry-pick or bisect in progress** — report it and stop;
+- **Merge, rebase, cherry-pick or bisect in progress** : report it and stop;
   do not commit or switch branches until the user decides how to proceed.
-- **Detached HEAD** — propose a new branch before committing.
-- **On `main`/`master` or a protected branch** — propose a new branch first;
+- **Detached HEAD** : propose a new branch before committing.
+- **On `main`/`master` or a protected branch** : propose a new branch first;
   commit there only if the user explicitly says so. Never push to it
   directly; deliver through a branch and PR.
-- **No upstream** — note it; propose `git push -u origin <branch>` in the PR
+- **No upstream** : note it; propose `git push -u origin <branch>` in the PR
   flow.
-- **No remote** — report that pushing and PRs are not possible yet. Adding a
+- **No remote** : report that pushing and PRs are not possible yet. Adding a
   remote changes repository configuration and needs its own proposal.
-- **Dirty tree when switching branches** — creating a new branch carries the
+- **Dirty tree when switching branches** : creating a new branch carries the
   changes by default; switching to an existing branch may conflict, so
   propose carrying or stashing. Stash is a mutation and needs approval.
-- **Empty repository (no commits)** — say so; the first commit is a normal
+- **Empty repository (no commits)** : say so; the first commit is a normal
   commit proposal.
-- **Behind the base or upstream** — report it; propose a merge or rebase
+- **Behind the base or upstream** : report it; propose a merge or rebase
   only as a separate proposal.
 
 ## status
