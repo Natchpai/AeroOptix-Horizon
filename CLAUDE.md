@@ -22,6 +22,7 @@ AeroOptix-Horizon is a KiCad 10 hardware design (no firmware, no build/test/lint
 - KiCad files reflect only the **saved** design; the editor may hold unsaved changes.
 - Inspect natively and narrowly (specific sheets/components/nets), not whole schematics or netlists. Verify component claims against datasheets. ERC/DRC PASS is not proof of correctness. Report `NOT_VERIFIED` when evidence is insufficient; do not invent specs or measurements.
 - Never generate, open, read or assess PDFs. If asked about documents, check only file existence (`EXISTS` / `MISSING` / `NOT_VERIFIED`). Create Markdown docs only when explicitly asked.
+- **External-model providers** (`agent-coworker`: `agy` or `codex`): never send PDFs, native KiCad files, `library/` contents, secrets or anything under the deny/ask lists to them. Hooks and `settings.json` protections do not apply inside a provider. Datasheet content follows `engineering.md`.
 - **Git:** Conventional Commits (`feat|fix|refactor|docs|chore|test|perf|build|ci`, `<type>(<scope>): <desc>`, ≤72 chars, English). Every mutation (stage, commit, branch, push, PR, tag) needs explicit, action-specific approval; never merge PRs, force-push or reset --hard. PRs follow `.github/pull_request_template.md`.
 
 ## Claude config
