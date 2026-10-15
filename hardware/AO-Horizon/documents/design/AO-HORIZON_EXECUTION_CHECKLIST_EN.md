@@ -18,19 +18,19 @@ Use the specification for confirmed requirements and decisions. This checklist r
 ## Gate summary
 
 | Gate | Name | Exit criterion | Status |
-|---|---|---|---|
-| P0 | Requirements | No unresolved requirement prevents MCU-resource, bus, connector, or power-architecture allocation. Sensor-specific choices stay TBD and block only the allocations they affect. | OPEN |
-| P1 | Allocation | The mapping has actual pins and alternate functions, passes documented resource checks, and has review evidence. It may then be called `ALLOCATED`. It is not automatically `VERIFIED`. | OPEN |
-| P2 | Schematic | Hardware schematic review is closed, electrical interfaces and reserved resources are documented, and no unresolved hardware blocker affects bring-up. Firmware ownership, PX4 target, bootloader, and software protocol details may stay deferred. | OPEN |
-| P3 | PCB and release package | PCB, BOM, fabrication data, and release manifest are reviewed and approved by the Human engineering owner. | OPEN |
-| P4 | Bring-up | Repeatable bench evidence exists, and every remaining issue has an owner and a defined disposition. | OPEN |
+| ---- |---|---|---|
+| P0   | Requirements | No unresolved requirement prevents MCU-resource, bus, connector, or power-architecture allocation. Sensor-specific choices stay TBD and block only the allocations they affect. | OPEN |
+| P1   | Allocation | The mapping has actual pins and alternate functions, passes documented resource checks, and has review evidence. It may then be called `ALLOCATED`. It is not automatically `VERIFIED`. | OPEN |
+| P2   | Schematic | Hardware schematic review is closed, electrical interfaces and reserved resources are documented, and no unresolved hardware blocker affects bring-up. Firmware ownership, PX4 target, bootloader, and software protocol details may stay deferred. | OPEN |
+| P3   | PCB and release package | PCB, BOM, fabrication data, and release manifest are reviewed and approved by the Human engineering owner. | OPEN |
+| P4   | Bring-up | Repeatable bench evidence exists, and every remaining issue has an owner and a defined disposition. | OPEN |
 
 ## P0: Requirements
 
 Groups: P0.1 scope and operating intent (P0-001 to P0-003). P0.2 MCU and safety boundary (P0-004 to P0-007). P0.3 sensors (P0-008 to P0-011). P0.4 interfaces, power, actuators, and envelope (P0-012 to P0-015). Tasks added by audit are P0-016 to P0-018, P1-014, P2-010, P3-010, and P3-011.
 
-| ID | Task | Req | Owner | Status | Evidence required / link |
-|---|---|---|---|---|---|
+| ID     | Task | Req | Owner | Status | Evidence required / link |
+| ------ |---|---|---|---|---|
 | P0-001 | Define the flight-controller role and system boundary. Scope confirmed on 2026-10-13. | SYS-001, SYS-002 | Human | DONE | User confirmation, 2026-10-13. No DEC record yet. |
 | P0-002 | Record PX4 target/version and supported modes as Software-owned deferred work. Not needed to proceed with hardware. | DEC-004 | Human | DONE | DEC-004 |
 | P0-003 | Define first-revision scope. In scope: H743 main control, F103 auxiliary I/O/PWM/safety, and the stated external interfaces. Deferred: PX4, bootloader, QGC, and detailed software behavior. | SYS-001, DEC-004 | Human | DONE | DEC-004; spec 1.2 |
@@ -54,8 +54,8 @@ Groups: P0.1 scope and operating intent (P0-001 to P0-003). P0.2 MCU and safety 
 
 Any candidate pin mapping stays labeled `CANDIDATE / NOT VERIFIED` until P1 evidence is complete. P1-006 to P1-008 are proposed allocations, not confirmed.
 
-| ID | Task | Req | Owner | Status | Evidence required / link |
-|---|---|---|---|---|---|
+| ID     | Task | Req | Owner | Status | Evidence required / link |
+| ------ |---|---|---|---|---|
 | P1-001 | Assign exact H743 pins and alternate functions for all confirmed and approved interfaces. | IF-010 to IF-024, OPEN-001 | Hardware | OPEN | Versioned MCU pin-allocation table |
 | P1-002 | Assign exact F103 pins and alternate functions for its approved role. | IF-030 to IF-038, FUN-002, OPEN-001 | Hardware | OPEN | Versioned F103 pin-allocation table |
 | P1-003 | Allocate both SPI IMUs: CS, DRDY, reset, bus ownership, DMA. | SEN-001 | Hardware | OPEN | SPI allocation and timing review |
@@ -75,40 +75,40 @@ Any candidate pin mapping stays labeled `CANDIDATE / NOT VERIFIED` until P1 evid
 
 Firmware tasks P2-005 to P2-007 do not block the hardware release.
 
-| ID | Task | Req | Owner | Status | Evidence required / link |
-|---|---|---|---|---|---|
-| P2-001 | Create the schematic from the P1 allocation. | | Hardware | BLOCKED BY P1 | Versioned native schematic |
+| ID     | Task | Req | Owner | Status | Evidence required / link |
+| ------ |---|---|---|---|---|
+| P2-001 | Create the schematic from the P1 allocation. |  | Hardware | BLOCKED BY P1 | Versioned native schematic |
 | P2-002 | Implement USB FS, BOOT0, SWD, reset, power, and protection circuits. | IF-022, IF-023, FUN-005, FUN-006, SAF-014 | Hardware | BLOCKED BY P1 | Schematic review evidence |
 | P2-003 | Implement sensor buses, addresses, CS/DRDY, pull-ups, and recovery provisions. | SEN-001, SEN-002, SEN-003 | Hardware | BLOCKED BY P0, P1 | Sensor interface review |
 | P2-004 | Define hardware net names and connector pinout. Reserve resources for later firmware mapping. | IF-010 to IF-024 | Hardware | BLOCKED BY P0, P1 | Hardware net/connector cross-check |
 | P2-005 | Create the PX4 board configuration and bootloader plan. | DEC-004 | Software | DEFERRED | Later versioned firmware configuration and build/flash procedure. Not a hardware release blocker. |
 | P2-006 | Define the H743 USB FS/QGC flashing workflow for both MCU firmware images. | DEC-004 | Software | DEFERRED | Later reproducible software procedure and test record. Hardware shall preserve the physical path and access. |
 | P2-007 | Define H743↔F103 firmware ownership, protocol version, startup, timeout, and fault behavior. | IF-001, SAF-010, SAF-011, OPEN-008 | Software | DEFERRED | Later versioned firmware interface contract. Hardware shall document the reserved electrical path before schematic freeze. |
-| P2-008 | Run ERC and resolve or disposition all relevant findings. | | TBD | OPEN | ERC output and issue disposition |
-| P2-009 | Complete line-by-line schematic review. | | TBD | OPEN | Review checklist with reviewer and evidence links |
+| P2-008 | Run ERC and resolve or disposition all relevant findings. |  | TBD | OPEN | ERC output and issue disposition |
+| P2-009 | Complete line-by-line schematic review. |  | TBD | OPEN | Review checklist with reviewer and evidence links |
 | P2-010 | Complete the spec 4.7 calculations: board input current, servo rail current, rail tolerance, thermal margin, and safety response timing. Added by audit. | Spec 4.7, PWR-012 to PWR-014 | Hardware | OPEN | Calculation records with margins |
 
 ## P3: PCB and fabrication release
 
-| ID | Task | Req | Owner | Status | Evidence required / link |
-|---|---|---|---|---|---|
+| ID     | Task | Req | Owner | Status | Evidence required / link |
+| ------ |---|---|---|---|---|
 | P3-001 | Confirm board envelope, mounting, connector placement, and service/debug access. | MEC-001 to MEC-004, OPEN-009 | Human | OPEN | Mechanical constraint review |
 | P3-002 | Place IMUs, barometers, magnetometers, clock, power, USB, and debug interfaces by their constraints. | PCB-011, PCB-012, PCB-013 | TBD | BLOCKED BY P0, P2 | Placement review |
 | P3-003 | Route power and return paths with documented current and noise assumptions. | PCB-010 | TBD | BLOCKED BY P0, P2 | Power/layout review |
 | P3-004 | Route USB FS and high-sensitivity sensor/debug signals with appropriate layout review. | PCB-011, PCB-012 | TBD | BLOCKED BY P0, P2 | Signal/layout review |
-| P3-005 | Run DRC and disposition all relevant findings. | | TBD | OPEN | DRC output and issue disposition |
+| P3-005 | Run DRC and disposition all relevant findings. |  | TBD | OPEN | DRC output and issue disposition |
 | P3-006 | Review thermal/current constraints and manufacturability. | MFG-001 to MFG-003 | TBD | OPEN | Manufacturing and thermal review |
 | P3-007 | Confirm BOM, footprints, alternates, assembly notes, and test-point access. | MFG-002 to MFG-004, TST-001 to TST-007 | TBD | OPEN | Controlled BOM and assembly review |
-| P3-008 | Create a hardware release package linked to schematic, PCB, BOM, and the deferred-firmware status. | | TBD | OPEN | Hardware release manifest that records firmware integration as deferred |
-| P3-009 | Obtain Human engineering-owner approval for fabrication release. | | Human | OPEN | Explicit approval record |
+| P3-008 | Create a hardware release package linked to schematic, PCB, BOM, and the deferred-firmware status. |  | TBD | OPEN | Hardware release manifest that records firmware integration as deferred |
+| P3-009 | Obtain Human engineering-owner approval for fabrication release. |  | Human | OPEN | Explicit approval record |
 | P3-010 | Define PCB fabrication parameters: layer count, stackup, copper weight, trace/space, hole/via, soldermask, finish. Added by audit. | PCB-001 to PCB-005, MFG-001 | TBD | OPEN | Parameter record confirmed by the fabricator |
 | P3-011 | Route PWM/actuator outputs and the H743↔F103 USART with return path, drive, protection, voltage compatibility, and test access. Added by audit. | PCB-014, PCB-015 | TBD | BLOCKED BY P0, P2 | Layout review and electrical test |
 
 ## P4: Bring-up and validation
 
-| ID | Task | Req | Owner | Status | Evidence required / link |
-|---|---|---|---|---|---|
-| P4-001 | Inspect the assembled board for shorts, assembly defects, polarity, and component identity. | | TBD | OPEN | Inspection record |
+| ID     | Task | Req | Owner | Status | Evidence required / link |
+| ------ |---|---|---|---|---|
+| P4-001 | Inspect the assembled board for shorts, assembly defects, polarity, and component identity. |  | TBD | OPEN | Inspection record |
 | P4-002 | Verify power rails, sequencing, reset behavior, and current consumption before firmware loading. | PWR-001, PWR-002, TST-004, TST-005 | TBD | OPEN | Measured bring-up log |
 | P4-003 | Verify SWD access for H743. | FUN-005, TST-001 | TBD | OPEN | Probe/session log |
 | P4-004 | Verify SWD access for F103. | FUN-005, TST-002 | TBD | OPEN | Probe/session log |
@@ -117,7 +117,7 @@ Firmware tasks P2-005 to P2-007 do not block the hardware release.
 | P4-007 | Verify bootloader, PX4 startup, sensor detection, and calibration flow. | DEC-004 | Software | DEFERRED | Later firmware/console/test log. Not a hardware release blocker. |
 | P4-008 | Verify the H743↔F103 physical link, electrical levels, continuity, and test access. Protocol behavior is deferred to Software. | IF-001, IF-024, TST-006 | Hardware, Software | OPEN | Hardware link test record and later software protocol test record |
 | P4-009 | Verify actuator outputs, arming behavior, failsafe behavior, and fault handling. | SAF-001, SAF-010 to SAF-013, TST-007 | TBD | OPEN | Safety/actuator test record |
-| P4-010 | Record hardware revision, firmware revision, test conditions, measurements, and deviations. | | TBD | OPEN | Controlled bring-up report |
+| P4-010 | Record hardware revision, firmware revision, test conditions, measurements, and deviations. |  | TBD | OPEN | Controlled bring-up report |
 
 ## Evidence and closure checklist
 
@@ -136,8 +136,8 @@ Firmware tasks P2-005 to P2-007 do not block the hardware release.
 
 Descriptions are in the specification (section 8.2). Status and owner below are tracked here.
 
-| ID | Spec ref | Open item | Status | Owner / target |
-|---|---|---|---|---|
+| ID     | Spec ref | Open item | Status | Owner / target |
+| ------ |---|---|---|---|
 | OI-001 | OPEN-008, SAF-001 | Immediate-landing requirement and F103 safety implementation | Requirement confirmed. Detailed behavior and timing are Software-owned and deferred. | Software / P2, P4 |
 | OI-002 | OPEN-004 | Sensor MFR/MPN and electrical properties | `TBD`. Diagram suggestions are not selections. | Human owner / P0 |
 | OI-003 | OPEN-001 | External interfaces and exact MCU pins | Logical requirements confirmed; mapping unverified. | Hardware / P1 |
