@@ -3,9 +3,9 @@
   "permissions": {
     "defaultMode": "default",
     "allow": [
-      "Read",
       "Edit",
       "Write",
+      "Read",
       "Glob",
       "Grep",
       "Bash(git status)",
@@ -16,26 +16,26 @@
       "Bash(git add *)",
       "Bash(git commit *)",
       "Bash(gh pr create *)",
-      "Bash(git push *)"
-    ],
-    "ask": [
-      "Edit(**/*.kicad_pcb)",
+      "Bash(git push *)",
+
       "Edit(**/*.kicad_sch)",
       "Edit(**/*.kicad_sym)",
       "Edit(**/*.kicad_mod)",
-      "Edit(**/*.kicad_pro)",
-      "Edit(**/*.step)",
-      "Edit(**/*.stp)",
       "Edit(**/library/**)"
     ],
+    "ask": [
+      "Edit(**/*.kicad_pcb)",
+      "Edit(**/*.kicad_pro)",
+      "Edit(**/*.step)",
+      "Edit(**/*.stp)"
+    ],
     "deny": [
-      "Edit(**/*.kicad_wks)",
-      "Edit(**/*.wrl)",
-      "Edit(**/templates/**)",
-
       "Read(**/*.pdf)",
       "Read(~/.notebooklm/**)",
       "Bash(pdftotext *)",
+      "Edit(**/*.kicad_wks)",
+      "Edit(**/templates/**)",
+      "Edit(**/*.wrl)",
       "Bash(git push origin main*)",
       "Bash(git push origin master*)",
       "Bash(git push * HEAD:main*)",
