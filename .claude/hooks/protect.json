@@ -6,13 +6,13 @@
     "**/templates/**"
   ],
   "ask": [
-    "**/*.kicad_pcb",
+    "**/*.step",
+    "**/*.stp",
     "**/*.kicad_sch",
+    "**/*.kicad_pcb",
     "**/*.kicad_pro",
     "**/*.kicad_sym",
     "**/*.kicad_mod",
-    "**/*.step",
-    "**/*.stp",
     "**/library/**"
   ],
   "allow": [
