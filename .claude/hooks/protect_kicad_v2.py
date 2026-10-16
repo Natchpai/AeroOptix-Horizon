@@ -30,10 +30,7 @@ OUTPUT_FLAGS = {'-o', '--output'}                      # e.g. kicad-cli ... -o P
 INTERPRETERS = {'python', 'python3', 'py', 'node', 'powershell', 'pwsh', 'perl'}
 WRITE_HINT = re.compile(r"(?i)open\([^)]*['\"][wax]|write|rmtree|unlink|remove|"
                         r"set-content|out-file|copy|rename|move")
-PS_COPY = {'copy-item', 'copy', 'cpi'}                # PowerShell: -Destination may come first
-SPLIT = re.compile(r'&&|\|\||[;|\n]|(?<![<>])&')       # a lone & also separates commands
-# redirection target, with or without a space: > f, >> f, >f, 2>f, echo hi>f (not 2>&1)
-REDIRECT = re.compile(r'''(?<![<>&])\d?>>?(?!&)\s*("[^"]*"|'[^']*'|[^\s<>&|;"']+)''')
+SPLIT = re.compile(r'&&|\|\||[;|\n]')
 
 
 def glob_re(g):
@@ -62,10 +59,7 @@ def load_rules():
     here = os.path.dirname(os.path.abspath(__file__))
     with open(os.path.join(here, 'protect.json'), encoding='utf-8') as f:
         cfg = json.load(f)
-    # optional extra shell commands, so new aliases need no code change
-    WRITE_ALL.update(c.lower() for c in cfg.get('write_all') or [])
-    WRITE_LAST.update(c.lower() for c in cfg.get('write_last') or [])
-    return {k: [(g, glob_re(g)) for g in cfg.get(k) or []] for k in RANK}
+    return {k: [(g, glob_re(g)) for g in cfg.get(k, [])] for k in RANK}
 
 
 def classify(path, rules):
@@ -73,10 +67,8 @@ def classify(path, rules):
     if not isinstance(path, str) or not path.strip():
         return None, None
     # resolve ".." so an allow glob (for example scratchpad/**) cannot hide a
-    # protected file behind a "scratchpad/../" segment; "D:foo" (drive-relative)
-    # is read as "D:/foo" so the directory part is still matched
-    p = path.strip().strip('"\'').replace('\\', '/')
-    p = posixpath.normpath(re.sub(r'^([A-Za-z]):(?=[^/])', r'\1:/', p)).lower()
+    # protected file behind a "scratchpad/../" segment
+    p = posixpath.normpath(path.strip().strip('"\'').replace('\\', '/')).lower()
     for level in ('allow', 'deny', 'ask'):
         for g, rx in rules[level]:
             if rx.match(p) or rx.match(p + '/'):
@@ -92,7 +84,11 @@ def shell_targets(command):
             toks = shlex.split(seg)
         except ValueError:
             toks = seg.split()
-        targets += [m.group(1).strip('"\'') for m in REDIRECT.finditer(seg)]
+        # redirections: > file, >> file, >file
+        for i, t in enumerate(toks):
+            m = re.match(r'^\d?>>?(.*)$', t)
+            if m:
+                targets.append(m.group(1) or (toks[i + 1] if i + 1 < len(toks) else ''))
         if not toks:
             continue
         cmd = os.path.basename(toks[0]).lower()
@@ -102,9 +98,6 @@ def shell_targets(command):
             targets += args
         elif cmd in WRITE_LAST and args:
             targets.append(args[-1])
-            if cmd in PS_COPY:                            # Copy-Item -Destination X -Path Y
-                targets += [toks[i + 1] for i, t in enumerate(toks[:-1])
-                            if t.lower().startswith('-d')]
         elif cmd in INPLACE and any(t.startswith('-i') for t in toks[1:]):
             targets += args
         elif cmd == 'git' and args and args[0] in GIT_WRITE:

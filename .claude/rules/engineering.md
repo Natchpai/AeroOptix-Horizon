@@ -101,8 +101,15 @@ evidence labels. `PASS` needs `VERIFIED` evidence for that specific check.
 One line per finding: severity, reference or net, evidence label, statement,
 and the source or calculation.
 
+Severity rates one finding, not the whole design:
+- `CRITICAL`: credible hazard or defect with severe impact, backed by clear
+  evidence. Describe the conditions; do not claim certainty.
+- `MAJOR`: likely functional or reliability issue that needs design attention.
+- `MINOR`: bounded improvement, margin concern, or documentation issue.
+- `INFO`: observation or optional suggestion, not a defect.
+
 ```text
-HIGH | U3 / 3V3 | VERIFIED | Output current limit 500 mA is below the 620 mA load estimate | calc in thread
+MAJOR | U3 / 3V3 | VERIFIED | Output current limit 500 mA is below the 620 mA load estimate | calc in thread
 ```
 
 ## Analysis (SHOULD)
