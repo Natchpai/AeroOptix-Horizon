@@ -9,7 +9,7 @@ AeroOptix-Horizon is a KiCad 10 hardware design (no firmware, no build/test/lint
 ## Repository layout (big picture)
 
 - `hardware/AO-Horizon/` is the KiCad project. The schematic is hierarchical. `AO-Horizon.kicad_sch` is the root and links `block_diagram`, `top_hierarchical` and `revision_history`. `power_supplies` is a child of `top_hierarchical`, not of the root (checked via `Sheetfile` properties). Library tables (`fp-lib-table`, `sym-lib-table`) sit next to the project; `*.bak` copies and `AO-Horizon-backups/` are not design sources.
-- `hardware/AO-Horizon/documents/` holds `design/` (spec, handoff, execution checklist, all Markdown), `manufacturing/`, `schematic/`, `verification/`, `images/`. Engineering PDFs and release documents live here and are human-generated.
+- `hardware/AO-Horizon/documents/` holds `design/` (spec, handoff, execution checklist, part selection and sourcing summaries, all Markdown), `manufacturing/`, `schematic/`, `verification/`, `images/`. Engineering PDFs and release documents live here and are human-generated.
 - `hardware/AO-Horizon/library/` (`symbols`, `footprints`, `3D`) holds project-specific libraries; `templates/` holds title-block worksheets (`.kicad_wks`), notes and the board theme.
 - `README.md` and `CHANGELOG.md` are project-level docs, written from the templates under `.claude/skills/hw-git-readme/assets` and `.claude/skills/hw-git-changelog/assets`.
 - Treat the `documents/design/` spec files as the source of requirements; read them before proposing design changes.
@@ -26,6 +26,11 @@ AeroOptix-Horizon is a KiCad 10 hardware design (no firmware, no build/test/lint
 ## Claude config
 
 The `protect_kicad_v2.py` PreToolUse hook (advisory, heuristic; rules in `.claude/hooks/protect.json`: deny / ask / allow globs, order allow > deny > ask) and the permission deny/ask lists in `.claude/settings.json`, which should be kept in sync with `protect.json`. Today `deny` covers `*.kicad_wks`, `*.wrl` and `templates/**`; `ask` covers the native KiCad files, `*.step` and `library/**`. The folder was renamed from the typo `.cluade/`; if protections seem inactive, restart Claude Code.
+
+Subagents (defined globally in `~/.claude/agents/`, not in this repo):
+- `research-scout`: read-only lookups (repo search, large files, web). Brief it with narrow KiCad targets (sheet, ref, net) and the exact path. Hooks and `settings.json` deny rules apply to it, unlike external providers.
+- `hardware-researcher`: datasheet and app-note research through official web pages or NotebookLM, per `engineering.md`.
+- Supplier pages: JLCPCB stock and price are JavaScript-rendered and Mouser often times out, so agents fall back to search snippets. Snippet values stay `NOT_VERIFIED`. Spot-check key values before writing them into a `design/` record.
 
 ## Working approach
 
