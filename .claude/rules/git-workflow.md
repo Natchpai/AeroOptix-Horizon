@@ -1,9 +1,9 @@
 # Git Workflow: Hardware Overrides (KiCad projects)
 
 The general Git rules (approval tiers, never pushing to the default branch,
-Conventional Commits, English-only, `NOT_VERIFIED` reporting) live in the
-global `~/.claude/rules/git-workflow.md`. This file only adds hardware
-specifics. It never relaxes the global rules or the English-only rule.
+English-only, `NOT_VERIFIED` reporting) live in the global
+`~/.claude/rules/git-workflow.md`. Commit, branch and PR conventions live in
+the `git-workflow` skill. This file only adds hardware specifics. It never relaxes the global rules or the English-only rule.
 If the global file is missing, apply the defaults built into the `git-workflow`
 skill.
 

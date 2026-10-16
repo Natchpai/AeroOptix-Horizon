@@ -13,9 +13,11 @@ argument-hint: "status | branch [name] | commit [scope] | pr [base]"
 Manage Git and GitHub changes without modifying project content except as
 explicitly approved by the user.
 
-Shared policy (approval boundary, commit types and format, PR reporting,
-`NOT_VERIFIED`) lives in `rules/git-workflow.md`; follow it. This skill adds
-the procedure. If that file is not in the project, apply the defaults here.
+Shared safety policy (approval tiers, default-branch rules, solo-repository
+opt-in, secrets, `NOT_VERIFIED`) lives in `rules/git-workflow.md`; follow it.
+This skill adds the conventions and the procedure. If that file is missing,
+treat every state-changing action as needing its own approval, and never push
+to the default branch.
 Examples and the proposal template are in `references/examples.md`; read it
 when drafting a proposal, commit message or PR body.
 
@@ -39,10 +41,27 @@ when drafting a proposal, commit message or PR body.
   listed actions.
 - If asked to push to the default or a protected branch, decline whatever the
   user says and offer the allowed route: push a feature branch and open a PR.
-  Repeating the request does not change the answer.
+  Repeating the request does not change the answer. The only exception is the
+  solo-repository opt-in in the rules.
 - After each approved action, verify the real result (`git status`,
   `git log -1`, or the tool output) and report it. Do not infer success from
   an exit code alone.
+
+## Conventions
+- Write commit messages, branch names and PRs in English.
+- Commits follow Conventional Commits 1.0.0: `<type>(<scope>): <description>`.
+- Types: `feat`, `fix`, `refactor`, `docs`, `chore`, `test`, `perf`, `build`,
+  `ci`. A repository that defines its own types or scopes overrides this list.
+- Use lowercase types, imperative wording and a subject of at most 72
+  characters; use `BREAKING CHANGE:` for incompatible interfaces.
+- Keep each commit to one logical change. Add a body when rationale or impact
+  needs explanation.
+- Prefer a new commit to amending; never amend or rewrite a pushed commit.
+- Reuse scopes and issue-reference style already present in history.
+- Branches: `<type>/<short-kebab-description>` using the types above.
+- PRs: Conventional Commit-style title. The body summarizes purpose, affected
+  areas, impact, risks and only the validation actually performed. Open as
+  draft when validation is `NOT_VERIFIED`.
 
 ## Dispatch
 Interpret `$ARGUMENTS` as one of:
@@ -86,7 +105,9 @@ Detect these during inspection and adapt the proposal:
 - **Detached HEAD** : propose a new branch before committing.
 - **On `main`/`master` or a protected branch** : propose a new branch first;
   commit there only if the user explicitly says so. Never push to it
-  directly; deliver through a branch and PR.
+  directly; deliver through a branch and PR. With the solo-repository opt-in,
+  propose committing on the default branch instead, and propose the push as
+  its own Tier 2 action.
 - **No upstream** : note it; propose `git push -u origin <branch>` in the PR
   flow.
 - **No remote** : report that pushing and PRs are not possible yet. Adding a
@@ -107,8 +128,7 @@ Perform no writes.
 
 ## branch
 1. Inspect current branch and ahead/behind state.
-2. Propose `<type>/<short-kebab-description>` using a commit type from the
-   rules.
+2. Propose `<type>/<short-kebab-description>` using a type from Conventions.
 3. After approval, create or switch (`git switch -c <name>` or
    `git switch <name>`). Never delete, rename or force-move a branch.
 
@@ -118,8 +138,7 @@ Perform no writes.
    path level (interactive staging is unsupported); flag files that mix
    concerns and ask how to proceed. Propose the split by default; the user may
    ask for a single commit. Name a new branch after the primary group's type.
-3. Draft each message per the rules' commit conventions, reusing scopes
-   seen in history.
+3. Draft each message per Conventions, reusing scopes seen in history.
 4. Present the proposal. Stop for approval.
 5. After approval, stage only the listed paths (`git add -- <paths>`), recheck
    `git diff --cached`, and stop if it differs materially from the proposal.
@@ -145,7 +164,7 @@ Perform no writes.
    - Add `Closes #n` only when the branch name, commits or user supply the
      issue.
 5. Use a Conventional Commit-style title. Propose a draft PR when validation
-   is `NOT_VERIFIED` (see rules).
+   is `NOT_VERIFIED` (see Conventions).
 6. Present base/head, required push, title, body, impact and risks as one
    proposal.
 7. After approval, push the feature branch (`git push -u origin <branch>`;
