@@ -8,7 +8,7 @@ AeroOptix-Horizon is a KiCad 10 hardware design (no firmware, no build/test/lint
 
 ## Repository layout (big picture)
 
-- `hardware/AO-Horizon/` is the KiCad project. The schematic is hierarchical: `AO-Horizon.kicad_sch` is the root, with sheet files `top_hierarchical`, `block_diagram`, `power_supplies`, `revision_history` (`*.kicad_sch`) alongside it. Check how sheets are linked before assuming which one is the root.
+- `hardware/AO-Horizon/` is the KiCad project. The schematic is hierarchical. `AO-Horizon.kicad_sch` is the root and links `block_diagram`, `top_hierarchical` and `revision_history`. `power_supplies` is a child of `top_hierarchical`, not of the root (checked via `Sheetfile` properties). Library tables (`fp-lib-table`, `sym-lib-table`) sit next to the project; `*.bak` copies and `AO-Horizon-backups/` are not design sources.
 - `hardware/AO-Horizon/documents/` holds `design/` (spec, handoff, execution checklist, all Markdown), `manufacturing/`, `schematic/`, `verification/`, `images/`. Engineering PDFs and release documents live here and are human-generated.
 - `hardware/AO-Horizon/library/` (`symbols`, `footprints`, `3D`) holds project-specific libraries; `templates/` holds title-block worksheets (`.kicad_wks`), notes and the board theme.
 - `README.md` and `CHANGELOG.md` are project-level docs, written from the templates under `.claude/skills/hw-git-readme/assets` and `.claude/skills/hw-git-changelog/assets`.
@@ -25,7 +25,7 @@ AeroOptix-Horizon is a KiCad 10 hardware design (no firmware, no build/test/lint
 
 ## Claude config
 
-The `protect_kicad_v2.py` PreToolUse hook (advisory, heuristic; rules in `hooks/protect.json`: deny / ask / allow globs) and the permission deny/ask lists in `settings.json`, which should be kept in sync with `protect.json`. It was renamed from the typo `.cluade/`; the rename takes effect after restarting Claude Code.
+The `protect_kicad_v2.py` PreToolUse hook (advisory, heuristic; rules in `.claude/hooks/protect.json`: deny / ask / allow globs, order allow > deny > ask) and the permission deny/ask lists in `.claude/settings.json`, which should be kept in sync with `protect.json`. Today `deny` covers `*.kicad_wks`, `*.wrl` and `templates/**`; `ask` covers the native KiCad files, `*.step` and `library/**`. The folder was renamed from the typo `.cluade/`; if protections seem inactive, restart Claude Code.
 
 ## Working approach
 
