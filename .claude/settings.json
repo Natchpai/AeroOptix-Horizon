@@ -18,12 +18,12 @@
       "Bash(gh pr create *)",
       "Bash(git push *)",
 
-      "Edit(**/*.kicad_sch)",
       "Edit(**/*.kicad_sym)",
       "Edit(**/*.kicad_mod)",
       "Edit(**/library/**)"
     ],
     "ask": [
+      "Edit(**/*.kicad_sch)",
       "Edit(**/*.kicad_pcb)",
       "Edit(**/*.kicad_pro)",
       "Edit(**/*.step)",
