@@ -1,11 +1,11 @@
 # AeroOptix-Horizon: Execution Checklist
 
-**Revision:** 0.2
-**Updated:** 2026-10-13
+**Revision:** 0.3
+**Updated:** 2026-10-18
 **Status:** Active execution tracker; not an approval or verification record
 **Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md)
 
-Use the specification for confirmed requirements and decisions. This checklist records the sequence of work and the evidence needed to close each gate. Diagram content is reference material. User-confirmed requirements take precedence. Sensor choices remain TBD.
+Use the specification for confirmed requirements and decisions. This checklist records the sequence of work and the evidence needed to close each gate. Diagram content is reference material. User-confirmed requirements take precedence. IMU part is chosen (DEC-008); barometer and magnetometer choices remain TBD.
 
 **Conventions**
 
@@ -38,7 +38,7 @@ Groups: P0.1 scope and operating intent (P0-001 to P0-003). P0.2 MCU and safety 
 | P0-005 | Confirm STM32F103C8T6 as operational auxiliary I/O/PWM/ESC/safety MCU. Implementation not verified. | MCU-002, CMP-002 | Human | DONE | DEC-002 |
 | P0-006 | Reserve H743↔F103 USART. Pins, levels, instance, rate, and test access remain for P1/P2. | IF-001, IF-024 | Human | DONE | DEC-003 |
 | P0-007 | Record the immediate-landing requirement if H743 is unavailable. USART is the monitoring path. Software owns detection, command behavior, and timing. Hardware must preserve the physical path and test access. | SAF-001, FUN-004 | Human | DONE | DEC-005 |
-| P0-008 | Select two IMU MFR/MPNs. Diagram parts are candidates only. | SEN-001, CMP-003 | Human | OPEN | Part selection record |
+| P0-008 | Select two IMU MFR/MPNs. Team confirmed 2 × ICM-45686 on 2026-10-18. SPI, supply range and sourcing checks stay open in the selection record. | SEN-001, CMP-003 | Team | DONE | DEC-008; [AO-HORIZON_IMU_SELECTION_EN.md](AO-HORIZON_IMU_SELECTION_EN.md) |
 | P0-009 | Select two barometer MFR/MPNs. Diagram parts are candidates only. | SEN-002, CMP-004 | Human | OPEN | Part selection record |
 | P0-010 | Decide magnetometer MFR/MPN and onboard/external allocation. | SEN-003, CMP-005 | Human | OPEN | Part selection and allocation record |
 | P0-011 | Define sensor rates, DRDY/interrupt needs, calibration, and redundancy. | SEN-001, SEN-002, SEN-003 | Human | OPEN | Sensor requirement record |
@@ -58,7 +58,7 @@ Any candidate pin mapping stays labeled `CANDIDATE / NOT VERIFIED` until P1 evid
 | ------ |---|---|---|---|---|
 | P1-001 | Assign exact H743 pins and alternate functions for all confirmed and approved interfaces. | IF-010 to IF-024, OPEN-001 | Hardware | OPEN | Versioned MCU pin-allocation table |
 | P1-002 | Assign exact F103 pins and alternate functions for its approved role. | IF-030 to IF-038, FUN-002, OPEN-001 | Hardware | OPEN | Versioned F103 pin-allocation table |
-| P1-003 | Allocate both SPI IMUs: CS, DRDY, reset, bus ownership, DMA. | SEN-001 | Hardware | OPEN | SPI allocation and timing review |
+| P1-003 | Allocate both SPI IMUs: CS, DRDY, bus ownership, DMA. No IMU reset line; reset is by software (DEC-009). | SEN-001 | Hardware | OPEN | SPI allocation and timing review |
 | P1-004 | Allocate both I2C barometers: addresses, pull-ups, recovery, bus ownership. | SEN-002 | Hardware | OPEN | I2C address/bus review |
 | P1-005 | Allocate both I2C magnetometers: addresses, pull-ups, recovery, placement constraints. | SEN-003 | Hardware | OPEN | I2C and magnetic-placement review |
 | P1-006 | Allocate USB FS, VBUS sensing, ESD/protection, connector, and reset support for H743 flashing (proposed). | IF-022 | Hardware | OPEN | USB interface review and schematic net list |
@@ -139,7 +139,7 @@ Descriptions are in the specification (section 8.2). Status and owner below are 
 | ID     | Spec ref | Open item | Status | Owner / target |
 | ------ |---|---|---|---|
 | OI-001 | OPEN-008, SAF-001 | Immediate-landing requirement and F103 safety implementation | Requirement confirmed. Detailed behavior and timing are Software-owned and deferred. | Software / P2, P4 |
-| OI-002 | OPEN-004 | Sensor MFR/MPN and electrical properties | `TBD`. Diagram suggestions are not selections. | Human owner / P0 |
+| OI-002 | OPEN-004 | Sensor MFR/MPN and electrical properties | IMU: 2 × ICM-45686 (DEC-008), electrical properties `NOT_VERIFIED`. Barometer and magnetometer `TBD`. | Human owner / P0 |
 | OI-003 | OPEN-001 | External interfaces and exact MCU pins | Logical requirements confirmed; mapping unverified. | Hardware / P1 |
 | OI-004 | OPEN-006, OPEN-007 | Power protection, transients, downstream budgets, and distribution | Input and servo ratings recorded; design details open. | Hardware / P0, P2 |
 | OI-005 | OPEN-001, OPEN-003 | Exact MCU pin mapping and resource conflicts (overlaps OI-003) | `NOT_VERIFIED` | Hardware / P1 |
@@ -149,7 +149,7 @@ Descriptions are in the specification (section 8.2). Status and owner below are 
 | OI-009 | OPEN-009 | Exact outline, mounting, connector placement, and environment | Maximum envelope confirmed; remaining mechanics TBD. | Human owner / P0, P3 |
 | OI-010 | OPEN-005 | Magnetometer count/allocation and sensor requirements | `TBD` | Human owner / P0 |
 | OI-011 | None (checklist only) | Physical actuator/ESC signal distribution | Diagram captured; native allocation and fanout need review. | Hardware / P1, P2 |
-| OI-012 | OPEN-010 | All non-MCU part numbers (added by audit) | No non-MCU part is approved. | Human owner / component selection gate (P0-016) |
+| OI-012 | OPEN-010 | All non-MCU part numbers (added by audit) | Only the IMU is chosen (DEC-008). No other non-MCU part is approved. | Human owner / component selection gate (P0-016) |
 
 ## Current next action
 

@@ -4,8 +4,8 @@
 | -------------------- |---|
 | Project              | AeroOptix-Horizon |
 | Document owner       | Human engineering owner (TBD) |
-| Document revision    | 0.2 |
-| Last updated         | 2026-10-13 |
+| Document revision    | 0.4 |
+| Last updated         | 2026-10-18 |
 | Design tool          | TBD |
 | Hardware phase       | TBD (declared by the human) |
 | Related baseline     | FC_H743 rev2 reference from user-provided diagrams; native design baseline not established |
@@ -18,7 +18,7 @@
 - `TBD`: to be decided. A value written as `TBD`, or left out, is open.
 - A part shown in a diagram is a candidate only. It is not an approved part number.
 
-**Part-number boundary:** Only `STM32H743VIT6` and `STM32F103C8T6` are confirmed part numbers. The H743↔F103 interface protocol is confirmed as `USART`. All other part numbers are `TBD`. This includes sensors, regulators, protection devices, power modules, connectors, and interface ICs.
+**Part-number boundary:** Only `STM32H743VIT6`, `STM32F103C8T6` and `ICM-45686` (2 × IMU, DEC-008) are confirmed part numbers. The H743↔F103 interface protocol is confirmed as `USART`. All other part numbers are `TBD`. This includes barometers, magnetometers, regulators, protection devices, power modules, connectors, and interface ICs.
 
 ## 1. Project Definition
 
@@ -84,7 +84,7 @@ All rows are `CONFIRMED` by the user and `NOT_VERIFIED`. SYS-001 and SYS-002 com
 | MCU-001 | The main MCU shall be STM32H743VIT6. | Package placement and native design implementation are open. | Native schematic inspection. |
 | MCU-002 | The operational auxiliary MCU shall be STM32F103C8T6. | Required during operation for auxiliary I/O, PWM/ESC, expanded I/O, and safety. | Native schematic and responsibility review. |
 | IF-001  | The H743↔F103 interface protocol shall be USART. | Path for F103 to monitor H743 availability. Instance, pins, levels, rate, timeout, and message details are open. Software owns detection and command behavior. | Allocation review and hardware test. |
-| SEN-001 | The design shall provide 2 × SPI IMU interfaces. | Parts and resource allocation TBD. | Schematic inspection and hardware test. |
+| SEN-001 | The design shall provide 2 × SPI IMU interfaces. | Part: 2 × ICM-45686 (DEC-008). Resource allocation TBD. | Schematic inspection and hardware test. |
 | SEN-002 | The design shall provide 2 × I2C barometer interfaces. | Parts, addresses, and bus allocation TBD. | Schematic inspection and hardware test. |
 | SEN-003 | The design shall provide 2 × I2C magnetometer interfaces. | Second magnetometer allocation TBD. | Architecture and hardware test. |
 | PWR-001 | The flight-controller board shall receive 5 V from the power module. | Limits: see PWR-010. | Power-tree inspection and measurement. |
@@ -196,7 +196,7 @@ The user-provided diagrams show an H743 main MCU, an F103 auxiliary MCU, sensor/
 | ------------------------- |---|---|---|---|
 | H743 main controller      | Primary flight-controller processing and interface host | Sensors, external interfaces, USB, SWD, USART, outputs | 5 V input and defined rails | Pins/resources NOT_VERIFIED. |
 | F103 auxiliary controller | PWM/ESC, expanded I/O, safety function | USART, PWM outputs, FlySky, safety path | H743 status; defined power/reset | Timer, resource, and safety implementation NOT_VERIFIED. |
-| IMU subsystem             | Two SPI IMU interfaces | SPI, CS, DRDY, reset | Selected sensor parts and rail | MFR/MPN and allocation TBD. |
+| IMU subsystem             | Two SPI IMU interfaces | SPI, CS, DRDY; reset by software (DEC-009) | Selected sensor parts and rail | 2 × ICM-45686 (DEC-008). Rail and allocation TBD. |
 | Barometer subsystem       | Two I2C barometer interfaces | I2C, address, pull-ups | Selected sensor parts and rail | MFR/MPN and bus strategy TBD. |
 | Magnetometer subsystem    | Two I2C magnetometer interfaces | I2C, address, placement | Selected sensor parts; external compass decision | Second magnetometer allocation TBD. |
 | H743 external I/O         | Telemetry, GPS, compass, air-data, rangefinder, logical outputs | UART/I2C/timer interfaces | H743 resource allocation | Pins and electrical implementation NOT_VERIFIED. |
@@ -232,7 +232,7 @@ All items are `TBD` and `NOT_VERIFIED`.
 | ------- |---|---|---|---|
 | CMP-001 | Main MCU | Must be STM32H743VIT6. | TBD | Availability, package, lifecycle, approved source TBD |
 | CMP-002 | Auxiliary MCU | Must be STM32F103C8T6. | TBD | Availability, package, lifecycle, approved source TBD |
-| CMP-003 | IMU | Two SPI positions required. | Diagram parts are not approved. | MFR/MPN, availability, driver, lifecycle TBD |
+| CMP-003 | IMU | Two SPI positions required. Must be TDK InvenSense ICM-45686 (DEC-008). | TBD | PX4 driver present. SPI support, supply range, availability and approved source NOT_VERIFIED |
 | CMP-004 | Barometer | Two I2C positions required. | Diagram parts are not approved. | MFR/MPN, availability, driver, lifecycle TBD |
 | CMP-005 | Magnetometer | Two I2C positions required. | Diagram parts are not approved. | MFR/MPN, availability, driver, lifecycle TBD |
 | CMP-006 | Regulator, protection, connector, PDB/UBEC, interface parts | Electrical requirements shall be satisfied. | Specific parts TBD. | MFR/MPN, availability, lifecycle, approved source TBD |
@@ -341,7 +341,7 @@ No automatic gates. This table plans how requirements could be checked. It does 
 
 ### 8.1 Decisions
 
-All decisions are by the human owner.
+All decisions are by the human owner, unless the Notes say otherwise.
 
 | ID      | Topic | Selected option | Notes | Date |
 | ------- |---|---|---|---|
@@ -352,6 +352,8 @@ All decisions are by the human owner.
 | DEC-005 | H743 availability monitoring path | USART | See SAF-001. | 2026-10-13 |
 | DEC-006 | Maximum PCB dimensions | Limit in MEC-001 | See MEC-001. | 2026-10-13 |
 | DEC-007 | Power input and servo rail limits | Limits in PWR-010 and PWR-011 | Budgets and component selection are open (OPEN-006, OPEN-007, OPEN-010). | 2026-10-13 |
+| DEC-008 | IMU part number (SEN-001, CMP-003) | 2 × TDK InvenSense ICM-45686 | Confirmed by the team. Implementation not verified. SPI, supply range and sourcing open; see `AO-HORIZON_IMU_SELECTION_EN.md`. | 2026-10-18 |
+| DEC-009 | IMU reset method | Software reset only (ICM-45686 `SOFT_RST`); no hardware reset line | ICM-45686 has no reset pin (datasheet via agy, `NOT_VERIFIED`). No hardware power control of the IMU rail is planned. | 2026-10-18 |
 
 ### 8.2 Open questions and assumptions
 
@@ -360,13 +362,13 @@ All decisions are by the human owner.
 | OPEN-001 | Exact H743/F103 pins and alternate functions | May invalidate the candidate allocation. | Hardware review / P1 |
 | OPEN-002 | USART instance, pins, voltage levels, rate, timeout, recovery | Affects safety/control path. | Hardware + Software / P1, P2 |
 | OPEN-003 | Timer/channel validity for all H743/F103 labels | May require reassignment or a logical-to-physical mapping. | Hardware review / P1 |
-| OPEN-004 | Sensor MFR/MPN and electrical properties | Affects footprint, rail, layout, drivers, verification. | Human owner / P0 |
+| OPEN-004 | Sensor MFR/MPN and electrical properties. IMU part chosen (DEC-008); IMU electrical properties, barometer and magnetometer open. | Affects footprint, rail, layout, drivers, verification. | Human owner / P0 |
 | OPEN-005 | Second magnetometer allocation | Affects sensor redundancy and connector/bus architecture. | Human owner / P0 |
 | OPEN-006 | 5 V input transient/protection, board current budget, downstream rail budgets | Affects power design and protection. | Hardware review / P0, P2 |
 | OPEN-007 | 6 V servo rail pulse duration, protection, distribution, actuator load profile | Affects power and actuator safety. | Hardware review / P0, P2 |
 | OPEN-008 | Software-owned safety detection timing, immediate-landing behavior, F103-failure response | Affects F103 behavior, output ownership, test method. | Software / P2, P4 |
 | OPEN-009 | Exact board outline under the MEC-001 limit, mounting, connector orientation, environment | Affects PCB and mechanical release. | Human owner / P0, P3 |
-| OPEN-010 | All non-MCU part numbers | No non-MCU part is approved by this document. | Human owner / component selection gate |
+| OPEN-010 | All non-MCU part numbers except the IMU (DEC-008) | No other non-MCU part is approved by this document. | Human owner / component selection gate |
 
 ## 9. Specification Change Notes
 
@@ -374,9 +376,11 @@ All decisions are by the human owner.
 | -------- |---|---|---|
 | 0.1      | 2026-10-12 | Initial advanced hardware specification draft based on confirmed H743/F103 part numbers, confirmed USART protocol, user-provided interface requirements, and diagram-derived references. | TBD |
 | 0.2      | 2026-10-13 | Recorded user-confirmed power limits, maximum PCB dimensions, USART safety-monitoring path, and Software ownership of detailed safety behavior. Sensor part selection remains TBD. | Human owner |
+| 0.3      | 2026-10-18 | Recorded team-confirmed IMU part: 2 × ICM-45686 (DEC-008). Barometer and magnetometer selection remain TBD. | Team |
+| 0.4      | 2026-10-18 | Recorded IMU software reset (DEC-009) and removed the IMU hardware reset signal from the interface table. | Human owner |
 
 ## Current verdict
 
 **Draft only. NOT_VERIFIED and NOT FOR FABRICATION.**
 
-The specification is structured enough for hardware P1 allocation and conflict review. It does not approve any non-MCU part number, pin mapping, timer allocation, power protection or rail detail, safety timing, schematic, PCB, or fabrication release. Sensor selection remains TBD. Diagram-listed sensor parts are not approved.
+The specification is structured enough for hardware P1 allocation and conflict review. It does not approve any non-MCU part number other than the IMU (DEC-008), pin mapping, timer allocation, power protection or rail detail, safety timing, schematic, PCB, or fabrication release. Barometer and magnetometer selection remains TBD. Diagram-listed sensor parts are not approved.
