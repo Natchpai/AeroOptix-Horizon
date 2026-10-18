@@ -25,7 +25,7 @@ AeroOptix-Horizon is a KiCad 10 hardware design (no firmware, no build/test/lint
 
 ## Claude config
 
-The `protect_kicad_v2.py` PreToolUse hook (advisory, heuristic; rules in `.claude/hooks/protect.json`: deny / ask / allow globs, order allow > deny > ask) and the permission deny/ask lists in `.claude/settings.json`, which should be kept in sync with `protect.json`. Today `deny` covers `*.kicad_wks`, `*.wrl` and `templates/**`; `ask` covers the native KiCad files, `*.step` and `library/**`. The folder was renamed from the typo `.cluade/`; if protections seem inactive, restart Claude Code.
+The `protect_kicad_v2.py` PreToolUse hook (advisory, heuristic; rules in `.claude/hooks/protect.json`: deny / ask / allow globs, order allow > deny > ask) and the permission deny/ask lists in `.claude/settings.json`, which should be kept in sync with `protect.json`. The engineer changes these lists often, so do not rely on a fixed summary: read `settings.json` and `protect.json` for the current allow / ask / deny entries before acting on a protected path. The folder was renamed from the typo `.cluade/`; if protections seem inactive, restart Claude Code.
 
 Subagents (defined globally in `~/.claude/agents/`, not in this repo):
 - `research-scout`: read-only lookups (repo search, large files, web). Brief it with narrow KiCad targets (sheet, ref, net) and the exact path. Hooks and `settings.json` deny rules apply to it, unlike external providers.
