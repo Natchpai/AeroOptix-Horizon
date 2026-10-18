@@ -51,7 +51,8 @@ fp-info-cache
 .DS_Store
 ._*
 
-**/skills/*
+# **/skills/*
 
-!/.claude/skills/git-workflow
+# !/.claude/skills/git-workflow
+# /hardware/AO-Horizon/documents/datesheets
 /hardware/AO-Horizon/documents/datesheets
