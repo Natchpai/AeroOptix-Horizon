@@ -4,8 +4,8 @@
 | -------------------- |---|
 | Project              | AeroOptix-Horizon |
 | Document owner       | Human engineering owner (TBD) |
-| Document revision    | 0.5 |
-| Last updated         | 2026-10-18 |
+| Document revision    | 0.6 |
+| Last updated         | 2026-10-19 |
 | Design tool          | TBD |
 | Hardware phase       | TBD (declared by the human) |
 | Related baseline     | FC_H743 rev2 reference from user-provided diagrams; native design baseline not established |
@@ -18,7 +18,7 @@
 - `TBD`: to be decided. A value written as `TBD`, or left out, is open.
 - A part shown in a diagram is a candidate only. It is not an approved part number.
 
-**Part-number boundary:** Only `STM32H743VIT6`, `STM32F103C8T6`, `ICM-45686` (2 × IMU, DEC-008), `ICP-20100` and `BMP390` (barometers, DEC-010) and `BMM150` (magnetometer, DEC-011) are confirmed part numbers. The H743↔F103 interface protocol is confirmed as `USART`. All other part numbers are `TBD`. This includes regulators, protection devices, power modules, connectors, and interface ICs.
+**Part-number boundary:** Only `STM32H743VIT6`, `STM32F103C8T6`, `ICM-45686` (2 × IMU, DEC-008), `ICP-20100` and `BMP390` (barometers, DEC-010) and `BMM150` (magnetometer, DEC-011) and `TPS62142RGTR` (main 3.3 V buck, DEC-012) are confirmed part numbers. The H743↔F103 interface protocol is confirmed as `USART`. All other part numbers are `TBD`. This includes regulators, protection devices, power modules, connectors, and interface ICs.
 
 ## 1. Project Definition
 
@@ -208,7 +208,18 @@ The user-provided diagrams show an H743 main MCU, an F103 auxiliary MCU, sensor/
 
 - Board input and servo supply limits: see PWR-010 and PWR-011.
 - The diagram-derived arrangement is a candidate only: 6S battery, XT90-S, PM02D, CRIUS PDB v1.0, 5 V, 3.3 V, 3.3 V_IMU, 6 V UBEC.
+- Main 3.3 V rail: TPS62142RGTR buck from the 5 V board input (DEC-012).
 - TBD: rail dependencies, current budgets, load steps, sequencing, brownout, reverse-polarity protection, overvoltage protection, transient handling, grounding, filtering, thermal limits.
+
+**Schematic state (`power_supplies.kicad_sch`, saved file, 2026-10-19).** This records what is drawn. It is not a reviewed or approved design. All references are unannotated. ERC not run.
+
+| Block | As drawn | Evidence |
+| ----- |---|---|
+| Power module input | 6-pin JST GH connector (`SM06B-GHS-TB`): pins 1-2 `+VIN`, pin 3 `PM02_SCL`, pin 4 `PM02_SDA`, pins 5-6 and MP `GND`. | Local net check |
+| `+VIN` to `+5V` | No part connects `+VIN` to `+5V`. No other sheet has components, so `+5V` has no source yet (OPEN-012). | Local net check; project summary |
+| Main 3.3 V buck | TPS62142RGTR: VIN and EN to `+5V`; SW to 2.2 µH (Abracon AOTA-B252010S) to `+3V3`; VOS to `+3V3`; FB, DEF, FSW (2.5 MHz) and PG to `GND`; SS/TR 3.3 nF. Input 3 × 10 µF on `+5V`, output 3 × 10 µF on `+3V3`. | Local net check; TI SLVSAJ0F Rev. F (HTML) |
+| `+3V3A` LDO | TPS73533DRBR: IN and EN to `+5V`, OUT to `+3V3A`, NR/FB 100 nF, 2 × 1 µF on `+3V3A`. Placed in the schematic, not a recorded decision (OPEN-011). | Local net check |
+| 3.3 V indicator | LED LTSL-C191TGKT with 1 kΩ from `+3V3`. Not driven by PG. | Local net check |
 
 ### 4.4 Clock, reset, boot and programming
 
@@ -236,6 +247,7 @@ All items are `TBD` and `NOT_VERIFIED`.
 | CMP-004 | Barometer | Two I2C positions required. Must be TDK ICP-20100 and Bosch BMP390 (DEC-010). | TBD | ICP-20100 is EOL (TDK page). BMP390 not available at LCSC C5124834 (2026-10-18). Approved source TBD |
 | CMP-005 | Magnetometer | One I2C position required. Must be Bosch BMM150 (DEC-011). | TBD | PX4 driver present. Lifecycle NOT_VERIFIED. Approved source TBD |
 | CMP-006 | Regulator, protection, connector, PDB/UBEC, interface parts | Electrical requirements shall be satisfied. | Specific parts TBD. | MFR/MPN, availability, lifecycle, approved source TBD |
+| CMP-007 | Main 3.3 V regulator | Must be TI TPS62142RGTR (DEC-012). Fixed 3.3 V, VIN 3 to 17 V, 2 A, VQFN-16 3 × 3 mm (TI SLVSAJ0F Rev. F, HTML). | 2.5 MHz (FSW low) as drawn | TI: ACTIVE. LCSC C129331: 632 in stock (snapshot 2026-10-18). Approved source TBD |
 
 ### 4.7 Engineering calculations and margins
 
@@ -356,6 +368,7 @@ All decisions are by the human owner, unless the Notes say otherwise.
 | DEC-009 | IMU reset method | Software reset only (ICM-45686 `SOFT_RST`); no hardware reset line | ICM-45686 has no reset pin (datasheet via agy, `NOT_VERIFIED`). No hardware power control of the IMU rail is planned. | 2026-10-18 |
 | DEC-010 | Barometer part numbers (SEN-002, CMP-004) | 1 × TDK ICP-20100 + 1 × Bosch BMP390 | Confirmed by the team. ICP-20100 is EOL per TDK; BMP390 not available at LCSC. See `AO-HORIZON_BARO_MAG_SELECTION_EN.md`. | 2026-10-18 |
 | DEC-011 | Magnetometer count and part number (SEN-003, CMP-005) | 1 × Bosch BMM150 | Confirmed by the team. Reduces SEN-003 from 2 to 1 magnetometer and closes OPEN-005. Lifecycle NOT_VERIFIED. | 2026-10-18 |
+| DEC-012 | Main 3.3 V supply (CMP-007) | TI TPS62142RGTR buck, 5 V to 3.3 V (LCSC C129331) | Selected by the human owner. Datasheet fit checked against TI HTML (SLVSAJ0F Rev. F). 3.3 V load current, inductor and output-capacitor derating NOT_VERIFIED. | 2026-10-18 |
 
 ### 8.2 Open questions and assumptions
 
@@ -370,7 +383,9 @@ All decisions are by the human owner, unless the Notes say otherwise.
 | OPEN-007 | 6 V servo rail pulse duration, protection, distribution, actuator load profile | Affects power and actuator safety. | Hardware review / P0, P2 |
 | OPEN-008 | Software-owned safety detection timing, immediate-landing behavior, F103-failure response | Affects F103 behavior, output ownership, test method. | Software / P2, P4 |
 | OPEN-009 | Exact board outline under the MEC-001 limit, mounting, connector orientation, environment | Affects PCB and mechanical release. | Human owner / P0, P3 |
-| OPEN-010 | All non-MCU part numbers except the sensors (DEC-008, DEC-010, DEC-011) | No other non-MCU part is approved by this document. | Human owner / component selection gate |
+| OPEN-010 | All non-MCU part numbers except the sensors (DEC-008, DEC-010, DEC-011) and the main 3.3 V buck (DEC-012) | No other non-MCU part is approved by this document. | Human owner / component selection gate |
+| OPEN-011 | `+3V3A` rail: purpose (for example 3.3 V_IMU), load, and LDO part. TPS73533DRBR is drawn but not decided. | Affects sensor supply noise and the power budget. | Human owner / P0, P2 |
+| OPEN-012 | Path from `+VIN` (power module connector) to `+5V`. Nothing connects them in the schematic yet. | Without it, both regulators have no input. | Hardware / P2 |
 
 ## 9. Specification Change Notes
 
@@ -381,9 +396,10 @@ All decisions are by the human owner, unless the Notes say otherwise.
 | 0.3      | 2026-10-18 | Recorded team-confirmed IMU part: 2 × ICM-45686 (DEC-008). Barometer and magnetometer selection remain TBD. | Team |
 | 0.4      | 2026-10-18 | Recorded IMU software reset (DEC-009) and removed the IMU hardware reset signal from the interface table. | Human owner |
 | 0.5      | 2026-10-18 | Recorded team-confirmed barometers ICP-20100 + BMP390 (DEC-010) and single magnetometer BMM150 (DEC-011). SEN-003 reduced to 1 magnetometer; OPEN-005 closed. | Team |
+| 0.6      | 2026-10-19 | Recorded TPS62142RGTR as the main 3.3 V buck (DEC-012, CMP-007). Added the power-sheet schematic state to 4.3. Added OPEN-011 (`+3V3A` rail) and OPEN-012 (`+VIN` to `+5V` path). | Human owner |
 
 ## Current verdict
 
 **Draft only. NOT_VERIFIED and NOT FOR FABRICATION.**
 
-The specification is structured enough for hardware P1 allocation and conflict review. It does not approve any non-MCU part number other than the sensors (DEC-008, DEC-010, DEC-011), pin mapping, timer allocation, power protection or rail detail, safety timing, schematic, PCB, or fabrication release. Sensor lifecycle and sourcing risks are open (OPEN-004).
+The specification is structured enough for hardware P1 allocation and conflict review. It does not approve any non-MCU part number other than the sensors (DEC-008, DEC-010, DEC-011) and the main 3.3 V buck (DEC-012), pin mapping, timer allocation, power protection or rail detail, safety timing, schematic, PCB, or fabrication release. Sensor lifecycle and sourcing risks are open (OPEN-004).
