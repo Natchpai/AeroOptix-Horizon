@@ -2,4 +2,8 @@
 	(version 7)
 	(lib (name "0_MCU_ST_STM32F1") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_MCU_ST_STM32F1.kicad_symdir") (options "") (descr ""))
 	(lib (name "0_MCU_ST_STM32H7") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_MCU_ST_STM32H7.kicad_symdir") (options "") (descr ""))
+	(lib (name "0_Regulator_Switching") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Regulator_Switching.kicad_symdir") (options "") (descr ""))
+	(lib (name "0_Regulator_Linear") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Regulator_Linear.kicad_symdir") (options "") (descr ""))
+	(lib (name "0_Conn_Generic") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Conn_Generic.kicad_symdir") (options "") (descr ""))
+	(lib (name "0_Protection_ESD") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Protection_ESD.kicad_symdir") (options "") (descr ""))
 )
