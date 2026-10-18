@@ -47,7 +47,7 @@ Groups: P0.1 scope and operating intent (P0-001 to P0-003). P0.2 MCU and safety 
 | P0-014 | Confirm logical F103 PWM/expanded-I/O functions: TILT, ESC, COAX, AIL, and FlySky. Timer/channel validity and electrical implementation unverified. | IF-030 to IF-038, FUN-003 | Human | DONE | User confirmation, date TBD. No DEC record yet. |
 | P0-015 | Confirm maximum PCB envelope. Shape, mounting, connector orientation, and environment open for P3. | MEC-001 | Human | DONE | DEC-006 |
 | P0-016 | Select non-MCU parts: regulators, protection, connectors, PDB/UBEC, and interface ICs. | CMP-006, OPEN-010 | Human | OPEN | Part selection record (spec: component selection gate) |
-| P0-017 | Define power budget, rail tolerances, brownout thresholds, and 5 V and 6 V protection and transient requirements. | PWR-012 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007 | Hardware | OPEN | Power budget table and protection requirement record |
+| P0-017 | Define power budget, rail tolerances, brownout thresholds, and 5 V and 6 V protection and transient requirements. | PWR-012 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007 | Hardware | OPEN | Power budget table and protection requirement record. Draft: [AO-HORIZON_POWER_BUDGET_EN.md](AO-HORIZON_POWER_BUDGET_EN.md) |
 | P0-018 | Define environmental limits: operating and storage temperature, vibration and shock, humidity, ingress, altitude, maintenance. | ENV-001 to ENV-004 | TBD | OPEN | Decision record with a verification method per limit |
 
 ## P1: Allocation
