@@ -9,6 +9,18 @@
 		(comment 1 "Block Diagram")
 	)
 	(lib_symbols)
+	(rectangle
+		(start 85.09 45.72)
+		(end 172.72 87.63)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "bef6cfad-87ed-4fad-a1ba-9a326148feef")
+	)
 	(text "[${#}] ${COMMENT1}"
 		(exclude_from_sim no)
 		(at 209.55 25.4 0)
@@ -21,8 +33,48 @@
 		)
 		(uuid "660f9b16-b125-4df8-b4b1-37a82ff753ec")
 	)
+	(polyline
+		(pts
+			(xy 135.89 68.58) (xy 167.64 62.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0389b9b6-0d85-420a-872f-936af100e6a7")
+	)
+	(polyline
+		(pts
+			(xy 135.89 58.42) (xy 167.64 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "31c55181-bf81-416a-ab0a-c103bc878e88")
+	)
+	(polyline
+		(pts
+			(xy 135.89 77.47) (xy 167.64 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "37d7782c-a669-476e-8cd1-d1cd90244431")
+	)
+	(polyline
+		(pts
+			(xy 82.55 60.96) (xy 90.17 55.88)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ab8021bf-8482-49c9-ab31-fd3a8b1d9c94")
+	)
 	(image
-		(at 213.36 147.32)
+		(at 212.09 145.415)
 		(scale 0.823638)
 		(uuid "baaf3e84-5cea-4b94-9c7a-c4641e196ddb")
 		(data "iVBORw0KGgoAAAANSUhEUgAAEsAAAAyACAIAAADj3OZCAAAQAElEQVR4nOzdCYDOdf4H8G+tITKj"
