@@ -1,271 +1,123 @@
-# AeroOptix-Horizon — Execution Checklist
+# AeroOptix-Horizon: Execution Checklist
 
-**Document status:** Draft checklist / not an approval record  
-**Current design status:** `DESIGN DRAFT — NOT VERIFIED / NOT READY FOR FABRICATION`  
-**Source handoff:** `AO-HORIZON_HANDOFF_EN.md`
+**Revision:** 0.4
+**Updated:** 2026-10-18
+**Status:** Active execution tracker; not an approval or verification record
+**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md)
 
-This checklist tracks closure from the current architecture draft through schematic, PCB, fabrication, and bring-up. A checked item means that the required evidence exists; it does not mean that a design target has been measured unless the evidence explicitly contains a measurement.
+Use the specification for confirmed requirements and decisions. This checklist records the sequence of work and the evidence needed to close each gate. Diagram content is reference material. User-confirmed requirements take precedence. Sensor parts are chosen (DEC-008, DEC-010, DEC-011); their lifecycle and sourcing risks are open.
 
-## Status rules
+**Conventions**
 
-- `[x]` — Confirmed or completed with traceable evidence
-- `[ ]` — Open, proposed, TBD, or not yet supported by sufficient evidence
-- `NOT_VERIFIED` — A claim or result is not supported by the required evidence
-- `BLOCKED` — Cannot close until an upstream decision or artifact is available
-- `DEFERRED` — Intentionally postponed with an owner and follow-up point
+- Task status: `OPEN`, `IN_PROGRESS`, `BLOCKED BY <ID>`, `DEFERRED`, `DONE`, `N/A`.
+- `DONE` needs a stated completion and a named or linked evidence record in the last column.
+- A candidate, a count, a file, or an ERC/DRC pass is not evidence by itself. A `DONE` task does not mean the implementation was measured or verified.
+- Gates are work stages. They are not the project phase. The human declares the project phase and closes each gate.
+- `Req` holds spec IDs. Values stay in the specification. `TBD` means to be decided. Owner `Human` means the human engineer decides or approves.
 
-Do not mark an item complete from a count, assumption, candidate mapping, or implementation report alone.
+## Gate summary
 
-## Hardware-first execution rule
+| Gate | Name | Exit criterion | Status |
+| ---- |---|---|---|
+| P0   | Requirements | No unresolved requirement prevents MCU-resource, bus, connector, or power-architecture allocation. Sensor-specific choices stay TBD and block only the allocations they affect. | OPEN |
+| P1   | Allocation | The mapping has actual pins and alternate functions, passes documented resource checks, and has review evidence. It may then be called `ALLOCATED`. It is not automatically `VERIFIED`. | OPEN |
+| P2   | Schematic | Hardware schematic review is closed, electrical interfaces and reserved resources are documented, and no unresolved hardware blocker affects bring-up. Firmware ownership, PX4 target, bootloader, and software protocol details may stay deferred. | OPEN |
+| P3   | PCB and release package | PCB, BOM, fabrication data, and release manifest are reviewed and approved by the Human engineering owner. | OPEN |
+| P4   | Bring-up | Repeatable bench evidence exists, and every remaining issue has an owner and a defined disposition. | OPEN |
 
-Firmware integration details are explicitly **DEFERRED / NON-BLOCKING** by human direction. Hardware work may proceed without a final PX4 target, bootloader, firmware contract, or software flashing implementation. Hardware shall still reserve the required electrical interfaces, pins, reset/boot access, and test points so the Software team can select the implementation later.
+## P0: Requirements
 
-## Current checkpoint
+Groups: P0.1 scope and operating intent (P0-001 to P0-003). P0.2 MCU and safety boundary (P0-004 to P0-007). P0.3 sensors (P0-008 to P0-011). P0.4 interfaces, power, actuators, and envelope (P0-012 to P0-015). Tasks added by audit are P0-016 to P0-018, P1-014, P2-010, P3-010, and P3-011.
 
-- [x] English handoff document exists.
-- [x] Confirmed/proposed/TBD distinctions are recorded.
-- [x] Main baseline is recorded as H743 + F103.
-- [x] Confirmed sensor interface quantities are recorded.
-- [x] USB FS/QGC, selectable BOOT0, and SWD requirements are recorded.
-- [x] Firmware integration details are recorded as deferred and non-blocking for the hardware path.
-- [ ] P0 architecture-impacting requirements are closed.
-- [ ] P1 pin/resource conflict review is complete.
-- [ ] Exact pin mapping is verified.
-- [ ] Schematic, firmware contract, PCB, fabrication package, and bring-up evidence exist.
+| ID     | Task | Req | Owner | Status | Evidence required / link |
+| ------ |---|---|---|---|---|
+| P0-001 | Define the flight-controller role and system boundary. Scope confirmed on 2026-10-13. | SYS-001, SYS-002 | Human | DONE | User confirmation, 2026-10-13. No DEC record yet. |
+| P0-002 | Record PX4 target/version and supported modes as Software-owned deferred work. Not needed to proceed with hardware. | DEC-004 | Human | DONE | DEC-004 |
+| P0-003 | Define first-revision scope. In scope: H743 main control, F103 auxiliary I/O/PWM/safety, and the stated external interfaces. Deferred: PX4, bootloader, QGC, and detailed software behavior. | SYS-001, DEC-004 | Human | DONE | DEC-004; spec 1.2 |
+| P0-004 | Confirm STM32H743VIT6 as the main MCU. Implementation not verified. | MCU-001, CMP-001, FUN-001 | Human | DONE | DEC-001 |
+| P0-005 | Confirm STM32F103C8T6 as operational auxiliary I/O/PWM/ESC/safety MCU. Implementation not verified. | MCU-002, CMP-002 | Human | DONE | DEC-002 |
+| P0-006 | Reserve H743↔F103 USART. Pins, levels, instance, rate, and test access remain for P1/P2. | IF-001, IF-024 | Human | DONE | DEC-003 |
+| P0-007 | Record the immediate-landing requirement if H743 is unavailable. USART is the monitoring path. Software owns detection, command behavior, and timing. Hardware must preserve the physical path and test access. | SAF-001, FUN-004 | Human | DONE | DEC-005 |
+| P0-008 | Select two IMU MFR/MPNs. Team confirmed 2 × ICM-45686 on 2026-10-18. SPI, supply range and sourcing checks stay open in the selection record. | SEN-001, CMP-003 | Team | DONE | DEC-008; [AO-HORIZON_IMU_SELECTION_EN.md](AO-HORIZON_IMU_SELECTION_EN.md) |
+| P0-009 | Select two barometer MFR/MPNs. Team confirmed ICP-20100 + BMP390 on 2026-10-18. ICP-20100 EOL and BMP390 availability stay open in the selection record. | SEN-002, CMP-004 | Team | DONE | DEC-010; [AO-HORIZON_BARO_MAG_SELECTION_EN.md](AO-HORIZON_BARO_MAG_SELECTION_EN.md) |
+| P0-010 | Decide magnetometer MFR/MPN and allocation. Team confirmed 1 × BMM150 onboard on 2026-10-18; no second magnetometer. | SEN-003, CMP-005 | Team | DONE | DEC-011; [AO-HORIZON_BARO_MAG_SELECTION_EN.md](AO-HORIZON_BARO_MAG_SELECTION_EN.md) |
+| P0-011 | Define sensor rates, DRDY/interrupt needs, calibration, and redundancy. | SEN-001, SEN-002, SEN-003 | Human | OPEN | Sensor requirement record |
+| P0-012 | Confirm logical H743/F103 external interface allocations. Exact pins and electrical implementation unverified. See specification section 3. | IF-010 to IF-024 | Human | DONE | User confirmation, date TBD. No DEC record yet. |
+| P0-013 | Confirm board and servo power requirements. Protection, transients, distribution, and component choice are open (see P0-017). | PWR-001, PWR-002, PWR-010, PWR-011 | Human | DONE | DEC-007 |
+| P0-014 | Confirm logical F103 PWM/expanded-I/O functions: TILT, ESC, COAX, AIL, and FlySky. Timer/channel validity and electrical implementation unverified. | IF-030 to IF-038, FUN-003 | Human | DONE | User confirmation, date TBD. No DEC record yet. |
+| P0-015 | Confirm maximum PCB envelope. Shape, mounting, connector orientation, and environment open for P3. | MEC-001 | Human | DONE | DEC-006 |
+| P0-016 | Select non-MCU parts: regulators, protection, connectors, PDB/UBEC, and interface ICs. | CMP-006, OPEN-010 | Human | OPEN | Part selection record (spec: component selection gate) |
+| P0-017 | Define power budget, rail tolerances, brownout thresholds, and 5 V and 6 V protection and transient requirements. | PWR-012 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007 | Hardware | OPEN | Power budget table and protection requirement record. Draft: [AO-HORIZON_POWER_BUDGET_EN.md](AO-HORIZON_POWER_BUDGET_EN.md) |
+| P0-018 | Define environmental limits: operating and storage temperature, vibration and shock, humidity, ingress, altitude, maintenance. | ENV-001 to ENV-004 | TBD | OPEN | Decision record with a verification method per limit |
 
-## Part-number confirmation boundary
+## P1: Allocation
 
-Only the following part numbers are currently confirmed by the user:
+Any candidate pin mapping stays labeled `CANDIDATE / NOT VERIFIED` until P1 evidence is complete. P1-006 to P1-008 are proposed allocations, not confirmed.
 
-- `STM32H743VIT6`
-- `STM32F103C8T6`
+| ID     | Task | Req | Owner | Status | Evidence required / link |
+| ------ |---|---|---|---|---|
+| P1-001 | Assign exact H743 pins and alternate functions for all confirmed and approved interfaces. | IF-010 to IF-024, OPEN-001 | Hardware | OPEN | Versioned MCU pin-allocation table |
+| P1-002 | Assign exact F103 pins and alternate functions for its approved role. | IF-030 to IF-038, FUN-002, OPEN-001 | Hardware | OPEN | Versioned F103 pin-allocation table |
+| P1-003 | Allocate both SPI IMUs: CS, DRDY, bus ownership, DMA. No IMU reset line; reset is by software (DEC-009). | SEN-001 | Hardware | OPEN | SPI allocation and timing review |
+| P1-004 | Allocate both I2C barometers: addresses, pull-ups, recovery, bus ownership. | SEN-002 | Hardware | OPEN | I2C address/bus review |
+| P1-005 | Allocate the I2C magnetometer (BMM150, DEC-011): address, pull-ups, recovery, placement constraints. | SEN-003 | Hardware | OPEN | I2C and magnetic-placement review |
+| P1-006 | Allocate USB FS, VBUS sensing, ESD/protection, connector, and reset support for H743 flashing (proposed). | IF-022 | Hardware | OPEN | USB interface review and schematic net list |
+| P1-007 | Allocate selectable H743 BOOT0 and define its default/reset behavior (proposed). | FUN-006, TST-003 | Hardware | OPEN | Boot-state table and circuit review |
+| P1-008 | Allocate SWD access for both MCUs: SWDIO, SWCLK, NRST, GND, probe access (proposed). | FUN-005, IF-023, TST-001, TST-002 | Hardware | OPEN | Debug-access review |
+| P1-009 | Check alternate-function conflicts across every assigned pin. | OPEN-001, OPEN-003 | Hardware | OPEN | Conflict report with no unresolved critical conflicts |
+| P1-010 | Check DMA, interrupt, timer/PWM, clock, and priority conflicts. | OPEN-003 | Hardware | OPEN | Resource matrix and resolution record |
+| P1-011 | Check voltage domains, IO levels, pull states, reset states, and boot-time behavior. | OPEN-002 | Hardware | OPEN | Electrical compatibility review |
+| P1-012 | Review package pin availability, reserved pins, unused pins, and ERC/DRC implications. | OPEN-001 | Hardware | OPEN | Package/resource review |
+| P1-013 | Record mapping revision, reviewer, date, conflicts, resolutions, and remaining obligations. | OPEN-001 | TBD | OPEN | Signed or attributable review record |
+| P1-014 | Define clock sources, reset topology, watchdog use, and F103 boot behavior. Added by audit. | Spec 4.4 | Hardware | OPEN | Clock/reset/boot decision record |
 
-The H743↔F103 interface protocol is confirmed as `USART`. All other part numbers visible in diagrams or listed as candidates remain `UNCONFIRMED / TBD`, including sensors, regulators, protection devices, power modules, PDB/UBEC devices, connectors, and interface ICs.
+## P2: Schematic
 
-## Diagram-derived hardware snapshot
+Firmware tasks P2-005 to P2-007 do not block the hardware release.
 
-The following items are transcribed from the user-provided architecture and power diagrams. They are **SOURCE IMAGE / PROPOSED / NOT VERIFIED** until the native design source, part list, and engineering review confirm them.
+| ID     | Task | Req | Owner | Status | Evidence required / link |
+| ------ |---|---|---|---|---|
+| P2-001 | Create the schematic from the P1 allocation. |  | Hardware | BLOCKED BY P1 | Versioned native schematic |
+| P2-002 | Implement USB FS, BOOT0, SWD, reset, power, and protection circuits. | IF-022, IF-023, FUN-005, FUN-006, SAF-014 | Hardware | BLOCKED BY P1 | Schematic review evidence |
+| P2-003 | Implement sensor buses, addresses, CS/DRDY, pull-ups, and recovery provisions. | SEN-001, SEN-002, SEN-003 | Hardware | BLOCKED BY P0, P1 | Sensor interface review |
+| P2-004 | Define hardware net names and connector pinout. Reserve resources for later firmware mapping. | IF-010 to IF-024 | Hardware | BLOCKED BY P0, P1 | Hardware net/connector cross-check |
+| P2-005 | Create the PX4 board configuration and bootloader plan. | DEC-004 | Software | DEFERRED | Later versioned firmware configuration and build/flash procedure. Not a hardware release blocker. |
+| P2-006 | Define the H743 USB FS/QGC flashing workflow for both MCU firmware images. | DEC-004 | Software | DEFERRED | Later reproducible software procedure and test record. Hardware shall preserve the physical path and access. |
+| P2-007 | Define H743↔F103 firmware ownership, protocol version, startup, timeout, and fault behavior. | IF-001, SAF-010, SAF-011, OPEN-008 | Software | DEFERRED | Later versioned firmware interface contract. Hardware shall document the reserved electrical path before schematic freeze. |
+| P2-008 | Run ERC and resolve or disposition all relevant findings. |  | TBD | OPEN | ERC output and issue disposition |
+| P2-009 | Complete line-by-line schematic review. |  | TBD | OPEN | Review checklist with reviewer and evidence links |
+| P2-010 | Complete the spec 4.7 calculations: board input current, servo rail current, rail tolerance, thermal margin, and safety response timing. Added by audit. | Spec 4.7, PWR-012 to PWR-014 | Hardware | OPEN | Calculation records with margins |
 
-- [ ] `IMG-001` Intended controller board is labeled `FC_H743 rev2`, with an approximate envelope of `~90 mm × 95 mm`. **Status:** `SOURCE IMAGE / NOT VERIFIED`  
-  **Required confirmation:** Board revision, exact outline, mounting pattern, and whether the dimensions are final design targets.
-- [x] `IMG-002` Confirmed MCU part numbers are `STM32H743VIT6` and `STM32F103C8T6`. **Status:** `CONFIRMED PART NUMBERS / IMPLEMENTATION NOT VERIFIED`  
-  **Required confirmation:** Native design placement, exact package data, final pin allocation, and electrical implementation.
-- [ ] `IMG-003` IMU candidates shown are `ICM-42688-P` and `BMI088`. **Status:** `SOURCE IMAGE / PROPOSED`  
-  **Required confirmation:** MFR/MPN approval, supply/IO voltage, bus assignment, data-ready behavior, and driver suitability.
-- [ ] `IMG-004` Barometer candidates shown are `BMP280` and `MS5611`. **Status:** `SOURCE IMAGE / PROPOSED`  
-  **Required confirmation:** MFR/MPN approval, bus/address strategy, pressure range, and environmental/placement requirements.
-- [ ] `IMG-005` `IST8310` is visible as an onboard magnetometer candidate. **Status:** `SOURCE IMAGE / PROPOSED`  
-  **Required confirmation:** Identify the second magnetometer required by the current baseline, or confirm that an external GPS/compass module supplies it.
-- [ ] `IMG-006` USB FS protection, microSD, SWD, telemetry/GPS/RC/UART, safety, companion-computer, air-data/rangefinder, and actuator-related blocks are shown. **Status:** `SOURCE IMAGE / NOT VERIFIED`  
-  **Required confirmation:** Exact interface list, connector count, electrical standard, and ownership.
-- [ ] `IMG-007` Power diagram shows a 6S battery path through XT90-S, PM02D, and CRIUS PDB v1.0, with 5 V, 3.3 V, 3.3 V_IMU, and a separate 6 V UBEC path shown. **Status:** `SOURCE IMAGE / NOT VERIFIED`  
-  **Required confirmation:** Input limits, rail current budgets, protection, sequencing, and whether the diagram is the approved power architecture.
-- [ ] `IMG-008` Four ESC paths are visibly labeled in the power diagram; servo/actuator channel count is not sufficiently clear from the image. **Status:** `SOURCE IMAGE / NOT VERIFIED`  
-  **Required confirmation:** ESC count, servo count, output levels, current/drive method, and failsafe hardware requirements.
+## P3: PCB and fabrication release
 
-## User-confirmed hardware requirements
+| ID     | Task | Req | Owner | Status | Evidence required / link |
+| ------ |---|---|---|---|---|
+| P3-001 | Confirm board envelope, mounting, connector placement, and service/debug access. | MEC-001 to MEC-004, OPEN-009 | Human | OPEN | Mechanical constraint review |
+| P3-002 | Place IMUs, barometers, magnetometers, clock, power, USB, and debug interfaces by their constraints. | PCB-011, PCB-012, PCB-013 | TBD | BLOCKED BY P0, P2 | Placement review |
+| P3-003 | Route power and return paths with documented current and noise assumptions. | PCB-010 | TBD | BLOCKED BY P0, P2 | Power/layout review |
+| P3-004 | Route USB FS and high-sensitivity sensor/debug signals with appropriate layout review. | PCB-011, PCB-012 | TBD | BLOCKED BY P0, P2 | Signal/layout review |
+| P3-005 | Run DRC and disposition all relevant findings. |  | TBD | OPEN | DRC output and issue disposition |
+| P3-006 | Review thermal/current constraints and manufacturability. | MFG-001 to MFG-003 | TBD | OPEN | Manufacturing and thermal review |
+| P3-007 | Confirm BOM, footprints, alternates, assembly notes, and test-point access. | MFG-002 to MFG-004, TST-001 to TST-007 | TBD | OPEN | Controlled BOM and assembly review |
+| P3-008 | Create a hardware release package linked to schematic, PCB, BOM, and the deferred-firmware status. |  | TBD | OPEN | Hardware release manifest that records firmware integration as deferred |
+| P3-009 | Obtain Human engineering-owner approval for fabrication release. |  | Human | OPEN | Explicit approval record |
+| P3-010 | Define PCB fabrication parameters: layer count, stackup, copper weight, trace/space, hole/via, soldermask, finish. Added by audit. | PCB-001 to PCB-005, MFG-001 | TBD | OPEN | Parameter record confirmed by the fabricator |
+| P3-011 | Route PWM/actuator outputs and the H743↔F103 USART with return path, drive, protection, voltage compatibility, and test access. Added by audit. | PCB-014, PCB-015 | TBD | BLOCKED BY P0, P2 | Layout review and electrical test |
 
-The following requirements were provided directly by the user on 2026-10-12. They are treated as confirmed requirements, while pin alternate functions, electrical implementation, timing, and safety behavior remain subject to P1/P2 verification.
+## P4: Bring-up and validation
 
-### F103 role and H743 link
-
-- [x] `USR-001` STM32F103C8T6 is required for operation, not only development. **Status:** `CONFIRMED REQUIREMENT`
-- [x] `USR-002` F103 provides auxiliary I/O, controls PWM for all ESC-related outputs, and expands I/O. **Status:** `CONFIRMED REQUIREMENT`
-- [x] `USR-003` If the H743 is not operating, the F103 shall command immediate landing. **Status:** `CONFIRMED SAFETY REQUIREMENT / IMPLEMENTATION NOT VERIFIED`  
-  **Open detail:** Fault detection, landing command path, output ownership, timing, and the behavior when the F103 itself cannot act.
-- [x] `USR-004` H743↔F103 interface protocol is USART. **Status:** `CONFIRMED INTERFACE PROTOCOL / IMPLEMENTATION NOT VERIFIED`  
-  **Open detail:** USART instance, pins, voltage levels, baud/rate, framing, timeout, redundancy, and test access.
-
-### H743 external interfaces
-
-| Connector / function | User-provided allocation | Status |
-|---|---|---|
-| Conn1 | Tel1 — UART7 | **CONFIRMED REQUIREMENT / PIN IMPLEMENTATION NOT VERIFIED** |
-| Conn2 | Tel2 — UART1 | **CONFIRMED REQUIREMENT / PIN IMPLEMENTATION NOT VERIFIED** |
-| Conn3 | GPS1 + Compass — UBX via UART2; compass via I2C1 | **CONFIRMED REQUIREMENT / PIN IMPLEMENTATION NOT VERIFIED** |
-| Conn4 | GPS2 — UART3, currently blank | **CONFIRMED REQUIREMENT / PIN IMPLEMENTATION NOT VERIFIED** |
-| Conn5 | MS4525DO — I2C4, address `0x28` | **CONFIRMED REQUIREMENT / PIN IMPLEMENTATION NOT VERIFIED** |
-| Conn6 | TF-Luna — UART8 | **CONFIRMED REQUIREMENT / PIN IMPLEMENTATION NOT VERIFIED** |
-| Conn7 | UART7 TX, currently blank | **CONFIRMED REQUIREMENT / PIN IMPLEMENTATION NOT VERIFIED** |
-| Conn8 | VT L — TIM4_CH3 | **CONFIRMED REQUIREMENT / TIMER AF NOT VERIFIED** |
-| Conn9 | VT R — TIM4_CH4 | **CONFIRMED REQUIREMENT / TIMER AF NOT VERIFIED** |
-| Conn10 | SP2 — TIM1_CH1, currently blank | **CONFIRMED REQUIREMENT / TIMER AF NOT VERIFIED** |
-| Conn11 | TL2 — TIM15_CH1 | **CONFIRMED REQUIREMENT / TIMER AF NOT VERIFIED** |
-| Conn12 | TR2 — TIM15_CH2 | **CONFIRMED REQUIREMENT / TIMER AF NOT VERIFIED** |
-| USB | USB FS | **CONFIRMED REQUIREMENT / HARDWARE PATH NOT VERIFIED** |
-| Debug | SWD | **CONFIRMED REQUIREMENT / HARDWARE ACCESS NOT VERIFIED** |
-
-### F103 PWM and expanded I/O
-
-| Logical output | User-provided allocation | Status |
-|---|---|---|
-| TILT L | TIM2_CH1 | **CONFIRMED REQUIREMENT / TIMER AF NOT VERIFIED** |
-| TILT R | TIM2_CH2 | **CONFIRMED REQUIREMENT / TIMER AF NOT VERIFIED** |
-| ESC L | TIM4_CH3 | **CONFIRMED REQUIREMENT / TIMER AF NOT VERIFIED** |
-| ESC R | TIM4_CH4 | **CONFIRMED REQUIREMENT / TIMER AF NOT VERIFIED** |
-| COAX T | TIM3_CH5 | **CONFIRMED LOGICAL LABEL / MCU RESOURCE NOT VERIFIED** |
-| COAX B | TIM3_CH6 | **CONFIRMED LOGICAL LABEL / MCU RESOURCE NOT VERIFIED** |
-| AIL L | TIM3_CH7 | **CONFIRMED LOGICAL LABEL / MCU RESOURCE NOT VERIFIED** |
-| AIL R | TIM3_CH8 | **CONFIRMED LOGICAL LABEL / MCU RESOURCE NOT VERIFIED** |
-| FlySky | Pinheader bulk / connector unspecified | **CONFIRMED REQUIREMENT / PINOUT TBD** |
-
-> Timer/channel labels above are captured verbatim from the user input. They are not claims that the STM32F103 package or alternate-function matrix supports those labels. P1 must validate every timer/channel assignment against the selected MCU package and electrical design.
-
-### Power input
-
-- [x] `USR-005` Flight-controller board input is `5 V from power module`. **Status:** `CONFIRMED REQUIREMENT / LIMITS TBD`
-- [x] `USR-006` Servo power is `6 V`. **Status:** `CONFIRMED REQUIREMENT / CURRENT BUDGET TBD`
-- [ ] `USR-007` Upstream battery/PDB arrangement shown in the diagrams is the approved system power architecture. **Status:** `SOURCE IMAGE / NOT VERIFIED`
-
-## P0 — Architecture-impacting requirement closure
-
-**Exit gate:** No remaining `TBD` prevents selection of MCU resources, bus topology, connector strategy, or power architecture.
-
-### P0.1 System scope and operating intent
-
-- [ ] `P0-001` Define the flight-controller role and system boundary. **Status:** `TBD`  
-  **Evidence required:** Approved system-scope statement.
-- [ ] `P0-002` Record the PX4 version, board target strategy, and supported operating modes as a software-owned deferred item. **Status:** `DEFERRED / NON-BLOCKING`  
-  **Evidence required:** Later versioned firmware-target decision; not required to close the hardware architecture gate.
-- [ ] `P0-003` Define in-scope and out-of-scope functions for the first hardware revision. **Status:** `TBD`  
-  **Evidence required:** Scope baseline with owner approval.
-
-### P0.2 MCU architecture
-
-- [x] `P0-004` Confirm the final role of STM32H743VIT6 as the main flight-controller MCU. **Status:** `CONFIRMED REQUIREMENT / IMPLEMENTATION NOT VERIFIED`  
-  **Evidence required:** Responsibility matrix and hardware review.
-- [x] `P0-005` Confirm the final role of STM32F103C8T6 as the operational auxiliary I/O, PWM, ESC, and safety controller. **Status:** `CONFIRMED REQUIREMENT / IMPLEMENTATION NOT VERIFIED`  
-  **Evidence required:** Responsibility matrix, flight-use policy, and recovery behavior.
-- [x] `P0-006` Reserve a USART physical/electrical H743↔F103 communication path; defer protocol and software ownership. **Status:** `CONFIRMED INTERFACE / IMPLEMENTATION NOT VERIFIED`  
-  **Evidence required:** USART instance, pins, voltage compatibility, test access, and deferred-protocol note.
-- [x] `P0-007` Define the hardware safety requirement that F103 commands immediate landing if H743 is not operating; defer firmware implementation details. **Status:** `CONFIRMED SAFETY REQUIREMENT / IMPLEMENTATION NOT VERIFIED`  
-  **Evidence required:** Fault-detection and landing-command hardware boundary, timing target, reset/boot access, and recovery plan.
-
-### P0.3 Sensor selection and requirements
-
-- [ ] `P0-008` Confirm the IMU MFR/MPN candidates shown in the diagram: `ICM-42688-P` and `BMI088`. **Status:** `PROPOSED / SOURCE IMAGE`  
-  **Evidence required:** Approved parts list with availability, driver, voltage, range, rate, package, and placement review.
-- [ ] `P0-009` Confirm the barometer MFR/MPN candidates shown in the diagram: `BMP280` and `MS5611`. **Status:** `PROPOSED / SOURCE IMAGE`  
-  **Evidence required:** Approved parts list with address, voltage, driver, pressure range, and placement review.
-- [ ] `P0-010` Resolve the second-magnetometer requirement against the diagram, which visibly identifies `IST8310` and an external GPS/compass-related block. **Status:** `OPEN / NOT_VERIFIED`  
-  **Evidence required:** Explicit onboard/external sensor allocation and approved parts list.
-- [ ] `P0-011` Define sensor sample rates, interrupt/data-ready behavior, calibration needs, and redundancy policy. **Status:** `TBD`  
-  **Evidence required:** Sensor requirements table linked to the PX4 configuration.
-
-### P0.4 External interfaces, power, and actuators
-
-- [x] `P0-012` Confirm the H743 and F103 external interface allocations provided by the user. **Status:** `CONFIRMED REQUIREMENT / PIN IMPLEMENTATION NOT VERIFIED`  
-  **Evidence required:** Connector-level interface table, exact MCU pins, electrical standards, and resource review.
-- [x] `P0-013` Confirm the board power inputs provided by the user: 5 V from the power module and 6 V for servo power. **Status:** `CONFIRMED REQUIREMENT / LIMITS NOT DEFINED`  
-  **Evidence required:** Approved power tree, input limits, rail current budgets, sequencing, brownout, and protection review.
-- [x] `P0-014` Confirm F103 PWM/expanded-I/O requirements for ESC, tilt, coax, aileron, and FlySky connections. **Status:** `CONFIRMED REQUIREMENT / TIMER AF NOT VERIFIED`  
-  **Evidence required:** Actuator/I/O requirement table with exact resource validation, output levels, update rate, current/drive method, and failsafe behavior.
-- [ ] `P0-015` Confirm the approximate `~90 mm × 95 mm` board envelope and mechanical constraints shown in the diagram. **Status:** `PROPOSED / SOURCE IMAGE`  
-  **Evidence required:** Mechanical constraint record with exact outline, mounting, connector orientation, and environmental limits.
-
-## P1 — MCU allocation and conflict review
-
-**Exit gate:** The mapping has actual pins and alternate functions, passes documented resource checks, and has review evidence. It may then be called `ALLOCATED`; it is not yet automatically `VERIFIED`.
-
-- [ ] `P1-001` Assign exact H743 pins and alternate functions for all confirmed and approved interfaces. **Status:** `NOT_VERIFIED`  
-  **Evidence required:** Versioned MCU pin-allocation table.
-- [ ] `P1-002` Assign exact F103 pins and alternate functions for its approved role. **Status:** `NOT_VERIFIED`  
-  **Evidence required:** Versioned F103 pin-allocation table.
-- [ ] `P1-003` Allocate both SPI IMUs, including CS, DRDY, reset, bus ownership, and DMA. **Status:** `NOT_VERIFIED`  
-  **Evidence required:** SPI allocation and timing review.
-- [ ] `P1-004` Allocate both I2C barometers, including addresses, pull-ups, recovery, and bus ownership. **Status:** `NOT_VERIFIED`  
-  **Evidence required:** I2C address/bus review.
-- [ ] `P1-005` Allocate both I2C magnetometers, including addresses, pull-ups, recovery, and placement constraints. **Status:** `NOT_VERIFIED`  
-  **Evidence required:** I2C and magnetic-placement review.
-- [ ] `P1-006` Allocate USB FS, VBUS sensing, ESD/protection, connector, and reset support for H743 flashing. **Status:** `PROPOSED / NOT_VERIFIED`  
-  **Evidence required:** USB interface review and schematic net list.
-- [ ] `P1-007` Allocate selectable H743 BOOT0 and define its default/reset behavior. **Status:** `PROPOSED / NOT_VERIFIED`  
-  **Evidence required:** Boot-state table and circuit review.
-- [ ] `P1-008` Allocate SWD access for both MCUs, including SWDIO, SWCLK, NRST, GND, and probe access. **Status:** `PROPOSED / NOT_VERIFIED`  
-  **Evidence required:** Debug-access review.
-- [ ] `P1-009` Check alternate-function conflicts across every assigned pin. **Status:** `OPEN`  
-  **Evidence required:** Conflict report with no unresolved critical conflicts.
-- [ ] `P1-010` Check DMA, interrupt, timer/PWM, clock, and priority conflicts. **Status:** `OPEN`  
-  **Evidence required:** Resource matrix and resolution record.
-- [ ] `P1-011` Check voltage domains, IO levels, pull states, reset states, and boot-time behavior. **Status:** `OPEN`  
-  **Evidence required:** Electrical compatibility review.
-- [ ] `P1-012` Review package pin availability, reserved pins, unused pins, and ERC/DRC implications. **Status:** `OPEN`  
-  **Evidence required:** Package/resource review.
-- [ ] `P1-013` Record mapping revision, reviewer, date, conflicts, resolutions, and remaining obligations. **Status:** `OPEN`  
-  **Evidence required:** Signed or attributable review record.
-
-> **Mandatory statement:** Candidate pin mapping v0.1 must remain labeled `CANDIDATE / NOT VERIFIED` until P1 evidence is complete.
-
-## P2 — Schematic and hardware interface boundary
-
-**Exit gate:** Hardware schematic review is closed, electrical interfaces and reserved resources are documented, and no unresolved hardware blocker affects bring-up. Firmware ownership, PX4 target, bootloader, and software protocol details may remain deferred.
-
-- [ ] `P2-001` Create the schematic from the P1 allocation. **Status:** `BLOCKED BY P1`  
-  **Evidence required:** Versioned native schematic.
-- [ ] `P2-002` Implement USB FS, BOOT0, SWD, reset, power, and protection circuits. **Status:** `BLOCKED BY P1`  
-  **Evidence required:** Schematic review evidence.
-- [ ] `P2-003` Implement sensor buses, addresses, CS/DRDY, pull-ups, and recovery provisions. **Status:** `BLOCKED BY P0/P1`  
-  **Evidence required:** Sensor interface review.
-- [ ] `P2-004` Define hardware net names and connector pinout while reserving resources for later firmware mapping. **Status:** `BLOCKED BY P0/P1`  
-  **Evidence required:** Hardware net/connector cross-check.
-- [ ] `P2-005` Create the PX4 board configuration and bootloader plan. **Status:** `DEFERRED / NON-BLOCKING`  
-  **Evidence required:** Later versioned firmware configuration and build/flash procedure; not a hardware release blocker.
-- [ ] `P2-006` Define the H743 USB FS/QGC flashing workflow for both MCU firmware images. **Status:** `DEFERRED / NON-BLOCKING`  
-  **Evidence required:** Later reproducible software procedure and test record; hardware shall preserve the physical path and access.
-- [ ] `P2-007` Define H743↔F103 firmware ownership, protocol version, startup, timeout, and fault behavior. **Status:** `DEFERRED / NON-BLOCKING`  
-  **Evidence required:** Later versioned firmware interface contract; hardware shall document the reserved electrical path before schematic freeze.
-- [ ] `P2-008` Run ERC and resolve or disposition all relevant findings. **Status:** `NOT_VERIFIED`  
-  **Evidence required:** ERC output and issue disposition.
-- [ ] `P2-009` Complete line-by-line schematic review. **Status:** `NOT_VERIFIED`  
-  **Evidence required:** Review checklist with reviewer and evidence links.
-
-## P3 — PCB and fabrication release
-
-**Exit gate:** PCB, BOM, fabrication data, and release manifest are reviewed and approved by the Human engineering owner.
-
-- [ ] `P3-001` Confirm board envelope, mounting, connector placement, and service/debug access. **Status:** `TBD`  
-  **Evidence required:** Mechanical constraint review.
-- [ ] `P3-002` Place IMUs, barometers, magnetometers, clock, power, USB, and debug interfaces according to their constraints. **Status:** `BLOCKED BY P0/P2`  
-  **Evidence required:** Placement review.
-- [ ] `P3-003` Route power and return paths with documented current and noise assumptions. **Status:** `BLOCKED BY P0/P2`  
-  **Evidence required:** Power/layout review.
-- [ ] `P3-004` Route USB FS and high-sensitivity sensor/debug signals with appropriate layout review. **Status:** `BLOCKED BY P0/P2`  
-  **Evidence required:** Signal/layout review.
-- [ ] `P3-005` Run DRC and disposition all relevant findings. **Status:** `NOT_VERIFIED`  
-  **Evidence required:** DRC output and issue disposition.
-- [ ] `P3-006` Review thermal/current constraints and manufacturability. **Status:** `NOT_VERIFIED`  
-  **Evidence required:** Manufacturing and thermal review.
-- [ ] `P3-007` Confirm BOM, footprints, alternates, assembly notes, and test-point access. **Status:** `TBD`  
-  **Evidence required:** Controlled BOM and assembly review.
-- [ ] `P3-008` Create a hardware release package linked to schematic, PCB, BOM, and the deferred-firmware status. **Status:** `NOT_VERIFIED`  
-  **Evidence required:** Hardware release manifest that explicitly records firmware integration as deferred.
-- [ ] `P3-009` Obtain Human engineering-owner approval for fabrication release. **Status:** `NOT_VERIFIED`  
-  **Evidence required:** Explicit approval record.
-
-## P4 — Bring-up and validation
-
-**Exit gate:** Repeatable bench evidence exists, and all remaining issues have an owner and a defined disposition.
-
-- [ ] `P4-001` Inspect the assembled board for shorts, assembly defects, polarity, and component identity. **Status:** `NOT_STARTED`  
-  **Evidence required:** Inspection record.
-- [ ] `P4-002` Verify power rails, sequencing, reset behavior, and current consumption before firmware loading. **Status:** `NOT_STARTED`  
-  **Evidence required:** Measured bring-up log.
-- [ ] `P4-003` Verify SWD access for H743. **Status:** `NOT_STARTED`  
-  **Evidence required:** Probe/session log.
-- [ ] `P4-004` Verify SWD access for F103. **Status:** `NOT_STARTED`  
-  **Evidence required:** Probe/session log.
-- [ ] `P4-005` Verify the H743 USB FS hardware path, connector, protection, continuity, and relevant electrical behavior. **Status:** `NOT_STARTED`  
-  **Evidence required:** Hardware inspection/measurement record; host enumeration may remain deferred.
-- [ ] `P4-006` Verify firmware flashing through QGC for the approved workflow. **Status:** `DEFERRED / NON-BLOCKING`  
-  **Evidence required:** Later reproducible software test record.
-- [ ] `P4-007` Verify bootloader, PX4 startup, sensor detection, and calibration flow. **Status:** `DEFERRED / NON-BLOCKING`  
-  **Evidence required:** Later firmware/console/test log.
-- [ ] `P4-008` Verify the H743↔F103 physical link, electrical levels, continuity, and test access; defer protocol behavior. **Status:** `NOT_STARTED / SOFTWARE DEFERRED`  
-  **Evidence required:** Hardware link test record and later software protocol test record.
-- [ ] `P4-009` Verify actuator outputs, arming behavior, failsafe behavior, and fault handling. **Status:** `NOT_STARTED`  
-  **Evidence required:** Safety/actuator test record.
-- [ ] `P4-010` Record hardware revision, firmware revision, test conditions, measurements, and deviations. **Status:** `NOT_STARTED`  
-  **Evidence required:** Controlled bring-up report.
+| ID     | Task | Req | Owner | Status | Evidence required / link |
+| ------ |---|---|---|---|---|
+| P4-001 | Inspect the assembled board for shorts, assembly defects, polarity, and component identity. |  | TBD | OPEN | Inspection record |
+| P4-002 | Verify power rails, sequencing, reset behavior, and current consumption before firmware loading. | PWR-001, PWR-002, TST-004, TST-005 | TBD | OPEN | Measured bring-up log |
+| P4-003 | Verify SWD access for H743. | FUN-005, TST-001 | TBD | OPEN | Probe/session log |
+| P4-004 | Verify SWD access for F103. | FUN-005, TST-002 | TBD | OPEN | Probe/session log |
+| P4-005 | Verify the H743 USB FS hardware path, connector, protection, continuity, and relevant electrical behavior. | IF-022 | TBD | OPEN | Hardware inspection/measurement record. Host enumeration may stay deferred. |
+| P4-006 | Verify firmware flashing through QGC for the approved workflow. | DEC-004 | Software | DEFERRED | Later reproducible software test record. Not a hardware release blocker. |
+| P4-007 | Verify bootloader, PX4 startup, sensor detection, and calibration flow. | DEC-004 | Software | DEFERRED | Later firmware/console/test log. Not a hardware release blocker. |
+| P4-008 | Verify the H743↔F103 physical link, electrical levels, continuity, and test access. Protocol behavior is deferred to Software. | IF-001, IF-024, TST-006 | Hardware, Software | OPEN | Hardware link test record and later software protocol test record |
+| P4-009 | Verify actuator outputs, arming behavior, failsafe behavior, and fault handling. | SAF-001, SAF-010 to SAF-013, TST-007 | TBD | OPEN | Safety/actuator test record |
+| P4-010 | Record hardware revision, firmware revision, test conditions, measurements, and deviations. |  | TBD | OPEN | Controlled bring-up report |
 
 ## Evidence and closure checklist
 
@@ -278,24 +130,27 @@ The following requirements were provided directly by the user on 2026-10-12. The
 - [ ] `E-007` Release package revisions are mutually traceable.
 - [ ] `E-008` Remaining issues are classified as closed, accepted limitation, or deferred obligation.
 - [ ] `E-009` Human engineering owner provides the final approval for the applicable release gate.
+- [ ] `E-010` Every spec requirement ID has at least one task, or is marked `N/A` with a reason.
 
-## Open-item register
+## Open items
 
-| ID | Open item | Status | Owner | Evidence / decision link | Target gate |
-|---|---|---|---|---|---|
-| OI-001 | Final F103 role and immediate-landing safety behavior | `CONFIRMED REQUIREMENT / IMPLEMENTATION NOT VERIFIED` | `TBD` | `TBD` | P0/P1/P2 |
-| OI-002 | Sensor MFR/MPN selection from the diagrams | `PROPOSED / SOURCE IMAGE` | `TBD` | `TBD` | P0 |
-| OI-003 | External I/O and connector list from user confirmation | `CONFIRMED REQUIREMENT / PIN IMPLEMENTATION NOT VERIFIED` | `TBD` | `TBD` | P0/P1 |
-| OI-004 | 5 V board input, 6 V servo rail, and current budgets | `CONFIRMED REQUIREMENT / LIMITS TBD` | `TBD` | `TBD` | P0/P2 |
-| OI-005 | Exact MCU pin mapping | `NOT_VERIFIED` | `TBD` | `TBD` | P1 |
-| OI-006 | H743↔F103 USART physical path and later protocol | `CONFIRMED INTERFACE / PROTOCOL DEFERRED` | `TBD` | `TBD` | P0/P1/P2 |
-| OI-007 | PX4 board target and bootloader plan | `DEFERRED / NON-BLOCKING` | `Software` | `TBD` | Post-hardware |
-| OI-008 | F103 PWM/expanded-I/O allocation and failsafe behavior | `CONFIRMED REQUIREMENT / TIMER AF NOT VERIFIED` | `TBD` | `TBD` | P0/P1/P2 |
-| OI-009 | Mechanical and environmental constraints | `TBD` | `TBD` | `TBD` | P0/P3 |
-| OI-010 | Second magnetometer allocation | `OPEN / NOT_VERIFIED` | `TBD` | `TBD` | P0 |
-| OI-011 | ESC and servo/actuator channel count | `OPEN / NOT_VERIFIED` | `TBD` | `TBD` | P0 |
+Descriptions are in the specification (section 8.2). Status and owner below are tracked here.
+
+| ID     | Spec ref | Open item | Status | Owner / target |
+| ------ |---|---|---|---|
+| OI-001 | OPEN-008, SAF-001 | Immediate-landing requirement and F103 safety implementation | Requirement confirmed. Detailed behavior and timing are Software-owned and deferred. | Software / P2, P4 |
+| OI-002 | OPEN-004 | Sensor MFR/MPN and electrical properties | Parts chosen: IMU 2 × ICM-45686 (DEC-008), barometers ICP-20100 + BMP390 (DEC-010), magnetometer BMM150 (DEC-011). Electrical properties `NOT_VERIFIED`. ICP-20100 EOL and BMP390 availability open. | Human owner / P0 |
+| OI-003 | OPEN-001 | External interfaces and exact MCU pins | Logical requirements confirmed; mapping unverified. | Hardware / P1 |
+| OI-004 | OPEN-006, OPEN-007 | Power protection, transients, downstream budgets, and distribution | Input and servo ratings recorded; design details open. | Hardware / P0, P2 |
+| OI-005 | OPEN-001, OPEN-003 | Exact MCU pin mapping and resource conflicts (overlaps OI-003) | `NOT_VERIFIED` | Hardware / P1 |
+| OI-006 | OPEN-002 | H743↔F103 USART implementation and software contract | Physical protocol confirmed; detailed software contract deferred. | Hardware + Software / P1, P2 |
+| OI-007 | DEC-004 | PX4 target and bootloader plan | `DEFERRED`; non-blocking. | Software / post-hardware |
+| OI-008 | OPEN-003, OPEN-008 | F103 PWM outputs and failsafe behavior | Logical functions confirmed; timer AF and electrical behavior unverified. | Hardware + Software / P1, P2 |
+| OI-009 | OPEN-009 | Exact outline, mounting, connector placement, and environment | Maximum envelope confirmed; remaining mechanics TBD. | Human owner / P0, P3 |
+| OI-010 | OPEN-005 | Magnetometer count/allocation and sensor requirements | Closed: 1 × BMM150 (DEC-011). | Team / closed 2026-10-18 |
+| OI-011 | None (checklist only) | Physical actuator/ESC signal distribution | Diagram captured; native allocation and fanout need review. | Hardware / P1, P2 |
+| OI-012 | OPEN-010 | All non-MCU part numbers (added by audit) | Only the sensors are chosen (DEC-008, DEC-010, DEC-011). No other non-MCU part is approved. | Human owner / component selection gate (P0-016) |
 
 ## Current next action
 
-Close the remaining hardware P0 items, especially `P0-010`, `P0-013`, and `P0-015`. Then start P1 validation of the user-provided H743/F103 USART, timer/channel, pin, voltage, and safety-resource allocations. Keep firmware-target, bootloader, QGC, and software-protocol items explicitly deferred. Do not treat the candidate pin mapping as an implementation baseline until the P1 conflict review has been completed.
-
+Continue P1 allocation and conflict review using the confirmed logical interfaces. Keep sensor-specific resources provisional until the sensor requirements are decided. Keep the candidate/unverified label on all pin mappings. Reserve the USART safety path and test access. Do not begin fabrication release until the applicable P0 to P3 evidence and Human approval are complete.

@@ -30,7 +30,8 @@ tag or GitHub release remains a separate, explicitly approved Git action.
 - A phase is never inferred from file counts, document presence, ERC/DRC
   output, or Git status. The human engineer declares the phase.
 - ERC and DRC are verification evidence, not proof that a design is correct,
-  safe, manufacturable, or approved.
+  safe, manufacturable, or approved. Evidence labels and design authority
+  rules are in `engineering.md`.
 - A change to the checked source, design rules, libraries, or required release
   inputs reopens CHECK until the human establishes a new checked baseline.
 - This workflow does not prescribe branch names, pull-request flow, release
@@ -43,6 +44,8 @@ tag or GitHub release remains a separate, explicitly approved Git action.
   explicitly requested. Markdown documentation does not declare or advance a
   project phase unless a human explicitly states that phase.
 - Claude must not generate, open, read, parse, or assess PDF documents.
+  Datasheet content is reached only through user-supplied text, official web
+  pages, or the `notebooklm` skill, as defined in `engineering.md`.
 - When explicitly asked, Claude may check only the expected document file
   names and paths, and must report that result as `EXISTS`, `MISSING`, or
   `NOT_VERIFIED`; file presence does not verify document content.

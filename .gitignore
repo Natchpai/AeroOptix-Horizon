@@ -1,6 +1,7 @@
 # Dev files
 settings.local.json
-
+\__pycache__
+/.claude/memory/
 
 # For PCBs designed using KiCad: https://www.kicad.org/
 # Format documentation: https://kicad.org/help/file-formats/
@@ -50,3 +51,7 @@ fp-info-cache
 .DS_Store
 ._*
 
+**/skills/*
+
+!/.claude/skills/git-workflow
+/hardware/AO-Horizon/documents/datesheets

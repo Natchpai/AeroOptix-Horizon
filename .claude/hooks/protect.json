@@ -1,0 +1,21 @@
+{
+  "_help": "Rules for protect_kicad_v2.py. Order: allow > deny > ask. Globs: ** crosses folders, * and ? do not cross '/'. Matching is case-insensitive on '/'-normalized paths. Edit this file to change protection; no code change needed.",
+  "deny": [
+    "**/*.kicad_wks",
+    "**/*.wrl",
+    "**/templates/**"
+  ],
+  "ask": [
+    "**/*.step",
+    "**/*.stp",
+    "**/*.kicad_sch",
+    "**/*.kicad_pcb",
+    "**/*.kicad_pro",
+    "**/*.kicad_sym",
+    "**/*.kicad_mod",
+    "**/library/**"
+  ],
+  "allow": [
+    "**/scratchpad/**"
+  ]
+}

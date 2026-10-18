@@ -1,7 +1,10 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
+    "defaultMode": "default",
     "allow": [
+      "Edit",
+      "Write",
       "Read",
       "Glob",
       "Grep",
@@ -9,35 +12,41 @@
       "Bash(git status *)",
       "Bash(git diff *)",
       "Bash(git log *)",
-      "Bash(git branch *)"
-    ],
-    "deny": [
+      "Bash(git branch *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(gh pr create *)",
+      "Bash(git push *)",
+
       "Edit(**/*.kicad_sch)",
-      "Edit(**/*.kicad_pcb)",
-      "Edit(**/*.kicad_pro)",
       "Edit(**/*.kicad_sym)",
       "Edit(**/*.kicad_mod)",
+      "Edit(**/library/**)"
+    ],
+    "ask": [
+      "Edit(**/*.kicad_pcb)",
+      "Edit(**/*.kicad_pro)",
       "Edit(**/*.step)",
-      "Edit(**/*.wrl)",
+      "Edit(**/*.stp)"
+    ],
+    "deny": [
+      "Read(**/*.pdf)",
+      "Read(~/.notebooklm/**)",
+      "Bash(pdftotext *)",
       "Edit(**/*.kicad_wks)",
-      "Edit(**/library/**)",
+      "Edit(**/templates/**)",
+      "Edit(**/*.wrl)",
+      "Bash(git push origin main*)",
+      "Bash(git push origin master*)",
+      "Bash(git push * HEAD:main*)",
+      "Bash(git push * HEAD:master*)",
       "Bash(git push --force *)",
       "Bash(git push -f *)",
       "Bash(git reset --hard *)",
       "Bash(git clean -fd *)",
       "Bash(git merge *)",
       "Bash(gh pr merge *)"
-    ],
-    "ask": [
-      "Edit",
-      "Bash(git add *)",
-      "Bash(git commit *)",
-      "Bash(git push *)",
-      "Bash(gh pr create *)",
-      "Edit(**/documents/**)",
-      "Write"
-    ],
-    "defaultMode": "default"
+    ]
   },
   "hooks": {
     "PreToolUse": [
@@ -46,7 +55,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"${CLAUDE_PROJECT_DIR}/.claude/hooks/protect_kicad.py\"",
+            "command": "python \"${CLAUDE_PROJECT_DIR}/.claude/hooks/protect_kicad_v2.py\"",
             "timeout": 10
           }
         ]

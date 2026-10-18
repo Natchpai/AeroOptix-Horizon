@@ -8,24 +8,34 @@ AeroOptix-Horizon is a KiCad 10 hardware design (no firmware, no build/test/lint
 
 ## Repository layout (big picture)
 
-- `hardware/AO-Horizon/` is the KiCad project. The schematic is hierarchical: `AO-Horizon.kicad_sch` is the root, with sheet files `top_hierarchical`, `block_diagram`, `power_supplies`, `revision_history` (`*.kicad_sch`) alongside it. Check how sheets are linked before assuming which one is the root.
-- `hardware/AO-Horizon/documents/` holds `design/` (spec, handoff, execution checklist, all Markdown), `manufacturing/`, `schematic/`, `verification/`, `images/`. Engineering PDFs and release documents live here and are human-generated.
+- `hardware/AO-Horizon/` is the KiCad project. The schematic is hierarchical. `AO-Horizon.kicad_sch` is the root and links `block_diagram`, `top_hierarchical` and `revision_history`. `power_supplies` is a child of `top_hierarchical`, not of the root (checked via `Sheetfile` properties). Library tables (`fp-lib-table`, `sym-lib-table`) sit next to the project; `*.bak` copies and `AO-Horizon-backups/` are not design sources.
+- `hardware/AO-Horizon/documents/` holds `design/` (spec, handoff, execution checklist, part selection and sourcing summaries, all Markdown), `manufacturing/`, `schematic/`, `verification/`, `images/`. Engineering PDFs and release documents live here and are human-generated.
 - `hardware/AO-Horizon/library/` (`symbols`, `footprints`, `3D`) holds project-specific libraries; `templates/` holds title-block worksheets (`.kicad_wks`), notes and the board theme.
-- `README.md` and `CHANGELOG.md` are project-level docs, written from the templates under `.claude/skills/project-readme` and `project-changelog`.
+- `README.md` and `CHANGELOG.md` are project-level docs, written from the templates under `.claude/skills/hw-git-readme/assets` and `.claude/skills/hw-git-changelog/assets`.
 - Treat the `documents/design/` spec files as the source of requirements; read them before proposing design changes.
 
 ## Rules that matter
 
-- **Native KiCad files and `library/` are read-only** (`.kicad_sch/.kicad_pcb/.kicad_pro/.kicad_sym/.kicad_mod/.kicad_wks`, `.step/.stp/.wrl`). Propose changes with justification instead of editing; never silently alter connectivity, values, footprints, net names or geometry.
+- **Native KiCad files and `library/` are protected** (enforced by the hook and `settings.json`; the rules in `.claude/hooks/protect.json` are authoritative). Never edit without the engineer's explicit authorization, and propose changes with justification first; never silently alter connectivity, values, footprints, net names or geometry.
 - KiCad files reflect only the **saved** design; the editor may hold unsaved changes.
 - Inspect natively and narrowly (specific sheets/components/nets), not whole schematics or netlists. Verify component claims against datasheets. ERC/DRC PASS is not proof of correctness. Report `NOT_VERIFIED` when evidence is insufficient; do not invent specs or measurements.
 - Never generate, open, read or assess PDFs. If asked about documents, check only file existence (`EXISTS` / `MISSING` / `NOT_VERIFIED`). Create Markdown docs only when explicitly asked.
-- **Git:** Conventional Commits (`feat|fix|refactor|docs|chore|test`, `<type>(<scope>): <desc>`, ≤72 chars, English). Every mutation (stage, commit, branch, push, PR, tag) needs explicit, action-specific approval; never merge PRs, force-push or reset --hard. PRs follow `.github/pull_request_template.md`.
+- **External-model providers** (`agent-coworker`: `agy` or `codex`): never send PDFs, native KiCad files, `library/` contents, secrets or anything under the deny/ask lists to them. Hooks and `settings.json` protections do not apply inside a provider. Datasheet content follows `engineering.md`.
+- **Git:** Conventional Commits (`feat|fix|refactor|docs|chore|test|perf|build|ci`, `<type>(<scope>): <desc>`, ≤72 chars, English). Every mutation (stage, commit, branch, push, PR, tag) needs explicit, action-specific approval; never merge PRs, force-push or reset --hard. PRs follow `.github/pull_request_template.md`.
 
 ## Claude config
 
-`.claude/` holds the rules, skills (`project-readme`, `project-changelog`, `git-workflow`, `phase-record`, `session-log`), the `protect_kicad.py` PreToolUse hook (advisory, heuristic) and the permission deny-list. It was renamed from the typo `.cluade/`; the rename takes effect after restarting Claude Code.
+The `protect_kicad_v2.py` PreToolUse hook (advisory, heuristic; rules in `.claude/hooks/protect.json`: deny / ask / allow globs, order allow > deny > ask) and the permission deny/ask lists in `.claude/settings.json`, which should be kept in sync with `protect.json`. The engineer changes these lists often, so do not rely on a fixed summary: read `settings.json` and `protect.json` for the current allow / ask / deny entries before acting on a protected path. The folder was renamed from the typo `.cluade/`; if protections seem inactive, restart Claude Code.
+
+Subagents (defined globally in `~/.claude/agents/`, not in this repo):
+- `research-scout`: read-only lookups (repo search, large files, web). Brief it with narrow KiCad targets (sheet, ref, net) and the exact path. Hooks and `settings.json` deny rules apply to it, unlike external providers.
+- `hardware-researcher`: datasheet and app-note research through official web pages or NotebookLM, per `engineering.md`.
+- Supplier pages: JLCPCB stock and price are JavaScript-rendered and Mouser often times out, so agents fall back to search snippets. Snippet values stay `NOT_VERIFIED`. Spot-check key values before writing them into a `design/` record.
 
 ## Working approach
 
 Establish objective and scope, inspect only the relevant saved design data, separate findings from proposed changes, and state assumptions and verification gaps. Keep answers concise and technical, citing refs/nets/sources.
+
+## Language Rules
+- Use English for all files, code, error messages, and git's activity messages.
+- Use English for user-facing explanations, conversational text in CLI, unless otherwise specified by the user.
