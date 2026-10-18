@@ -1,7 +1,7 @@
 # AeroOptix-Horizon: Execution Checklist
 
-**Revision:** 0.4
-**Updated:** 2026-10-18
+**Revision:** 0.5
+**Updated:** 2026-10-19
 **Status:** Active execution tracker; not an approval or verification record
 **Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md)
 
@@ -46,7 +46,7 @@ Groups: P0.1 scope and operating intent (P0-001 to P0-003). P0.2 MCU and safety 
 | P0-013 | Confirm board and servo power requirements. Protection, transients, distribution, and component choice are open (see P0-017). | PWR-001, PWR-002, PWR-010, PWR-011 | Human | DONE | DEC-007 |
 | P0-014 | Confirm logical F103 PWM/expanded-I/O functions: TILT, ESC, COAX, AIL, and FlySky. Timer/channel validity and electrical implementation unverified. | IF-030 to IF-038, FUN-003 | Human | DONE | User confirmation, date TBD. No DEC record yet. |
 | P0-015 | Confirm maximum PCB envelope. Shape, mounting, connector orientation, and environment open for P3. | MEC-001 | Human | DONE | DEC-006 |
-| P0-016 | Select non-MCU parts: regulators, protection, connectors, PDB/UBEC, and interface ICs. | CMP-006, OPEN-010 | Human | OPEN | Part selection record (spec: component selection gate) |
+| P0-016 | Select non-MCU parts: regulators, protection, connectors, PDB/UBEC, and interface ICs. Main 3.3 V buck chosen: TPS62142RGTR (DEC-012). `+3V3A` LDO and the rest are open. | CMP-006, CMP-007, OPEN-010, OPEN-011 | Human | IN_PROGRESS | DEC-012; part selection record for the remaining parts |
 | P0-017 | Define power budget, rail tolerances, brownout thresholds, and 5 V and 6 V protection and transient requirements. | PWR-012 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007 | Hardware | OPEN | Power budget table and protection requirement record. Draft: [AO-HORIZON_POWER_BUDGET_EN.md](AO-HORIZON_POWER_BUDGET_EN.md) |
 | P0-018 | Define environmental limits: operating and storage temperature, vibration and shock, humidity, ingress, altitude, maintenance. | ENV-001 to ENV-004 | TBD | OPEN | Decision record with a verification method per limit |
 
@@ -87,6 +87,7 @@ Firmware tasks P2-005 to P2-007 do not block the hardware release.
 | P2-008 | Run ERC and resolve or disposition all relevant findings. |  | TBD | OPEN | ERC output and issue disposition |
 | P2-009 | Complete line-by-line schematic review. |  | TBD | OPEN | Review checklist with reviewer and evidence links |
 | P2-010 | Complete the spec 4.7 calculations: board input current, servo rail current, rail tolerance, thermal margin, and safety response timing. Added by audit. | Spec 4.7, PWR-012 to PWR-014 | Hardware | OPEN | Calculation records with margins |
+| P2-011 | Capture the power sheet (`power_supplies.kicad_sch`): power module input, `+VIN` to `+5V` path, TPS62142 3.3 V buck, `+3V3A` LDO, indicator. Does not depend on P1. Drawn so far: see spec 4.3 "Schematic state". Open: `+VIN` to `+5V` path (OPEN-012), `+3V3A` decision (OPEN-011), annotation, LCSC field on the 1 µF / 10 µF capacitors (both show C162430). | DEC-012, OPEN-011, OPEN-012 | Hardware | IN_PROGRESS | Saved `power_supplies.kicad_sch`; power-sheet review record |
 
 ## P3: PCB and fabrication release
 
@@ -149,8 +150,10 @@ Descriptions are in the specification (section 8.2). Status and owner below are 
 | OI-009 | OPEN-009 | Exact outline, mounting, connector placement, and environment | Maximum envelope confirmed; remaining mechanics TBD. | Human owner / P0, P3 |
 | OI-010 | OPEN-005 | Magnetometer count/allocation and sensor requirements | Closed: 1 × BMM150 (DEC-011). | Team / closed 2026-10-18 |
 | OI-011 | None (checklist only) | Physical actuator/ESC signal distribution | Diagram captured; native allocation and fanout need review. | Hardware / P1, P2 |
-| OI-012 | OPEN-010 | All non-MCU part numbers (added by audit) | Only the sensors are chosen (DEC-008, DEC-010, DEC-011). No other non-MCU part is approved. | Human owner / component selection gate (P0-016) |
+| OI-012 | OPEN-010 | All non-MCU part numbers (added by audit) | Sensors (DEC-008, DEC-010, DEC-011) and the main 3.3 V buck TPS62142RGTR (DEC-012) are chosen. No other non-MCU part is approved. | Human owner / component selection gate (P0-016) |
+| OI-013 | OPEN-011 | `+3V3A` rail purpose, load and LDO part | TPS73533DRBR drawn, not decided. | Human owner / P0, P2 |
+| OI-014 | OPEN-012 | `+VIN` to `+5V` path | Not drawn; both regulators have no input source yet. | Hardware / P2 (P2-011) |
 
 ## Current next action
 
-Continue P1 allocation and conflict review using the confirmed logical interfaces. Keep sensor-specific resources provisional until the sensor requirements are decided. Keep the candidate/unverified label on all pin mappings. Reserve the USART safety path and test access. Do not begin fabrication release until the applicable P0 to P3 evidence and Human approval are complete.
+Continue P1 allocation and conflict review using the confirmed logical interfaces. In parallel, continue the power sheet (P2-011): connect `+VIN` to `+5V`, decide the `+3V3A` rail, then annotate. Keep sensor-specific resources provisional until the sensor requirements are decided. Keep the candidate/unverified label on all pin mappings. Reserve the USART safety path and test access. Do not begin fabrication release until the applicable P0 to P3 evidence and Human approval are complete.

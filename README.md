@@ -13,14 +13,15 @@ AeroOptix-Horizon is a custom PX4 flight controller hardware platform with a dua
 
 Pixhawk 6C is only a conceptual and functional reference. Its schematic, PCB and pinout are not copied.
 
-> **Draft specification (rev 0.2, 2026-10-13): NOT FOR FABRICATION.** Everything below is a design target taken from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.6, 2026-10-19): NOT FOR FABRICATION.** Everything below is a design target taken from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Key Features
 
 - Main MCU: STM32H743VIT6
 - Auxiliary MCU: STM32F103C8T6 (PWM/ESC, expanded I/O, safety)
 - H743 to F103 link over USART
-- 2× SPI IMU, 2× I2C barometer, 2× I2C magnetometer interfaces
+- 2× SPI IMU (ICM-45686), 2× I2C barometer (ICP-20100, BMP390), 1× I2C magnetometer (BMM150)
+- 3.3 V rail from a TPS62142 buck on the 5 V board input
 - USB FS, SWD on both MCUs, selectable BOOT0 on the H743
 - F103 commands immediate landing if the H743 is not operating (detection and timing `TBD`)
 
@@ -31,10 +32,12 @@ Pixhawk 6C is only a conceptual and functional reference. Its schematic, PCB and
 | Main MCU | STM32H743VIT6 |
 | Auxiliary MCU | STM32F103C8T6 |
 | Inter-MCU link | USART (instance, pins, levels, rate `TBD`) |
-| IMU | 2× SPI, parts `TBD` |
-| Barometer | 2× I2C, parts `TBD` |
-| Magnetometer | 2× I2C, parts `TBD` |
-| Board input | 5 V from power module (tolerance and current `TBD`) |
+| IMU | 2× SPI, ICM-45686 |
+| Barometer | 2× I2C, ICP-20100 + BMP390 |
+| Magnetometer | 1× I2C, BMM150 |
+| Board input | 5 V from power module, 4.5 to 5.5 V, 2 A source |
+| 3.3 V rail | TPS62142RGTR buck from 5 V (load current `TBD`) |
+| 3.3 V analog rail (`+3V3A`) | Purpose and part `TBD` (TPS73533DRBR drawn, not decided) |
 | Servo supply | 6 V (current and protection `TBD`) |
 | Board outline | Approx. 90 mm × 95 mm from diagram; exact outline `TBD` |
 | Mounting pattern | `TBD` |
@@ -96,11 +99,11 @@ The diagram is for reference only. It does not enforce gates or approve releases
 |---|---|
 | H743 main controller | Primary flight-controller processing and interface host |
 | F103 auxiliary controller | PWM/ESC outputs, expanded I/O, safety function |
-| IMU / barometer / magnetometer | Two of each; parts and bus allocation `TBD` |
+| IMU / barometer / magnetometer | 2 IMU, 2 barometer, 1 magnetometer; bus allocation `TBD` |
 | H743 external I/O | Telemetry, GPS, compass, air-data sensor, rangefinder, logical outputs |
 | F103 PWM / I/O | TILT, ESC, COAX, AIL outputs and FlySky bulk header |
 | USB / SWD / BOOT0 | Service, debug and recovery access |
-| Power | 5 V board input and 6 V servo supply |
+| Power | 5 V board input, 3.3 V buck, 6 V servo supply |
 
 The specification's candidate power arrangement (6S battery, XT90-S, PM02D, CRIUS PDB v1.0, 6 V UBEC) comes from user diagrams and is not an approved design.
 
@@ -131,7 +134,9 @@ Allocations below are user-confirmed at the logical level only. Exact pins, alte
 - Clock sources, reset topology and F103 boot behavior are `TBD`.
 - Safety detection method, timing and output ownership for the H743-failure case are `TBD`.
 - Firmware (PX4 version and target, bootloader, USART message protocol) is deferred.
-- Only STM32H743VIT6 and STM32F103C8T6 are confirmed part numbers. All other parts are `TBD`.
+- Confirmed part numbers: STM32H743VIT6, STM32F103C8T6, ICM-45686, ICP-20100, BMP390, BMM150 and TPS62142RGTR. All other parts are `TBD`.
+- Sensor sourcing risks are open: ICP-20100 is EOL and BMP390 is not available at LCSC.
+- Power sheet in progress: the path from the power module input (`+VIN`) to `+5V` is not drawn yet.
 
 ## Verification
 
@@ -145,7 +150,7 @@ Allocations below are user-confirmed at the logical level only. Exact pins, alte
 
 ## Open Items
 
-The specification tracks ten open items (OPEN-001 to OPEN-010): pin and alternate-function validity, USART details, timer validity, sensor part numbers, second magnetometer allocation, 5 V and 6 V budgets, safety timing, board outline and mounting, and all non-MCU part numbers.
+The specification tracks open items OPEN-001 to OPEN-012 (OPEN-005 is closed): pin and alternate-function validity, USART details, timer validity, sensor electrical properties and sourcing, 5 V and 6 V budgets, safety timing, board outline and mounting, remaining non-MCU part numbers, the `+3V3A` rail, and the `+VIN` to `+5V` path.
 
 ## Repository Structure
 
@@ -180,6 +185,11 @@ AeroOptix-Horizon/
 |---|---|
 | [Specification](hardware/AO-Horizon/documents/design/AO-HORIZON_SPEC_EN.md) | Draft requirements, interfaces and open items |
 | [Execution checklist](hardware/AO-Horizon/documents/design/AO-HORIZON_EXECUTION_CHECKLIST_EN.md) | Work plan and evidence tracker |
+| [IMU selection](hardware/AO-Horizon/documents/design/AO-HORIZON_IMU_SELECTION_EN.md) | ICM-45686 selection record |
+| [Barometer and magnetometer selection](hardware/AO-Horizon/documents/design/AO-HORIZON_BARO_MAG_SELECTION_EN.md) | ICP-20100, BMP390 and BMM150 selection record |
+| [Power budget](hardware/AO-Horizon/documents/design/AO-HORIZON_POWER_BUDGET_EN.md) | Draft rail and load budget (P0-017) |
+| [Pin allocation](hardware/AO-Horizon/documents/design/AO-HORIZON_PIN_ALLOCATION_EN.md) | Draft H743 and F103 pin allocation |
+| [H7 MCU sourcing](hardware/AO-Horizon/documents/design/AO-HORIZON_H7_MCU_SOURCING_EN.md) | STM32H743VI price and stock |
 
 ## License
 
