@@ -1,6 +1,6 @@
 # AeroOptix-Horizon: Execution Checklist
 
-**Revision:** 0.5
+**Revision:** 0.6
 **Updated:** 2026-10-19
 **Status:** Active execution tracker; not an approval or verification record
 **Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md)
@@ -87,7 +87,8 @@ Firmware tasks P2-005 to P2-007 do not block the hardware release.
 | P2-008 | Run ERC and resolve or disposition all relevant findings. |  | TBD | OPEN | ERC output and issue disposition |
 | P2-009 | Complete line-by-line schematic review. |  | TBD | OPEN | Review checklist with reviewer and evidence links |
 | P2-010 | Complete the spec 4.7 calculations: board input current, servo rail current, rail tolerance, thermal margin, and safety response timing. Added by audit. | Spec 4.7, PWR-012 to PWR-014 | Hardware | OPEN | Calculation records with margins |
-| P2-011 | Capture the power sheet (`power_supplies.kicad_sch`): power module input, `+VIN` to `+5V` path, TPS62142 3.3 V buck, `+3V3A` LDO, indicator. Does not depend on P1. Drawn so far: see spec 4.3 "Schematic state". Open: `+VIN` to `+5V` path (OPEN-012), `+3V3A` decision (OPEN-011), annotation, LCSC field on the 1 µF / 10 µF capacitors (both show C162430). | DEC-012, OPEN-011, OPEN-012 | Hardware | IN_PROGRESS | Saved `power_supplies.kicad_sch`; power-sheet review record |
+| P2-011 | Capture the power sheet (`power_supplies.kicad_sch`): power module input, `+VIN` to `+5V` path, TPS62142 3.3 V buck, `+3V3A` LDO, indicator. Does not depend on P1. Drawn so far: see spec 4.3 "Schematic state". Open: `+VIN` to `+5V` path (OPEN-012), `+3V3A` decision and its NR and output capacitors (OPEN-011), the 0.1 µF AVIN-to-AGND capacitor TI recommends for the TPS62142, annotation, LCSC C162430 on both the 1 µF (GCM188R71C105KA64J) and 10 µF (GRM21BZ71C106KE15L) capacitors, `PM02_SCL` / `PM02_SDA` going nowhere, the DNP DF2S6.2CT on `+VIN`. | DEC-012, OPEN-011, OPEN-012 | Hardware | IN_PROGRESS | Saved `power_supplies.kicad_sch`; power-sheet review record |
+| P2-012 | Check the sensor footprints against the datasheet drawings and app notes: pad geometry, land pattern, pin 1 corner, 3D model (BMM150 model missing). Pin maps already match the datasheet tables. See spec 4.6 "Library state". | OPEN-013, CMP-003 to CMP-005 | Human | IN_PROGRESS | Per-part review record naming the datasheet figure or app note used |
 
 ## P3: PCB and fabrication release
 
@@ -140,7 +141,7 @@ Descriptions are in the specification (section 8.2). Status and owner below are 
 | ID     | Spec ref | Open item | Status | Owner / target |
 | ------ |---|---|---|---|
 | OI-001 | OPEN-008, SAF-001 | Immediate-landing requirement and F103 safety implementation | Requirement confirmed. Detailed behavior and timing are Software-owned and deferred. | Software / P2, P4 |
-| OI-002 | OPEN-004 | Sensor MFR/MPN and electrical properties | Parts chosen: IMU 2 × ICM-45686 (DEC-008), barometers ICP-20100 + BMP390 (DEC-010), magnetometer BMM150 (DEC-011). Electrical properties `NOT_VERIFIED`. ICP-20100 EOL and BMP390 availability open. | Human owner / P0 |
+| OI-002 | OPEN-004 | Sensor MFR/MPN and electrical properties | Parts chosen: IMU 2 × ICM-45686 (DEC-008), barometers ICP-20100 + BMP390 (DEC-010), magnetometer BMM150 (DEC-011). Electrical properties `NOT_VERIFIED`. ICP-20100 EOL, BMP390 availability and BMM150 lifecycle (no longer listed by Bosch) open. | Human owner / P0 |
 | OI-003 | OPEN-001 | External interfaces and exact MCU pins | Logical requirements confirmed; mapping unverified. | Hardware / P1 |
 | OI-004 | OPEN-006, OPEN-007 | Power protection, transients, downstream budgets, and distribution | Input and servo ratings recorded; design details open. | Hardware / P0, P2 |
 | OI-005 | OPEN-001, OPEN-003 | Exact MCU pin mapping and resource conflicts (overlaps OI-003) | `NOT_VERIFIED` | Hardware / P1 |
@@ -151,9 +152,10 @@ Descriptions are in the specification (section 8.2). Status and owner below are 
 | OI-010 | OPEN-005 | Magnetometer count/allocation and sensor requirements | Closed: 1 × BMM150 (DEC-011). | Team / closed 2026-10-18 |
 | OI-011 | None (checklist only) | Physical actuator/ESC signal distribution | Diagram captured; native allocation and fanout need review. | Hardware / P1, P2 |
 | OI-012 | OPEN-010 | All non-MCU part numbers (added by audit) | Sensors (DEC-008, DEC-010, DEC-011) and the main 3.3 V buck TPS62142RGTR (DEC-012) are chosen. No other non-MCU part is approved. | Human owner / component selection gate (P0-016) |
-| OI-013 | OPEN-011 | `+3V3A` rail purpose, load and LDO part | TPS73533DRBR drawn, not decided. | Human owner / P0, P2 |
+| OI-013 | OPEN-011 | `+3V3A` rail purpose, load and LDO part | TPS73533DRBR drawn, not decided. As drawn, NR capacitor above TI's limit and output capacitance at TI's minimum. | Human owner / P0, P2 |
 | OI-014 | OPEN-012 | `+VIN` to `+5V` path | Not drawn; both regulators have no input source yet. | Hardware / P2 (P2-011) |
+| OI-015 | OPEN-013 | Sensor symbol and footprint starting points | In the project library, not placed. Pin maps match the datasheet tables; land patterns and pin 1 not checked. BMM150 3D model missing. | Human owner / P2 (P2-012) |
 
 ## Current next action
 
-Continue P1 allocation and conflict review using the confirmed logical interfaces. In parallel, continue the power sheet (P2-011): connect `+VIN` to `+5V`, decide the `+3V3A` rail, then annotate. Keep sensor-specific resources provisional until the sensor requirements are decided. Keep the candidate/unverified label on all pin mappings. Reserve the USART safety path and test access. Do not begin fabrication release until the applicable P0 to P3 evidence and Human approval are complete.
+Continue P1 allocation and conflict review using the confirmed logical interfaces. In parallel, continue the power sheet (P2-011): connect `+VIN` to `+5V`, decide the `+3V3A` rail (and its NR and output capacitors if TPS73533DRBR stays), fix the C162430 LCSC field, then annotate. Check the sensor footprints against the datasheets (P2-012) before placing them. Keep sensor-specific resources provisional until the sensor requirements are decided. Keep the candidate/unverified label on all pin mappings. Reserve the USART safety path and test access. Do not begin fabrication release until the applicable P0 to P3 evidence and Human approval are complete.

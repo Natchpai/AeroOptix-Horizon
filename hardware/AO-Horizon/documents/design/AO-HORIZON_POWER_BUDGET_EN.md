@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.1
-**Updated:** 2026-10-18
-**Status:** Draft record with open `TBD` rows. No rail, regulator or protection part is approved. Not a verification record.
-**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007 (spec). Checklist task: P0-017.
+**Revision:** 0.2
+**Updated:** 2026-10-19
+**Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012). No other rail, regulator or protection part is approved. Not a verification record.
+**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012 (spec). Decision: DEC-012. Checklist task: P0-017.
 **Decision owner:** Hardware
 
 Single record for rail loads, rail tolerances, brownout thresholds and power protection requirements.
@@ -15,6 +15,7 @@ Source keys used below:
 - **Bosch**: Bosch Sensortec product page, fetched 2026-10-18.
 - **IMU rec**: `AO-HORIZON_IMU_SELECTION_EN.md` (datasheet values extracted by agy, `NOT_VERIFIED`).
 - **Snippet**: search-result text of a PDF datasheet. Not opened, always `NOT_VERIFIED`.
+- **TI**: ti.com product pages and HTML datasheets (TPS62142: SLVSAJ0F Rev. F; TPS735: SBVS087M), fetched 2026-10-18 and 2026-10-19.
 
 Fetches to st.com, invensense.tdk.com, te.com and en.benewake.com failed on 2026-10-18 (`getaddrinfo EAI_AGAIN`). The rows that depend on them are `TBD`.
 
@@ -39,9 +40,9 @@ From the spec diagram. Candidate only, not approved (spec PWR-013).
 ```
 
 - `ASSUMED`: the 5 V input feeds the external connectors directly, and both 3.3 V rails come from the 5 V input.
-- `TBD`: whether 3.3 V_IMU is a separate LDO or a filtered branch of 3.3 V.
+- `TBD`: whether 3.3 V_IMU is a separate LDO or a filtered branch of 3.3 V. The schematic draws a separate `+3V3A` LDO, but its purpose is not decided (OPEN-011).
 - `TBD`: whether USB VBUS can power the board, and how it is isolated from the PM02D 5 V.
-- The saved `power_supplies.kicad_sch` holds one unplaced R and one unplaced C, with no regulator or rail net (checked 2026-10-18).
+- The saved `power_supplies.kicad_sch` (re-checked 2026-10-19) draws `+3V3` from the TPS62142RGTR buck (DEC-012) and `+3V3A` from a TPS73533DRBR LDO (drawn, not decided), both fed from `+5V`. Nothing drives `+5V` yet (OPEN-012). Details: spec 4.3 "Schematic state".
 
 ## 3. Load table
 
@@ -92,8 +93,8 @@ Which outputs drive servos (6 V) and which drive ESC signal inputs only is not r
 
 | Rail | Known subtotal | Missing | Budget | Margin | Label |
 | ---- | -------------- | ------- | ------ | ------ | ----- |
-| 3.3 V_IMU | 0.88 mA (2 × 0.44 mA) | IMU peak | Regulator TBD | TBD | `ESTIMATED` from `NOT_VERIFIED` inputs |
-| 3.3 V | about 0.5 mA (BMP390 + BMM150 regular) | Both MCUs, ICP-20100, pull-ups, LEDs | Regulator TBD | TBD | `ESTIMATED` from partial inputs |
+| 3.3 V_IMU | 0.88 mA (2 × 0.44 mA) | IMU peak | TBD. The drawn `+3V3A` LDO TPS73533DRBR is rated 500 mA (TI SBVS087M 5.3) but is not decided (OPEN-011). | TBD | `ESTIMATED` from `NOT_VERIFIED` inputs |
+| 3.3 V | about 0.5 mA (BMP390 + BMM150 regular) | Both MCUs, ICP-20100, pull-ups, LEDs | 2 A, TPS62142RGTR (DEC-012, TI SLVSAJ0F) | TBD | `ESTIMATED` from partial inputs |
 | 5 V | 70 mA average, 150 mA peak (TF-Luna only) | All other external loads, 3.3 V regulator input | 2 A source (PWR-010) | TBD | `ESTIMATED` from partial inputs |
 | 6 V | none | All servo loads | 10 A cont., 15 A inst. (PWR-011) | TBD | `TBD` |
 
@@ -163,5 +164,7 @@ All `TBD`. Items to decide:
 - Bosch BMP390: https://www.bosch-sensortec.com/products/environmental-sensors/pressure-sensors/bmp390/
 - BMM150 snippet source (PDF, not opened): https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmm150-ds001.pdf
 - TF-Luna snippet source (third-party PDF, not opened): https://files.waveshare.com/upload/c/c3/SJ-GU-TF-Luna_A05_Datasheet.pdf
+- TI TPS62142: https://www.ti.com/product/TPS62142
+- TI TPS735 (TPS73533DRBR): https://www.ti.com/product/TPS735 and https://www.ti.com/document-viewer/TPS735/datasheet/electrical-characteristics-slvscd4719
 - ICM-45686: see `AO-HORIZON_IMU_SELECTION_EN.md`
 - Requirements: `AO-HORIZON_SPEC_EN.md` sections on power, safety and interfaces
