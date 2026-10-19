@@ -1,19 +1,19 @@
 # AeroOptix-Horizon
 
-Dual-MCU flight controller based on an STM32H7 and an STM32F1, by AeroOptix Club.
+**Dual-MCU PX4 flight controller hardware (STM32H743 + STM32F103) by AeroOptix Club.**
 
 > **Status:** `CONCEPT`
 > **Revision:** `v1.0`
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.7`
 
+> **Draft specification (rev 0.7, 2026-10-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+
 ## Overview
 
-AeroOptix-Horizon is a custom PX4 flight controller hardware platform with a dual-MCU architecture. The STM32H743VIT6 is the main flight-controller MCU. The STM32F103C8T6 is an auxiliary MCU for expanded I/O, PWM/ESC control and safety behavior. A USART link connects the two MCUs.
+AeroOptix-Horizon is a custom PX4 flight controller with two MCUs. The STM32H743VIT6 is the main flight-controller MCU. The STM32F103C8T6 is an auxiliary MCU for PWM/ESC outputs, expanded I/O and a safety function. A USART link connects the two MCUs, and the F103 uses it to watch the H743.
 
 Pixhawk 6C is only a conceptual and functional reference. Its schematic, PCB and pinout are not copied.
-
-> **Draft specification (rev 0.6, 2026-10-19): NOT FOR FABRICATION.** Everything below is a design target taken from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Key Features
 
@@ -21,9 +21,9 @@ Pixhawk 6C is only a conceptual and functional reference. Its schematic, PCB and
 - Auxiliary MCU: STM32F103C8T6 (PWM/ESC, expanded I/O, safety)
 - H743 to F103 link over USART
 - 2× SPI IMU (ICM-45686), 2× I2C barometer (ICP-20100, BMP390), 1× I2C magnetometer (BMM150)
-- 3.3 V rail from a TPS62142 buck on the 5 V board input
+- 3.3 V rail from a TPS62142RGTR buck on the 5 V board input
 - USB FS, SWD on both MCUs, selectable BOOT0 on the H743
-- F103 commands immediate landing if the H743 is not operating (detection and timing `TBD`)
+- F103 commands immediate landing if the H743 stops operating (detection and timing `TBD`)
 
 ## Specifications
 
@@ -36,10 +36,10 @@ Pixhawk 6C is only a conceptual and functional reference. Its schematic, PCB and
 | Barometer | 2× I2C, ICP-20100 + BMP390 |
 | Magnetometer | 1× I2C, BMM150 |
 | Board input | 5 V from power module, 4.5 to 5.5 V, 2 A source |
-| 3.3 V rail | TPS62142RGTR buck from 5 V (load current `TBD`) |
+| 3.3 V rail | TPS62142RGTR buck from 5 V, 2 A part (load current `TBD`) |
 | 3.3 V analog rail (`+3V3A`) | Purpose and part `TBD` (TPS73533DRBR drawn, not decided) |
-| Servo supply | 6 V (current and protection `TBD`) |
-| Board outline | Approx. 90 mm × 95 mm from diagram; exact outline `TBD` |
+| Servo supply | 6 V, 10 A continuous, 15 A instantaneous (protection and distribution `TBD`) |
+| Board outline | Each dimension under 80 mm; exact outline `TBD` |
 | Mounting pattern | `TBD` |
 | Copper layers / stackup | `TBD` |
 | Operating / storage temperature | `TBD` |
@@ -91,6 +91,17 @@ A human engineer declares phase changes.
 
 The diagram is for reference only. It does not enforce gates or approve releases.
 
+### Design progress
+
+State of the saved KiCad files on 2026-10-19. Details are in the specification (4.3 "Schematic state", 4.6 "Library state").
+
+| Area | State |
+|---|---|
+| Schematic | Only `power_supplies.kicad_sch` has parts (17, all unannotated): power module connector, TPS62142RGTR buck, TPS73533DRBR LDO and a 3.3 V LED. Nothing drives `+5V` yet. The other sheets hold no parts. |
+| PCB | Empty: no footprints and no board outline. |
+| Library | Project symbols, footprints and 3D models for the MCUs, regulators, ESD parts, connectors and passives. Sensor symbols and footprints are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked yet. A read-only link audit found no broken links. |
+| ERC / DRC | Not run. |
+
 ## Hardware Design
 
 ### Architecture
@@ -105,11 +116,11 @@ The diagram is for reference only. It does not enforce gates or approve releases
 | USB / SWD / BOOT0 | Service, debug and recovery access |
 | Power | 5 V board input, 3.3 V buck, 6 V servo supply |
 
-The specification's candidate power arrangement (6S battery, XT90-S, PM02D, CRIUS PDB v1.0, 6 V UBEC) comes from user diagrams and is not an approved design.
+The specification's candidate power chain (6S battery, XT90-S, PM02D, CRIUS PDB v1.0, 6 V UBEC) comes from user diagrams and is not an approved design.
 
 ### External interfaces (logical level)
 
-Allocations below are user-confirmed at the logical level only. Exact pins, alternate functions, electrical levels and protection are `TBD` and not verified.
+These allocations are user-confirmed at the logical level only. Exact pins, alternate functions, electrical levels and protection are `TBD` and not verified.
 
 | Interface | Function | Allocation |
 |---|---|---|
@@ -129,28 +140,50 @@ Allocations below are user-confirmed at the logical level only. Exact pins, alte
 
 ### Design Considerations
 
-- Timer/channel validity of the H743 and F103 labels is unconfirmed (OPEN-003). The same timer channels appear on both MCUs, and TIM3 labels CH5..CH8 need checking against the STM32F103 datasheet.
+- Timer labels are not confirmed (OPEN-003). The draft pin allocation finds that the F103 TIM3 has CH1 to CH4 only, so the COAX and AIL labels need a human correction.
+- Sourcing risk on the sensors (OPEN-004): ICP-20100 is EOL (TDK says its pressure products are not for new designs), BMP390 is not sold at LCSC, and Bosch no longer lists BMM150.
+- The power sheet is in progress: `+VIN` to `+5V` is not drawn (OPEN-012), and the `+3V3A` LDO is not decided (OPEN-011). As drawn, the LDO's NR capacitor (100 nF) is above TI's 0.01 µF limit, and the TPS62142 lacks the 0.1 µF AVIN capacitor TI recommends.
 - Power budgets, rail tolerances, sequencing, brownout/reset thresholds and protection (reverse polarity, overvoltage, ESD, short circuit) are `TBD`.
 - Clock sources, reset topology and F103 boot behavior are `TBD`.
 - Safety detection method, timing and output ownership for the H743-failure case are `TBD`.
 - Firmware (PX4 version and target, bootloader, USART message protocol) is deferred.
 - Confirmed part numbers: STM32H743VIT6, STM32F103C8T6, ICM-45686, ICP-20100, BMP390, BMM150 and TPS62142RGTR. All other parts are `TBD`.
-- Sensor sourcing risks are open: ICP-20100 is EOL and BMP390 is not available at LCSC.
-- Power sheet in progress: the path from the power module input (`+VIN`) to `+5V` is not drawn yet.
 
 ## Verification
 
 | Check | Result | Evidence |
 |---|---|---|
-| Schematic ERC | `NOT_VERIFIED` | `TBD` |
-| PCB DRC | `NOT_VERIFIED` | `TBD` |
+| Schematic ERC | `NOT_VERIFIED` | Not run |
+| PCB DRC | `NOT_VERIFIED` | Not run; PCB is empty |
 | Connectivity / pin review | `NOT_VERIFIED` | `TBD` |
 | BOM / footprint review | `NOT_VERIFIED` | `TBD` |
 | Prototype functional test | `NOT_VERIFIED` | `TBD` |
 
 ## Open Items
 
-The specification tracks open items OPEN-001 to OPEN-012 (OPEN-005 is closed): pin and alternate-function validity, USART details, timer validity, sensor electrical properties and sourcing, 5 V and 6 V budgets, safety timing, board outline and mounting, remaining non-MCU part numbers, the `+3V3A` rail, and the `+VIN` to `+5V` path.
+The specification tracks OPEN-001 to OPEN-013 (OPEN-005 is closed):
+
+- MCU pins, alternate functions and timer validity (OPEN-001, OPEN-003)
+- USART instance, levels and timing (OPEN-002)
+- Sensor electrical data and sourcing (OPEN-004)
+- 5 V and 6 V budgets and protection (OPEN-006, OPEN-007)
+- Safety timing, owned by Software (OPEN-008)
+- Board outline, mounting and environment (OPEN-009)
+- Remaining non-MCU part numbers (OPEN-010)
+- `+3V3A` rail (OPEN-011) and the `+VIN` to `+5V` path (OPEN-012)
+- Sensor footprints to check against the datasheet drawings and app notes (OPEN-013)
+
+## How we work
+
+1. A human engineer makes every design decision and declares the phase. Decisions go into the specification first.
+2. The execution checklist tracks each task and the evidence needed to close it. A task is `DONE` only with a named evidence record.
+3. The saved KiCad files are the design authority. The Markdown records describe them and never replace them.
+4. New library parts start from the stock KiCad library where it fits, use KLC names with a `0_` family prefix, and get a link check before use.
+5. After design work, the docs are updated in this order: specification, checklist, design records, README, CHANGELOG.
+6. Datasheet values come from official sources and are labeled `VERIFIED`, `ASSUMED`, `ESTIMATED` or `NOT_VERIFIED`. ERC and DRC results are evidence, not proof of a correct design.
+7. Changes go through `dev` and a pull request to `main` (see `.github/pull_request_template.md`), with Conventional Commits.
+
+Claude Code support for this workflow (rules, skills and file protection) is in `.claude/` and `CLAUDE.md`.
 
 ## Repository Structure
 
@@ -162,20 +195,23 @@ AeroOptix-Horizon/
 │   ├── *.kicad_sch                    # Sheets: top_hierarchical, block_diagram,
 │   │                                  #   power_supplies, revision_history
 │   ├── AO-Horizon.kicad_pcb           # PCB source
+│   ├── sym-lib-table, fp-lib-table    # Project library tables
 │   ├── library/
-│   │   ├── symbols/                   # Project-specific symbols
-│   │   ├── footprints/                # Project-specific footprints
-│   │   └── 3D/                        # Project-specific 3D models
+│   │   ├── symbols/                   # 0_<Family>.kicad_symdir
+│   │   ├── footprints/                # 0_<Family>.pretty
+│   │   └── 3D/                        # 3D models by family
 │   ├── documents/
-│   │   ├── design/                    # Specification and execution checklist
+│   │   ├── design/                    # Specification, checklist, design records
 │   │   ├── manufacturing/             # Fab/assembly notes and outputs
 │   │   ├── schematic/                 # Schematic diagram outputs
 │   │   ├── verification/              # Review reports and test evidence
 │   │   └── images/                    # Documentation images
 │   └── templates/                     # Worksheets, theme, fab/assembly notes
+├── .claude/                           # Claude Code rules, skills and hooks
 ├── .github/                           # Pull request template
-├── LICENSE
+├── CLAUDE.md
 ├── CHANGELOG.md
+├── LICENSE
 └── README.md
 ```
 
@@ -183,13 +219,14 @@ AeroOptix-Horizon/
 
 | Resource | Description |
 |---|---|
-| [Specification](hardware/AO-Horizon/documents/design/AO-HORIZON_SPEC_EN.md) | Draft requirements, interfaces and open items |
+| [Specification](hardware/AO-Horizon/documents/design/AO-HORIZON_SPEC_EN.md) | Requirements, decisions, schematic and library state, open items |
 | [Execution checklist](hardware/AO-Horizon/documents/design/AO-HORIZON_EXECUTION_CHECKLIST_EN.md) | Work plan and evidence tracker |
 | [IMU selection](hardware/AO-Horizon/documents/design/AO-HORIZON_IMU_SELECTION_EN.md) | ICM-45686 selection record |
-| [Barometer and magnetometer selection](hardware/AO-Horizon/documents/design/AO-HORIZON_BARO_MAG_SELECTION_EN.md) | ICP-20100, BMP390 and BMM150 selection record |
+| [Barometer and magnetometer selection](hardware/AO-Horizon/documents/design/AO-HORIZON_BARO_MAG_SELECTION_EN.md) | ICP-20100, BMP390 and BMM150 selection and lifecycle |
 | [Power budget](hardware/AO-Horizon/documents/design/AO-HORIZON_POWER_BUDGET_EN.md) | Draft rail and load budget (P0-017) |
 | [Pin allocation](hardware/AO-Horizon/documents/design/AO-HORIZON_PIN_ALLOCATION_EN.md) | Draft H743 and F103 pin allocation |
 | [H7 MCU sourcing](hardware/AO-Horizon/documents/design/AO-HORIZON_H7_MCU_SOURCING_EN.md) | STM32H743VI price and stock |
+| [KiCad project](hardware/AO-Horizon/README.md) | Project folder layout |
 
 ## License
 

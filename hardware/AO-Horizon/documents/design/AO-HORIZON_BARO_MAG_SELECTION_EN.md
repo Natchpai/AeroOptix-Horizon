@@ -1,7 +1,7 @@
 # AeroOptix-Horizon: Barometer and Magnetometer Selection Summary
 
-**Revision:** 0.2
-**Updated:** 2026-10-18
+**Revision:** 0.3
+**Updated:** 2026-10-19
 **Status:** Parts confirmed by the team (DEC-010, DEC-011). Lifecycle and availability risks are open. Datasheet values and implementation are not verified. Not a verification record.
 **Requirement refs:** SEN-002, SEN-003, CMP-004, CMP-005 (spec). Checklist tasks: P0-009, P0-010.
 **Decision owner:** Team
@@ -16,6 +16,7 @@ Source keys used below:
 - **LCSC**: LCSC product page, fetched 2026-10-18.
 - **PX4**: PX4-Autopilot repo, main branch, driver directory and register headers.
 - **Snippet**: search-result text of a PDF datasheet. Not opened, always `NOT_VERIFIED`.
+- **DS (NotebookLM)**: datasheet text checked through NotebookLM on 2026-10-19, with the text confirmed in the source fulltext: ICP-20100 DS-000416 Rev 1.3 (marked preliminary), BMP390 BST-BMP390-DS002-07 Rev 1.7, BMM150 BST-BMM150-DS001-05 Rev 1.4.
 - **LCSC data (agy)**: LCSC page embedded data (`__NEXT_DATA__` JSON), extracted by the external model agy on 2026-10-18 (user-approved). Not shown on the rendered page and not checked by Claude, so always `NOT_VERIFIED`.
 
 ## 1. Decision
@@ -39,6 +40,16 @@ Source keys used below:
 | MINOR | BMM150 | `ASSUMED` | Single magnetometer: no onboard redundancy for heading. | DEC-011 |
 | INFO | I2C addresses | `NOT_VERIFIED` | PX4 defaults are ICP-20100 0x63 and BMM150 0x10. BMP390 address and the selectable addresses are not confirmed, so a bus conflict check is open. | PX4 |
 
+### Re-check (2026-10-19)
+
+| Severity | Part | Label | Finding | Source |
+| -------- | ---- | ----- | ------- | ------ |
+| INFO | I2C addresses | `VERIFIED` | ICP-20100 0x63 or 0x64 (AD0), BMP390 0x76 or 0x77 (SDO; SDO must not float), BMM150 0x10 to 0x13 (CSB and SDO). No two parts can share an address. | DS (NotebookLM): ICP-20100 §4.1.9, BMP390 I2C interface text, BMM150 Table 30 |
+| MAJOR | BMM150 | `VERIFIED` | Bosch no longer lists BMM150. Its magnetometer page lists only BMM350, and the BMM150 product page returns 404. | Bosch |
+| MAJOR | BMM150 | `NOT_VERIFIED` | DigiKey lists BMM150 as Obsolete ("no longer manufactured"). Search results point to a Bosch discontinuation notice, which was not read. | DigiKey (agent fetch), snippet |
+| INFO | ICP-20100 | `VERIFIED` | TDK SmartPressure page: "Pressure products are EOL and not recommended for new designs". No successor or last-time-buy date is given. | TDK |
+| INFO | BMP390 | `NOT_VERIFIED` | Bosch page is live and states no lifecycle status. DigiKey lists it as Active. | Bosch, DigiKey (agent fetch) |
+
 ## 3. Key data
 
 ### ICP-20100 (barometer)
@@ -47,7 +58,7 @@ Source keys used below:
 | --------- | ----- | ------ | ----- |
 | Product status | EOL | TDK | `VERIFIED` |
 | Pressure range | 30 to 110 kPa | TDK | `VERIFIED` |
-| Package | LGA-10L | LCSC | `VERIFIED` (name only); size `NOT_VERIFIED` |
+| Package | LGA-10L, 2.000 × 2.000 × 0.800 mm nom, 0.5 mm pitch | LCSC; DS Table 19 | `VERIFIED` (DS via NotebookLM) |
 | Interfaces, I2C address selection | Not on the page | TDK | `NOT_VERIFIED` |
 | Default I2C address | 0x63 | PX4 `Inven_Sense_ICP201XX_registers.hpp` | `VERIFIED` (driver default) |
 | Supply, temperature, noise, accuracy | Not on the page. Datasheet DS-000416 v1.4 not read. | TDK | `NOT_VERIFIED` |
@@ -72,9 +83,9 @@ Source keys used below:
 
 | Parameter | Value | Source | Label |
 | --------- | ----- | ------ | ----- |
-| Product status | Unknown. Bosch page 404; no official EOL notice found. | Bosch | `NOT_VERIFIED` |
-| Package | WLCSP-12, 1.6 × 1.6 mm (LCSC); 1.56 × 1.56 × 0.6 mm (snippet) | LCSC, snippet | `VERIFIED` (LCSC name); size `NOT_VERIFIED` |
-| Interfaces | I2C, SPI | Snippet | `NOT_VERIFIED` |
+| Product status | Not listed by Bosch (magnetometer page lists only BMM350, 2026-10-19). DigiKey: Obsolete. No Bosch EOL notice read. | Bosch; DigiKey | `VERIFIED` (not listed); EOL `NOT_VERIFIED` |
+| Package | WLCSP-12, 1.56 × 1.56 × 0.6 mm, 0.4 mm diagonal ball pitch | DS §8.1 | `VERIFIED` (DS via NotebookLM) |
+| Interfaces | I2C, SPI (3- and 4-wire), selected by the PS pin | DS Table 32 | `VERIFIED` (DS via NotebookLM) |
 | Default I2C address | 0x10 | PX4 `Bosch_BMM150_registers.hpp` | `VERIFIED` (driver default) |
 | VDD / VDDIO | 1.62 to 3.6 V / 1.2 to 3.6 V | Snippet | `NOT_VERIFIED` |
 | Range | ±1300 µT (x, y), ±2500 µT (z) | Snippet | `NOT_VERIFIED` |
@@ -104,15 +115,19 @@ LCSC, fetched 2026-10-18. USD. Not a quote.
 ## 5. Open checks
 
 - [ ] Team reviews DEC-010 because both barometers have supply risk: ICP-20100 EOL (last-time buy or replacement) and BMP390 not sold at LCSC (other source or replacement).
-- [ ] Confirm BMM150 lifecycle from Bosch, and consider BMM350 if BMM150 is EOL.
+- [ ] Confirm BMM150 lifecycle from Bosch, and consider BMM350 if BMM150 is EOL. Bosch no longer lists BMM150 (2026-10-19). BMM350 is not a drop-in part (`NOT_VERIFIED`, flyer snippet).
 - [ ] Get supply, temperature, I2C address selection and land pattern from each datasheet (user-supplied values, or an approved datasheet route).
-- [ ] Check the I2C address plan for all three parts on the chosen buses (P1-004, P1-005).
+- [ ] Check the I2C address plan for all three parts on the chosen buses (P1-004, P1-005). The address sets do not overlap (re-check table); the strap choice for each part is open.
+- [ ] Check the library footprints against the datasheet drawings (OPEN-013, P2-012). Symbol pin maps match ICP-20100 Table 18, BMP390 Table 52 and BMM150 Table 32. Open: ICP-20100 has no land pattern in its datasheet (AN-000140) and its pads are wider than terminal b; BMP390 keeps the ST pad size although Bosch asks for its own outline as the land pattern; BMM150 A1 corner and 3D model.
 - [ ] Confirm that PX4 `icp201xx` supports ICP-20100.
 - [ ] Check JLCPCB assembly eligibility.
 
 ## 6. Sources
 
 - TDK ICP-20100: https://invensense.tdk.com/products/smartpressure/icp-20100/
+- TDK SmartPressure (EOL notice): https://invensense.tdk.com/smartpressure/
+- Bosch magnetometers: https://www.bosch-sensortec.com/products/motion-sensors/magnetometers/
+- DigiKey BMM150: https://www.digikey.com/en/products/detail/bosch-sensortec/BMM150/4196671
 - Bosch BMP390: https://www.bosch-sensortec.com/products/environmental-sensors/pressure-sensors/bmp390/
 - Bosch BMM350 (BMM150 page returned 404): https://www.bosch-sensortec.com/products/motion-sensors/magnetometers/bmm350/
 - LCSC: https://www.lcsc.com/product-detail/C5343527.html (ICP-20100), https://www.lcsc.com/product-detail/C5124834.html (BMP390), https://www.lcsc.com/product-detail/C171681.html (BMM150)

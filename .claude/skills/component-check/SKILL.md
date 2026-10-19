@@ -44,7 +44,7 @@ argument-hint: "[<reference> | <MPN> | compare <MPN1> <MPN2>]"
    - **Footprint:** package variant, pad count and numbers, pin-1 orientation, dimensions and land pattern versus the exact datasheet package.
    - **Substitution:** electrical, functional, pinout, footprint and operating-condition compatibility; list the design changes it would need.
 5. Compare only the evidence you have for those checks. For a pin-to-net connection, get targeted connectivity from the saved schematic (with `sch-inspect` if installed); nearby text or labels are not a connection.
-6. For PCB pad, net or geometry evidence, use targeted board queries (with `pcb-inspect` if installed). For symbol, footprint and 3D-model links across the project, `hw-link-audit` helps if installed. If a companion skill is missing, say so and do the check directly or mark it `NOT_VERIFIED`.
+6. For PCB pad, net or geometry evidence, use targeted board queries (with `pcb-inspect` if installed). For symbol, footprint and 3D-model links across the project, `kicad-link-audit` helps if installed. If a companion skill is missing, say so and do the check directly or mark it `NOT_VERIFIED`.
 7. Report each finding with its evidence source, the specific mismatch or limit, and the next action.
 
 ## Result format

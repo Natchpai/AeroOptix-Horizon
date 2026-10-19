@@ -1,4 +1,4 @@
-(footprint "VSON-8-1EP_3x3mm_P0.65mm__EP1.5x1.75mm_ThermalVias_DRV8601DRBT"
+(footprint "VSON-8-1EP_3x3mm_P0.65mm_EP1.5x1.75mm_ThermalVias"
 	(version 20260206)
 	(generator "pcbnew")
 	(generator_version "10.0")
@@ -14,7 +14,7 @@
 			)
 		)
 	)
-	(property "Value" "${REFERENCE}"
+	(property "Value" "VSON-8-1EP_3x3mm_P0.65mm_EP1.5x1.75mm_ThermalVias"
 		(at 0 0 0)
 		(layer "F.Fab")
 		(uuid "d3296b6f-7da3-4c87-99b2-9bcdc70ceca5")
@@ -330,7 +330,7 @@
 		)
 		(uuid "5152f6c1-a4d1-48a3-8370-266ccedbb49c")
 	)
-	(pad "10" thru_hole circle
+	(pad "9" thru_hole circle
 		(at 0 -0.625)
 		(size 0.4 0.4)
 		(drill 0.2)
@@ -338,7 +338,7 @@
 		(remove_unused_layers no)
 		(uuid "6c210e50-d99c-416e-a1e5-353d80f06acf")
 	)
-	(pad "11" thru_hole circle
+	(pad "9" thru_hole circle
 		(at 0.5 0)
 		(size 0.4 0.4)
 		(drill 0.2)
@@ -346,7 +346,7 @@
 		(remove_unused_layers no)
 		(uuid "28622efc-7aa2-4aa1-b90b-f468e2c63f7a")
 	)
-	(pad "12" thru_hole circle
+	(pad "9" thru_hole circle
 		(at -0.5 0)
 		(size 0.4 0.4)
 		(drill 0.2)
@@ -354,7 +354,7 @@
 		(remove_unused_layers no)
 		(uuid "790fe048-6f45-4af1-88ea-cae808fa7e38")
 	)
-	(pad "13" thru_hole circle
+	(pad "9" thru_hole circle
 		(at 0 0.625)
 		(size 0.4 0.4)
 		(drill 0.2)
@@ -363,7 +363,7 @@
 		(uuid "f0a90eb9-e4fd-4948-beff-0fb350a4fe17")
 	)
 	(embedded_fonts no)
-	(model "${KIPRJMOD}/library/3D/Package_SON/VSON-8-1EP_3x3mm_P0.65mm__EP1.5x1.75mm_ThermalVias_DRV8601DRBT.step"
+	(model "${KIPRJMOD}/library/3D/Package_SON/VSON-8-1EP_3x3mm_P0.65mm_EP1.5x1.75mm_ThermalVias_DRV8601DRBT.step"
 		(offset
 			(xyz 0 0 0)
 		)

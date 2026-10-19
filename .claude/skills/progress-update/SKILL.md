@@ -73,7 +73,7 @@ table changes, and new library items.
   refs such as `U?` work as targets; the tool returns every match.
 - **PCB:** if `.kicad_pcb` changed, run `pcb-inspect` `summary`.
 - **Library:** list new symbol, footprint and 3D model names. Suggest
-  `/hw-link-audit`; leave it to the human to run.
+  `/kicad-link-audit`; leave it to the human to run.
 - **Session:** list each design decision the human stated, with a quote.
 
 Done when every changed sheet has a state table (block, as drawn, evidence)

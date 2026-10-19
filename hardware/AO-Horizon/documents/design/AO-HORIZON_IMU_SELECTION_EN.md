@@ -1,7 +1,7 @@
 # AeroOptix-Horizon: IMU Selection Summary
 
-**Revision:** 0.6
-**Updated:** 2026-10-18
+**Revision:** 0.7
+**Updated:** 2026-10-19
 **Status:** Part confirmed by the team (DEC-008). Datasheet values and implementation are not verified. Not a verification record.
 **Requirement refs:** SEN-001, CMP-003 (spec). Decisions: DEC-008, DEC-009. Checklist task: P0-008.
 **Decision owner:** Team
@@ -11,7 +11,7 @@ Single record for the IMU part, its key data, sourcing, and the candidates that 
 Evidence labels follow `.claude/rules/engineering.md`: `VERIFIED`, `ASSUMED`, `ESTIMATED`, `NOT_VERIFIED`.
 
 Source keys used below:
-- **DS**: TDK datasheet DS-000489 Rev 1.1 (11/25/2023) for ICM-45686. Values were extracted by the external model agy (user-approved, 2026-10-18). Claude and a human have not checked them, so every DS value is `NOT_VERIFIED`.
+- **DS**: TDK datasheet DS-000489 Rev 1.1 (11/25/2023) for ICM-45686. Values were extracted by the external model agy (user-approved, 2026-10-18). Claude and a human have not checked them, so every DS value is `NOT_VERIFIED`, except the Table 10 pin list and the section 10.2 package table. Those were checked through NotebookLM on 2026-10-19 (notebook ICM-45686, source `24bd0600`), with the text confirmed in the source fulltext.
 - **TDK**: TDK product page. Product-page values, not datasheet limits.
 - **LCSC**: LCSC product page, fetched 2026-10-18.
 - **PX4**: PX4-Autopilot repo, `src/drivers/imu`, main branch.
@@ -34,7 +34,7 @@ Assumptions: `ASSUMED` the 3.3 V_IMU rail supplies both IMUs (candidate only in 
 | Parameter | Value | Source | Label |
 | --------- | ----- | ------ | ----- |
 | Product status | Production | TDK | `VERIFIED` |
-| Package | LGA-14, 2.5 × 3.0 × 0.81 mm, 0.5 mm pitch | TDK; DS §10.2 | `VERIFIED` (size, TDK); `NOT_VERIFIED` (pitch) |
+| Package | LGA-14, 2.5 × 3.0 × 0.81 mm, 0.5 mm pitch | TDK; DS §10.2 | `VERIFIED` (size, TDK; pitch, DS §10.2 via NotebookLM) |
 | Land pattern | Not in the datasheet. TDK app note AN-000393 is referenced. | DS §10.2, §22 | `NOT_VERIFIED` |
 | VDD (recommended) | 1.71 / 1.8 / 3.6 V min/typ/max | DS Table 3 | `NOT_VERIFIED` |
 | VDDIO (recommended) | 1.08 / 1.8 / 3.6 V; 1.1 V min with I3C | DS Table 3 | `NOT_VERIFIED` |
@@ -43,9 +43,9 @@ Assumptions: `ASSUMED` the 3.3 V_IMU rail supplies both IMUs (candidate only in 
 | Absolute maximum, inputs | FSYNC, SCL, SDA: -0.5 V to VDDIO + 0.5 V. No rating stated for other inputs. | DS Table 9 | `NOT_VERIFIED` |
 | Absolute maximum, other | 20,000 g for 0.2 ms unpowered; ESD 2 kV HBM, 500 V CDM; storage -40 to +125 °C | DS Table 9 | `NOT_VERIFIED` |
 | Host interface | SPI 3- or 4-wire, max 24 MHz at VDDIO ≥ 1.71 V (20 MHz below), mode 0/3 by default. I2C and I3C share the pins. | DS §4.10, Table 7, §9.5 | `NOT_VERIFIED` |
-| CS lines | 1 (pin 12, AP_CS) | DS Table 10 | `NOT_VERIFIED` |
-| Interrupts | INT1 pin 4; INT2/FSYNC/CLKIN pin 9 | DS Table 10 | `NOT_VERIFIED` |
-| Hardware reset pin | None. Software reset `SOFT_RST` in `REG_MISC2`. | DS p.109 | `NOT_VERIFIED` |
+| CS lines | 1 (pin 12, AP_CS) | DS Table 10 | `VERIFIED` (via NotebookLM) |
+| Interrupts | INT1 pin 4 (push-pull or open drain); INT2/FSYNC/CLKIN pin 9 | DS Table 10 | `VERIFIED` (via NotebookLM) |
+| Hardware reset pin | None: no reset pin in the 14-pin Table 10. Software reset `SOFT_RST` in `REG_MISC2`. | DS Table 10; DS p.109 | `VERIFIED` (no pin, via NotebookLM); `SOFT_RST` `NOT_VERIFIED` |
 | Gyro full-scale | ±15.625 to ±4000 dps (9 settings) | TDK (±4000); DS Table 1 | `VERIFIED` (max, TDK); `NOT_VERIFIED` (settings) |
 | Accel full-scale | ±2 to ±32 g (5 settings) | TDK (±32); DS Table 2 | `VERIFIED` (max, TDK); `NOT_VERIFIED` (settings) |
 | Max output data rate | 6400 Hz gyro and accel, low-noise mode | DS Tables 1, 2 | `NOT_VERIFIED` |
@@ -88,7 +88,7 @@ DigiKey checked 2026-10-16; LCSC checked 2026-10-18 from a page fetch. USD. Not 
 ## 5. Open checks
 
 - [ ] Human confirms the DS values in sections 2 and 3 against DS-000489 Rev 1.1: Table 3, Table 9, Table 10, §4.5, §10.2.
-- [ ] Get the land pattern from TDK AN-000393. Compare it with any ICM-42688-P footprint before reusing one (the BF claim of a shared footprint is `NOT_VERIFIED`; the datasheet does not mention ICM-42688-P).
+- [ ] Get the land pattern from TDK AN-000393 and compare it with the library footprint `0_Package_LGA:Bosch_LGA-14_3x2.5mm_P0.5mm` (a stock Bosch land copied on 2026-10-19; OPEN-013, P2-012). Its pad count, pitch and pad-row spans match DS §10.2; pad size and pin 1 corner are not checked. The BF claim of a footprint shared with ICM-42688-P is `NOT_VERIFIED`.
 - [ ] Decide how to tie reserved pins 2, 3, 7, 10, 11 and record the matching `pe_trim` setting for firmware.
 - [ ] Confirm errata for ICM-45686.
 - [ ] Secure a source for 2 × ICM-45686 per board, and check JLCPCB eligibility.
@@ -98,6 +98,7 @@ Closed:
 - [x] Team chose the part and recorded DEC-008 (2026-10-18).
 - [x] Reset method decided: software reset, DEC-009 (2026-10-18).
 - [x] Datasheet read for SPI, CS count, supply, absolute maximum and pinout (agy, 2026-10-18).
+- [x] Library symbol `0_Sensor_Motion:ICM-45686` pin map checked against DS Table 10 through NotebookLM (2026-10-19).
 
 ## Appendix A. Candidates compared before DEC-008
 
