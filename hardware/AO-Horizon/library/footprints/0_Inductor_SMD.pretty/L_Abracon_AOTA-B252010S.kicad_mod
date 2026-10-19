@@ -197,7 +197,7 @@
 		(uuid "73b8b80f-19de-49a1-935c-30c809aaf3b1")
 	)
 	(embedded_fonts no)
-	(model "${KIPRJMOD}/library/3D/Inductor_SMD/L_Abracon_AOTA-B252010S.STEP"
+	(model "${KIPRJMOD}/library/3D/Inductor_SMD/L_Abracon_AOTA-B252010S.step"
 		(offset
 			(xyz 0 0 0.51)
 		)
