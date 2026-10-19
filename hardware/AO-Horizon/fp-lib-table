@@ -12,4 +12,5 @@
 	(lib (name "0_Package_SON") (type "KiCad") (uri "${KIPRJMOD}/library/footprints/0_Package_SON.pretty") (options "") (descr ""))
 	(lib (name "0_Diode_SMD") (type "KiCad") (uri "${KIPRJMOD}/library/footprints/0_Diode_SMD.pretty") (options "") (descr ""))
 	(lib (name "0_Package_LGA") (type "KiCad") (uri "${KIPRJMOD}/library/footprints/0_Package_LGA.pretty") (options "") (descr ""))
+	(lib (name "0_Package_CSP") (type "KiCad") (uri "${KIPRJMOD}/library/footprints/0_Package_CSP.pretty") (options "") (descr ""))
 )

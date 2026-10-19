@@ -10,4 +10,6 @@
 	(lib (name "0_Conn") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Conn.kicad_symdir") (options "") (descr ""))
 	(lib (name "0_Diode") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Diode.kicad_symdir") (options "") (descr ""))
 	(lib (name "0_Sensor_Motion") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Sensor_Motion.kicad_symdir") (options "") (descr ""))
+	(lib (name "0_Sensor_Pressure") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Sensor_Pressure.kicad_symdir") (options "") (descr ""))
+	(lib (name "0_Sensor_Magnetic") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Sensor_Magnetic.kicad_symdir") (options "") (descr ""))
 )
