@@ -83,11 +83,7 @@ flowchart LR
     class D inactive
 ```
 
-A human engineer declares phase changes.
-
-- Slate: not started
-- Amber: current phase, under review
-- Green: completed
+> Slate: not started, Amber: current phase, Green: completed
 
 The diagram is for reference only. It does not enforce gates or approve releases.
 
