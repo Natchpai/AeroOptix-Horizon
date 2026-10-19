@@ -60,13 +60,10 @@ flowchart LR
     class D inactive
 ```
 
-<!-- Maintainer note: set the class lines from the declared phase (earlier phases done, declared phase review, later phases inactive, all four done for RELEASE); with no declared phase every node stays slate. Remove this comment in the generated README. -->
+<!-- Maintainer note: set the class lines from the declared phase (earlier phases done, declared phase review, later phases inactive, all four done for RELEASE); with no declared phase every node stays slate. Remove this comment in the generated README. A human engineer declares phase changes.
+-->
 
-A human engineer declares phase changes.
-
-- Slate: not started, or no phase declared
-- Amber: current phase, under review
-- Green: completed
+> Slate: not started, Amber: current phase, Green: completed
 
 The diagram is for reference only. It does not enforce gates or approve releases.
 

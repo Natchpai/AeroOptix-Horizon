@@ -18,6 +18,9 @@
       "Bash(gh pr create *)",
       "Bash(git push *)",
 
+      "Edit(**/*.step)",
+      "Edit(**/*.stp)",
+
       "Edit(**/*.kicad_sym)",
       "Edit(**/*.kicad_mod)",
       "Edit(**/library/**)"
@@ -25,9 +28,7 @@
     "ask": [
       "Edit(**/*.kicad_sch)",
       "Edit(**/*.kicad_pcb)",
-      "Edit(**/*.kicad_pro)",
-      "Edit(**/*.step)",
-      "Edit(**/*.stp)"
+      "Edit(**/*.kicad_pro)"
     ],
     "deny": [
       "Read(**/*.pdf)",
