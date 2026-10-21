@@ -4,8 +4,8 @@
 | -------------------- |---|
 | Project              | AeroOptix-Horizon |
 | Document owner       | Human engineering owner (TBD) |
-| Document revision    | 0.7 |
-| Last updated         | 2026-10-19 |
+| Document revision    | 0.8 |
+| Last updated         | 2026-10-21 |
 | Design tool          | KiCad 10 (saved files written by eeschema 10.0) |
 | Hardware phase       | TBD (declared by the human) |
 | Related baseline     | FC_H743 rev2 reference from user-provided diagrams; native design baseline not established |
@@ -18,7 +18,7 @@
 - `TBD`: to be decided. A value written as `TBD`, or left out, is open.
 - A part shown in a diagram is a candidate only. It is not an approved part number.
 
-**Part-number boundary:** Only `STM32H743VIT6`, `STM32F103C8T6`, `ICM-45686` (2 × IMU, DEC-008), `ICP-20100` and `BMP390` (barometers, DEC-010) and `BMM150` (magnetometer, DEC-011) and `TPS62142RGTR` (main 3.3 V buck, DEC-012) are confirmed part numbers. The H743↔F103 interface protocol is confirmed as `USART`. All other part numbers are `TBD`. This includes regulators, protection devices, power modules, connectors, and interface ICs.
+**Part-number boundary:** Only `STM32H743VIT6`, `STM32F103C8T6`, `ICM-45686` (2 × IMU, DEC-008), `ICP-20100` (barometer 1, DEC-010; barometer 2 TBD, OPEN-014) and `BMM150` (magnetometer, DEC-011) and `TPS62142RGTR` (main 3.3 V buck, DEC-012) are confirmed part numbers. The H743↔F103 interface protocol is confirmed as `USART`. All other part numbers are `TBD`. This includes regulators, protection devices, power modules, connectors, and interface ICs.
 
 ## 1. Project Definition
 
@@ -61,7 +61,7 @@ See section 3.2.
 | REF-01    | Pixhawk 6C reference architecture | Not specified | Conceptual and functional reference only |
 | REF-02    | User-provided FC_H743 architecture diagram | 2026-10-12 | Diagram-derived candidate architecture; not native design authority |
 | REF-03    | User-provided power architecture diagram | 2026-10-12 | Diagram-derived power candidates; not an approved power specification |
-| REF-04    | `AO-HORIZON_EXECUTION_CHECKLIST_EN.md` | 0.6 | Execution and evidence checklist |
+| REF-04    | `AO-HORIZON_EXECUTION_CHECKLIST_EN.md` | 0.7 | Execution and evidence checklist |
 
 ## 2. Requirements Management
 
@@ -85,7 +85,7 @@ All rows are `CONFIRMED` by the user and `NOT_VERIFIED`. SYS-001 and SYS-002 com
 | MCU-002 | The operational auxiliary MCU shall be STM32F103C8T6. | Required during operation for auxiliary I/O, PWM/ESC, expanded I/O, and safety. | Native schematic and responsibility review. |
 | IF-001  | The H743↔F103 interface protocol shall be USART. | Path for F103 to monitor H743 availability. Instance, pins, levels, rate, timeout, and message details are open. Software owns detection and command behavior. | Allocation review and hardware test. |
 | SEN-001 | The design shall provide 2 × SPI IMU interfaces. | Part: 2 × ICM-45686 (DEC-008). Resource allocation TBD. | Schematic inspection and hardware test. |
-| SEN-002 | The design shall provide 2 × I2C barometer interfaces. | Parts: ICP-20100 + BMP390 (DEC-010). Addresses and bus allocation TBD. | Schematic inspection and hardware test. |
+| SEN-002 | The design shall provide 2 × I2C barometer interfaces. | Parts: ICP-20100 (DEC-010) + barometer 2 TBD (OPEN-014). Addresses and bus allocation TBD. | Schematic inspection and hardware test. |
 | SEN-003 | The design shall provide 1 × I2C magnetometer interface. | Part: BMM150 (DEC-011). Reduced from 2 by DEC-011. | Architecture and hardware test. |
 | PWR-001 | The flight-controller board shall receive 5 V from the power module. | Limits: see PWR-010. | Power-tree inspection and measurement. |
 | PWR-002 | The servo supply shall be 6 V. | Limits: see PWR-011. | Power-tree inspection and measurement. |
@@ -197,7 +197,7 @@ The user-provided diagrams show an H743 main MCU, an F103 auxiliary MCU, sensor/
 | H743 main controller      | Primary flight-controller processing and interface host | Sensors, external interfaces, USB, SWD, USART, outputs | 5 V input and defined rails | Pins/resources NOT_VERIFIED. |
 | F103 auxiliary controller | PWM/ESC, expanded I/O, safety function | USART, PWM outputs, FlySky, safety path | H743 status; defined power/reset | Timer, resource, and safety implementation NOT_VERIFIED. |
 | IMU subsystem             | Two SPI IMU interfaces | SPI, CS, DRDY; reset by software (DEC-009) | Selected sensor parts and rail | 2 × ICM-45686 (DEC-008). Rail and allocation TBD. |
-| Barometer subsystem       | Two I2C barometer interfaces | I2C, address, pull-ups | Selected sensor parts and rail | ICP-20100 + BMP390 (DEC-010). Bus strategy TBD. |
+| Barometer subsystem       | Two I2C barometer interfaces | I2C, address, pull-ups | Selected sensor parts and rail | ICP-20100 (DEC-010) + barometer 2 TBD (OPEN-014). Bus strategy TBD. |
 | Magnetometer subsystem    | One I2C magnetometer interface | I2C, address, placement | Selected sensor part | BMM150 (DEC-011). Placement TBD. |
 | H743 external I/O         | Telemetry, GPS, compass, air-data, rangefinder, logical outputs | UART/I2C/timer interfaces | H743 resource allocation | Pins and electrical implementation NOT_VERIFIED. |
 | F103 PWM/I/O              | TILT, ESC, COAX, AIL, FlySky | Timer/PWM and bulk connector | F103 resource allocation | Timer/channel validity and electrical drive TBD. |
@@ -247,18 +247,19 @@ All items are `TBD` and `NOT_VERIFIED`.
 | CMP-001 | Main MCU | Must be STM32H743VIT6. | TBD | Availability, package, lifecycle, approved source TBD |
 | CMP-002 | Auxiliary MCU | Must be STM32F103C8T6. | TBD | Availability, package, lifecycle, approved source TBD |
 | CMP-003 | IMU | Two SPI positions required. Must be TDK InvenSense ICM-45686 (DEC-008). | TBD | TDK: Production (product page, 2026-10-19). PX4 driver present. SPI support, supply range, availability and approved source NOT_VERIFIED |
-| CMP-004 | Barometer | Two I2C positions required. Must be TDK ICP-20100 and Bosch BMP390 (DEC-010). | TBD | ICP-20100 is EOL (TDK page). TDK SmartPressure page: "Pressure products are EOL and not recommended for new designs" (2026-10-19). BMP390 not available at LCSC C5124834 (2026-10-18); Bosch page states no lifecycle status. Approved source TBD |
+| CMP-004 | Barometer | Two I2C positions required. Position 1 must be TDK ICP-20100 (DEC-010). Position 2 TBD (OPEN-014). | TBD | ICP-20100 is EOL (TDK page). TDK SmartPressure page: "Pressure products are EOL and not recommended for new designs" (2026-10-19). BMP390 removed on 2026-10-21 because LCSC C5124834 is not available. Approved source TBD |
 | CMP-005 | Magnetometer | One I2C position required. Must be Bosch BMM150 (DEC-011). | TBD | PX4 driver present. Bosch no longer lists BMM150: the magnetometer page lists only BMM350 (2026-10-19). DigiKey lists it as Obsolete (distributor page, NOT_VERIFIED). No Bosch EOL notice read. Approved source TBD |
 | CMP-006 | Regulator, protection, connector, PDB/UBEC, interface parts | Electrical requirements shall be satisfied. | Specific parts TBD. | MFR/MPN, availability, lifecycle, approved source TBD |
 | CMP-007 | Main 3.3 V regulator | Must be TI TPS62142RGTR (DEC-012). Fixed 3.3 V, VIN 3 to 17 V, 2 A, VQFN-16 3 × 3 mm (TI SLVSAJ0F Rev. F, HTML). | 2.5 MHz (FSW low) as drawn | TI: ACTIVE (2026-10-19; the page also points to a newer TPS62902). LCSC C129331: 632 in stock (snapshot 2026-10-18). Approved source TBD |
 
-**Library state (project library, saved files, 2026-10-19).** Symbol and footprint starting points for the decided sensors. They are drawn, not decided, and no sensor symbol is placed on a sheet yet. A read-only link audit found no broken links, and the symbol pin numbers match the footprint pad numbers 1:1. Each symbol's pin map was checked against the datasheet pin table through NotebookLM, with the table text confirmed in the source fulltext. Pin 1 corner, pad positions and land patterns are shown only in datasheet drawings (images), so they stay `NOT_VERIFIED` (OPEN-013).
+**Library state (project library, saved files, 2026-10-21).** Symbol and footprint starting points for the decided sensors and the BMP581 candidate (OPEN-014). They are drawn, not decided, and no sensor symbol is placed on a sheet yet. A read-only link audit found no broken links, and the symbol pin numbers match the footprint pad numbers 1:1. Each symbol's pin map was checked against the datasheet pin table through NotebookLM, with the table text confirmed in the source fulltext. Pin 1 corner, pad positions and land patterns are shown only in datasheet drawings (images), so they stay `NOT_VERIFIED` (OPEN-013).
 
 | Part | Symbol | Footprint | Pin map vs datasheet | Still open |
 | ---- |---|---|---|---|
 | ICM-45686 | `0_Sensor_Motion:ICM-45686` | `0_Package_LGA:Bosch_LGA-14_3x2.5mm_P0.5mm` (stock Bosch copy, KiCad stock model) | Matches DS-000489 Rev 1.1 Table 10 (pins 1 to 14). Pad count, 0.5 mm pitch, 2.5 × 3 mm body and pad-row spans (D1 1.5, E1 1.0) match section 10.2. | Land pattern against TDK AN-000393 (not in the notebook); pin 1 corner |
 | ICP-20100 | `0_Sensor_Pressure:ICP-20100` | `0_Package_LGA:ST_HLGA-10_2x2mm_P0.5mm_LayoutBorder3x2y` (stock ST copy, KiCad stock model) | Matches DS-000416 Rev 1.3 Table 18 (pins 1 to 10). The datasheet is marked preliminary. INT is open-drain; RESV pins 8 and 9: "Connect to Ground". | No land pattern in the datasheet (it refers to AN-000140). Pads are 0.35 mm wide; terminal width b is 0.25 nom, 0.30 max (Table 19). Pin 1 corner |
-| BMP390 | `0_Sensor_Pressure:BMP390` | `0_Package_LGA:Bosch_LGA-10_2x2mm_P0.5mm_LayoutBorder3x2y` (ST pads, local model, source not recorded) | Matches BST-BMP390-DS002-07 Rev 1.7 Table 52 (pins 1 to 10). | Bosch says to use the bottom-view outline as the land pattern (7.2); the footprint keeps the ST pad size, which may be larger. Pin 1 corner; 3D model rotation |
+| BMP390 (not used) | `0_Sensor_Pressure:BMP390` | `0_Package_LGA:Bosch_LGA-10_2x2mm_P0.5mm_LayoutBorder3x2y` (pads set to the BMP581 land pattern on 2026-10-21, see the BMP581 row; local model, source not recorded) | Matches BST-BMP390-DS002-07 Rev 1.7 Table 52 (pins 1 to 10). | Removed from DEC-010 on 2026-10-21; library files kept until OPEN-014 is decided. The footprint now follows the BMP581 land pattern; not checked against the BMP390 drawing (7.2). Pin 1 corner; 3D model rotation |
+| BMP581 (candidate, OPEN-014) | `0_Sensor_Pressure:BMP581` | `0_Package_LGA:Bosch_LGA-10_2x2mm_P0.5mm_LayoutBorder3x2y` (shared with BMP390; pads 0.325 × 0.30 mm on ±0.7625 mm centers, smallest gap 0.20 mm) | Matches BST-BMP581-DS004-13 Rev 1.13 Table 28 (pins 1 to 10), the same pin map as BMP390. 10 pins, body 2.0 × 2.0 × 0.75 mm (Table 3). | Pad sizes, pad centers, pin 1 corner and numbering were read by NotebookLM from Fig. 29 to 32 with no citation (`NOT_VERIFIED`). §8.2: no solder mask, vias or traces under the part, 20 µm mask clearance; the footprint uses the board default mask. |
 | BMM150 | `0_Sensor_Magnetic:BMM150` | `0_Package_CSP:WLCSP-12_1.56x1.56mm_P0.4mm` (stock copy) | Matches BST-BMM150-DS001-05 Rev 1.4 Table 32 (12 balls). Body 1.56 mm and 0.283 mm grid (0.4 mm diagonal) match. | A1 corner and mirroring; 3D model missing from the KiCad 10 install |
 
 ### 4.7 Engineering calculations and margins
@@ -378,7 +379,7 @@ All decisions are by the human owner, unless the Notes say otherwise.
 | DEC-007 | Power input and servo rail limits | Limits in PWR-010 and PWR-011 | Budgets and component selection are open (OPEN-006, OPEN-007, OPEN-010). | 2026-10-13 |
 | DEC-008 | IMU part number (SEN-001, CMP-003) | 2 × TDK InvenSense ICM-45686 | Confirmed by the team. Implementation not verified. SPI, supply range and sourcing open; see `AO-HORIZON_IMU_SELECTION_EN.md`. | 2026-10-18 |
 | DEC-009 | IMU reset method | Software reset only (ICM-45686 `SOFT_RST`); no hardware reset line | ICM-45686 has no reset pin (DS-000489 Rev 1.1 Table 10, checked through NotebookLM on 2026-10-19). No hardware power control of the IMU rail is planned. | 2026-10-18 |
-| DEC-010 | Barometer part numbers (SEN-002, CMP-004) | 1 × TDK ICP-20100 + 1 × Bosch BMP390 | Confirmed by the team. ICP-20100 is EOL per TDK; BMP390 not available at LCSC. See `AO-HORIZON_BARO_MAG_SELECTION_EN.md`. | 2026-10-18 |
+| DEC-010 | Barometer part numbers (SEN-002, CMP-004) | 1 × TDK ICP-20100; second barometer TBD (OPEN-014) | Confirmed by the team on 2026-10-18 as ICP-20100 + Bosch BMP390. The human owner removed BMP390 on 2026-10-21 because LCSC C5124834 is not available. ICP-20100 is EOL per TDK. See `AO-HORIZON_BARO_MAG_SELECTION_EN.md`. | 2026-10-18, revised 2026-10-21 |
 | DEC-011 | Magnetometer count and part number (SEN-003, CMP-005) | 1 × Bosch BMM150 | Confirmed by the team. Reduces SEN-003 from 2 to 1 magnetometer and closes OPEN-005. Lifecycle NOT_VERIFIED. | 2026-10-18 |
 | DEC-012 | Main 3.3 V supply (CMP-007) | TI TPS62142RGTR buck, 5 V to 3.3 V (LCSC C129331) | Selected by the human owner. Datasheet fit checked against TI HTML (SLVSAJ0F Rev. F). 3.3 V load current, inductor and output-capacitor derating NOT_VERIFIED. | 2026-10-18 |
 
@@ -389,7 +390,7 @@ All decisions are by the human owner, unless the Notes say otherwise.
 | OPEN-001 | Exact H743/F103 pins and alternate functions | May invalidate the candidate allocation. | Hardware review / P1 |
 | OPEN-002 | USART instance, pins, voltage levels, rate, timeout, recovery | Affects safety/control path. | Hardware + Software / P1, P2 |
 | OPEN-003 | Timer/channel validity for all H743/F103 labels. The pin allocation record (F-02) finds that F103 TIM3 has CH1 to CH4 only, so the IF-034 to IF-037 labels need a human correction. | May require reassignment or a logical-to-physical mapping. | Hardware review / P1 |
-| OPEN-004 | Sensor electrical properties and sourcing. All sensor parts chosen (DEC-008, DEC-010, DEC-011); datasheet values, ICP-20100 EOL, BMP390 availability and BMM150 lifecycle (no longer listed by Bosch) open. | Affects footprint, rail, layout, drivers, verification. | Human owner / P0 |
+| OPEN-004 | Sensor electrical properties and sourcing. Sensor parts chosen (DEC-008, DEC-010, DEC-011) except barometer 2 (OPEN-014); datasheet values, ICP-20100 EOL and BMM150 lifecycle (no longer listed by Bosch) open. | Affects footprint, rail, layout, drivers, verification. | Human owner / P0 |
 | OPEN-005 | Second magnetometer allocation. Closed by DEC-011 (single magnetometer). | Affects sensor redundancy and connector/bus architecture. | Closed 2026-10-18 |
 | OPEN-006 | 5 V input transient/protection, board current budget, downstream rail budgets | Affects power design and protection. | Hardware review / P0, P2 |
 | OPEN-007 | 6 V servo rail pulse duration, protection, distribution, actuator load profile | Affects power and actuator safety. | Hardware review / P0, P2 |
@@ -398,7 +399,8 @@ All decisions are by the human owner, unless the Notes say otherwise.
 | OPEN-010 | All non-MCU part numbers except the sensors (DEC-008, DEC-010, DEC-011) and the main 3.3 V buck (DEC-012) | No other non-MCU part is approved by this document. | Human owner / component selection gate |
 | OPEN-011 | `+3V3A` rail: purpose (for example 3.3 V_IMU), load, and LDO part. TPS73533DRBR is drawn but not decided. As drawn, its NR capacitor (100 nF) is above TI's 0.01 µF limit and its output capacitance (2 × 1 µF) is at TI's 2 µF minimum before derating (see 4.3). | Affects sensor supply noise, start-up and the power budget. | Human owner / P0, P2 |
 | OPEN-012 | Path from `+VIN` (power module connector) to `+5V`. Nothing connects them in the schematic yet. | Without it, both regulators have no input. | Hardware / P2 |
-| OPEN-013 | Sensor library starting points (see 4.6 "Library state"): pin maps match the datasheet tables, but pin 1 corner, pad geometry and land patterns are not checked against the datasheet drawings and app notes, and the BMM150 3D model is missing. | A wrong land pattern or orientation reaches the PCB. | Human owner / P2 |
+| OPEN-013 | Sensor library starting points (see 4.6 "Library state"): pin maps match the datasheet tables, but pin 1 corner, pad geometry and land patterns are not checked against the datasheet drawings and app notes, and the BMM150 3D model is missing. The Bosch LGA-10 pads follow the BMP581 land pattern (Fig. 32, read from an image) since 2026-10-21. | A wrong land pattern or orientation reaches the PCB. | Human owner / P2 |
+| OPEN-014 | Second barometer part number (SEN-002, CMP-004). BMP390 removed from DEC-010 on 2026-10-21 (LCSC C5124834 not available). Proposed: Bosch BMP581 (LCSC C5362283), to be confirmed by the team. A library starting point exists (4.6). | Affects footprint, I2C address plan, power budget, PX4 driver and sourcing. | Team / P0 |
 
 ## 9. Specification Change Notes
 
@@ -411,9 +413,10 @@ All decisions are by the human owner, unless the Notes say otherwise.
 | 0.5      | 2026-10-18 | Recorded team-confirmed barometers ICP-20100 + BMP390 (DEC-010) and single magnetometer BMM150 (DEC-011). SEN-003 reduced to 1 magnetometer; OPEN-005 closed. | Team |
 | 0.6      | 2026-10-19 | Recorded TPS62142RGTR as the main 3.3 V buck (DEC-012, CMP-007). Added the power-sheet schematic state to 4.3. Added OPEN-011 (`+3V3A` rail) and OPEN-012 (`+VIN` to `+5V` path). | Human owner |
 | 0.7      | 2026-10-19 | No new decisions. Re-checked the power-sheet state (4.3) against the saved file and the TPS62142 and TPS735 datasheets: added the DNP `+VIN` ESD diode, the missing TPS62142 AVIN capacitor and the TPS73533DRBR NR and output capacitor notes. Added the sensor library state (4.6), with pin maps checked against the datasheet tables through NotebookLM, and OPEN-013. Recorded sensor and regulator lifecycle checks (CMP-003 to CMP-005, CMP-007). Set the design tool and the checklist revision (REF-04). | Pending human review |
+| 0.8      | 2026-10-21 | Removed BMP390 from DEC-010 because LCSC C5124834 is not available. Barometer 2 is open (OPEN-014); BMP581 (LCSC C5362283) is proposed and waits for team confirmation. Updated SEN-002, CMP-004, OPEN-004 and the library state. Added the BMP581 library starting point and set the Bosch LGA-10 footprint pads to the BMP581 land pattern (4.6, OPEN-013). | Human owner |
 
 ## Current verdict
 
 **Draft only. NOT_VERIFIED and NOT FOR FABRICATION.**
 
-The specification is structured enough for hardware P1 allocation and conflict review. It does not approve any non-MCU part number other than the sensors (DEC-008, DEC-010, DEC-011) and the main 3.3 V buck (DEC-012), pin mapping, timer allocation, power protection or rail detail, safety timing, schematic, PCB, or fabrication release. Sensor lifecycle and sourcing risks are open (OPEN-004): ICP-20100 is EOL and BMM150 is no longer listed by Bosch. The sensor library parts are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked (OPEN-013).
+The specification is structured enough for hardware P1 allocation and conflict review. It does not approve any non-MCU part number other than the sensors (DEC-008, DEC-010, DEC-011) and the main 3.3 V buck (DEC-012), pin mapping, timer allocation, power protection or rail detail, safety timing, schematic, PCB, or fabrication release. Sensor lifecycle and sourcing risks are open (OPEN-004): ICP-20100 is EOL and BMM150 is no longer listed by Bosch. The second barometer is not chosen (OPEN-014). The sensor library parts are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked (OPEN-013).

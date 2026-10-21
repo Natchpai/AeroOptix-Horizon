@@ -1,7 +1,7 @@
 # AeroOptix-Horizon: MCU Pin Allocation
 
-**Revision:** 0.1
-**Updated:** 2026-10-18
+**Revision:** 0.2
+**Updated:** 2026-10-21
 **Status:** Draft proposal. Pin choices are not approved. DMA, interrupt priority and clock checks (P1-010) are not done. Not a verification record.
 **Requirement refs:** IF-010 to IF-024, IF-030 to IF-038, SEN-001 to SEN-003 (spec). Checklist tasks: P1-001, P1-002, P1-003 to P1-005 (partial), P1-009 (partial).
 **Decision owner:** Hardware
@@ -67,8 +67,8 @@ Script inputs and outputs are not kept in the repo.
 | IMU2 INT1 | SEN-001 | GPIO input, EXTI15 | PE15 | 45 | - |
 | ICP-20100 + BMM150 | SEN-002, SEN-003 | I2C2_SCL | PB10 | 46 | match |
 | ICP-20100 + BMM150 | SEN-002, SEN-003 | I2C2_SDA | PB11 | 47 | match |
-| BMP390 | SEN-002 | I2C3_SCL | PA8 | 67 | match |
-| BMP390 | SEN-002 | I2C3_SDA | PC9 | 66 | match |
+| Barometer 2 (TBD, OPEN-014) | SEN-002 | I2C3_SCL | PA8 | 67 | match |
+| Barometer 2 (TBD, OPEN-014) | SEN-002 | I2C3_SDA | PC9 | 66 | match |
 | HSE crystal | P1-014 | OSC_IN | PH0 | 12 | - |
 | HSE crystal | P1-014 | OSC_OUT | PH1 | 13 | - |
 | Boot select | P1-007 | BOOT0 | BOOT0 | 94 | - |

@@ -2,12 +2,12 @@
 
 **Dual-MCU PX4 flight controller hardware (STM32H743 + STM32F103) by AeroOptix Club.**
 
-> **Status:** `CONCEPT`
+> **Status:** `DRAFT`
 > **Revision:** `v1.0`
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.7`
 
-> **Draft specification (rev 0.7, 2026-10-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.8, 2026-10-21): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -20,7 +20,7 @@ Pixhawk 6C is only a conceptual and functional reference. Its schematic, PCB and
 - Main MCU: STM32H743VIT6
 - Auxiliary MCU: STM32F103C8T6 (PWM/ESC, expanded I/O, safety)
 - H743 to F103 link over USART
-- 2× SPI IMU (ICM-45686), 2× I2C barometer (ICP-20100, BMP390), 1× I2C magnetometer (BMM150)
+- 2× SPI IMU (ICM-45686), 2× I2C barometer (ICP-20100 + second part `TBD`), 1× I2C magnetometer (BMM150)
 - 3.3 V rail from a TPS62142RGTR buck on the 5 V board input
 - USB FS, SWD on both MCUs, selectable BOOT0 on the H743
 - F103 commands immediate landing if the H743 stops operating (detection and timing `TBD`)
@@ -33,7 +33,7 @@ Pixhawk 6C is only a conceptual and functional reference. Its schematic, PCB and
 | Auxiliary MCU | STM32F103C8T6 |
 | Inter-MCU link | USART (instance, pins, levels, rate `TBD`) |
 | IMU | 2× SPI, ICM-45686 |
-| Barometer | 2× I2C, ICP-20100 + BMP390 |
+| Barometer | 2× I2C, ICP-20100 + second part `TBD` (BMP581 proposed, OPEN-014) |
 | Magnetometer | 1× I2C, BMM150 |
 | Board input | 5 V from power module, 4.5 to 5.5 V, 2 A source |
 | 3.3 V rail | TPS62142RGTR buck from 5 V, 2 A part (load current `TBD`) |
@@ -89,13 +89,13 @@ The diagram is for reference only. It does not enforce gates or approve releases
 
 ### Design progress
 
-State of the saved KiCad files on 2026-10-19. Details are in the specification (4.3 "Schematic state", 4.6 "Library state").
+State of the saved KiCad files on 2026-10-21. Details are in the specification (4.3 "Schematic state", 4.6 "Library state").
 
 | Area | State |
 |---|---|
 | Schematic | Only `power_supplies.kicad_sch` has parts (17, all unannotated): power module connector, TPS62142RGTR buck, TPS73533DRBR LDO and a 3.3 V LED. Nothing drives `+5V` yet. The other sheets hold no parts. |
 | PCB | Empty: no footprints and no board outline. |
-| Library | Project symbols, footprints and 3D models for the MCUs, regulators, ESD parts, connectors and passives. Sensor symbols and footprints are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked yet. A read-only link audit found no broken links. |
+| Library | Project symbols, footprints and 3D models for the MCUs, regulators, ESD parts, connectors and passives. Sensor symbols and footprints are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked yet. A BMP581 symbol is a starting point for the second barometer candidate (OPEN-014), and the Bosch LGA-10 footprint pads now follow the BMP581 land pattern (not checked against the drawing). A read-only link audit found no broken links. |
 | ERC / DRC | Not run. |
 
 ## Hardware Design
@@ -137,13 +137,14 @@ These allocations are user-confirmed at the logical level only. Exact pins, alte
 ### Design Considerations
 
 - Timer labels are not confirmed (OPEN-003). The draft pin allocation finds that the F103 TIM3 has CH1 to CH4 only, so the COAX and AIL labels need a human correction.
-- Sourcing risk on the sensors (OPEN-004): ICP-20100 is EOL (TDK says its pressure products are not for new designs), BMP390 is not sold at LCSC, and Bosch no longer lists BMM150.
+- Sourcing risk on the sensors (OPEN-004): ICP-20100 is EOL (TDK says its pressure products are not for new designs), and Bosch no longer lists BMM150.
+- BMP390 was removed because LCSC does not sell it. BMP581 (LCSC C5362283) is proposed as the second barometer and waits for team confirmation (OPEN-014).
 - The power sheet is in progress: `+VIN` to `+5V` is not drawn (OPEN-012), and the `+3V3A` LDO is not decided (OPEN-011). As drawn, the LDO's NR capacitor (100 nF) is above TI's 0.01 µF limit, and the TPS62142 lacks the 0.1 µF AVIN capacitor TI recommends.
 - Power budgets, rail tolerances, sequencing, brownout/reset thresholds and protection (reverse polarity, overvoltage, ESD, short circuit) are `TBD`.
 - Clock sources, reset topology and F103 boot behavior are `TBD`.
 - Safety detection method, timing and output ownership for the H743-failure case are `TBD`.
 - Firmware (PX4 version and target, bootloader, USART message protocol) is deferred.
-- Confirmed part numbers: STM32H743VIT6, STM32F103C8T6, ICM-45686, ICP-20100, BMP390, BMM150 and TPS62142RGTR. All other parts are `TBD`.
+- Confirmed part numbers: STM32H743VIT6, STM32F103C8T6, ICM-45686, ICP-20100, BMM150 and TPS62142RGTR. All other parts are `TBD`.
 
 ## Verification
 
@@ -157,11 +158,12 @@ These allocations are user-confirmed at the logical level only. Exact pins, alte
 
 ## Open Items
 
-The specification tracks OPEN-001 to OPEN-013 (OPEN-005 is closed):
+The specification tracks OPEN-001 to OPEN-014 (OPEN-005 is closed):
 
 - MCU pins, alternate functions and timer validity (OPEN-001, OPEN-003)
 - USART instance, levels and timing (OPEN-002)
 - Sensor electrical data and sourcing (OPEN-004)
+- Second barometer part number (OPEN-014)
 - 5 V and 6 V budgets and protection (OPEN-006, OPEN-007)
 - Safety timing, owned by Software (OPEN-008)
 - Board outline, mounting and environment (OPEN-009)
@@ -218,7 +220,7 @@ AeroOptix-Horizon/
 | [Specification](hardware/AO-Horizon/documents/design/AO-HORIZON_SPEC_EN.md) | Requirements, decisions, schematic and library state, open items |
 | [Execution checklist](hardware/AO-Horizon/documents/design/AO-HORIZON_EXECUTION_CHECKLIST_EN.md) | Work plan and evidence tracker |
 | [IMU selection](hardware/AO-Horizon/documents/design/AO-HORIZON_IMU_SELECTION_EN.md) | ICM-45686 selection record |
-| [Barometer and magnetometer selection](hardware/AO-Horizon/documents/design/AO-HORIZON_BARO_MAG_SELECTION_EN.md) | ICP-20100, BMP390 and BMM150 selection and lifecycle |
+| [Barometer and magnetometer selection](hardware/AO-Horizon/documents/design/AO-HORIZON_BARO_MAG_SELECTION_EN.md) | ICP-20100 and BMM150 selection and lifecycle, BMP390 removal, BMP581 candidate |
 | [Power budget](hardware/AO-Horizon/documents/design/AO-HORIZON_POWER_BUDGET_EN.md) | Draft rail and load budget (P0-017) |
 | [Pin allocation](hardware/AO-Horizon/documents/design/AO-HORIZON_PIN_ALLOCATION_EN.md) | Draft H743 and F103 pin allocation |
 | [H7 MCU sourcing](hardware/AO-Horizon/documents/design/AO-HORIZON_H7_MCU_SOURCING_EN.md) | STM32H743VI price and stock |
