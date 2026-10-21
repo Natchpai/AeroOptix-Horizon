@@ -1,11 +1,11 @@
 # AeroOptix-Horizon: Execution Checklist
 
-**Revision:** 0.6
-**Updated:** 2026-10-19
+**Revision:** 0.7
+**Updated:** 2026-10-21
 **Status:** Active execution tracker; not an approval or verification record
 **Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md)
 
-Use the specification for confirmed requirements and decisions. This checklist records the sequence of work and the evidence needed to close each gate. Diagram content is reference material. User-confirmed requirements take precedence. Sensor parts are chosen (DEC-008, DEC-010, DEC-011); their lifecycle and sourcing risks are open.
+Use the specification for confirmed requirements and decisions. This checklist records the sequence of work and the evidence needed to close each gate. Diagram content is reference material. User-confirmed requirements take precedence. Sensor parts are chosen (DEC-008, DEC-010, DEC-011) except the second barometer (OPEN-014); their lifecycle and sourcing risks are open.
 
 **Conventions**
 
@@ -39,7 +39,7 @@ Groups: P0.1 scope and operating intent (P0-001 to P0-003). P0.2 MCU and safety 
 | P0-006 | Reserve H743↔F103 USART. Pins, levels, instance, rate, and test access remain for P1/P2. | IF-001, IF-024 | Human | DONE | DEC-003 |
 | P0-007 | Record the immediate-landing requirement if H743 is unavailable. USART is the monitoring path. Software owns detection, command behavior, and timing. Hardware must preserve the physical path and test access. | SAF-001, FUN-004 | Human | DONE | DEC-005 |
 | P0-008 | Select two IMU MFR/MPNs. Team confirmed 2 × ICM-45686 on 2026-10-18. SPI, supply range and sourcing checks stay open in the selection record. | SEN-001, CMP-003 | Team | DONE | DEC-008; [AO-HORIZON_IMU_SELECTION_EN.md](AO-HORIZON_IMU_SELECTION_EN.md) |
-| P0-009 | Select two barometer MFR/MPNs. Team confirmed ICP-20100 + BMP390 on 2026-10-18. ICP-20100 EOL and BMP390 availability stay open in the selection record. | SEN-002, CMP-004 | Team | DONE | DEC-010; [AO-HORIZON_BARO_MAG_SELECTION_EN.md](AO-HORIZON_BARO_MAG_SELECTION_EN.md) |
+| P0-009 | Select two barometer MFR/MPNs. Team confirmed ICP-20100 + BMP390 on 2026-10-18. BMP390 removed on 2026-10-21 (not available at LCSC); BMP581 (LCSC C5362283) proposed, team to confirm. ICP-20100 EOL stays open in the selection record. | SEN-002, CMP-004, OPEN-014 | Team | IN_PROGRESS | DEC-010; [AO-HORIZON_BARO_MAG_SELECTION_EN.md](AO-HORIZON_BARO_MAG_SELECTION_EN.md) |
 | P0-010 | Decide magnetometer MFR/MPN and allocation. Team confirmed 1 × BMM150 onboard on 2026-10-18; no second magnetometer. | SEN-003, CMP-005 | Team | DONE | DEC-011; [AO-HORIZON_BARO_MAG_SELECTION_EN.md](AO-HORIZON_BARO_MAG_SELECTION_EN.md) |
 | P0-011 | Define sensor rates, DRDY/interrupt needs, calibration, and redundancy. | SEN-001, SEN-002, SEN-003 | Human | OPEN | Sensor requirement record |
 | P0-012 | Confirm logical H743/F103 external interface allocations. Exact pins and electrical implementation unverified. See specification section 3. | IF-010 to IF-024 | Human | DONE | User confirmation, date TBD. No DEC record yet. |
@@ -88,7 +88,7 @@ Firmware tasks P2-005 to P2-007 do not block the hardware release.
 | P2-009 | Complete line-by-line schematic review. |  | TBD | OPEN | Review checklist with reviewer and evidence links |
 | P2-010 | Complete the spec 4.7 calculations: board input current, servo rail current, rail tolerance, thermal margin, and safety response timing. Added by audit. | Spec 4.7, PWR-012 to PWR-014 | Hardware | OPEN | Calculation records with margins |
 | P2-011 | Capture the power sheet (`power_supplies.kicad_sch`): power module input, `+VIN` to `+5V` path, TPS62142 3.3 V buck, `+3V3A` LDO, indicator. Does not depend on P1. Drawn so far: see spec 4.3 "Schematic state". Open: `+VIN` to `+5V` path (OPEN-012), `+3V3A` decision and its NR and output capacitors (OPEN-011), the 0.1 µF AVIN-to-AGND capacitor TI recommends for the TPS62142, annotation, LCSC C162430 on both the 1 µF (GCM188R71C105KA64J) and 10 µF (GRM21BZ71C106KE15L) capacitors, `PM02_SCL` / `PM02_SDA` going nowhere, the DNP DF2S6.2CT on `+VIN`. | DEC-012, OPEN-011, OPEN-012 | Hardware | IN_PROGRESS | Saved `power_supplies.kicad_sch`; power-sheet review record |
-| P2-012 | Check the sensor footprints against the datasheet drawings and app notes: pad geometry, land pattern, pin 1 corner, 3D model (BMM150 model missing). Pin maps already match the datasheet tables. See spec 4.6 "Library state". | OPEN-013, CMP-003 to CMP-005 | Human | IN_PROGRESS | Per-part review record naming the datasheet figure or app note used |
+| P2-012 | Check the sensor footprints against the datasheet drawings and app notes: pad geometry, land pattern, pin 1 corner, 3D model (BMM150 model missing). Pin maps already match the datasheet tables. See spec 4.6 "Library state". Bosch LGA-10 pads set to the BMP581 land pattern (DS004-13 Fig. 32) on 2026-10-21; the values were read from an image and need a human check. | OPEN-013, CMP-003 to CMP-005 | Human | IN_PROGRESS | Per-part review record naming the datasheet figure or app note used |
 
 ## P3: PCB and fabrication release
 
@@ -141,7 +141,7 @@ Descriptions are in the specification (section 8.2). Status and owner below are 
 | ID     | Spec ref | Open item | Status | Owner / target |
 | ------ |---|---|---|---|
 | OI-001 | OPEN-008, SAF-001 | Immediate-landing requirement and F103 safety implementation | Requirement confirmed. Detailed behavior and timing are Software-owned and deferred. | Software / P2, P4 |
-| OI-002 | OPEN-004 | Sensor MFR/MPN and electrical properties | Parts chosen: IMU 2 × ICM-45686 (DEC-008), barometers ICP-20100 + BMP390 (DEC-010), magnetometer BMM150 (DEC-011). Electrical properties `NOT_VERIFIED`. ICP-20100 EOL, BMP390 availability and BMM150 lifecycle (no longer listed by Bosch) open. | Human owner / P0 |
+| OI-002 | OPEN-004 | Sensor MFR/MPN and electrical properties | Parts chosen: IMU 2 × ICM-45686 (DEC-008), barometer 1 ICP-20100 (DEC-010), barometer 2 TBD (OPEN-014), magnetometer BMM150 (DEC-011). Electrical properties `NOT_VERIFIED`. ICP-20100 EOL and BMM150 lifecycle (no longer listed by Bosch) open. | Human owner / P0 |
 | OI-003 | OPEN-001 | External interfaces and exact MCU pins | Logical requirements confirmed; mapping unverified. | Hardware / P1 |
 | OI-004 | OPEN-006, OPEN-007 | Power protection, transients, downstream budgets, and distribution | Input and servo ratings recorded; design details open. | Hardware / P0, P2 |
 | OI-005 | OPEN-001, OPEN-003 | Exact MCU pin mapping and resource conflicts (overlaps OI-003) | `NOT_VERIFIED` | Hardware / P1 |
@@ -154,8 +154,9 @@ Descriptions are in the specification (section 8.2). Status and owner below are 
 | OI-012 | OPEN-010 | All non-MCU part numbers (added by audit) | Sensors (DEC-008, DEC-010, DEC-011) and the main 3.3 V buck TPS62142RGTR (DEC-012) are chosen. No other non-MCU part is approved. | Human owner / component selection gate (P0-016) |
 | OI-013 | OPEN-011 | `+3V3A` rail purpose, load and LDO part | TPS73533DRBR drawn, not decided. As drawn, NR capacitor above TI's limit and output capacitance at TI's minimum. | Human owner / P0, P2 |
 | OI-014 | OPEN-012 | `+VIN` to `+5V` path | Not drawn; both regulators have no input source yet. | Hardware / P2 (P2-011) |
-| OI-015 | OPEN-013 | Sensor symbol and footprint starting points | In the project library, not placed. Pin maps match the datasheet tables; land patterns and pin 1 not checked. BMM150 3D model missing. | Human owner / P2 (P2-012) |
+| OI-015 | OPEN-013 | Sensor symbol and footprint starting points | In the project library, not placed. Pin maps match the datasheet tables; land patterns and pin 1 not checked. BMM150 3D model missing. Bosch LGA-10 pads follow BMP581 Fig. 32 (image-read, not checked). | Human owner / P2 (P2-012) |
+| OI-016 | OPEN-014 | Second barometer part number | BMP390 removed 2026-10-21. BMP581 (LCSC C5362283) proposed; team to confirm. BMP581 library starting point added (spec 4.6). | Team / P0 (P0-009) |
 
 ## Current next action
 
-Continue P1 allocation and conflict review using the confirmed logical interfaces. In parallel, continue the power sheet (P2-011): connect `+VIN` to `+5V`, decide the `+3V3A` rail (and its NR and output capacitors if TPS73533DRBR stays), fix the C162430 LCSC field, then annotate. Check the sensor footprints against the datasheets (P2-012) before placing them. Keep sensor-specific resources provisional until the sensor requirements are decided. Keep the candidate/unverified label on all pin mappings. Reserve the USART safety path and test access. Do not begin fabrication release until the applicable P0 to P3 evidence and Human approval are complete.
+Continue P1 allocation and conflict review using the confirmed logical interfaces. In parallel, continue the power sheet (P2-011): connect `+VIN` to `+5V`, decide the `+3V3A` rail (and its NR and output capacitors if TPS73533DRBR stays), fix the C162430 LCSC field, then annotate. Get the team decision on the second barometer (P0-009, OPEN-014). Check the sensor footprints against the datasheets (P2-012) before placing them. Keep sensor-specific resources provisional until the sensor requirements are decided. Keep the candidate/unverified label on all pin mappings. Reserve the USART safety path and test access. Do not begin fabrication release until the applicable P0 to P3 evidence and Human approval are complete.

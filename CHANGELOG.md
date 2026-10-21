@@ -20,6 +20,7 @@ Notable changes to this hardware project are documented here.
 - Power sheet parts in `power_supplies.kicad_sch`: JST GH power module connector (`+VIN`, `PM02_SCL`, `PM02_SDA`), TPS62142RGTR 3.3 V buck with 2.2 µH inductor, TPS73533DRBR `+3V3A` LDO (drawn, not decided), 3.3 V indicator LED, and a DNP DF2S6.2CT on `+VIN`. All parts are unannotated, and `+5V` has no source yet (OPEN-012).
 - Project library under `library/` with `sym-lib-table` and `fp-lib-table`: STM32 MCU, regulator, ESD, diode, connector, FET and passive parts with footprints and 3D models.
 - Library starting points for the sensors: ICM-45686, ICP-20100, BMP390 and BMM150 symbols with LGA and WLCSP footprints. Not placed. Pin maps match the datasheet tables; land patterns and pin 1 orientation are not checked yet (OPEN-013). The BMM150 3D model is missing from the KiCad 10 install.
+- BMP581 library starting point: `0_Sensor_Pressure:BMP581`, pin map checked against BST-BMP581-DS004-13 Rev 1.13 Table 28 through NotebookLM. Not placed. BMP581 is a candidate, not a decided part (OPEN-014).
 
 ### Changed
 
@@ -32,6 +33,9 @@ Notable changes to this hardware project are documented here.
 - Sensor lifecycle recorded: ICP-20100 is EOL (TDK), and Bosch no longer lists BMM150. Both are decided parts (DEC-010, DEC-011), so their sourcing stays open (OPEN-004).
 - Library names follow KLC: `STM32F103C8Tx`, `0_Conn:Conn_ARM_JTAG_SWD_10`, `0_Diode:SMBJ30A`, the VSON-8 thermal-via footprint (its two schematic Footprint fields updated), and lowercase `.step` model files.
 - Claude Code configuration: KiCad library checks and syncs now run from the global `kicad-*` skills, the local `hw-link-audit` and `hw-*-sync` copies are removed, the `progress-update` skill is added, and all project skills are tracked.
+- BMP390 removed from the design because LCSC C5124834 is not available (DEC-010 revised, specification rev 0.8, checklist rev 0.7). The second barometer is open (OPEN-014); Bosch BMP581 (LCSC C5362283) is proposed and waits for team confirmation. The BMP390 library symbol and footprint are kept until then.
+- `Bosch_LGA-10_2x2mm_P0.5mm_LayoutBorder3x2y` pads changed from the ST size (0.425 × 0.35 mm) to the BMP581 land pattern (0.325 × 0.30 mm, smallest gap 0.20 mm); description and tags updated. The pad sizes were read from a datasheet figure and are `NOT_VERIFIED`. DRC not run.
+- Root `README.md`: `Status` changed from `CONCEPT` to `DRAFT` to match the declared phase.
 - Root `README.md` and `CLAUDE.md` rewritten for the current design state and workflow. `hardware/AO-Horizon/README.md` and the `documents/` and `documents/design/` indexes now name the real project files and records.
 
 ### Fixed

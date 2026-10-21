@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.2
-**Updated:** 2026-10-19
+**Revision:** 0.3
+**Updated:** 2026-10-21
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012). No other rail, regulator or protection part is approved. Not a verification record.
-**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012 (spec). Decision: DEC-012. Checklist task: P0-017.
+**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012, OPEN-014 (spec). Decision: DEC-012. Checklist task: P0-017.
 **Decision owner:** Hardware
 
 Single record for rail loads, rail tolerances, brownout thresholds and power protection requirements.
@@ -61,7 +61,7 @@ Typical or average current per load. Peak current listed where known. "TBD" mean
 | STM32H743VIT6 | 1 | TBD | TBD | st.com unreachable | `NOT_VERIFIED` |
 | STM32F103C8T6 | 1 | TBD | TBD | st.com unreachable | `NOT_VERIFIED` |
 | ICP-20100 | 1 | TBD | TBD | invensense.tdk.com unreachable | `NOT_VERIFIED` |
-| BMP390 | 1 | 3.2 µA average at 1 Hz | TBD | Bosch | `VERIFIED` |
+| Barometer 2 | 1 | TBD | TBD | Part not chosen (OPEN-014) | `TBD` |
 | BMM150, regular preset | 1 | 0.5 mA average (4.9 mA in high-accuracy preset) | 18 to 20 mA during measurement | Snippet (Bosch DS PDF) | `NOT_VERIFIED` |
 | I2C pull-ups | TBD | TBD | - | Depends on P1-004, P1-005 | `TBD` |
 | Status LEDs | TBD | TBD | - | Not defined | `TBD` |
@@ -94,7 +94,7 @@ Which outputs drive servos (6 V) and which drive ESC signal inputs only is not r
 | Rail | Known subtotal | Missing | Budget | Margin | Label |
 | ---- | -------------- | ------- | ------ | ------ | ----- |
 | 3.3 V_IMU | 0.88 mA (2 × 0.44 mA) | IMU peak | TBD. The drawn `+3V3A` LDO TPS73533DRBR is rated 500 mA (TI SBVS087M 5.3) but is not decided (OPEN-011). | TBD | `ESTIMATED` from `NOT_VERIFIED` inputs |
-| 3.3 V | about 0.5 mA (BMP390 + BMM150 regular) | Both MCUs, ICP-20100, pull-ups, LEDs | 2 A, TPS62142RGTR (DEC-012, TI SLVSAJ0F) | TBD | `ESTIMATED` from partial inputs |
+| 3.3 V | about 0.5 mA (BMM150 regular) | Both MCUs, ICP-20100, barometer 2, pull-ups, LEDs | 2 A, TPS62142RGTR (DEC-012, TI SLVSAJ0F) | TBD | `ESTIMATED` from partial inputs |
 | 5 V | 70 mA average, 150 mA peak (TF-Luna only) | All other external loads, 3.3 V regulator input | 2 A source (PWR-010) | TBD | `ESTIMATED` from partial inputs |
 | 6 V | none | All servo loads | 10 A cont., 15 A inst. (PWR-011) | TBD | `TBD` |
 
@@ -110,7 +110,6 @@ The subtotals are far from complete. Do not use them to size a regulator. The MC
 | 6 V servo | 6 V | TBD | TBD | TBD | TBD | `TBD` |
 
 Known upper bounds for the 3.3 V rails:
-- BMP390 VDD and VDDIO max 3.6 V (Bosch, `VERIFIED`).
 - ICM-45686 VDD and VDDIO max 3.6 V recommended, 4 V absolute maximum (IMU rec, `NOT_VERIFIED`).
 - BMM150 VDD max 3.6 V (snippet, `NOT_VERIFIED`).
 - `ESTIMATED`: 3.3 V nominal leaves 0.3 V (9 %) to the 3.6 V limit for regulator tolerance, load transients and overshoot.
@@ -161,7 +160,6 @@ All `TBD`. Items to decide:
 
 ## 10. Sources
 
-- Bosch BMP390: https://www.bosch-sensortec.com/products/environmental-sensors/pressure-sensors/bmp390/
 - BMM150 snippet source (PDF, not opened): https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmm150-ds001.pdf
 - TF-Luna snippet source (third-party PDF, not opened): https://files.waveshare.com/upload/c/c3/SJ-GU-TF-Luna_A05_Datasheet.pdf
 - TI TPS62142: https://www.ti.com/product/TPS62142
