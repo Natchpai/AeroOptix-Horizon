@@ -40,6 +40,34 @@ that part by hand and say so in the report.
 
 ## Steps
 
+### 0. Preflight
+Run the deterministic checks first, from the repo root:
+```bash
+python -I -X utf8 <skills dir>/progress-update/scripts/progress_preflight.py [--since <ref>]
+```
+It prints one JSON: project, spec and checklist paths, since point, commits,
+changed files by kind, per-sheet parts, library checks, doc checks and a
+`findings` list. Use it for steps 1, 2, the sheet and library parts of 3, the
+listed checks in 4, and 7. Read the JSON, not the KiCad files, for anything it
+covers. Options:
+- `--project <file.kicad_pro or folder>` when the repo has several projects
+  (run from inside a project folder also picks it).
+- `--spec <md>` and `--checklist <md>` when the names do not contain `SPEC`
+  and `CHECKLIST` (the spec is also found by an H1 that says
+  "Specification").
+- `--id-prefixes DEC,OPEN,...` when the spec's ID prefixes are not found right
+  (default: short or zero-padded IDs in the first column of table rows).
+  `--open-prefix` (default `OPEN`) and `--tracker-prefix` (default `OI`) set
+  the open-item and checklist tracker IDs.
+- `--pin-text SYMBOL=<fulltext.txt>` (for example a NotebookLM
+  `source fulltext` dump) to match a new symbol's pins against its datasheet.
+
+If it prints `"verification": "NOT_VERIFIED"` with an `error` (several
+projects, no git, bad ref), fix the option it names or report the error and
+do steps 1 to 4 by hand.
+`--since` takes a git ref only; for a date, find the ref with
+`git log -1 --before=<date> --format=%h`.
+
 ### 1. Find the project
 - **KiCad project:** `git ls-files '*.kicad_pro'`. The root schematic is the
   `.kicad_sch` with the same name. Several projects: ask which one.
@@ -57,6 +85,7 @@ Done when you know the project folder, root schematic, each doc path (or
 `MISSING`), and the since point.
 
 ### 2. Baseline
+Preflight keys `commits`, `changed_by_kind` and `uncommitted`. By hand:
 ```bash
 git log --oneline --since=<date>            # or <ref>..HEAD
 git diff --name-only <ref> -- <project dir>
@@ -66,13 +95,14 @@ Done when you have the list of changed `.kicad_sch` / `.kicad_pcb` files, lib
 table changes, and new library items.
 
 ### 3. Collect
-- **Sheets:** for each changed sheet, list its parts and labels:
-  `python -I <skills dir>/progress-update/scripts/list_symbols.py <sheet.kicad_sch>`.
+- **Sheets:** preflight `sheets` lists each sheet's parts and labels. By
+  hand: `python -I <skills dir>/progress-update/scripts/list_symbols.py <sheet.kicad_sch>`.
   Then trace each IC and connector with `sch-inspect`
   (`query_sch.py local-net <ref> --project <root.kicad_sch>`). Unannotated
   refs such as `U?` work as targets; the tool returns every match.
 - **PCB:** if `.kicad_pcb` changed, run `pcb-inspect` `summary`.
-- **Library:** list new symbol, footprint and 3D model names. Suggest
+- **Library:** list new symbol, footprint and 3D model names (preflight
+  `library`: pins against pads, missing 3D models, unresolved links). Suggest
   `/kicad-link-audit`; leave it to the human to run.
 - **Session:** list each design decision the human stated, with a quote.
 
@@ -80,11 +110,18 @@ Done when every changed sheet has a state table (block, as drawn, evidence)
 and every part in it is tagged DECISION or DRAWN.
 
 ### 4. Findings
-Check each changed sheet for:
-- power nets with no source (a rail used but never driven)
-- LCSC or MPN fields that conflict with the Value, or one code on two values
-- unannotated references
-- labels that reach nothing
+Preflight `findings` already covers: one LCSC code on two values,
+unannotated references, single-use local labels, no `PWR_FLAG`, board parts
+with no footprint, unresolved symbol or footprint links, pin and pad
+mismatches and missing 3D models. Read its `limitations` list: without the
+global KiCad library tables, stock links are not checked.
+Copy those rows; each is `[severity, check, item, detail]` and its evidence
+is the saved file, so label it `VERIFIED` with "preflight" as the source.
+
+Check by hand, because they need connectivity or a datasheet:
+- power nets with no source (a rail used but never driven), with `sch-inspect`
+- LCSC or MPN fields that conflict with the Value
+- labels that reach nothing on any sheet (preflight sees one sheet at a time)
 - parts a checked datasheet recommends that are missing
 
 Done when each finding has a severity, a label and its evidence.
@@ -119,11 +156,17 @@ Done when every decision and open item added to the spec also appears in the
 checklist, the README and the CHANGELOG (for each doc that exists).
 
 ### 7. Check
+Run preflight again with `--findings-only` and the same `--since`. It reads
+the working tree, so it sees your edits. No `em_dash`, `undefined_id`,
+`no_tracker_row` or `broken_link` row may be new. Then:
 ```bash
-git diff -U0 | grep -cP '^\+.*\x{2014}'     # em dashes added: must be 0
 git diff --stat
 ```
-Also confirm that every new open item has a checklist tracker row, and every
+By hand, if preflight failed:
+```bash
+git diff -U0 | grep -cP '^\+.*\x{2014}'     # em dashes added: must be 0
+```
+and confirm that every new open item has a checklist tracker row, and every
 decision and open-item ID you cite exists in the spec.
 
 ### 8. Report
