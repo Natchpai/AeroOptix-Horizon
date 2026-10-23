@@ -556,7 +556,7 @@
 				(alternate "USART3_RX" bidirectional line)
 			)
 			(pin power_in line
-				(at 0 -43.18 90)
+				(at -5.08 -43.18 90)
 				(length 5.08)
 				(name "VSS"
 					(effects
@@ -803,10 +803,9 @@
 				)
 				(alternate "SYS_JTMS-SWDIO" bidirectional line)
 			)
-			(pin passive line
-				(at 0 -43.18 90)
+			(pin power_in line
+				(at -2.54 -43.18 90)
 				(length 5.08)
-				(hide yes)
 				(name "VSS"
 					(effects
 						(font
@@ -1048,10 +1047,9 @@
 				(alternate "I2C1_SDA" bidirectional line)
 				(alternate "TIM4_CH4" bidirectional line)
 			)
-			(pin passive line
+			(pin power_in line
 				(at 0 -43.18 90)
 				(length 5.08)
-				(hide yes)
 				(name "VSS"
 					(effects
 						(font
