@@ -554,6 +554,9 @@
     },
     "net_colors": {},
     "netclass_assignments": {
+      "/Top/Power Supplies/+5V_BUCK": [
+        "+5V"
+      ],
       "/Top/Power Supplies/3V3_SW": [
         "+3V3"
       ]

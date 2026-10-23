@@ -10,8 +10,112 @@
 	)
 	(lib_symbols)
 	(rectangle
-		(start 85.09 45.72)
-		(end 172.72 87.63)
+		(start 49.53 97.79)
+		(end 74.93 102.87)
+		(stroke
+			(width -0.0001)
+			(type solid)
+		)
+		(fill
+			(type color)
+			(color 255 195 189 1)
+		)
+		(uuid "149797d3-142e-4aa1-804d-9de787cc685d")
+	)
+	(rectangle
+		(start 120.65 62.23)
+		(end 133.35 67.31)
+		(stroke
+			(width -0.0001)
+			(type solid)
+		)
+		(fill
+			(type color)
+			(color 204 175 230 1)
+		)
+		(uuid "24729f9b-025f-4117-9ea9-7bfa93cdde67")
+	)
+	(rectangle
+		(start 96.52 97.79)
+		(end 120.65 102.87)
+		(stroke
+			(width -0.0001)
+			(type solid)
+		)
+		(fill
+			(type color)
+			(color 255 195 189 1)
+		)
+		(uuid "3818f96f-50e0-4609-9fa9-d860d51afa5d")
+	)
+	(rectangle
+		(start 120.65 44.45)
+		(end 133.35 49.53)
+		(stroke
+			(width -0.0001)
+			(type solid)
+		)
+		(fill
+			(type color)
+			(color 230 160 225 1)
+		)
+		(uuid "382f9c53-5904-4c85-b14b-5aa0ec743e22")
+	)
+	(rectangle
+		(start 49.53 69.85)
+		(end 57.15 74.93)
+		(stroke
+			(width -0.0001)
+			(type solid)
+		)
+		(fill
+			(type color)
+			(color 221 170 82 1)
+		)
+		(uuid "3a438a16-3abd-4649-9c66-d92305ec98fa")
+	)
+	(rectangle
+		(start 82.55 44.45)
+		(end 87.63 74.93)
+		(stroke
+			(width -0.0001)
+			(type solid)
+		)
+		(fill
+			(type color)
+			(color 221 170 82 1)
+		)
+		(uuid "848234d7-84ee-47e9-a74d-5c842594cc86")
+	)
+	(rectangle
+		(start 76.2 69.85)
+		(end 82.55 74.93)
+		(stroke
+			(width -0.0001)
+			(type solid)
+		)
+		(fill
+			(type color)
+			(color 221 170 82 1)
+		)
+		(uuid "8c7b2089-b9a3-43ad-9406-dc31f8c2f4c7")
+	)
+	(rectangle
+		(start 49.53 44.45)
+		(end 57.15 49.53)
+		(stroke
+			(width -0.0001)
+			(type solid)
+		)
+		(fill
+			(type color)
+			(color 221 170 82 1)
+		)
+		(uuid "b1154212-7bde-4c75-85a9-39f184b51dc4")
+	)
+	(rectangle
+		(start 64.77 167.64)
+		(end 152.4 209.55)
 		(stroke
 			(width 0)
 			(type default)
@@ -20,6 +124,72 @@
 			(type none)
 		)
 		(uuid "bef6cfad-87ed-4fad-a1ba-9a326148feef")
+	)
+	(rectangle
+		(start 76.2 44.45)
+		(end 95.25 49.53)
+		(stroke
+			(width -0.0001)
+			(type solid)
+		)
+		(fill
+			(type color)
+			(color 221 170 82 1)
+		)
+		(uuid "c1df3915-225a-43ac-9f81-aed46813dff7")
+	)
+	(rectangle
+		(start 87.63 62.23)
+		(end 95.25 67.31)
+		(stroke
+			(width -0.0001)
+			(type solid)
+		)
+		(fill
+			(type color)
+			(color 221 170 82 1)
+		)
+		(uuid "cb089293-609e-4079-9057-c0a4119b84cc")
+	)
+	(text "+5V"
+		(exclude_from_sim no)
+		(at 85.09 48.26 0)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 1.778 1.778)
+				(bold yes)
+				(color 0 0 0 1)
+			)
+		)
+		(uuid "2f5ba9d8-ca69-4e41-8d6c-ce3ee72ceecb")
+	)
+	(text "+3V3A"
+		(exclude_from_sim no)
+		(at 126.8457 65.7099 0)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 1.778 1.778)
+				(bold yes)
+				(color 0 0 0 1)
+			)
+		)
+		(uuid "4db5d35a-5ecc-444a-a1c3-2c82afe3ef2b")
+	)
+	(text "+6V (MAX 10A)"
+		(exclude_from_sim no)
+		(at 61.884 101.0893 0)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 1.524 1.524)
+				(thickness 0.254)
+				(bold yes)
+				(color 194 0 0 1)
+			)
+		)
+		(uuid "5c1f9c42-fce9-42db-a107-d1fb39319301")
 	)
 	(text "[${#}] ${COMMENT1}"
 		(exclude_from_sim no)
@@ -33,9 +203,252 @@
 		)
 		(uuid "660f9b16-b125-4df8-b4b1-37a82ff753ec")
 	)
+	(text "+6V (MAX 10A)"
+		(exclude_from_sim no)
+		(at 108.6613 101.0893 0)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 1.524 1.524)
+				(thickness 0.254)
+				(bold yes)
+				(color 194 0 0 1)
+			)
+		)
+		(uuid "abdfae04-3e5e-4836-8a4d-736a97a80d7a")
+	)
+	(text "+3V3"
+		(exclude_from_sim no)
+		(at 126.7973 47.8416 0)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 1.778 1.778)
+				(bold yes)
+				(color 0 0 0 1)
+			)
+		)
+		(uuid "f7d1069a-7351-4b64-9696-b42e379d7b4e")
+	)
+	(text_box "eFuse\n(Set 1.5A)"
+		(exclude_from_sim no)
+		(at 57.15 40.64 0)
+		(size 19.05 12.7)
+		(margins 0.9525 0.9525 0.9525 0.9525)
+		(stroke
+			(width 0.254)
+			(type solid)
+			(color 132 132 132 1)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 1.778 1.778)
+				(bold yes)
+				(color 0 0 0 1)
+			)
+		)
+		(uuid "21c6ffc0-8316-41ba-8d2b-68b0a7e1a5cd")
+	)
+	(text_box "Buck Converter \n(MAX 2A)"
+		(exclude_from_sim no)
+		(at 95.25 40.64 0)
+		(size 25.4 12.7)
+		(margins 0.9525 0.9525 0.9525 0.9525)
+		(stroke
+			(width 0.254)
+			(type solid)
+			(color 132 132 132 1)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 1.778 1.778)
+				(bold yes)
+				(color 0 0 0 1)
+			)
+		)
+		(uuid "449dd681-5773-44ea-b7b1-60e2420c2dd3")
+	)
+	(text_box "PWR Conn\n(PM02D)"
+		(exclude_from_sim no)
+		(at 30.48 40.64 0)
+		(size 19.05 12.7)
+		(margins 0.9525 0.9525 0.9525 0.9525)
+		(stroke
+			(width 0.254)
+			(type solid)
+			(color 132 132 132 1)
+		)
+		(fill
+			(type color)
+			(color 212 237 255 1)
+		)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 1.778 1.778)
+				(bold yes)
+				(color 0 0 0 1)
+			)
+		)
+		(uuid "672817cf-0bc3-4df0-a73d-4099c2d7e607")
+	)
+	(text_box "LDO Regulator\n(MAX 0.5A)"
+		(exclude_from_sim no)
+		(at 95.25 58.42 0)
+		(size 25.4 12.7)
+		(margins 0.9525 0.9525 0.9525 0.9525)
+		(stroke
+			(width 0.254)
+			(type solid)
+			(color 132 132 132 1)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 1.778 1.778)
+				(bold yes)
+				(color 0 0 0 1)
+			)
+		)
+		(uuid "cd855057-2034-4404-824f-43114bde45d4")
+	)
+	(text_box "V & I Measure"
+		(exclude_from_sim no)
+		(at 74.93 93.98 0)
+		(size 21.59 12.7)
+		(margins 0.9525 0.9525 0.9525 0.9525)
+		(stroke
+			(width 0.254)
+			(type solid)
+			(color 132 132 132 1)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 1.778 1.778)
+				(bold yes)
+				(color 0 0 0 1)
+			)
+		)
+		(uuid "d318c4d1-367e-4987-9791-e6485cb62d24")
+	)
+	(text_box "Servo Conn"
+		(exclude_from_sim no)
+		(at 120.65 93.98 0)
+		(size 19.05 12.7)
+		(margins 0.9525 0.9525 0.9525 0.9525)
+		(stroke
+			(width 0.254)
+			(type solid)
+			(color 132 132 132 1)
+		)
+		(fill
+			(type color)
+			(color 255 194 196 1)
+		)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 1.778 1.778)
+				(bold yes)
+				(color 0 0 0 1)
+			)
+		)
+		(uuid "db89f26f-e487-4c88-8f82-8537c9ef9d01")
+	)
+	(text_box "USB-C\n(VBUS)"
+		(exclude_from_sim no)
+		(at 30.48 66.04 0)
+		(size 19.05 12.7)
+		(margins 0.9525 0.9525 0.9525 0.9525)
+		(stroke
+			(width 0.254)
+			(type solid)
+			(color 132 132 132 1)
+		)
+		(fill
+			(type color)
+			(color 212 237 255 1)
+		)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 1.778 1.778)
+				(bold yes)
+				(color 0 0 0 1)
+			)
+		)
+		(uuid "deee70a0-f6de-422f-bda0-a13feeefc24a")
+	)
+	(text_box "PWR Conn\n(UBEC 10A)"
+		(exclude_from_sim no)
+		(at 30.48 93.98 0)
+		(size 19.05 12.7)
+		(margins 0.9525 0.9525 0.9525 0.9525)
+		(stroke
+			(width 0.254)
+			(type solid)
+			(color 132 132 132 1)
+		)
+		(fill
+			(type color)
+			(color 255 194 196 1)
+		)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 1.778 1.778)
+				(bold yes)
+				(color 0 0 0 1)
+			)
+		)
+		(uuid "e84ff5c7-169f-443d-9f26-5c018a0e8dec")
+	)
+	(text_box "Reverse Current \nProtection"
+		(exclude_from_sim no)
+		(at 57.15 66.04 0)
+		(size 19.05 12.7)
+		(margins 0.9525 0.9525 0.9525 0.9525)
+		(stroke
+			(width 0.254)
+			(type solid)
+			(color 132 132 132 1)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 1.778 1.778)
+				(bold yes)
+				(color 0 0 0 1)
+			)
+		)
+		(uuid "e8b6ae58-4807-4c1b-9a0c-287548dc6b36")
+	)
 	(polyline
 		(pts
-			(xy 135.89 68.58) (xy 167.64 62.23)
+			(xy 115.57 190.5) (xy 147.32 184.15)
 		)
 		(stroke
 			(width 0)
@@ -45,7 +458,7 @@
 	)
 	(polyline
 		(pts
-			(xy 135.89 58.42) (xy 167.64 53.34)
+			(xy 115.57 180.34) (xy 147.32 175.26)
 		)
 		(stroke
 			(width 0)
@@ -55,7 +468,7 @@
 	)
 	(polyline
 		(pts
-			(xy 135.89 77.47) (xy 167.64 71.12)
+			(xy 115.57 199.39) (xy 147.32 193.04)
 		)
 		(stroke
 			(width 0)
@@ -65,7 +478,7 @@
 	)
 	(polyline
 		(pts
-			(xy 82.55 60.96) (xy 90.17 55.88)
+			(xy 62.23 182.88) (xy 69.85 177.8)
 		)
 		(stroke
 			(width 0)
@@ -74,7 +487,7 @@
 		(uuid "ab8021bf-8482-49c9-ab31-fd3a8b1d9c94")
 	)
 	(image
-		(at 212.09 145.415)
+		(at 191.77 267.335)
 		(scale 0.823638)
 		(uuid "baaf3e84-5cea-4b94-9c7a-c4641e196ddb")
 		(data "iVBORw0KGgoAAAANSUhEUgAAEsAAAAyACAIAAADj3OZCAAAQAElEQVR4nOzdCYDOdf4H8G+tITKj"
