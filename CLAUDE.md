@@ -16,7 +16,7 @@ AeroOptix-Horizon is a KiCad 10 hardware design for a dual-MCU flight controller
 
 ## Rules
 
-`.claude/rules/` loads every session and owns the rules: `engineering.md` (design authority, change proposals, evidence labels, datasheet sources, NotebookLM), `hardware-workflow.md` (phases, PDFs, Markdown docs) and `git-workflow.md` (hardware Git notes on top of the global `~/.claude/rules/git-workflow.md`). This repo adds:
+`.claude/rules/` loads every session and owns the rules: `engineering.md` (design authority, change proposals, evidence labels, datasheet sources, NotebookLM), `hardware-workflow.md` (phases, PDFs, Markdown docs), `notebooklm.md` (NotebookLM procedure, path-scoped) and `git-workflow.md` (hardware Git notes on top of the global `~/.claude/rules/git-workflow.md`). This repo adds:
 
 - **Protected paths.** The `protect_kicad_v2.py` PreToolUse hook (rules in `.claude/hooks/protect.json`, order allow > deny > ask) and the permission lists in `.claude/settings.json` control edits to KiCad files, `library/` and `templates/`. The engineer edits both often, and they can disagree (one may allow what the other asks for), so read both before acting on a protected path. A permission `allow` is not design authorization: a KiCad or library change still needs the engineer's approval of that specific change.
 - **Git.** Every Git mutation needs explicit, action-specific approval in chat, even where `settings.json` lets the command run without a prompt. Never merge a PR, force-push or `reset --hard`. Work on `dev`, and open PRs to `main` with `.github/pull_request_template.md`.
@@ -28,3 +28,7 @@ AeroOptix-Horizon is a KiCad 10 hardware design for a dual-MCU flight controller
 - **Design data:** `sch-inspect` and `pcb-inspect` extract evidence from the saved files; `sch-review` and `pcb-review` judge it. Query narrow targets (sheet, ref, net), and brief subagents the same way with exact paths. Unannotated refs such as `U?` return every match.
 - **Docs after design work:** the human runs `/progress-update`.
 - **Datasheets:** each sensor and MCU has a NotebookLM notebook (`notebooklm list --json`). JLCPCB stock and price are JavaScript-rendered and Mouser often times out, so supplier values from search snippets stay `NOT_VERIFIED`; spot-check key values before writing them into a `design/` record.
+
+## Compact Instructions
+
+When compacting, keep: spec IDs (`DEC-xxx`, `OPEN-xxx`) in play, files changed and not yet committed, pending approvals and the exact change each covers, evidence labels on open values, the branch and unpushed commits, and decisions the user made this session. Do not carry over the phase; read it from `README.md` again.
