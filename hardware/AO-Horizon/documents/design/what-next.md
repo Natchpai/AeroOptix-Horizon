@@ -1,6 +1,6 @@
 # What Next
 
-**Updated:** 2026-10-22
+**Updated:** 2026-10-24
 **Status:** Personal reminder list. Not a requirement, decision or verification record.
 
 The specification and the execution checklist stay the source of truth. This list only points to their IDs.
@@ -28,10 +28,11 @@ Check against the datasheet figures yourself:
 - [ ] BMP581: Fig. 32 pad sizes and the pin 1 corner (Fig. 29, 30) on `Bosch_LGA-10_2x2mm_P0.5mm_LayoutBorder3x2y`.
 - [ ] Solder mask under BMP581: Bosch asks for none, with 20 µm clearance (DS004-13 §8.2).
 - [ ] ICP-20100: land pattern (AN-000140) and pin 1 corner.
-- [ ] BMM150: A1 corner, mirroring, and the missing 3D model.
+- [ ] IST8310: make the library starting point (`kicad-part-start`), then check the land pattern and pin 1 corner against the datasheet drawing. BMM150 is no longer used (DEC-011, 2026-10-24).
 
 ## 4. Waiting on the team
 
+- [ ] Send `AO-HORIZON_PINMAP_REVIEW_EN.md` rev 0.2 to the team: proposed extra pins (section 3.6) and new questions Q11 to Q19 (IST8310, safety switch, LEDs, PM02D bus, buzzer, IMU CLKIN, DShot, PX4 board port, USB).
 - [ ] Is BMP581 (LCSC C5362283) confirmed as barometer 2? (OPEN-014, P0-009)
 - [ ] Did the pinout come from Pixhawk 6C, 6X or both? What board was "it works" tested on? Then fix the source note in `AO-HORIZON_PIN_ALLOCATION_EN.md`.
 - [ ] Correct the F103 TIM3_CH5 to CH8 labels for COAX and AIL (OPEN-003). TIM3 has CH1 to CH4 only.

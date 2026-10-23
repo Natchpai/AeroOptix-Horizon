@@ -1,7 +1,7 @@
 # AeroOptix-Horizon: Pinmap Review for the Software Team
 
-**Revision:** 0.1
-**Updated:** 2026-10-22
+**Revision:** 0.2
+**Updated:** 2026-10-24
 **From:** Hardware
 **To:** Software / PX4 dev team
 **Status:** Draft for review. Nothing here is approved. Return this file with the `Team` column and section 6 filled in.
@@ -16,7 +16,7 @@ You can fill this in by hand or ask Claude to do it. Rules for the reply:
    - `?: <question>`: you are not sure, or need hardware to explain.
 2. Do not edit the other columns. Hardware updates them after your reply.
 3. Answer every question in section 6 under its `Answer:` line.
-4. Add new pins you need (LEDs, buzzer, safety switch, ADC, extra GPIO) in section 7.
+4. Section 3.6 proposes pins for LEDs, buzzer, safety switch and other extras. Review them like the other rows. Add any other pins you need in section 7.
 5. Keep the file name. Send the whole file back.
 
 ## 2. Board summary
@@ -30,7 +30,8 @@ You can fill this in by hand or ask Claude to do it. Rules for the reply:
 | Debug | SWD on both MCUs |
 | IMU | 2 × ICM-45686, each on its own SPI bus |
 | Barometer | ICP-20100 + barometer 2 (BMP581 proposed, not confirmed) |
-| Magnetometer | 1 × BMM150 |
+| Magnetometer | 1 × iSentek IST8310 (changed from BMM150 on 2026-10-24, see Q11) |
+| Power module | PM02D, digital (I2C), see Q14 |
 | Logic level | 3.3 V on both MCUs |
 
 The pins in sections 3 and 4 come from the pinout the team sent to hardware. Hardware checked that each pin can carry its signal (ST pin data and datasheets). Hardware did not check DMA streams, interrupt priorities or timer clocks.
@@ -62,9 +63,9 @@ The pins in sections 3 and 4 come from the pinout the team sent to hardware. Har
 | Bus | Devices | SCL | SDA | Team |
 |---|---|---|---|---|
 | I2C1 | GPS1 compass (external) | PB8 (95) | PB9 (96) | |
-| I2C2 | ICP-20100 + BMM150 (onboard) | PB10 (46) | PB11 (47) | |
+| I2C2 | ICP-20100 + IST8310 (onboard) | PB10 (46) | PB11 (47) | |
 | I2C3 | Barometer 2 (onboard, BMP581 proposed) | PA8 (67) | PC9 (66) | |
-| I2C4 | MS4525DO airspeed (external) | PD12 (59) | PD13 (60) | |
+| I2C4 | MS4525DO airspeed (external) + PM02D power module (proposed, Q14) | PD12 (59) | PD13 (60) | |
 
 ### 3.3 SPI buses (IMUs)
 
@@ -73,7 +74,7 @@ The pins in sections 3 and 4 come from the pinout the team sent to hardware. Har
 | IMU1 ICM-45686 on SPI1 | PA5 (29) | PA6 (30) | PA7 (31) | PA4 (28) | PC4 (32), EXTI4 | |
 | IMU2 ICM-45686 on SPI4 | PE12 (42) | PE13 (43) | PE14 (44) | PE11 (41) | PE15 (45), EXTI15 | |
 
-No IMU reset line. Reset is by software (`SOFT_RST`). IMU INT2 and CLKIN are not connected yet.
+No IMU reset line. Reset is by software (`SOFT_RST`). IMU pin 9 (INT2/FSYNC/CLKIN) is proposed in section 3.6 (see Q16).
 
 ### 3.4 PWM outputs on the H743
 
@@ -101,7 +102,27 @@ No IMU reset line. Reset is by software (`SOFT_RST`). IMU INT2 and CLKIN are not
 
 HSE frequency is not decided (see Q6).
 
-Free H743 pins: PA0, PA1, PA10, PB0, PB1, PB2, PB5, PB6, PB7, PB12, PB13, PC0, PC1, PC2_C, PC3_C, PC5, PC8, PC10 to PC15, PD0 to PD4, PD7, PD10, PD11, PE2 to PE6, PE10. PA15, PB3 and PB4 are also free (JTAG pins, SWD only is used).
+### 3.6 Proposed pins for the remaining functions
+
+New in revision 0.2. Hardware picked these from the free list. Each signal was checked against ST pin data and the NuttX pinmap, no pin is used twice, and the EXTI lines are all different. Rows marked "only if" depend on your answer to the question named.
+
+| Function | Signal | Pin | Pkg | Notes | Team |
+|---|---|---|---|---|---|
+| LED red | GPIO out, active low | PE2 | 1 | Q13 | |
+| LED blue | GPIO out, active low | PE3 | 2 | Same as PX4 `matek/h743-slim`. Q13 | |
+| LED green | GPIO out, active low | PE4 | 3 | Same as PX4 `matek/h743-slim`. Q13 | |
+| Buzzer | TIM2_CH1 (AF1) | PA15 | 77 | Same as PX4 `matek/h743-slim`. Q15 | |
+| Safety LED | GPIO out | PD10 | 57 | Only if the safety switch is on the H743 (Q12) | |
+| Safety button | GPIO in, EXTI11 | PD11 | 58 | Only if the safety switch is on the H743 (Q12) | |
+| IST8310 DRDY | GPIO in, EXTI12 | PB12 | 51 | Optional. PX4 `ist8310` polls a status register instead (Q11) | |
+| IST8310 RSTN | GPIO out, open drain | PB13 | 52 | Optional. Internal pull-up on the IST8310 (Q11) | |
+| IMU1 pin 9 (INT2/CLKIN) | TIM3_CH3 (AF2) or GPIO in, EXTI0 | PB0 | 34 | Through a 0 Ω, fitted or not (Q16) | |
+| IMU2 pin 9 (INT2/CLKIN) | TIM3_CH4 (AF2) or GPIO in, EXTI1 | PB1 | 35 | Same timer as IMU1 (Q16) | |
+| F103 NRST control | GPIO out, open drain | PD3 | 84 | Only if Q9 is yes | |
+| F103 BOOT0 control | GPIO out | PD4 | 85 | Only if Q9 is yes | |
+| Analog battery V / I | ADC123_INP10 / INP11 | PC0 / PC1 | 15 / 16 | Reserve only, for an analog power module (Q14) | |
+
+Free H743 pins: PA0, PA1, PA10, PB0, PB1, PB2, PB5, PB6, PB7, PB12, PB13, PC0, PC1, PC2_C, PC3_C, PC5, PC8, PC10 to PC15, PD0 to PD4, PD7, PD10, PD11, PE2 to PE6, PE10. PA15, PB3 and PB4 are also free (JTAG pins, SWD only is used). This list still includes the pins proposed in section 3.6 until you accept them.
 
 ## 4. STM32F103C8T6 (IO MCU)
 
@@ -142,15 +163,16 @@ Free F103 pins: PA4, PA5, PA8, PA11, PA12, PA15, PB3 to PB7, PB10 to PB15, PC13 
 
 ## 5. Sensor addresses and drivers
 
-Address straps are not decided. Pick one address per part, or say "any" (see Q8). The address sets do not overlap.
+Address straps are not decided. Pick one address per part, or say "any" (see Q8). The address sets of the sensors do not overlap. The PM02D address is not checked yet (Q14).
 
 | Part | Bus | Address options | Set by | PX4 driver | Team |
 |---|---|---|---|---|---|
 | ICM-45686 (×2) | SPI1, SPI4 | - | - | `imu/invensense/icm45686` | |
 | ICP-20100 | I2C2 | 0x63 or 0x64 | AD0 pin | `barometer/invensense/icp201xx` (ICP-20100 coverage not checked) | |
-| BMM150 | I2C2 | 0x10 to 0x13 | CSB and SDO pins | `magnetometer/bosch/bmm150` | |
+| IST8310 | I2C2 | 0x0C to 0x0F (0x0E if both pins float; PX4 default 0x0E) | CAD0 and CAD1 pins | `magnetometer/isentek/ist8310` | |
 | BMP581 (proposed) | I2C3 | 0x46 (SDO low) or 0x47 (SDO high) | SDO pin | `barometer/bmp581` | |
 | MS4525DO (external) | I2C4 | 0x28 | part variant | `differential_pressure/ms4525do` (not checked) | |
+| PM02D power module (external) | I2C4 (proposed) | not checked | module | not checked (Q14) | |
 
 ## 6. Questions for the software team
 
@@ -182,7 +204,7 @@ Answer:
 
 Answer:
 
-**Q8. Sensor addresses.** Any preferred I2C address for ICP-20100, BMM150 and BMP581 (section 5)? Does your board config expect the defaults?
+**Q8. Sensor addresses.** Any preferred I2C address for ICP-20100, IST8310 and BMP581 (section 5)? Does your board config expect the defaults?
 
 Answer:
 
@@ -194,16 +216,49 @@ Answer:
 
 Answer:
 
+Questions Q11 to Q19 are new in revision 0.2.
+
+**Q11. Magnetometer.** Hardware changed the onboard magnetometer from BMM150 to iSentek IST8310 (PX4 driver `magnetometer/isentek/ist8310`). It sits on I2C2, the internal bus, at 0x0E unless you want another address. PX4 polls the IST8310 status register, so the DRDY and RSTN lines in section 3.6 are optional. Is IST8310 OK for you? Do you want DRDY and RSTN connected? A GPS module on I2C1 may also carry an IST8310 at 0x0E; that is a different bus, so there is no clash.
+
+Answer:
+
+**Q12. Safety switch.** Should the safety switch and its LED connect to the H743 (PX4 `GPIO_BTN_SAFETY` and `GPIO_LED_SAFETY`) or to the F103? On Pixhawk boards with an IO MCU, it is on the IO MCU. The answer depends on Q7.
+
+Answer:
+
+**Q13. LEDs.** How many board LEDs, and which colors? Section 3.6 proposes red, blue and green on the H743, active low. The PX4 Matek H743-Slim port uses only blue and green.
+
+Answer:
+
+**Q14. Power module.** The power connector is drawn for a PM02D with I2C (`PM02_SCL`, `PM02_SDA`). Is the module a Holybro PM02D (digital), and which PX4 driver and I2C address does it use? All four H743 I2C buses are in use, so hardware proposes sharing I2C4 with the MS4525DO (0x28). OK, or another bus?
+
+Answer:
+
+**Q15. Buzzer.** Passive buzzer driven by PWM (PX4 `tone_alarm` on TIM2_CH1, PA15), or an active buzzer on a plain GPIO? With TIM2 used for the buzzer, which timer do you want for the PX4 high-resolution timer (HRT)?
+
+Answer:
+
+**Q16. IMU external clock.** The ICM-45686 can take a 20 to 40 kHz clock on pin 9 (CLKIN). The PX4 `icm45686` driver supports it, but its code says `// TODO: this is not tested`. Do you want CLKIN (H743 TIM3 on PB0/PB1), INT2 as a second interrupt, or neither? If neither, pin 9 stays unconnected.
+
+Answer:
+
+**Q17. DShot and output rates.** Which outputs need DShot or a fixed update rate, on the H743 (TIM4, TIM1, TIM15) and on the F103? In the PX4 Matek H743-Slim port, TIM15 has no DMA, so DShot on TL2/TR2 may not work.
+
+Answer:
+
+**Q18. PX4 board port.** Which existing PX4 board target will you base the AO-Horizon port on (for example `matek/h743-slim` or `px4/fmu-v6c`)? Hardware can follow its conventions where it costs nothing.
+
+Answer:
+
+**Q19. USB.** VBUS sense is on PA9 (OTG_FS_VBUS). Do you need OTG_FS_ID (PA10), or is the board USB device only?
+
+Answer:
+
 ## 7. Extra pins you need
 
-Add rows. Hardware picks the pin from the free list if you leave `Pin` empty.
+Add rows for pins not covered by sections 3.6 and 4. Hardware picks the pin from the free list if you leave `Pin` empty.
 
 | Function | MCU (H743 or F103) | Type (GPIO out, GPIO in, ADC, PWM, UART...) | Pin | Notes |
 |---|---|---|---|---|
-| Status LED | | | | |
-| Buzzer | | | | |
-| Safety switch | | | | |
-| Battery voltage sense | | ADC | | |
-| Battery current sense | | ADC | | |
-| BMM150 DRDY | H743 | GPIO in | | |
+| | | | | |
 | | | | | |

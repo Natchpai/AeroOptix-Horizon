@@ -1,7 +1,7 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.3
-**Updated:** 2026-10-21
+**Revision:** 0.4
+**Updated:** 2026-10-24
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012). No other rail, regulator or protection part is approved. Not a verification record.
 **Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012, OPEN-014 (spec). Decision: DEC-012. Checklist task: P0-017.
 **Decision owner:** Hardware
@@ -62,7 +62,7 @@ Typical or average current per load. Peak current listed where known. "TBD" mean
 | STM32F103C8T6 | 1 | TBD | TBD | st.com unreachable | `NOT_VERIFIED` |
 | ICP-20100 | 1 | TBD | TBD | invensense.tdk.com unreachable | `NOT_VERIFIED` |
 | Barometer 2 | 1 | TBD | TBD | Part not chosen (OPEN-014) | `TBD` |
-| BMM150, regular preset | 1 | 0.5 mA average (4.9 mA in high-accuracy preset) | 18 to 20 mA during measurement | Snippet (Bosch DS PDF) | `NOT_VERIFIED` |
+| IST8310 (magnetometer, DEC-011) | 1 | 1.2 mA at 200 sps, 0.32 mA at 50 sps (typ, AVDD 2.8 V) | Not stated | IST8310 DS V1.2, 4.3 (NotebookLM) | `VERIFIED` at 2.8 V; at 3.3 V `NOT_VERIFIED` |
 | I2C pull-ups | TBD | TBD | - | Depends on P1-004, P1-005 | `TBD` |
 | Status LEDs | TBD | TBD | - | Not defined | `TBD` |
 | External 3.3 V devices | TBD | TBD | TBD | Not defined | `TBD` |
@@ -94,7 +94,7 @@ Which outputs drive servos (6 V) and which drive ESC signal inputs only is not r
 | Rail | Known subtotal | Missing | Budget | Margin | Label |
 | ---- | -------------- | ------- | ------ | ------ | ----- |
 | 3.3 V_IMU | 0.88 mA (2 × 0.44 mA) | IMU peak | TBD. The drawn `+3V3A` LDO TPS73533DRBR is rated 500 mA (TI SBVS087M 5.3) but is not decided (OPEN-011). | TBD | `ESTIMATED` from `NOT_VERIFIED` inputs |
-| 3.3 V | about 0.5 mA (BMM150 regular) | Both MCUs, ICP-20100, barometer 2, pull-ups, LEDs | 2 A, TPS62142RGTR (DEC-012, TI SLVSAJ0F) | TBD | `ESTIMATED` from partial inputs |
+| 3.3 V | about 1.2 mA (IST8310 at 200 sps) | Both MCUs, ICP-20100, barometer 2, pull-ups, LEDs | 2 A, TPS62142RGTR (DEC-012, TI SLVSAJ0F) | TBD | `ESTIMATED` from partial inputs |
 | 5 V | 70 mA average, 150 mA peak (TF-Luna only) | All other external loads, 3.3 V regulator input | 2 A source (PWR-010) | TBD | `ESTIMATED` from partial inputs |
 | 6 V | none | All servo loads | 10 A cont., 15 A inst. (PWR-011) | TBD | `TBD` |
 
@@ -111,7 +111,7 @@ The subtotals are far from complete. Do not use them to size a regulator. The MC
 
 Known upper bounds for the 3.3 V rails:
 - ICM-45686 VDD and VDDIO max 3.6 V recommended, 4 V absolute maximum (IMU rec, `NOT_VERIFIED`).
-- BMM150 VDD max 3.6 V (snippet, `NOT_VERIFIED`).
+- IST8310 AVDD and DVDD max 3.6 V recommended and 3.6 V absolute maximum (IST8310 DS V1.2, 4.1 and 4.2, `VERIFIED` via NotebookLM). This is the tightest limit on the 3.3 V rail.
 - `ESTIMATED`: 3.3 V nominal leaves 0.3 V (9 %) to the 3.6 V limit for regulator tolerance, load transients and overshoot.
 - MCU VDD ranges `TBD` (st.com unreachable).
 
@@ -143,7 +143,7 @@ All `TBD`. Items to decide:
 | Severity | Ref | Label | Finding | Source |
 | -------- | --- | ----- | ------- | ------ |
 | MAJOR | PWR-012 | `NOT_VERIFIED` | Board current budget cannot be closed: MCU currents and all external 5 V device models are missing. | Section 4 |
-| MINOR | BMM150 / 3.3 V | `NOT_VERIFIED` | BMM150 peak current of 18 to 20 mA during measurement is about 40 × its regular average. Local decoupling must cover it. | Snippet |
+| MINOR | IST8310 / 3.3 V | `VERIFIED` | IST8310 absolute maximum supply is 3.6 V, so the 3.3 V rail must never overshoot by more than 0.3 V (9 %), including start-up and load steps. | IST8310 DS V1.2, 4.1 |
 | INFO | IF-022 / 5 V | `ASSUMED` | If USB VBUS can power the board, it needs OR-ing or isolation from the PM02D 5 V. | Section 2 |
 | INFO | IF-030 to IF-037 | `TBD` | Servo count and stall current are needed before the 10 A / 15 A rating can be checked. | Section 3 |
 
@@ -156,11 +156,11 @@ All `TBD`. Items to decide:
 - [ ] STM32H743 and STM32F103 VDD range, run current at the planned clock, BOR/POR/PVD levels (user-supplied values or approved datasheet route).
 - [ ] ICP-20100 supply range and current.
 - [ ] MS4525DO version (3.3 V or 5 V) and supply current.
-- [ ] Retry the official pages for TF-Luna, MS4525DO and BMM150.
+- [ ] Retry the official pages for TF-Luna and MS4525DO.
 
 ## 10. Sources
 
-- BMM150 snippet source (PDF, not opened): https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmm150-ds001.pdf
+- IST8310 Datasheet, Version 1.2 (NotebookLM notebook `IST8301`, not opened by Claude)
 - TF-Luna snippet source (third-party PDF, not opened): https://files.waveshare.com/upload/c/c3/SJ-GU-TF-Luna_A05_Datasheet.pdf
 - TI TPS62142: https://www.ti.com/product/TPS62142
 - TI TPS735 (TPS73533DRBR): https://www.ti.com/product/TPS735 and https://www.ti.com/document-viewer/TPS735/datasheet/electrical-characteristics-slvscd4719
