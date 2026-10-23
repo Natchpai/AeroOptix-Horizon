@@ -6,7 +6,7 @@
 	(descr "VSON-8 3x3mm, 0.65mm pitch, 1.5x1.75mm exposed pad with tabs, thermal vias, TI DRB0008A land pattern and stencil 4218875/A (TPS735 SBVS087M)")
 	(tags "VSON-8 DRB0008A thermal vias")
 	(property "Reference" "REF**"
-		(at 0 -2.7 0)
+		(at 0 -2.78 0)
 		(layer "F.SilkS")
 		(uuid "86ba556e-3bd6-56b0-a77e-e146c919dcf2")
 		(effects
@@ -149,44 +149,44 @@
 		(uuid "35903754-b232-5919-8ffe-97dec87e9699")
 	)
 	(fp_line
-		(start -1.95 -1.95)
-		(end 1.95 -1.95)
+		(start -2 -1.96)
+		(end 1.95 -1.96)
 		(stroke
 			(width 0.05)
 			(type solid)
 		)
 		(layer "F.CrtYd")
-		(uuid "6696b01b-fb46-5750-a00d-4c95ae77bf83")
+		(uuid "a75501df-58b2-500c-ab1b-e685a707f0a6")
 	)
 	(fp_line
-		(start 1.95 -1.95)
+		(start 1.95 -1.96)
 		(end 1.95 1.95)
 		(stroke
 			(width 0.05)
 			(type solid)
 		)
 		(layer "F.CrtYd")
-		(uuid "d6effb88-ff06-5fdc-9d22-141f7ec5bdd8")
+		(uuid "c4245d7d-1a5e-5cac-8a10-8df165e02900")
 	)
 	(fp_line
 		(start 1.95 1.95)
-		(end -1.95 1.95)
+		(end -2 1.95)
 		(stroke
 			(width 0.05)
 			(type solid)
 		)
 		(layer "F.CrtYd")
-		(uuid "220a905b-6c6e-5589-8bc7-73ccae5b5ea7")
+		(uuid "4bebe445-4950-530b-942b-047a94493faa")
 	)
 	(fp_line
-		(start -1.95 1.95)
-		(end -1.95 -1.95)
+		(start -2 1.95)
+		(end -2 -1.96)
 		(stroke
 			(width 0.05)
 			(type solid)
 		)
 		(layer "F.CrtYd")
-		(uuid "93319fee-ffa9-5fb5-a86f-a285e39de36e")
+		(uuid "f41a7bb2-84e2-5017-af2c-5a2c3dcc899d")
 	)
 	(fp_line
 		(start -1.5 -1.5)
@@ -196,7 +196,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "d0e3bae3-94a0-5110-81c5-3e0ce82bf109")
+		(uuid "33f81fb4-1f85-5048-8d23-101f8f04507b")
 	)
 	(fp_line
 		(start 1.5 -1.5)
@@ -206,7 +206,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "511288c9-e6a9-596c-a198-386a764fdab1")
+		(uuid "ade682bf-614c-5a2a-8674-07b727dcc5c0")
 	)
 	(fp_line
 		(start 1.5 1.5)
@@ -216,7 +216,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "b13f7d5f-bf69-5663-a633-e1ae79c74cd6")
+		(uuid "5d4393d5-1e12-5cc8-9af4-e696fbafd5dd")
 	)
 	(fp_line
 		(start -1.5 1.5)
@@ -226,7 +226,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "d7fe1bb6-c6fa-50c4-91b7-0a8060e113d6")
+		(uuid "d98152be-2453-5040-bb9b-1c19076f5d7f")
 	)
 	(fp_circle
 		(center -1.25 -1.25)
@@ -237,16 +237,16 @@
 		)
 		(fill yes)
 		(layer "F.Fab")
-		(uuid "40d7359d-8805-51d1-b7f8-7caac7cd2336")
+		(uuid "bb2f8e1b-6f95-53a6-b4de-25abd6425e97")
 	)
 	(fp_text user "${REFERENCE}"
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "2ea92e31-6a94-5748-a42e-f61a2f1e9522")
+		(uuid "d4aedeec-bc5c-56e0-9a37-0e1d92f9a4db")
 		(effects
 			(font
-				(size 0.65 0.65)
-				(thickness 0.1)
+				(size 0.51 0.51)
+				(thickness 0.08)
 			)
 		)
 	)
