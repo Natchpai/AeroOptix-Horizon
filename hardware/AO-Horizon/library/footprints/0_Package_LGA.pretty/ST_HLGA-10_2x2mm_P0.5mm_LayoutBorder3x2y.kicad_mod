@@ -17,6 +17,7 @@
 	(property "Value" "ST_HLGA-10_2x2mm_P0.5mm_LayoutBorder3x2y"
 		(at 0 1.95 0)
 		(layer "F.Fab")
+		(hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -123,20 +124,56 @@
 		(fill no)
 		(layer "F.CrtYd")
 	)
-	(fp_poly
-		(pts
-			(xy -0.5 -1)
-			(xy 1 -1)
-			(xy 1 1)
-			(xy -1 1)
-			(xy -1 -0.5)
-		)
+	(fp_line
+		(start -1 -1)
+		(end 1 -1)
 		(stroke
 			(width 0.1)
 			(type solid)
 		)
-		(fill no)
 		(layer "F.Fab")
+		(uuid "229de1a4-52f0-5297-8997-6e86247095cc")
+	)
+	(fp_line
+		(start 1 -1)
+		(end 1 1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "6d61b038-fb1a-51ff-b291-7d714848e1c9")
+	)
+	(fp_line
+		(start 1 1)
+		(end -1 1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "fb79b326-d332-568e-a62b-d358732858b7")
+	)
+	(fp_line
+		(start -1 1)
+		(end -1 -1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "61c45896-d918-5dc9-82d3-94a65ae5565d")
+	)
+	(fp_circle
+		(center -0.8 -0.8)
+		(end -0.7 -0.8)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill yes)
+		(layer "F.Fab")
+		(uuid "b6f148c2-2e7f-59e1-982a-b27182466ad4")
 	)
 	(fp_text user "${REFERENCE}"
 		(at 0 0 0)

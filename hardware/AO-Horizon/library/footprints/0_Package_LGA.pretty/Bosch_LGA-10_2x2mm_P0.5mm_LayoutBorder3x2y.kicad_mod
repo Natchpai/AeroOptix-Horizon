@@ -17,6 +17,7 @@
 	(property "Value" "Bosch_LGA-10_2x2mm_P0.5mm_LayoutBorder3x2y"
 		(at 0 1.95 0)
 		(layer "F.Fab")
+		(hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -123,20 +124,56 @@
 		(fill no)
 		(layer "F.CrtYd")
 	)
-	(fp_poly
-		(pts
-			(xy -0.5 -1)
-			(xy 1 -1)
-			(xy 1 1)
-			(xy -1 1)
-			(xy -1 -0.5)
-		)
+	(fp_line
+		(start -1 -1)
+		(end 1 -1)
 		(stroke
 			(width 0.1)
 			(type solid)
 		)
-		(fill no)
 		(layer "F.Fab")
+		(uuid "89d3c9ba-915f-5fcd-8b45-166895f832ee")
+	)
+	(fp_line
+		(start 1 -1)
+		(end 1 1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "b9d3102e-2b1a-53e8-ae10-7ad060be9390")
+	)
+	(fp_line
+		(start 1 1)
+		(end -1 1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "bf1c0e6f-da05-561e-bb12-e21076ef770a")
+	)
+	(fp_line
+		(start -1 1)
+		(end -1 -1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "a10a0574-c5bc-5234-8032-5d799b48a2d3")
+	)
+	(fp_circle
+		(center -0.8 -0.8)
+		(end -0.7 -0.8)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill yes)
+		(layer "F.Fab")
+		(uuid "345c20ae-d43d-50ce-91b2-8ad16104d243")
 	)
 	(fp_text user "${REFERENCE}"
 		(at 0 0 0)
