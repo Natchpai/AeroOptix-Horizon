@@ -1,10 +1,10 @@
 # AeroOptix-Horizon: Barometer and Magnetometer Selection Summary
 
-**Revision:** 0.4
-**Updated:** 2026-10-21
-**Status:** ICP-20100 and BMM150 confirmed by the team (DEC-010, DEC-011). BMP390 removed on 2026-10-21; the second barometer is open (OPEN-014, BMP581 proposed). Lifecycle and availability risks are open. Datasheet values and implementation are not verified. Not a verification record.
+**Revision:** 0.5
+**Updated:** 2026-10-24
+**Status:** ICP-20100 confirmed by the team (DEC-010). BMP390 removed on 2026-10-21; the second barometer is open (OPEN-014, BMP581 proposed). Magnetometer changed from BMM150 to iSentek IST8310 by the human owner on 2026-10-24 (DEC-011). Lifecycle and availability risks are open. Datasheet values and implementation are not verified. Not a verification record.
 **Requirement refs:** SEN-002, SEN-003, CMP-004, CMP-005, OPEN-014 (spec). Checklist tasks: P0-009, P0-010.
-**Decision owner:** Team
+**Decision owner:** Team (barometers); human owner (magnetometer change)
 
 Single record for the barometer and magnetometer parts, their key data and sourcing.
 
@@ -17,7 +17,7 @@ Source keys used below:
 - **PX4**: PX4-Autopilot repo, main branch, driver directory and register headers.
 - **Bosch API**: Bosch BMP5_SensorAPI on GitHub, `bmp5_defs.h`, fetched 2026-10-21.
 - **Snippet**: search-result text of a PDF datasheet. Not opened, always `NOT_VERIFIED`.
-- **DS (NotebookLM)**: datasheet text checked through NotebookLM on 2026-10-19, with the text confirmed in the source fulltext: ICP-20100 DS-000416 Rev 1.3 (marked preliminary), BMP390 BST-BMP390-DS002-07 Rev 1.7, BMM150 BST-BMM150-DS001-05 Rev 1.4. BMP581: BST-BMP581-DS004-13 Rev 1.13, checked on 2026-10-21 (notebook `BMP581`, source added from the Bosch URL).
+- **DS (NotebookLM)**: datasheet text checked through NotebookLM on 2026-10-19, with the text confirmed in the source fulltext: ICP-20100 DS-000416 Rev 1.3 (marked preliminary), BMP390 BST-BMP390-DS002-07 Rev 1.7, BMM150 BST-BMM150-DS001-05 Rev 1.4. BMP581: BST-BMP581-DS004-13 Rev 1.13, checked on 2026-10-21 (notebook `BMP581`, source added from the Bosch URL). IST8310: iSentek "IST8310 Datasheet, Version 1.2", checked on 2026-10-24 in the source fulltext (notebook `IST8301`, file `IST8301.pdf`, added by the user).
 - **LCSC data (agy)**: LCSC page embedded data (`__NEXT_DATA__` JSON), extracted by the external model agy on 2026-10-18 (user-approved). Not shown on the rendered page and not checked by Claude, so always `NOT_VERIFIED`.
 
 ## 1. Decision
@@ -27,7 +27,8 @@ Source keys used below:
 | Barometers (SEN-002) | 1 × TDK InvenSense ICP-20100 (LCSC C5343527), DEC-010, 2026-10-18. Second barometer TBD (OPEN-014). |
 | BMP390 removed | The human owner removed Bosch BMP390 (LCSC C5124834) on 2026-10-21 because LCSC does not sell it. Its data stays below as a record. |
 | Second barometer candidate | Bosch BMP581 (LCSC C5362283, checked at LCSC by the user). Proposed, not confirmed: the team decides (OPEN-014). |
-| Magnetometer (SEN-003) | 1 × Bosch BMM150 (LCSC C171681). DEC-011, 2026-10-18. |
+| Magnetometer (SEN-003) | 1 × iSentek IST8310. DEC-011, revised 2026-10-24 by the human owner. |
+| BMM150 replaced | The team chose Bosch BMM150 (LCSC C171681) on 2026-10-18. The human owner replaced it with IST8310 on 2026-10-24. Its data stays below as a record. |
 | Requirement change | SEN-003 reduced from 2 × to 1 × I2C magnetometer (DEC-011). OPEN-005 closed. |
 | Barometer gain | Vendor diversity between the two barometers. |
 
@@ -65,6 +66,18 @@ Source keys used below:
 | INFO | BMP581 | `NOT_VERIFIED` | LCSC C5362283 names Bosch BMP581, LGA-10 (2x2). Stock and price are not recorded here. | User; LCSC (agent fetch) |
 | INFO | BMP581 | `VERIFIED` | Pin map is the same as BMP390: 1 VDDIO, 2 SCK, 3 VSS, 4 SDI, 5 SDO, 6 CSB, 7 INT, 8 VSS, 9 VSS, 10 VDD. 10 pins, body 2.0 × 2.0 mm (±0.1), 0.75 mm high. | DS (NotebookLM): Table 28, Table 3 |
 | INFO | I2C addresses | `VERIFIED` | SDO selects the BMP581 address: 0x46 when SDO = 0, 0x47 when SDO = 1. SDO must not float in I2C mode. | DS (NotebookLM): §5 I2C text |
+
+### Magnetometer change to IST8310 (2026-10-24)
+
+| Severity | Part | Label | Finding | Source |
+| -------- | ---- | ----- | ------- | ------ |
+| MINOR | IST8310 / 3.3 V | `VERIFIED` | AVDD and DVDD absolute maximum is 3.6 V, the same as the recommended maximum. A 3.3 V rail leaves 0.3 V (9 %) for regulator tolerance and overshoot. | IST8310 DS 4.1, 4.2 |
+| MINOR | IST8310 / I2C | `VERIFIED` | Digital input maximum is DVDD + 0.3 V and VIH is 0.7 × DVDD. DVDD must sit on the same 3.3 V rail as the I2C2 pull-ups. | IST8310 DS 4.1, 4.3 |
+| INFO | I2C addresses | `VERIFIED` | IST8310 is 0x0C to 0x0F (CAD1/CAD0), 0x0E if both float. PX4 default is 0x0E. No overlap with ICP-20100 (0x63, 0x64) on I2C2. | IST8310 DS 2.3; PX4 `iSentek_IST8310_registers.hpp` |
+| INFO | IST8310 | `VERIFIED` | Device ID register 0x00 reads 0x10. PX4 accepts 0x10 (IST8310) and 0xA3 (IST8310J). | IST8310 DS 6.4.2; PX4 |
+| INFO | DRDY, RSTN | `VERIFIED` | DRDY is an output, enabled by default and active high (CNTL2 DREN = 1, DRP = 1). RSTN has an internal pull-up; "MCU connection is suggested (but not necessary)". PX4 polls the STAT1 DRDY bit and uses no DRDY GPIO. | IST8310 DS 2.2, 6.4.7; PX4 `IST8310.cpp` |
+| INFO | IST8310 | `NOT_VERIFIED` | Lifecycle is not in the datasheet. The iSentek product pages render with JavaScript and could not be read. | iSentek web |
+| INFO | IST8310 | `NOT_VERIFIED` | LCSC C2683055 appears in a search-result file name for IST8310. Not checked. | Snippet |
 | MINOR | BMP581 | `VERIFIED` | The datasheet gives VDD min 1.71 V (Table 4); the product page says 1.65 V. 3.3 V is inside both. | DS (NotebookLM): Table 4; Bosch |
 | MINOR | Footprint | `NOT_VERIFIED` | Land pattern 0.325 × 0.30 mm pads on ±0.7625 mm centers, pin 1 top-left, counterclockwise in top view: read by NotebookLM from Fig. 29 to 32 with no citation. The §8.2 text (`VERIFIED`) gives the rule: terminal +25 µm per side, at least 200 µm between pads, no solder mask, vias or traces under the part. | DS (NotebookLM) |
 
@@ -114,7 +127,24 @@ Source keys used below:
 | Noise, accuracy, temperature | Not checked | - | `NOT_VERIFIED` |
 | PX4 driver | `barometer/bmp581` (I2C and SPI) | PX4 | `VERIFIED` (directory) |
 
-### BMM150 (magnetometer)
+### IST8310 (magnetometer)
+
+| Parameter | Value | Source | Label |
+| --------- | ----- | ------ | ----- |
+| Product status | Not stated in the datasheet | iSentek | `NOT_VERIFIED` |
+| Package | LGA-16, 3.0 × 3.0 × 1.0 mm, ±0.1 mm. Land pattern not in the text (drawing is an image) | DS 1, 2.2 | `VERIFIED` (DS via NotebookLM) |
+| Pins | 1 SCL, 2 AVDD, 3 NC, 4 NC, 5 CAD0, 6 CAD1, 7 VPP (test, leave floating), 8 NC, 9 VSS, 10 C1 (4.7 µF set/reset capacitor), 11 VSS, 12 NC, 13 DVDD, 14 RSTN, 15 DRDY, 16 SDA | DS 2.2 | `VERIFIED` (DS via NotebookLM) |
+| Interface | I2C only, fast mode up to 400 kHz | DS 1 | `VERIFIED` (DS via NotebookLM) |
+| I2C address | CAD1/CAD0 = VSS/VSS 0x0C, VSS/VDD 0x0D, VDD/VSS 0x0E, VDD/VDD 0x0F. Both floating: 0x0E | DS 2.3 | `VERIFIED` (DS via NotebookLM) |
+| AVDD / DVDD | 1.72 to 3.6 V each (typ 2.8 V / 1.8 V) | DS 4.2 | `VERIFIED` (DS via NotebookLM) |
+| Absolute maximum | AVDD, DVDD -0.5 to +3.6 V; digital input -0.3 to DVDD + 0.3 V; HBM ±4000 V | DS 4.1 | `VERIFIED` (DS via NotebookLM) |
+| Operating temperature | -40 to +85 °C | DS 4.1, 4.2 | `VERIFIED` (DS via NotebookLM) |
+| Current | 20 µA at 1 sps, 320 µA at 50 sps, 1200 µA at 200 sps; standby 10 µA (typ, AVDD 2.8 V, DVDD 1.8 V) | DS 4.3 | `VERIFIED` (DS via NotebookLM) |
+| Range, resolution | ±1600 µT (x, y), ±2500 µT (z); 0.3 µT/LSB; ODR up to 200 Hz | DS 4.3, 4.4 | `VERIFIED` (DS via NotebookLM) |
+| Application circuit | 0.1 µF on AVDD and on DVDD, 4.7 µF on C1, 4.7 kΩ I2C pull-ups | DS 2.3, Figure 2 | `VERIFIED` (DS via NotebookLM) |
+| PX4 driver | `magnetometer/isentek/ist8310`, default address 0x0E, 400 kHz, polls STAT1 (no DRDY GPIO) | PX4 @ `b26146e` | `VERIFIED` |
+
+### BMM150 (replaced 2026-10-24)
 
 | Parameter | Value | Source | Label |
 | --------- | ----- | ------ | ----- |
@@ -128,7 +158,7 @@ Source keys used below:
 | Operating temperature | Not found | – | `NOT_VERIFIED` |
 | PX4 driver | `magnetometer/bosch/bmm150` (chip ID 0x32). A `bmm350` driver also exists. | PX4 | `VERIFIED` |
 
-3.3 V supply: inside the BMP581 range (`VERIFIED`, Bosch). ICP-20100 and BMM150 ranges are `NOT_VERIFIED`.
+3.3 V supply: inside the BMP581 and IST8310 ranges (`VERIFIED`, Bosch; IST8310 DS 4.2). The IST8310 margin to its 3.6 V absolute maximum is 0.3 V. The ICP-20100 range is `NOT_VERIFIED`.
 
 ## 4. Sourcing
 
@@ -145,6 +175,7 @@ LCSC, fetched 2026-10-18. USD. Not a quote.
 - BMP390 page data (agy, `NOT_VERIFIED`) also lists 30+ $5.22 and 100+ $5.15, MOQ 1, 10,000 per reel. LCSC lists this bare IC as `Module: Yes` in its spec table, which looks like an LCSC data error.
 - LCSC search (`lcsc.com/search?q=BMP390`) does not render without JavaScript, so other BMP390 SKUs or boards at LCSC are unknown.
 - BMP581 LCSC C5362283 was checked by the user on 2026-10-21. Stock and price are not recorded here (`NOT_VERIFIED`).
+- IST8310: no supplier was checked. LCSC C2683055 is a search-result lead only (`NOT_VERIFIED`).
 - DigiKey, Mouser and JLCPCB were not checked.
 - JLCPCB assembly eligibility is not checked for any of the three.
 
@@ -152,10 +183,12 @@ LCSC, fetched 2026-10-18. USD. Not a quote.
 
 - [ ] Team confirms the second barometer (OPEN-014). Proposed: BMP581 (LCSC C5362283). ICP-20100 EOL still needs a last-time buy or a replacement.
 - [ ] Check the BMP581 footprint against the datasheet figures (pin 1 corner, Fig. 32 pad sizes) before placing it. Library starting point: `0_Sensor_Pressure:BMP581` on the Bosch LGA-10 footprint (OPEN-013, P2-012).
-- [ ] Confirm BMM150 lifecycle from Bosch, and consider BMM350 if BMM150 is EOL. Bosch no longer lists BMM150 (2026-10-19). BMM350 is not a drop-in part (`NOT_VERIFIED`, flyer snippet).
+- [ ] Confirm IST8310 lifecycle and a supplier (iSentek, LCSC or distributor).
+- [ ] Make the IST8310 library starting point (`kicad-part-start`). The land pattern needs the datasheet drawing or an iSentek layout note.
+- [ ] Decide the IST8310 CAD0/CAD1 straps (address) and whether DRDY and RSTN go to the H743 (PX4 uses neither).
 - [ ] Get supply, temperature, I2C address selection and land pattern from each datasheet (user-supplied values, or an approved datasheet route).
 - [ ] Check the I2C address plan for all three parts on the chosen buses (P1-004, P1-005). The address sets do not overlap (re-check table); the strap choice for each part is open.
-- [ ] Check the library footprints against the datasheet drawings (OPEN-013, P2-012). Symbol pin maps match ICP-20100 Table 18 and BMM150 Table 32. Open: ICP-20100 has no land pattern in its datasheet (AN-000140) and its pads are wider than terminal b; BMM150 A1 corner and 3D model.
+- [ ] Check the library footprints against the datasheet drawings (OPEN-013, P2-012). The ICP-20100 symbol pin map matches Table 18. Open: ICP-20100 has no land pattern in its datasheet (AN-000140) and its pads are wider than terminal b.
 - [ ] Confirm that PX4 `icp201xx` supports ICP-20100.
 - [ ] Check JLCPCB assembly eligibility.
 
@@ -171,4 +204,6 @@ LCSC, fetched 2026-10-18. USD. Not a quote.
 - Bosch BMP5_SensorAPI: https://github.com/boschsensortec/BMP5_SensorAPI/blob/master/bmp5_defs.h
 - Bosch BMM350 (BMM150 page returned 404): https://www.bosch-sensortec.com/products/motion-sensors/magnetometers/bmm350/
 - LCSC: https://www.lcsc.com/product-detail/C5343527.html (ICP-20100), https://www.lcsc.com/product-detail/C5124834.html (BMP390), https://www.lcsc.com/product-detail/C171681.html (BMM150), https://www.lcsc.com/product-detail/C5362283.html (BMP581)
+- iSentek IST8310 Datasheet, Version 1.2 (NotebookLM notebook `IST8301`, source `IST8301.pdf`, not opened by Claude)
+- PX4 IST8310 driver: https://github.com/PX4/PX4-Autopilot/tree/b26146efc4ddeb9d1cae3cd80afc8c8fcf29cca4/src/drivers/magnetometer/isentek/ist8310
 - PX4 drivers: https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/barometer/invensense/icp201xx, https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/barometer/bmp388, https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/barometer/bmp581, https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/bosch/bmm150
