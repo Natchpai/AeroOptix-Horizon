@@ -7,7 +7,8 @@ The specification and the execution checklist stay the source of truth. This lis
 
 ## 1. Git
 
-- [ ] Push `dev` to `origin` (local commits not yet pushed, starting with `1a5e7ae`).
+- [ ] Commit the doc sync (checklist 0.10, selection record 0.7, README, CHANGELOG, this file). `c9fe9ed` (spec 0.11, pinmap 0.3) is already committed on `dev`.
+- [ ] Push `dev` to `origin` (not pushed yet).
 - [ ] Open a PR from `dev` to `main` with `.github/pull_request_template.md`.
 
 ## 2. Power sheet (P2-011)
@@ -32,29 +33,34 @@ Check against the datasheet figures yourself:
 
 ## 4. Waiting on the team
 
-Pinmap review 0.2 is answered (`AO-HORIZON_PINMAP_REVIEW_EN.md`). The team answered the pinout source (Q1, Q2), the F103 TIM3 channels (Q3) and stock px4io (Q7).
+The decisions file is answered and applied (spec rev 0.11, 2026-10-24). You kept the F103; the F103 gets an 8 MHz crystal and the team rebuilds px4io (DEC-017).
 
-- [ ] Send `AO-HORIZON_PINMAP_DECISIONS_EN.md` to the team: spec rows to change (section 3, OPEN-016), decisions D1 to D7, software questions S1 to S7, proposals H1 and H2 (P0-019).
-- [ ] After the reply: update the spec rows, apply pin allocation section 2.1, and issue pinmap 0.3.
+- [ ] Send `AO-HORIZON_PINMAP_REVIEW_EN.md` rev 0.3 to the team (P0-020). They fill the `NEW` rows and answer Q20 (px4io LEDs), Q21 (TX-only px4io console), Q22 (BMP384 address).
+- [ ] After the reply: ask Claude to apply it to the pin allocation record and the spec.
+- [ ] Team bench tests, not hardware work: RC and RC-loss failsafe over ELRS MAVLink (S5).
 
-## 5. Hardware items from the pinmap review (answer later)
+## 5. Hardware items (from the pinmap work)
 
-Hardware-only choices taken out of the team decisions file. None changes the drone spec or the software.
+Hardware-only choices. None changes the drone spec or the software.
 
-- [ ] F103 LEDs (blue PB14, amber PB15, green PA11): fit or leave unconnected. px4io drives them either way.
-- [x] F103 24 MHz crystal: checked 2026-10-24. DS5319 Rev 20 Table 22 limits the crystal to 4 to 16 MHz; Table 20 allows an external clock of 1 to 25 MHz. Out of range, so the team gets S7 (OPEN-015).
-- [ ] F103 clock part: pick it after the team answers S7 (8 MHz crystal, or 24 MHz oscillator module).
-- [ ] PWM pull-downs (team Q10): pick the resistor value.
-- [ ] F103 PA9 (px4io console TX): test pad or connector.
-- [ ] F103 PC14 and PC15 unconnected, and the px4io-v2 reserved pins: cut the free F103 list in pinmap 4.2.
+- [ ] F103 LEDs (blue PB14, amber PB15, green PA11): fit or leave unconnected. Asked the team (Q20).
+- [x] F103 24 MHz crystal: out of range (DS5319 Table 22). Resolved: 8 MHz crystal, PLL ×3 (DEC-017).
+- [ ] Crystal parts and load capacitors: 16 MHz (H743) and 8 MHz (F103) (P1-014).
+- [ ] PWM pull-downs: pick the value so bidirectional DShot still works on the motor lines (P2-013, OPEN-018).
+- [ ] BMP384 fallback: compare footprint, pinout and address with the BMP581 (P1-015, OPEN-019).
+- [ ] F103 debug pads: SWDIO, SWCLK, NRST, GND, USART1 TX (PA9).
+- [ ] H743 debug: Pixhawk Debug Mini 6-pin JST-SH (1 VREF, 2 TX, 3 RX, 4 SWDIO, 5 SWCLK, 6 GND) plus an NRST pad. Check the pin order against DS-009 if you can get it.
+- [x] F103 PC14/PC15 and the px4io-v2 reserved pins: done in pin allocation rev 0.5 (4 free F103 pins left).
 - [ ] Telemetry 2 (USART1, PB14, PB15): connector.
-- [ ] Spare outputs PD14, PD15, PE9: connector or pads, after the team answers D4.
-- [ ] Debug connectors for both MCUs: form, after the team answers S6.
-- [ ] Servo rail divider on F103 PA4: match the px4io scaling.
+- [ ] Spare outputs PD14, PD15, PE9: connector or pads (team keeps all 3, D4).
+- [ ] Servo rail divider on F103 PA4: match the px4io 3:1 scaling.
 - [ ] ICM-45686 pin 9 unused: the IMU record (section 3) says leave it NC or tie it to VDDIO, but that note came from agy and is `NOT_VERIFIED`. Confirm in the datasheet.
 - [x] IST8310 RSTN unused: internal pull-up, MCU connection "not necessary" (IST8310 DS 2.2, barometer and magnetometer record). It can stay unconnected.
-- [ ] SDMMC1: check pins against ST pin data; add pull-ups and ESD protection.
+- [x] SDMMC1 pins checked against ST pin data (2026-10-24).
+- [ ] SDMMC1: add pull-ups and ESD protection.
 - [ ] PM02D: read the label (INA228 at 0x45, or INA226 at 0x41).
+- [ ] ESC: confirm the model (Tekko32 F4 4-in-1, AM32 planned) and how it acts on DShot signal loss (OPEN-017, P4-011).
+- [ ] Buy BMP581 early: DigiKey showed 0 in stock on 2026-10-08 (team note, not checked).
 
 ## 6. Open questions for me
 

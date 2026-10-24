@@ -52,6 +52,17 @@ Notable changes to this hardware project are documented here.
 - Specification rev 0.10 and checklist rev 0.9: Pixhawk 6X Rev 8 added as a reference next to Pixhawk 6C by the human owner (DEC-013, REF-05, SYS-002). Team answers recorded on OPEN-001 to OPEN-003, OPEN-008, OPEN-014 and DEC-011 without changing requirement rows. New open items OPEN-015 (stock px4io expects a 24 MHz F103 clock; DS5319 Rev 20 Table 22 limits the crystal to 4 to 16 MHz) and OPEN-016 (spec rows the team's answers change), with task P0-019. The IST8310 library row now names the stock symbol and footprint.
 - Pin allocation rev 0.4 (pin source note, team changes in section 2.1, findings F-11 to F-14), barometer and magnetometer selection rev 0.6 and IMU selection rev 0.8 record the team's answers. Pin tables are unchanged until the team decides. No KiCad file changed; ERC and DRC not run.
 - Root `README.md`: header field `Revision` renamed `Board revision`.
+- Specification rev 0.11: the software team's answers in the pinmap decisions file (rev 0.2) are applied, and the human owner accepted them. New decisions DEC-014 to DEC-018:
+  - H743 pins follow `px4/fmu-v6c` and F103 pins follow `px4/io-v2`, with PX4 v1.16.2.
+  - The px4io link runs on H743 USART6 to F103 USART2 at 1.5 Mb/s.
+  - The 4 motors move from the F103 to H743 TIM5 (DShot only, bidirectional). The F103 drives 8 servos (flaperons, ruddervators, 4 tilt servos).
+  - SAF-001 changes from "immediate landing" to: servo failsafe after 0.5 s without H743 data, and the motors stop when their DShot frames stop.
+  - Crystals: H743 16 MHz; F103 8 MHz with PLL ×3, with px4io and its bootloader rebuilt by the software team. The human owner kept the F103 over the team's STM32F100 proposal.
+  - The interface set changes: GPS2, the reserved UART7 TX, I2C3 and FlySky are dropped. Added: microSD on SDMMC1, a buzzer on TIM3_CH3, 3 LEDs, a Pixhawk Debug Mini connector, and the F103 safety switch.
+
+  BMP581 is accepted as barometer 2 (BMP384 fallback). Interface rows IF-040 to IF-051 and SAF-015 are added. OPEN-002, 003, 008, 014, 015 and 016 are closed. New open items: motor stop depends on the ESC (OPEN-017), pull-down value with bidirectional DShot (OPEN-018), BMP384 fit (OPEN-019).
+- Pin allocation rev 0.5: team changes applied to both MCU tables. New pins checked against ST open pin data, and the TIM5 and TIM3 AF numbers checked against the NuttX pinmap. px4io-v2 reserved F103 pins listed. Pinmap review rev 0.3 sent to the team for the new rows and questions Q20 to Q22, with the 0.2 answers kept.
+- Checklist rev 0.10, barometer and magnetometer selection rev 0.7, root `README.md` and `what-next.md` updated to match. New tasks: P0-020 (team reply to pinmap 0.3), P1-015 (BMP384 fit), P2-013 (pull-down value) and P4-011 (H743 halt bench test). No KiCad file changed. ERC and DRC not run.
 
 ### Fixed
 
