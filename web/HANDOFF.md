@@ -1,7 +1,7 @@
 # Handoff: team website
 
 **Updated:** 2026-10-24
-**Status:** Clickable mockup, live on GitHub Pages. The engineer approved the Pinout page and reviewed the Block diagram for size and labels. The diagram update is live (PR #19, squash commit `0e8ba9e`). Rail colours, SVG export and the record-driven Overview (progress, spec changes, next action, build stamp) are on `dev`, not live until the next `dev` → `main` PR.
+**Status:** Clickable mockup, live on GitHub Pages. The engineer approved the Pinout page and reviewed the Block diagram for size and labels. Rail colours, SVG export, the record-driven Overview (progress, spec changes, next action, build stamp) and the IO MCU layout are live (PR #20, squash commit `2fd8638`).
 
 ## Where things are
 
@@ -15,7 +15,7 @@
   - `extract-docs` throws when one of these is missing, so a changed record layout fails the build and the old site stays up.
 - Still hand-written: blocks and links (`topology.ts`) and their positions (`places.ts`).
 - Pages is enabled with source "GitHub Actions". The first run failed because Pages was not enabled yet; the re-run passed.
-- Branches: `dev` contains all of `main` (the engineer merged `main` into `dev` after PR #19). PRs #18 and #19 were squash-merged, which leaves `dev` behind `main` each time. Merge with "Create a merge commit" to avoid that.
+- Branches: `dev` contains all of `main` (the engineer merged `main` into `dev` after PR #20, `4947719`). PRs #18, #19 and #20 were squash-merged, which leaves `dev` behind `main` each time. Merge with "Create a merge commit", or turn off squash merging in the repo settings, to avoid that.
 
 ## What the site does
 
@@ -48,7 +48,7 @@
   | Rail | Bus id | Light | Dark |
   |---|---|---|---|
   | Battery (6S) | `batt` | `#dc2626` | `#ef4444` |
-  | +6V | `v6` | `#c2410c` | `#f97316` |
+  | +6V | `v6` | `#ea580c` | `#f97316` |
   | +5V (incl. `+VIN`, VBUS) | `v5` | `#ca8a04` | `#facc15` |
   | +3.3V | `v3v3` | `#0284c7` | `#38bdf8` |
   | +3.3VA | `v3v3a` | `#4f46e5` | `#818cf8` |
@@ -57,20 +57,21 @@
 
 ## Verified
 
-- `npm run check`: OK (43 blocks, 50 links, 67 pins on links). It fails, as intended, on a fake spec ID and on a block moved out of line.
+- `npm run check`: OK (43 blocks, 57 links, 67 pins on links; 50 links before the servo lines were split). It fails, as intended, on a fake spec ID and on a block moved out of line.
 - `npm ci` + `npm run build` on a fresh clone of `dev`.
 - Pins spot-checked against the pin allocation record: H743 PE8 UART7_TX #38, H743 PA5 SPI1_SCK #29, F100 PA2 USART2_TX #12.
 - Screenshots at 1440 px and 390 px: no horizontal scroll. The live Board view renders.
 - After `6d00f58`: `npm run check` and `npm run build` pass. A headless Edge script measured every link label on both views, also with a block selected (bold labels): no label overlaps a block, a label or a line. The script lives outside the repo; `npm run check` cannot test this, because it has no font widths.
 
 - Record-driven Overview: `npm run build` passes. The extracted gate counts match a separate count of the checklist (P0 17 done of 22; P1 0 of 15 plus 1 N/A; P2 0 of 18; P3 0 of 11; P4 0 of 11). A copy of the records with `Gate summary` renamed makes `extract-docs` fail. `GITHUB_SHA` sets the build stamp. Screenshots at 1440 and 390 px, dark and light: no horizontal scroll.
+- Live after PR #20: the deploy passed and the sidebar shows `Build 2fd8638`, the merge commit, so the CI build stamp works. The Progress card, the 8 servo lines and Export SVG are on the live site.
+- Light-theme +6V changed from `#c2410c` to `#ea580c` (engineer's request, 2026-10-24): the old one looked like Battery red. `#ea580c` was compared with `#f97316` on the System view; `#f97316` drifts toward the +5V amber and its 12 px label reads weaker on white (about 2.8:1 against white, `#ea580c` about 3.6:1).
 
 ## Not verified
 
-- Light theme on the pinout page. The diagram was checked in both themes after the rail colours: in the light theme, Battery and +6V look close (both dark red-orange on white); a lighter +6V, such as `#f97316`, would fix it if the engineer agrees.
+- Light theme on the pinout page.
 - Every block and link text against the spec: only spot checks were done. `topology.ts` is hand-written.
 - Same-tab deep links: pasting a new `#/…` URL into an open tab was not tested (a fresh load works).
-- The first CI deploy with the new Overview: the build stamp from `GITHUB_SHA` was tested locally only.
 - SVG export: all 8 files (4 views × 2 themes) were downloaded in headless Edge from the production build, parse as valid SVG, contain no CSS variables, `color-mix` or classes, and render correctly in Edge. Opening them in Inkscape, PowerPoint or Word was not tested. Text uses Inter and JetBrains Mono when installed, else the generic sans-serif and monospace.
 
 ## Next steps
