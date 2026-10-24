@@ -18,14 +18,14 @@ You can fill this in by hand or ask Claude to do it.
    - `CHANGE: <what>`: say exactly what you want instead.
    - `?: <question>`: you need hardware to explain.
 3. Under each question, fill the `Decision:` or `Answer:` line, and the `By:` line with the name or role of whoever decided.
-4. Section 7 is for information only. It lists what hardware will check by itself.
+4. Section 7 is for information only. It lists what hardware does without your input.
 5. Keep the file name. Send the whole file back.
 
 After your reply, hardware updates the spec (`AO-HORIZON_SPEC_EN.md`) and the pinmap to revision 0.3.
 
 ## 2. What hardware checked
 
-Hardware checked your answers against the PX4 source at tag v1.16.2 (`boards/px4/io-v2` and `boards/px4/fmu-v6c`). These facts are used below. Labels: `VERIFIED` = read in the source, `ASSUMED` = not checked, `NOT_VERIFIED` = check still open.
+Hardware checked your answers against the PX4 source at tag v1.16.2 (`boards/px4/io-v2` and `boards/px4/fmu-v6c`) and the STM32F103 datasheet. These facts are used below. Labels: `VERIFIED` = read in the source, `ASSUMED` = not checked, `NOT_VERIFIED` = check still open.
 
 | # | Fact | Source | Label |
 |---|---|---|---|
@@ -81,7 +81,7 @@ By:
 Your plan puts them on the H743, TIM5, so they can run DShot (Q17). The trade-off: on the H743, the F103 failsafe (F4) does not cover the motors. If the H743 hangs with the motors in PWM mode, they keep their last throttle (F12). DShot or a watchdog reset would stop them (see S1).
 Options:
 - (a) H743 TIM5, PA0 to PA3, as you planned. Requires a safe answer to S1.
-- (b) F103, with the F103 failsafe covering the motors. No DShot (px4io has no DShot), and the F103 runs out of outputs for the 8 servos.
+- (b) F103, with the F103 failsafe covering the motors. No DShot (stock px4io has no DShot, ASSUMED), and the F103 runs out of outputs for the 8 servos.
 
 Hardware impact: pin assignment only. Both options fit the board.
 
@@ -89,7 +89,7 @@ Decision:
 By:
 
 **D3. Failsafe positions for the 8 servos.**
-When the H743 stops, px4io moves each servo to a fixed failsafe value (F4). For a tilt-rotor this sets the aircraft's state after the failure. Give the position you want for the tilt servos (1 to 4), the flaperons (L, R) and the ruddervators (L, R). For example: tilt up for hover, or tilt forward for cruise. Flaperons and ruddervators centred.
+When the H743 stops, px4io moves each servo to a fixed failsafe value (F4). For a tilt-rotor this sets the aircraft's state after the failure. Give the position you want for the tilt servos (1 to 4), the flaperons (L, R) and the ruddervators (L, R). For example: tilt up for hover, or tilt forward for cruise. Flaperons and ruddervators centered.
 
 Decision:
 By:
