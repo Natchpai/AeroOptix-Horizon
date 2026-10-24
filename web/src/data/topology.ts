@@ -909,16 +909,28 @@ export const boardLinks: Link[] = [
     pins: [{ mcu: 'h743', refs: ['IF-047'], fn: '^LED' }],
   },
   // F100 I/O
-  {
-    id: 'b-servo',
+  // one line per servo output, labelled with its timer channel (spec 3.5)
+  ...(
+    [
+      ['IF-030', 'TIM2_CH1'],
+      ['IF-031', 'TIM2_CH2'],
+      ['IF-032', 'TIM4_CH3'],
+      ['IF-033', 'TIM4_CH4'],
+      ['IF-034', 'TIM3_CH1'],
+      ['IF-035', 'TIM3_CH2'],
+      ['IF-036', 'TIM3_CH3'],
+      ['IF-037', 'TIM3_CH4'],
+    ] as const
+  ).map(([ref, label], i): Link => ({
+    id: `b-servo-${i + 1}`,
     level: 'board',
     from: 'f100',
     to: 'j-servo',
     bus: 'pwm',
-    label: 'TIM2/3/4 PWM',
-    refs: range('IF', 30, 37),
-    pins: [{ mcu: 'f100', refs: range('IF', 30, 37) }],
-  },
+    label,
+    refs: [ref],
+    pins: [{ mcu: 'f100', refs: [ref] }],
+  })),
   {
     id: 'b-safety',
     level: 'board',

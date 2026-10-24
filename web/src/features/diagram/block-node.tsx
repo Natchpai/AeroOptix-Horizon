@@ -4,7 +4,7 @@ import { Handle, Position, type Node, type NodeProps } from '@xyflow/react'
 import { ChevronsRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { blockColor, kindInfo } from './kinds'
-import type { HandleSpec, Side } from './layout'
+import { type HandleSpec, type Side, TALL } from './layout'
 
 export type BlockNodeType = Node<
   { block: Block; w: number; h: number; handles?: HandleSpec[]; dim?: boolean },
@@ -26,12 +26,19 @@ function BlockNodeImpl({ data, selected }: NodeProps<BlockNodeType>) {
   const open = openItems(block).length
   // MCUs and the board are large: icon and text centered, bigger type
   const big = block.kind === 'mcu' || block.kind === 'board'
+  // tall small blocks (servo headers, PDB) stack icon and text, centred, so
+  // the name gets the full width
+  const tall = !big && h >= TALL
   return (
     <div
       style={{ width: w, height: h, ['--k' as string]: color }}
       className={cn(
         'group relative flex items-center rounded-lg border bg-card px-3 text-card-foreground shadow-sm transition-[opacity,box-shadow,border-color]',
-        big ? 'flex-col justify-center gap-3 text-center' : 'gap-2.5',
+        big
+          ? 'flex-col justify-center gap-3 text-center'
+          : tall
+            ? 'flex-col justify-center gap-2 text-center'
+            : 'gap-2.5',
         'border-[color-mix(in_oklab,var(--k)_45%,var(--border))]',
         'hover:border-[var(--k)] hover:shadow-[0_0_0_1px_var(--k),0_8px_24px_-8px_color-mix(in_oklab,var(--k)_55%,transparent)]',
         status === 'candidate' && 'border-dashed',
@@ -72,7 +79,12 @@ function BlockNodeImpl({ data, selected }: NodeProps<BlockNodeType>) {
       >
         <k.icon className={big ? 'size-6' : 'size-4'} />
       </span>
-      <div className={cn('min-w-0 leading-tight', big ? 'w-full' : 'flex-1')}>
+      <div
+        className={cn(
+          'min-w-0 leading-tight',
+          big || tall ? 'w-full' : 'flex-1'
+        )}
+      >
         <div
           className={cn(
             'truncate font-semibold',
@@ -104,7 +116,11 @@ function BlockNodeImpl({ data, selected }: NodeProps<BlockNodeType>) {
         <ChevronsRight
           className={cn(
             'shrink-0 text-primary',
-            big ? 'absolute top-1/2 right-3 size-5 -translate-y-1/2' : 'size-4'
+            big
+              ? 'absolute top-1/2 right-3 size-5 -translate-y-1/2'
+              : tall
+                ? 'absolute top-1/2 right-2 size-4 -translate-y-1/2'
+                : 'size-4'
           )}
         />
       )}

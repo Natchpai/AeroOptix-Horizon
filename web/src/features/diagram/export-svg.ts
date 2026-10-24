@@ -26,7 +26,7 @@ import {
   textWidth,
 } from '@/lib/svg-export'
 import { blockColor, kindInfo } from './kinds'
-import { type LaidNode, handlePoint, placedLayout } from './layout'
+import { type LaidNode, TALL, handlePoint, placedLayout } from './layout'
 
 const PAD = 40
 const HEAD = 44
@@ -116,6 +116,36 @@ function blockSvg(n: LaidNode, f: ReturnType<typeof fonts>) {
           top + 104,
           subFont(16),
           16,
+          'var(--muted-foreground)',
+          'middle'
+        )
+      )
+  } else if (h >= TALL) {
+    // centred column, as block-node.tsx draws a tall block
+    const total = 32 + 8 + 18.75 + (b.sub ? 15 : 0)
+    const top = y + (h - total) / 2
+    const cx = x + w / 2
+    const max = w - 24
+    out.push(box(cx - 16, top, 32), icon(b, cx - 8, top + 8, 16))
+    out.push(
+      text(
+        fitText(b.label, labelFont(15), max),
+        cx,
+        top + 49.4,
+        labelFont(15),
+        15,
+        'var(--card-foreground)',
+        'middle'
+      )
+    )
+    if (b.sub)
+      out.push(
+        text(
+          fitText(b.sub, subFont(12), max),
+          cx,
+          top + 66.25,
+          subFont(12),
+          12,
           'var(--muted-foreground)',
           'middle'
         )

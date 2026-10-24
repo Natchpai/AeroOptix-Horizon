@@ -35,6 +35,12 @@
 - Mockup first, then deploy (done).
 - Pinout page: OK as it is.
 - Block diagram, Board view only: Main MCU block 720x640 (was 900x700), Buzzer moved from the top edge to the left edge, XT30 above the servo headers. The System view keeps its FC block size.
+- Board view, IO MCU area (engineer's request, 2026-10-24):
+  - The F100 block is square, 400x400.
+  - Servo headers are one tall block, 200x300, so "Servo headers × 8" shows in full.
+  - One PWM line per servo output (IF-030 to IF-037), labelled with its timer channel from the spec, 28 px apart. The rail-sense line is set apart below them.
+  - The F100 SWD pads moved under the F100, so XT30 and the servo headers are the only blocks on its right. The +3V3 rail bar moved down to make room.
+  - Any small block at least 120 px tall is drawn as a centred column (icon, then name, then sub-line). This also applies to the PDB on the System view.
 - Center blocks (MCUs, FC): icon and text centered, larger type. Other block and link text larger; blocks are 200x60.
 - Link labels must not cover a block, another label or another line. Parallel pairs: labels centered on horizontal pairs, beside the line on vertical pairs (`layout.ts`).
 - Power rails: one colour per rail, by voltage. Battery is red (danger), then warm (high voltage) to cold (low). Power lines are 4 px (signals 1.75 px) and never dashed; a candidate power line is faded to 45 % instead.
