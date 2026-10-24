@@ -1,6 +1,7 @@
 import idsJson from './generated/ids.json'
 import metaJson from './generated/meta.json'
 import pinsJson from './generated/pins.json'
+import progressJson from './generated/progress.json'
 import { blocks, links } from './topology'
 import type {
   Block,
@@ -11,6 +12,7 @@ import type {
   Meta,
   PinRow,
   PinSelect,
+  Progress,
   ReservedRow,
   SpecId,
   Status,
@@ -26,6 +28,8 @@ export const pins = pinsJson as {
   f100: PinRow[]
   f100Reserved: ReservedRow[]
 }
+// counts keys differ per gate, so the JSON type does not match Record directly
+export const progress = progressJson as unknown as Progress
 
 export const REPO_URL = 'https://github.com/Natchpai/AeroOptix-Horizon'
 
@@ -33,6 +37,11 @@ export const REPO_URL = 'https://github.com/Natchpai/AeroOptix-Horizon'
 export function sourceUrl(file: string, line?: number) {
   const base = `${REPO_URL}/blob/main/${file}`
   return line ? `${base}?plain=1#L${line}` : base
+}
+
+/** Link to a commit on GitHub. A local build has no commit to link. */
+export function commitUrl(sha: string) {
+  return /^[0-9a-f]{7,40}$/.test(sha) ? `${REPO_URL}/commit/${sha}` : undefined
 }
 
 export const mcuInfo: Record<

@@ -117,6 +117,39 @@ export type Meta = {
   specUpdated: string
   specStatus: string
   keyFeatures: string[]
-  sources: { spec: string; pins: string; readme: string }
+  mainMcu: string
+  ioMcu: string
+  /** Spec heading number of the OPEN rows, e.g. "8.2" */
+  openSection: string
+  /** Last spec change notes (section 9), newest first */
+  specChanges: {
+    revision: string
+    date: string
+    description: string
+    approvedBy: string
+    line: number
+  }[]
+  /** Commit and date the site was built from */
+  build: { commit: string; date: string }
+  sources: { spec: string; pins: string; readme: string; checklist: string }
   generatedFrom: string
+}
+
+/** Execution checklist: gates, task counts per status, next action. */
+export type Progress = {
+  revision: string
+  updated: string
+  gates: {
+    id: string
+    name: string
+    exit: string
+    status: string
+    /** Task count per status (DONE, IN_PROGRESS, OPEN, BLOCKED ...) */
+    counts: Record<string, number>
+    line: number
+  }[]
+  /** One entry per sentence or list item, in record order */
+  nextAction: string[]
+  nextActionLine: number
+  tasks: Record<string, { status: string; line: number }>
 }

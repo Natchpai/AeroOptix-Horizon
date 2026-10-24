@@ -24,11 +24,14 @@ npm run preview  # serve dist/ under /AeroOptix-Horizon/
 |---|---|---|
 | Spec IDs (IF, DEC, OPEN, SEN, PWR ...) | `AO-HORIZON_SPEC_EN.md` | `scripts/extract-docs.ts`, every table row whose first cell is an ID |
 | MCU pins | `AO-HORIZON_PIN_ALLOCATION_EN.md` | same script, the H743, F100 and F100-reserved tables |
-| Phase, board and spec revision, key features | root `README.md` | same script |
+| Spec change notes (last 5) | `AO-HORIZON_SPEC_EN.md` section 9 | same script |
+| Phase, board and spec revision, key features, MCU part numbers | root `README.md` | same script, `Specifications` table for the MCUs |
+| Gate progress and current next action | `AO-HORIZON_EXECUTION_CHECKLIST_EN.md` | same script, `Gate summary` table, every `P<n>-<nnn>` task row, `Current next action` paragraph |
+| Build stamp (commit, date) | Git | same script: `GITHUB_SHA` in CI, `git rev-parse HEAD` locally |
 | Blocks and links | `src/data/topology.ts` | hand-written; every block and link names its spec IDs |
 | Block positions | `src/data/places.ts` | hand-written drawing data |
 
-The extracted JSON goes to `src/data/generated/`. It is git-ignored and rebuilt on every `dev` and `build`.
+The extracted JSON goes to `src/data/generated/`. It is git-ignored and rebuilt on every `dev` and `build`. The script throws when a table or heading it needs is missing, so a record that changes shape fails the build instead of showing `TBD`.
 
 ## Checks (`scripts/check-data.ts`)
 
@@ -49,7 +52,9 @@ The build fails when:
 
 ## Deploy
 
-GitHub Pages serves `dist/` under `/AeroOptix-Horizon/` (`base` in `vite.config.ts`). The router uses hash URLs (`#/diagram?level=board`), so deep links work without server rewrites. The Pages workflow is not added yet.
+GitHub Pages serves `dist/` under `/AeroOptix-Horizon/` (`base` in `vite.config.ts`). The router uses hash URLs (`#/diagram?level=board`), so deep links work without server rewrites.
+
+`.github/workflows/pages.yml` builds and deploys on every push to `main` that touches `web/`, the design records or the root `README.md`, so a merged record change shows on the site without any edit here. The Overview footer and the sidebar show the commit the live site was built from.
 
 ## Template and licences
 

@@ -1,5 +1,6 @@
 # Builds the team website in web/ and publishes it to GitHub Pages.
-# The build reads the design records, so a docs change redeploys the site.
+# The build reads the design records (spec, pin allocation, execution
+# checklist) and the root README, so a merged docs change redeploys the site.
 # One-time setup: Settings > Pages > Source: "GitHub Actions".
 name: Deploy website
 
