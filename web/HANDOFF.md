@@ -19,7 +19,7 @@
 
 ## What the site does
 
-- Overview: phase, revisions, key features, open OPEN items, and (engineer's request, 2026-10-24) gate progress per checklist gate with a stacked task bar, the checklist's current next action (one numbered line per sentence or list item, words unchanged; task IDs link to their checklist row and take their status colour), the last 5 spec change notes, and a build stamp (commit and date, also in the sidebar).
+- Overview: phase, revisions, key features, open OPEN items, and (engineer's request, 2026-10-24) gate progress per checklist gate with a stacked task bar, the checklist's current next action (one numbered line per sentence or list item, words unchanged; task IDs link to their checklist row and take their status colour), the last 5 spec change notes, and a build stamp (commit and date, also in the sidebar). Order, from `lg` up: Progress (left half) beside Recent spec changes (right half), then the next action at full width, then Key features beside Open items. Below `lg` the cards stack.
 - Block Diagram: System (L0) and Board (L1) views, hand-placed, every link straight. Click a block for its detail panel; click a link label for the Interface view (L2): each signal with the MCU pin at each end, far end `TBD`.
 - Pinout: LQFP100 / LQFP48 package views and pin tables; a pin links back to its diagram link.
 - Showcase: placeholder.
