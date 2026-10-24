@@ -50,10 +50,10 @@ export function handlePoint(n: LaidNode, h: HandleSpec): Point {
   }
 }
 
-/** Smallest gap between two link ends on one side, and from a corner. */
 /** Height from which a small block is drawn as a centred column. */
 export const TALL = 120
 
+/** Smallest gap between two link ends on one side, and from a corner. */
 const END_GAP = 28
 const END_MARGIN = 12
 

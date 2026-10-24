@@ -5,6 +5,7 @@ import { ChevronsRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { blockColor, kindInfo } from './kinds'
 import { type HandleSpec, type Side, TALL } from './layout'
+import { draw } from './style'
 
 export type BlockNodeType = Node<
   { block: Block; w: number; h: number; handles?: HandleSpec[]; dim?: boolean },
@@ -17,6 +18,13 @@ const position: Record<Side, Position> = {
   top: Position.Top,
   bottom: Position.Bottom,
 }
+
+/**
+ * Handle offset so it lands at `pos` of the outer box, as layout.ts assumes.
+ * A handle is placed in the padding box, inside the border.
+ */
+const handleAt = (pos: number) =>
+  `calc(${pos * 100}% + ${(2 * pos - 1) * draw.border}px)`
 
 function BlockNodeImpl({ data, selected }: NodeProps<BlockNodeType>) {
   const { block, w, h, handles, dim } = data
@@ -31,9 +39,15 @@ function BlockNodeImpl({ data, selected }: NodeProps<BlockNodeType>) {
   const tall = !big && h >= TALL
   return (
     <div
-      style={{ width: w, height: h, ['--k' as string]: color }}
+      style={{
+        width: w,
+        height: h,
+        borderWidth: draw.border,
+        borderRadius: draw.radius,
+        ['--k' as string]: color,
+      }}
       className={cn(
-        'group relative flex items-center rounded-lg border bg-card px-3 text-card-foreground shadow-sm transition-[opacity,box-shadow,border-color]',
+        'group relative flex items-center bg-card px-3 text-card-foreground shadow-sm transition-[opacity,box-shadow,border-color]',
         big
           ? 'flex-col justify-center gap-3 text-center'
           : tall
@@ -55,12 +69,14 @@ function BlockNodeImpl({ data, selected }: NodeProps<BlockNodeType>) {
             id={hd.id}
             type={hd.type}
             position={position[hd.side]}
-            className='!size-1.5 !min-h-0 !min-w-0 !border-0'
+            className='!min-h-0 !min-w-0 !border-0'
             style={{
+              width: draw.dot,
+              height: draw.dot,
               background: 'var(--k)',
               ...(hd.side === 'left' || hd.side === 'right'
-                ? { top: `${hd.pos * 100}%` }
-                : { left: `${hd.pos * 100}%` }),
+                ? { top: handleAt(hd.pos) }
+                : { left: handleAt(hd.pos) }),
             }}
           />
         ))

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { type Bus, type Level, blocksAt, busInfo, linksAt } from '@/data'
 import { ChevronDown, ChevronUp } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { draw } from './style'
 
 /** Colour key for the rails and buses on the current level, plus line styles. */
 export function Legend({ level }: { level: Level }) {
@@ -40,12 +40,9 @@ export function Legend({ level }: { level: Level }) {
                   <div className='grid grid-cols-2 gap-x-4 gap-y-1'>
                     {g.buses.map((b) => (
                       <span key={b} className='flex items-center gap-1.5'>
-                        <span
-                          className={cn(
-                            'rounded-full',
-                            busInfo[b].power ? 'h-1 w-5' : 'h-0.5 w-4'
-                          )}
-                          style={{ background: busInfo[b].color }}
+                        <LineSample
+                          color={busInfo[b].color}
+                          power={busInfo[b].power}
                         />
                         {busInfo[b].label}
                       </span>
@@ -56,29 +53,25 @@ export function Legend({ level }: { level: Level }) {
           )}
           <div className='space-y-1 border-t pt-2 text-muted-foreground'>
             <span className='flex items-center gap-1.5'>
-              <svg width='16' height='4'>
-                <line
-                  x1='0'
-                  y1='2'
-                  x2='16'
-                  y2='2'
-                  stroke='currentColor'
-                  strokeWidth='2'
-                  strokeDasharray='4 3'
-                />
-              </svg>
-              <svg width='20' height='4'>
-                <line
-                  x1='0'
-                  y1='2'
-                  x2='20'
-                  y2='2'
-                  stroke='currentColor'
-                  strokeWidth='4'
-                  strokeOpacity='0.45'
-                />
-              </svg>
+              <LineSample color='currentColor' candidate />
+              <LineSample color='currentColor' power candidate />
               Dashed signal or faded power line: candidate, TBD
+            </span>
+            <span className='flex items-center gap-1.5'>
+              <svg width='20' height='12' className='shrink-0'>
+                <rect
+                  x={draw.border / 2}
+                  y={draw.border / 2}
+                  width={20 - draw.border}
+                  height={12 - draw.border}
+                  rx='3'
+                  fill='none'
+                  stroke='currentColor'
+                  strokeWidth={draw.border}
+                  strokeDasharray={draw.dash.block}
+                />
+              </svg>
+              Dashed block border: candidate part
             </span>
             <span className='flex items-center gap-1.5'>
               <span className='flex size-4 items-center justify-center rounded-full border border-status-open/60 text-[9px] font-bold text-status-open'>
@@ -91,5 +84,34 @@ export function Legend({ level }: { level: Level }) {
         </div>
       )}
     </div>
+  )
+}
+
+/** A short line drawn as on the canvas: width, dash and fade from style.ts. */
+function LineSample({
+  color,
+  power = false,
+  candidate = false,
+}: {
+  color: string
+  power?: boolean
+  candidate?: boolean
+}) {
+  const kind = power ? 'power' : 'signal'
+  const w = power ? 20 : 16
+  const h = Math.ceil(draw.line[kind])
+  return (
+    <svg width={w} height={h} className='shrink-0'>
+      <line
+        x1='0'
+        y1={h / 2}
+        x2={w}
+        y2={h / 2}
+        stroke={color}
+        strokeWidth={draw.line[kind]}
+        strokeDasharray={candidate && !power ? draw.dash.signal : undefined}
+        strokeOpacity={candidate && power ? draw.candidatePower : undefined}
+      />
+    </svg>
   )
 }

@@ -12,7 +12,7 @@ import {
   SidebarRail,
   useSidebar,
 } from '@/components/ui/sidebar'
-import { BrandLogo } from '@/components/brand-logo'
+import { BrandLogo, CoopLogo } from '@/components/brand-logo'
 import { sidebarData } from './data/sidebar-data'
 import { NavGroup } from './nav-group'
 
@@ -62,6 +62,10 @@ export function AppSidebar() {
             <span className='font-mono'>{meta.build.commit.slice(0, 7)}</span> ·{' '}
             {meta.build.date}
           </a>
+        </div>
+        <div className='flex items-center gap-2 px-1 text-[11px] text-muted-foreground group-data-[collapsible=icon]:hidden'>
+          In co-op with
+          <CoopLogo className='h-4 w-6 shrink-0' />
         </div>
       </SidebarFooter>
       <SidebarRail />

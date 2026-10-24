@@ -7,6 +7,7 @@ import {
   type EdgeProps,
 } from '@xyflow/react'
 import { cn } from '@/lib/utils'
+import { draw } from './style'
 
 export type LinkEdgeType = Edge<
   {
@@ -54,14 +55,16 @@ function LinkEdgeImpl({
   // the line is straight, so the label sits at a fraction along it
   const lx = sourceX + (targetX - sourceX) * labelAt
   const ly = sourceY + (targetY - sourceY) * labelAt
-  // beside the line (6 px clear) or centered on it
+  // beside the line (a small gap clear) or centered on it
+  const gap = draw.label.gap
   const anchor =
     labelSide === 'left'
-      ? `translate(-100%, -50%) translate(${lx - 6}px, ${ly}px)`
+      ? `translate(-100%, -50%) translate(${lx - gap}px, ${ly}px)`
       : labelSide === 'right'
-        ? `translate(0, -50%) translate(${lx + 6}px, ${ly}px)`
+        ? `translate(0, -50%) translate(${lx + gap}px, ${ly}px)`
         : `translate(-50%, -50%) translate(${lx}px, ${ly}px)`
   const strong = selected || hot
+  const kind = power ? 'power' : 'signal'
   return (
     <>
       {/* wide invisible path makes the edge easy to click */}
@@ -69,7 +72,7 @@ function LinkEdgeImpl({
         d={d}
         fill='none'
         stroke='transparent'
-        strokeWidth={power ? 18 : 14}
+        strokeWidth={draw.hit[kind]}
         className='react-flow__edge-interaction'
       />
       <path
@@ -77,9 +80,11 @@ function LinkEdgeImpl({
         d={d}
         fill='none'
         stroke={color}
-        strokeWidth={power ? (strong ? 5.5 : 4) : strong ? 3 : 1.75}
-        strokeDasharray={!power && status === 'candidate' ? '6 5' : undefined}
-        strokeOpacity={dim ? 0.15 : faded ? 0.45 : 1}
+        strokeWidth={(strong ? draw.lineStrong : draw.line)[kind]}
+        strokeDasharray={
+          !power && status === 'candidate' ? draw.dash.signal : undefined
+        }
+        strokeOpacity={dim ? 0.15 : faded ? draw.candidatePower : 1}
         className={cn(
           'transition-[stroke-width,stroke-opacity]',
           strong && 'drop-shadow-[0_0_6px_currentColor]'
@@ -89,12 +94,16 @@ function LinkEdgeImpl({
       <EdgeLabelRenderer>
         <div
           className={cn(
-            'nodrag nopan pointer-events-auto absolute cursor-pointer rounded border px-1.5 py-px font-mono text-[12px] leading-4 whitespace-nowrap shadow-sm transition-opacity',
+            'nodrag nopan pointer-events-auto absolute flex cursor-pointer items-center rounded border font-mono whitespace-nowrap shadow-sm transition-opacity',
             status === 'open' && 'ring-1 ring-status-open/50',
             dim && 'opacity-20'
           )}
           style={{
             transform: anchor,
+            height: draw.label.height,
+            paddingInline: draw.label.padX,
+            fontSize: draw.label.font,
+            lineHeight: 1,
             color,
             borderColor: `color-mix(in oklab, ${color} 45%, transparent)`,
             background: `color-mix(in oklab, ${color} 12%, var(--card))`,

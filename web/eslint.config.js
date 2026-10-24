@@ -55,8 +55,8 @@ export default defineConfig(
     },
   },
   {
-    // Build scripts print their results
-    files: ['scripts/**/*.ts'],
+    // Build scripts and browser tests print their results
+    files: ['scripts/**/*.ts', 'tests/**/*.ts'],
     languageOptions: { globals: globals.node },
     rules: { 'no-console': 'off' },
   }
