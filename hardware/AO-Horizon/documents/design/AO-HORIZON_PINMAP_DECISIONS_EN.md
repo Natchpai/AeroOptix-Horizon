@@ -4,7 +4,7 @@
 **Updated:** 2026-10-24
 **From:** Hardware
 **To:** Software team and all members
-**Status:** Answered by the software team on 2026-10-24 and accepted by the hardware owner. D1 to D7 are signed "Software team (proposal for the team)"; a separate whole-team confirmation is not recorded. The hardware owner's response is in section 9. The spec records the result in rev 0.11.
+**Status:** Answered by the software team on 2026-10-24 and accepted by the hardware owner. D1 to D7 are signed "Software team (proposal for the team)"; a separate whole-team confirmation is not recorded. The hardware owner's response is in section 9. The spec records the result in rev 0.11, and the S7 update in rev 0.12.
 
 ## 1. How to reply
 
@@ -205,3 +205,4 @@ ST: DS5319 Rev 20, STM32F103x8/B datasheet, Tables 20 and 22 (`https://www.st.co
 - **S6:** the PX4 docs give the Pixhawk Debug Mini pinout as 1 VREF, 2 Console TX, 3 Console RX, 4 SWDIO, 5 SWCLK, 6 GND. NRST is not on the connector; hardware adds an NRST pad next to it (`https://docs.px4.io/main/en/debug/swd_debug.html`, read 2026-10-24; DS-009 itself not read).
 - **New open items from the answers** (spec rev 0.11): motor stop on an H743 hang depends on the ESC's signal-loss behavior (OPEN-017); the PWM pull-down value must suit bidirectional DShot (OPEN-018); the BMP384 fallback needs a footprint check against the BMP581 (OPEN-019).
 - Pinmap review 0.3 (`AO-HORIZON_PINMAP_REVIEW_EN.md`) shows the result.
+- **Update after pinmap review 0.3 (2026-10-24):** S7 changed to option (d). The IO MCU is now the STM32F100C8T6B with a 24 MHz crystal and stock px4io (spec rev 0.12, DEC-002, DEC-017). Also, the stock px4io bootloader runs from HSI, so it needs no rebuild for either chip (team correction in review 0.3, checked in PX4-Bootloader `main_f1.c`).

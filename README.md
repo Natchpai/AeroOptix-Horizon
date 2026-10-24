@@ -1,40 +1,40 @@
 # AeroOptix-Horizon
 
-**Dual-MCU PX4 flight controller hardware (STM32H743 + STM32F103) by AeroOptix Club.**
+**Dual-MCU PX4 flight controller hardware (STM32H743 + STM32F100) by AeroOptix Club.**
 
 > **Status:** `DRAFT`
 > **Board revision:** `v1.0`
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.7`
 
-> **Draft specification (rev 0.11, 2026-10-24): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.12, 2026-10-24): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
-AeroOptix-Horizon is a custom PX4 flight controller with two MCUs. The STM32H743VIT6 is the main flight-controller MCU and drives the 4 motor outputs. The STM32F103C8T6 is the IO MCU: it runs PX4 IO firmware (px4io) and drives the 8 servo outputs, the safety switch and the servo failsafe. A USART link connects the two MCUs.
+AeroOptix-Horizon is a custom PX4 flight controller with two MCUs. The STM32H743VIT6 is the main flight-controller MCU and drives the 4 motor outputs. The STM32F100C8T6B is the IO MCU: it runs PX4 IO firmware (px4io) and drives the 8 servo outputs, the safety switch and the servo failsafe. A USART link connects the two MCUs.
 
-Pixhawk 6C and Pixhawk 6X are conceptual and functional references. Their schematics and PCBs are not copied. By team decision, the H743 pins mostly follow Pixhawk 6C (`px4/fmu-v6c`) and the F103 pins follow `px4/io-v2` (DEC-014).
+Pixhawk 6C and Pixhawk 6X are conceptual and functional references. Their schematics and PCBs are not copied. By team decision, the H743 pins mostly follow Pixhawk 6C (`px4/fmu-v6c`) and the F100 pins follow `px4/io-v2` (DEC-014).
 
 ## Key Features
 
 - Main MCU: STM32H743VIT6
-- IO MCU: STM32F103C8T6 running px4io (8 servo outputs, safety switch)
-- H743 to F103 link over USART, px4io protocol at 1.5 Mb/s
+- IO MCU: STM32F100C8T6B running px4io (8 servo outputs, safety switch)
+- H743 to F100 link over USART, px4io protocol at 1.5 Mb/s
 - 4 motor outputs on the H743 (TIM5, DShot with RPM feedback), 3 spare outputs
 - 2× SPI IMU (ICM-45686), 2× I2C barometer (ICP-20100 + BMP581), 1× I2C magnetometer (IST8310)
 - 3.3 V rail from a TPS62142RGTR buck on the 5 V board input
-- USB FS, microSD (SDMMC1), H743 debug on a Pixhawk Debug Mini connector, F103 SWD pads, selectable BOOT0 on the H743
-- If the H743 stops, the F103 holds the servos at failsafe values after 0.5 s and the motors stop when their DShot signal stops (no landing)
+- USB FS, microSD (SDMMC1), H743 debug on a Pixhawk Debug Mini connector, F100 SWD pads, selectable BOOT0 on the H743
+- If the H743 stops, the F100 holds the servos at failsafe values after 0.5 s and the motors stop when their DShot signal stops (no landing)
 
 ## Specifications
 
 | Parameter | Specification |
 |---|---|
 | Main MCU | STM32H743VIT6 |
-| IO MCU | STM32F103C8T6 (px4io) |
-| Clocks | H743 16 MHz crystal; F103 8 MHz crystal with PLL ×3 to 24 MHz |
-| Inter-MCU link | H743 USART6 to F103 USART2, px4io protocol, 1.5 Mb/s |
-| Outputs | 4 motors (H743 TIM5, DShot only); 8 servos (F103, 50 Hz PWM); 3 spare (H743) |
+| IO MCU | STM32F100C8T6B (px4io) |
+| Clocks | H743 16 MHz crystal; F100 24 MHz crystal (stock px4io-v2) |
+| Inter-MCU link | H743 USART6 to F100 USART2, px4io protocol, 1.5 Mb/s |
+| Outputs | 4 motors (H743 TIM5, DShot only); 8 servos (F100, 50 Hz PWM); 3 spare (H743) |
 | IMU | 2× SPI, ICM-45686 |
 | Barometer | 2× I2C, ICP-20100 + BMP581 (BMP384 fallback) |
 | Magnetometer | 1× I2C, iSentek IST8310 (DEC-011, replaced BMM150) |
@@ -108,10 +108,10 @@ State of the saved KiCad files on 2026-10-24. Details are in the specification (
 | Block | Role |
 |---|---|
 | H743 main controller | Primary flight-controller processing and interface host |
-| F103 IO controller | px4io: 8 servo outputs, safety switch and LED, servo rail sense, servo failsafe |
+| F100 IO controller | px4io: 8 servo outputs, safety switch and LED, servo rail sense, servo failsafe |
 | IMU / barometer / magnetometer | 2 IMU on SPI1 and SPI4; 2 barometers and the magnetometer on I2C2 |
 | H743 external I/O | Telemetry/RC (ELRS), GPS, compass, air-data sensor, rangefinder, power module, 4 motor outputs, 3 spare outputs, microSD, buzzer, LEDs |
-| USB / debug / BOOT0 | USB FS, H743 debug connector (console + SWD), F103 SWD pads |
+| USB / debug / BOOT0 | USB FS, H743 debug connector (console + SWD), F100 SWD pads |
 | Power | 5 V board input, 3.3 V buck, 6 V servo supply |
 
 The specification's candidate power chain (6S battery, XT90-S, PM02D, CRIUS PDB v1.0, 6 V UBEC) comes from user diagrams and is not an approved design.
@@ -132,13 +132,13 @@ Peripheral allocations agreed with the software team (DEC-014, DEC-018). Pins ar
 | Spare 1 to 3 | Spare outputs | TIM4_CH3, TIM4_CH4, TIM1_CH1 |
 | microSD | Flight logs | SDMMC1, 4-bit |
 | Buzzer | PX4 tone alarm | TIM3_CH3 |
-| F103 servos 1 to 8 | Flaperon L/R, ruddervator L/R, tilt servo 1 to 4 | TIM2_CH1/CH2, TIM4_CH3/CH4, TIM3_CH1 to CH4 |
-| F103 safety | Safety button and LED | GPIO |
+| F100 servos 1 to 8 | Flaperon L/R, ruddervator L/R, tilt servo 1 to 4 | TIM2_CH1/CH2, TIM4_CH3/CH4, TIM3_CH1 to CH4 |
+| F100 safety | Safety button and LED | GPIO |
 
 ### Design Considerations
 
-- The software team's pinmap answers were applied in spec rev 0.11 (DEC-014 to DEC-018). The software team signed decisions D1 to D7 as proposals for the team; a separate whole-team confirmation is not recorded.
-- Stock PX4 IO firmware expects a 24 MHz F103 clock, outside the F103 crystal range of 4 to 16 MHz. The F103 gets an 8 MHz crystal, and the software team rebuilds px4io and its bootloader (DEC-017). The team's STM32F100 proposal was not taken.
+- The software team's pinmap answers were applied in spec rev 0.11 and 0.12 (DEC-014 to DEC-018). The software team signed decisions D1 to D7 as proposals for the team; a separate whole-team confirmation is not recorded.
+- The IO MCU changed from STM32F103C8T6 to STM32F100C8T6B on 2026-10-24, following the software team (DEC-002, DEC-017). Stock PX4 IO firmware expects a 24 MHz crystal, which is outside the F103 range (4 to 16 MHz) and inside the F100 range (4 to 24 MHz). With the F100, stock px4io runs unchanged. No pin moved.
 - The motors stop on an H743 hang only if the ESC stops when DShot frames stop. ESC model and behavior are not confirmed (OPEN-017).
 - PWM lines get weak pull-downs; the value must still let bidirectional DShot work (OPEN-018).
 - Sourcing risk on the sensors (OPEN-004): ICP-20100 is EOL (TDK says its pressure products are not for new designs), BMP581 stock is short, and the IST8310 lifecycle is not confirmed.
@@ -148,7 +148,7 @@ Peripheral allocations agreed with the software team (DEC-014, DEC-018). Pins ar
 - Power budgets, rail tolerances, sequencing, brownout/reset thresholds and protection (reverse polarity, overvoltage, ESD, short circuit) are `TBD`.
 - Crystal parts, load capacitors and reset topology are `TBD`.
 - Firmware is owned by the software team: PX4 v1.16.2, port based on `px4/fmu-v6c`. The PX4 Matek H743-Slim board port is kept in `documents/reference/` as a pin-map reference only.
-- Confirmed part numbers: STM32H743VIT6, STM32F103C8T6, ICM-45686, ICP-20100, BMP581, IST8310 and TPS62142RGTR. All other parts are `TBD`.
+- Confirmed part numbers: STM32H743VIT6, STM32F100C8T6B, ICM-45686, ICP-20100, BMP581, IST8310 and TPS62142RGTR. All other parts are `TBD`.
 
 ## Verification
 
@@ -162,9 +162,9 @@ Peripheral allocations agreed with the software team (DEC-014, DEC-018). Pins ar
 
 ## Open Items
 
-The specification tracks OPEN-001 to OPEN-019. Closed: OPEN-002, OPEN-003, OPEN-005, OPEN-008, OPEN-014, OPEN-015, OPEN-016. Open:
+The specification tracks OPEN-001 to OPEN-020. Closed: OPEN-002, OPEN-003, OPEN-005, OPEN-008, OPEN-014, OPEN-015, OPEN-016, OPEN-020. Open:
 
-- MCU pins: pinmap review 0.3 sent to the team, not in the schematic yet (OPEN-001)
+- MCU pins: pinmap review 0.3 answered by the team, not in the schematic yet (OPEN-001)
 - Sensor electrical data and sourcing (OPEN-004)
 - 5 V and 6 V budgets and protection (OPEN-006, OPEN-007)
 - Board outline, mounting and environment (OPEN-009)
@@ -227,9 +227,10 @@ AeroOptix-Horizon/
 | [IMU selection](hardware/AO-Horizon/documents/design/AO-HORIZON_IMU_SELECTION_EN.md) | ICM-45686 selection record |
 | [Barometer and magnetometer selection](hardware/AO-Horizon/documents/design/AO-HORIZON_BARO_MAG_SELECTION_EN.md) | ICP-20100, BMP581 and IST8310 selection and lifecycle (BMM150 replaced), BMP390 removal |
 | [Power budget](hardware/AO-Horizon/documents/design/AO-HORIZON_POWER_BUDGET_EN.md) | Draft rail and load budget (P0-017) |
-| [Pin allocation](hardware/AO-Horizon/documents/design/AO-HORIZON_PIN_ALLOCATION_EN.md) | Draft H743 and F103 pin allocation (rev 0.5) |
-| [Pinmap review](hardware/AO-Horizon/documents/design/AO-HORIZON_PINMAP_REVIEW_EN.md) | Pinmap review 0.3 for the software team, with the 0.2 answers kept |
+| [Pin allocation](hardware/AO-Horizon/documents/design/AO-HORIZON_PIN_ALLOCATION_EN.md) | Draft H743 and F100 pin allocation (rev 0.6) |
+| [Pinmap review](hardware/AO-Horizon/documents/design/AO-HORIZON_PINMAP_REVIEW_EN.md) | Pinmap review 0.3, answered by the software team (0.2 answers kept) |
 | [Pinmap decisions](hardware/AO-Horizon/documents/design/AO-HORIZON_PINMAP_DECISIONS_EN.md) | Team decisions and software answers behind DEC-014 to DEC-018 |
+| [Integration questions](hardware/AO-Horizon/documents/design/AO-HORIZON_INTEGRATION_QUESTIONS_EN.md) | Questions for the team: servo power, mounting, environment, connectors and devices (rev 0.1, sent) |
 | [H7 MCU sourcing](hardware/AO-Horizon/documents/design/AO-HORIZON_H7_MCU_SOURCING_EN.md) | STM32H743VI price and stock |
 | [KiCad project](hardware/AO-Horizon/README.md) | Project folder layout |
 

@@ -1,6 +1,6 @@
 # AeroOptix-Horizon: Barometer and Magnetometer Selection Summary
 
-**Revision:** 0.7
+**Revision:** 0.8
 **Updated:** 2026-10-24
 **Status:** ICP-20100 confirmed by the team (DEC-010). BMP390 removed on 2026-10-21. The team accepted BMP581 as barometer 2 on 2026-10-24, with BMP384 as fallback (DEC-010, decisions file D7); the fallback fit is open (OPEN-019). Magnetometer changed from BMM150 to iSentek IST8310 by the human owner on 2026-10-24 (DEC-011); the team accepted it at 0x0E the same day (pinmap review Q11). Lifecycle and availability risks are open. Datasheet values and implementation are not verified. Not a verification record.
 **Requirement refs:** SEN-002, SEN-003, CMP-004, CMP-005, OPEN-019 (spec). Checklist tasks: P0-009, P0-010.
@@ -163,37 +163,28 @@ Source keys used below:
 
 ## 4. Sourcing
 
-LCSC, fetched 2026-10-18. USD. Not a quote.
+USD. Not a quote.
 
-| Detail | ICP-20100 | BMP390 | BMM150 |
-| ------ | --------- | ------ | ------ |
-| LCSC SKU | C5343527 | C5124834 | C171681 |
-| MPN on page | ICP-20100 (exact) | BMP390 (exact) | BMM150 (exact) |
-| Stock | 5,372 | Not available now (page data: 0, `stop_product`) | 10,019 |
-| Qty 1 | $1.39 | none shown (page data: $5.39) | $1.30 |
-| Qty 10 | not listed | none shown (page data: $5.29) | $1.10 |
+| Detail | ICP-20100 | BMP581 | IST8310 |
+| ------ | --------- | ------ | ------- |
+| LCSC SKU | C5343527 | C5362283 | C2683055 (search-result lead only, `NOT_VERIFIED`) |
+| Stock | 5,372 (LCSC, 2026-10-18) | Checked by the user at LCSC on 2026-10-21, not recorded. DigiKey: 0 on 2026-10-08, 10,000 due 2026-11-19 (team, `NOT_VERIFIED`) | Not checked |
+| Qty 1 | $1.39 (LCSC, 2026-10-18) | Not recorded | Not checked |
 
-- BMP390 page data (agy, `NOT_VERIFIED`) also lists 30+ $5.22 and 100+ $5.15, MOQ 1, 10,000 per reel. LCSC lists this bare IC as `Module: Yes` in its spec table, which looks like an LCSC data error.
-- LCSC search (`lcsc.com/search?q=BMP390`) does not render without JavaScript, so other BMP390 SKUs or boards at LCSC are unknown.
-- BMP581 LCSC C5362283 was checked by the user on 2026-10-21. Stock and price are not recorded here (`NOT_VERIFIED`).
-- IST8310: no supplier was checked. LCSC C2683055 is a search-result lead only (`NOT_VERIFIED`).
-- DigiKey, Mouser and JLCPCB were not checked.
-- JLCPCB assembly eligibility is not checked for any of the three.
+- Removed parts, kept as a record (LCSC, 2026-10-18): BMP390 C5124834 not available (page data: 0, `stop_product`); BMM150 C171681 10,019 in stock, $1.30 at qty 1.
+- Mouser and JLCPCB were not checked. JLCPCB assembly eligibility is not checked for any of the three.
 
 ## 5. Open checks
 
-- [x] Team confirms the second barometer. BMP581 accepted on 2026-10-24, BMP384 fallback (DEC-010, decisions file D7).
-- [ ] Check the BMP384 fallback against the BMP581 footprint and pinout (OPEN-019), and buy BMP581 stock early (DigiKey 0 on 2026-10-08, per the team).
+- [ ] Check the BMP384 fallback against the BMP581 footprint and pinout (OPEN-019). Its address is 0x76 (team, pinmap review Q22). Buy BMP581 stock early (section 4).
 - [ ] ICP-20100 EOL still needs a last-time buy or a replacement.
 - [ ] Check the BMP581 footprint against the datasheet figures (pin 1 corner, Fig. 32 pad sizes) before placing it. Library starting point: `0_Sensor_Pressure:BMP581` on the Bosch LGA-10 footprint (OPEN-013, P2-012).
 - [ ] Confirm IST8310 lifecycle and a supplier (iSentek, LCSC or distributor).
-- [x] Make the IST8310 library starting point. Done with the stock KiCad symbol and `LGA-16_3x3mm_P0.5mm` footprint (CHANGELOG). The land pattern still needs the datasheet drawing or an iSentek layout note; the fit is `ESTIMATED`.
-- [ ] Decide the IST8310 CAD0/CAD1 straps for 0x0E. Team: 0x0E, DRDY and RSTN not connected (Q11). RSTN has an internal pull-up and an MCU connection is "not necessary" (re-check table above).
 - [ ] Get supply, temperature, I2C address selection and land pattern from each datasheet (user-supplied values, or an approved datasheet route).
-- [ ] Set the address straps on I2C2: ICP-20100 0x63, BMP581 0x46 (SDO low), IST8310 0x0E (P1-004, P1-005). The address sets do not overlap (re-check table).
-- [ ] Check the library footprints against the datasheet drawings (OPEN-013, P2-012). The ICP-20100 symbol pin map matches Table 18. Open: ICP-20100 has no land pattern in its datasheet (AN-000140) and its pads are wider than terminal b.
+- [ ] Set the address straps on I2C2: ICP-20100 0x63, BMP581 0x46 (SDO low), IST8310 0x0E with CAD0/CAD1 (P1-004, P1-005). The address sets do not overlap (re-check table). IST8310 DRDY and RSTN stay unconnected (team, Q11); RSTN has an internal pull-up.
+- [ ] Check the library footprints against the datasheet drawings (OPEN-013, P2-012). The ICP-20100 symbol pin map matches Table 18. The IST8310 uses the stock `LGA-16_3x3mm_P0.5mm` footprint; its fit is `ESTIMATED` (no land pattern in the datasheet). Open: ICP-20100 has no land pattern in its datasheet (AN-000140) and its pads are wider than terminal b.
 - [ ] Confirm that PX4 `icp201xx` supports ICP-20100. The team says it does (pinmap review section 5); not checked by hardware (`NOT_VERIFIED`).
-- [ ] Check JLCPCB assembly eligibility.
+- [ ] Check JLCPCB assembly eligibility (section 4).
 
 ## 6. Sources
 

@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.4
+**Revision:** 0.5
 **Updated:** 2026-10-24
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012). No other rail, regulator or protection part is approved. Not a verification record.
-**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012, OPEN-014 (spec). Decision: DEC-012. Checklist task: P0-017.
+**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012 (spec rev 0.12). Decisions: DEC-010, DEC-012, DEC-016, DEC-018. Checklist task: P0-017.
 **Decision owner:** Hardware
 
 Single record for rail loads, rail tolerances, brownout thresholds and power protection requirements.
@@ -58,43 +58,41 @@ Typical or average current per load. Peak current listed where known. "TBD" mean
 
 | Load | Qty | Current each | Peak | Source | Label |
 | ---- | --- | ------------ | ---- | ------ | ----- |
-| STM32H743VIT6 | 1 | TBD | TBD | st.com unreachable | `NOT_VERIFIED` |
-| STM32F103C8T6 | 1 | TBD | TBD | st.com unreachable | `NOT_VERIFIED` |
+| STM32H743VIT6 | 1 | TBD | TBD | Not read yet (NotebookLM notebook `STM32H743VI`) | `NOT_VERIFIED` |
+| STM32F100C8T6B | 1 | 15.4 mA max at 24 MHz, all peripherals on, code from Flash, TA 85 °C | Not stated | F1 value-line DS Table 12 (NotebookLM) | `VERIFIED` for the table condition (8 MHz external clock with PLL); at a 24 MHz HSE without PLL `ESTIMATED` as no higher |
 | ICP-20100 | 1 | TBD | TBD | invensense.tdk.com unreachable | `NOT_VERIFIED` |
-| Barometer 2 | 1 | TBD | TBD | Part not chosen (OPEN-014) | `TBD` |
+| BMP581 (barometer 2, DEC-010) | 1 | TBD | TBD | Not read yet (NotebookLM notebook `BMP581`) | `NOT_VERIFIED` |
 | IST8310 (magnetometer, DEC-011) | 1 | 1.2 mA at 200 sps, 0.32 mA at 50 sps (typ, AVDD 2.8 V) | Not stated | IST8310 DS V1.2, 4.3 (NotebookLM) | `VERIFIED` at 2.8 V; at 3.3 V `NOT_VERIFIED` |
 | I2C pull-ups | TBD | TBD | - | Depends on P1-004, P1-005 | `TBD` |
-| Status LEDs | TBD | TBD | - | Not defined | `TBD` |
+| LEDs: 3 board (IF-047), 3 px4io, safety LED (IF-049) | 7 | TBD (set by the resistors) | - | Resistors not chosen | `TBD` |
 | External 3.3 V devices | TBD | TBD | TBD | Not defined | `TBD` |
 
 ### 5 V (external connectors and regulator input)
 
 | Load | Ref | Current each | Peak | Source | Label |
 | ---- | --- | ------------ | ---- | ------ | ----- |
-| Telemetry 1 | IF-010 | TBD (model TBD) | TBD | - | `TBD` |
+| Telemetry 1, ELRS receiver | IF-010 | TBD (model TBD) | TBD | - | `TBD` |
 | Telemetry 2 | IF-011 | TBD (model TBD) | TBD | - | `TBD` |
 | GPS1 + compass | IF-012 | TBD (model TBD) | TBD | - | `TBD` |
-| GPS2 (reserved) | IF-013 | TBD | TBD | - | `TBD` |
 | MS4525DO | IF-014 | TBD (3.3 V and 5 V versions exist) | TBD | Snippet | `NOT_VERIFIED` |
 | TF-Luna | IF-015 | 70 mA or less average (3.7 to 5.2 V supply) | 150 mA | Snippet (third-party PDF) | `NOT_VERIFIED` |
-| FlySky receiver | IF-038 | TBD (model TBD) | TBD | - | `TBD` |
 | 3.3 V regulator input | - | Sum of section 3.3 V loads | TBD | - | `TBD` |
 
 ### 6 V servo rail
 
 | Load | Ref | Qty | Current each | Stall / peak | Label |
 | ---- | --- | --- | ------------ | ------------ | ----- |
-| Servos on F103 outputs | IF-030 to IF-037 | TBD | TBD | TBD | `TBD` |
-| Servos or devices on H743 outputs | IF-017 to IF-021 | TBD | TBD | TBD | `TBD` |
+| Servos on F100 outputs: 2 flaperon, 2 ruddervator, 4 tilt | IF-030 to IF-037 | 8 | TBD (models TBD) | TBD | `TBD` |
+| Spare outputs on the H743 | IF-017 to IF-019 | 0 planned (DEC-018) | - | - | - |
 
-Which outputs drive servos (6 V) and which drive ESC signal inputs only is not recorded. `TBD`.
+The 4 motor outputs (IF-040 to IF-043) carry only the DShot signal to the ESCs (DEC-016); motor power does not pass through the board (`ASSUMED`). Whether the 6 V servo current passes through the board is a team question (team questions file).
 
 ## 4. Totals
 
 | Rail | Known subtotal | Missing | Budget | Margin | Label |
 | ---- | -------------- | ------- | ------ | ------ | ----- |
 | 3.3 V_IMU | 0.88 mA (2 × 0.44 mA) | IMU peak | TBD. The drawn `+3V3A` LDO TPS73533DRBR is rated 500 mA (TI SBVS087M 5.3) but is not decided (OPEN-011). | TBD | `ESTIMATED` from `NOT_VERIFIED` inputs |
-| 3.3 V | about 1.2 mA (IST8310 at 200 sps) | Both MCUs, ICP-20100, barometer 2, pull-ups, LEDs | 2 A, TPS62142RGTR (DEC-012, TI SLVSAJ0F) | TBD | `ESTIMATED` from partial inputs |
+| 3.3 V | about 17 mA (IST8310 at 200 sps, F100 max 15.4 mA) | H743, ICP-20100, BMP581, pull-ups, LEDs | 2 A, TPS62142RGTR (DEC-012, TI SLVSAJ0F) | TBD | `ESTIMATED` from partial inputs |
 | 5 V | 70 mA average, 150 mA peak (TF-Luna only) | All other external loads, 3.3 V regulator input | 2 A source (PWR-010) | TBD | `ESTIMATED` from partial inputs |
 | 6 V | none | All servo loads | 10 A cont., 15 A inst. (PWR-011) | TBD | `TBD` |
 
@@ -113,7 +111,7 @@ Known upper bounds for the 3.3 V rails:
 - ICM-45686 VDD and VDDIO max 3.6 V recommended, 4 V absolute maximum (IMU rec, `NOT_VERIFIED`).
 - IST8310 AVDD and DVDD max 3.6 V recommended and 3.6 V absolute maximum (IST8310 DS V1.2, 4.1 and 4.2, `VERIFIED` via NotebookLM). This is the tightest limit on the 3.3 V rail.
 - `ESTIMATED`: 3.3 V nominal leaves 0.3 V (9 %) to the 3.6 V limit for regulator tolerance, load transients and overshoot.
-- MCU VDD ranges `TBD` (st.com unreachable).
+- F100 VDD 2 to 3.6 V (F1 value-line DS Table 8, `VERIFIED`). H743 VDD range `TBD`.
 
 ## 6. Brownout and reset thresholds (PWR-014)
 
@@ -121,8 +119,8 @@ Known upper bounds for the 3.3 V rails:
 | ---- | --------- | ------ | ----- |
 | H743 BOR level (option bytes) | TBD | ST datasheet / RM | `NOT_VERIFIED` |
 | H743 PVD level | TBD | ST datasheet / RM | `NOT_VERIFIED` |
-| F103 POR/PDR | TBD | ST datasheet | `NOT_VERIFIED` |
-| F103 PVD level | TBD | ST datasheet | `NOT_VERIFIED` |
+| F100 POR/PDR | Falling 1.8 / 1.88 / 1.96 V, rising 1.84 / 1.92 / 2.0 V (min / typ / max), 40 mV hysteresis | F1 value-line DS Table 10 (NotebookLM) | `VERIFIED` |
+| F100 PVD level | 8 levels, falling-edge typ 2.08 to 2.78 V, 100 mV hysteresis; enabled by software | F1 value-line DS Table 10 (NotebookLM) | `VERIFIED` |
 | 5 V input undervoltage detect | TBD (does the board monitor 5 V?) | Not defined | `TBD` |
 | 6 V servo rail monitor | TBD | Not defined | `TBD` |
 
@@ -145,22 +143,23 @@ All `TBD`. Items to decide:
 | MAJOR | PWR-012 | `NOT_VERIFIED` | Board current budget cannot be closed: MCU currents and all external 5 V device models are missing. | Section 4 |
 | MINOR | IST8310 / 3.3 V | `VERIFIED` | IST8310 absolute maximum supply is 3.6 V, so the 3.3 V rail must never overshoot by more than 0.3 V (9 %), including start-up and load steps. | IST8310 DS V1.2, 4.1 |
 | INFO | IF-022 / 5 V | `ASSUMED` | If USB VBUS can power the board, it needs OR-ing or isolation from the PM02D 5 V. | Section 2 |
-| INFO | IF-030 to IF-037 | `TBD` | Servo count and stall current are needed before the 10 A / 15 A rating can be checked. | Section 3 |
+| INFO | IF-030 to IF-037 | `TBD` | The 8 servo models and their stall current are needed before the 10 A / 15 A rating can be checked. | Section 3 |
 
 ## 9. Open inputs
 
-- [ ] Telemetry 1 and 2, GPS, FlySky receiver: model and supply current (human).
-- [ ] Servo count, servo model and stall current; which outputs carry servo power (human).
+- [ ] ELRS receiver (Telemetry 1), Telemetry 2 device, GPS: model and supply current (team questions file).
+- [ ] Servo models and stall current; whether servo power passes through the board (team questions file).
 - [ ] 3.3 V_IMU rail structure: separate LDO or filtered branch (human).
-- [ ] USB VBUS as a board power source: yes or no (human).
-- [ ] STM32H743 and STM32F103 VDD range, run current at the planned clock, BOR/POR/PVD levels (user-supplied values or approved datasheet route).
+- [ ] USB VBUS as a board power source: yes or no (team questions file).
+- [ ] STM32H743 VDD range, run current at the planned clock, BOR/PVD levels (user-supplied values or approved datasheet route). STM32F100: done (VDD 2 to 3.6 V, Table 8; sections 3.3 V and 6).
 - [ ] ICP-20100 supply range and current.
-- [ ] MS4525DO version (3.3 V or 5 V) and supply current.
+- [ ] MS4525DO version (3.3 V or 5 V) and supply current (team questions file).
 - [ ] Retry the official pages for TF-Luna and MS4525DO.
 
 ## 10. Sources
 
 - IST8310 Datasheet, Version 1.2 (NotebookLM notebook `IST8301`, not opened by Claude)
+- F1 value-line DS: ST DocID16455 Rev 9 (STM32F100x4/6/8/B), NotebookLM notebook `STM32F100`, read as source fulltext
 - TF-Luna snippet source (third-party PDF, not opened): https://files.waveshare.com/upload/c/c3/SJ-GU-TF-Luna_A05_Datasheet.pdf
 - TI TPS62142: https://www.ti.com/product/TPS62142
 - TI TPS735 (TPS73533DRBR): https://www.ti.com/product/TPS735 and https://www.ti.com/document-viewer/TPS735/datasheet/electrical-characteristics-slvscd4719

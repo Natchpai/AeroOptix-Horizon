@@ -4,7 +4,7 @@
 **Updated:** 2026-10-24
 **From:** Hardware
 **To:** Software / PX4 dev team
-**Status:** Draft for review. Applies your answers to review 0.2 and the decisions file (`AO-HORIZON_PINMAP_DECISIONS_EN.md`). Rows marked `NEW` and the questions in section 6 need your reply. Nothing here is drawn in the schematic yet.
+**Status:** Answered by the software team on 2026-10-24. The `Team` column and section 6 hold their answers, kept as written. The hardware owner's response is in section 9; the spec records the result in rev 0.12. The IO MCU is now the STM32F100C8T6B on the same pins (section 9); the board summary and the section 4 title show it. Other rows and the answers still say F103 or 8 MHz as sent. Nothing here is drawn in the schematic yet.
 
 ## 1. How to reply
 
@@ -18,8 +18,8 @@
 | Item | Value |
 |---|---|
 | Main MCU (FMU) | STM32H743VIT6, LQFP100, 16 MHz crystal |
-| IO MCU | STM32F103C8T6, LQFP48, 8 MHz crystal (PLL ×3 to 24 MHz; px4io and its bootloader rebuilt for 8 MHz, your S7 option (a)) |
-| Link between MCUs | H743 USART6 to F103 USART2, px4io protocol, 1.5 Mb/s |
+| IO MCU | STM32F100C8T6B, LQFP48, 24 MHz crystal, stock px4io-v2 (changed from STM32F103C8T6 after your 0.3 answers, section 9) |
+| Link between MCUs | H743 USART6 to F100 USART2, px4io protocol, 1.5 Mb/s |
 | PX4 | v1.16.2, port based on `px4/fmu-v6c`; IO runs px4io-v2 |
 | Outputs | 4 motors on the H743 (TIM5, DShot only, bidirectional); 8 servos on the F103 (50 Hz PWM); 3 spare outputs on the H743 |
 | Flashing | H743 over USB (PX4 bootloader); first flash of both MCUs over SWD by the software team |
@@ -102,12 +102,12 @@ TIM5 is timer 0 in `timer_config.cpp`, with DMA (your S2, S3). Every output has 
 
 | Connector pin | Signal | H743 pin | Team |
 |---|---|---|---|
-| 1 | VREF (3.3 V) | - | NEW |
-| 2 | Console TX (from the H743) | PD8 (USART3_TX) | NEW |
-| 3 | Console RX (to the H743) | PD9 (USART3_RX) | NEW |
-| 4 | SWDIO | PA13 | NEW |
-| 5 | SWCLK | PA14 | NEW |
-| 6 | GND | - | NEW |
+| 1 | VREF (3.3 V) | - | OK (matches the PX4 docs, DS-009) |
+| 2 | Console TX (from the H743) | PD8 (USART3_TX) | OK |
+| 3 | Console RX (to the H743) | PD9 (USART3_RX) | OK |
+| 4 | SWDIO | PA13 | OK |
+| 5 | SWCLK | PA14 | OK |
+| 6 | GND | - | OK |
 
 The Debug Mini has no NRST pin. Hardware adds an NRST pad next to the connector for connect-under-reset.
 
@@ -131,7 +131,7 @@ No microSD card-detect pin (S4). HRT on TIM8, no pin (Q15). PA15 is free again n
 
 Free H743 pins (25): PA8, PA10, PB1, PB2, PB5, PB6, PB7, PB12, PB13, PC2_C, PC3_C, PC5, PC13, PC14, PC15, PD0, PD1, PD3, PD4, PD7, PD10, PD11, PE5, PE6, PE10. PA15, PB3 and PB4 are also free (JTAG pins, SWD only is used).
 
-## 4. STM32F103C8T6 (IO MCU)
+## 4. STM32F100C8T6B (IO MCU)
 
 `Pkg` is the LQFP48 package pin number. All timer outputs use the default mapping (no AFIO remap). All pins are the px4io-v2 pins.
 
@@ -154,7 +154,7 @@ Free H743 pins (25): PA8, PA10, PB1, PB2, PB5, PB6, PB7, PB12, PB13, PC2_C, PC3_
 |---|---|---|---|---|
 | Link to H743 | USART2_TX | PA2 | 12 | OK (0.2) |
 | Link to H743 | USART2_RX | PA3 | 13 | OK (0.2) |
-| px4io console (TX only, to a pad) | USART1_TX | PA9 | 30 | NEW (S6) |
+| px4io console (TX only, to a pad) | USART1_TX | PA9 | 30 | OK (Q21) |
 | Safety button | GPIO in | PB5 | 41 | OK (0.2) |
 | Safety LED | GPIO out, open drain, active low | PB13 | 26 | OK (0.2) |
 | Servo rail sense (3:1 divider) | ADC1_IN4 | PA4 | 14 | OK (0.2) |
@@ -163,8 +163,8 @@ Free H743 pins (25): PA8, PA10, PB1, PB2, PB5, PB6, PB7, PB12, PB13, PC2_C, PC3_
 | Reset (pad) | NRST | NRST | 7 | OK (0.2) |
 | Boot select | BOOT0 (pull-down) | BOOT0 | 44 | OK (0.2) |
 | Boot select | BOOT1 (pull-down) | PB2 | 20 | OK (0.2) |
-| HSE crystal, 8 MHz | OSC_IN | PD0 | 5 | NEW (S7 a) |
-| HSE crystal, 8 MHz | OSC_OUT | PD1 | 6 | NEW (S7 a) |
+| HSE crystal, 8 MHz | OSC_IN | PD0 | 5 | OK, we can rebuild px4io for 8 MHz (S7 a). Simpler, if you can buy it: an STM32F100C8T6B with a 24 MHz crystal. px4io-v2 is built for that chip, so stock px4io runs unchanged and nothing needs a custom build. Same speed: px4io runs at 24 MHz on either chip. Please check that its LQFP48 pinout matches the F103 (PA11/PA12 are USB on the F103, plain GPIO on the F100). DigiKey had 988 in stock on 2026-10-08. Correction to our S7 answer: the stock px4io bootloader runs from the internal HSI clock, so it needs no rebuild either way |
+| HSE crystal, 8 MHz | OSC_OUT | PD1 | 6 | OK |
 
 ### 4.3 Other px4io-v2 pins
 
@@ -172,14 +172,14 @@ These are left for their px4io-v2 function and not used for anything else (F5 in
 
 | Pin | px4io-v2 function | Plan | Team |
 |---|---|---|---|
-| PB14 | Blue LED (also heater output) | See Q20 | NEW |
-| PB15 | Amber LED | See Q20 | NEW |
-| PA11 | Green LED | See Q20 | NEW |
-| PA15 | Servo fault input | Unconnected | NEW |
-| PA5, PA12 | RSSI | Unconnected | NEW |
-| PC13, PA10 | Spektrum (PA10 is also USART1_RX) | Unconnected | NEW |
-| PB10, PB11, PB4 | SBUS | Unconnected | NEW |
-| PA8 | PPM | Unconnected | NEW |
+| PB14 | Blue LED (also heater output) | See Q20 | OK, fit the LED (Q20) |
+| PB15 | Amber LED | See Q20 | OK, fit the LED (Q20) |
+| PA11 | Green LED | See Q20 | OK, fit the LED (Q20) |
+| PA15 | Servo fault input | Unconnected | OK |
+| PA5, PA12 | RSSI | Unconnected | OK |
+| PC13, PA10 | Spektrum (PA10 is also USART1_RX) | Unconnected | CHANGE: keep unconnected, but add a weak pull-up to 3.3 V on PA10. It is a UART RX input (DSM); left floating, noise could be decoded as RC input |
+| PB10, PB11, PB4 | SBUS | Unconnected | CHANGE: keep unconnected, but add a weak pull-up to 3.3 V on PB11 (SBUS input), same reason as PA10 |
+| PA8 | PPM | Unconnected | OK (px4io turns on the internal pull-up) |
 | PC14, PC15 | Board sense, read at boot | Unconnected (Q6) | OK (0.2) |
 
 Free F103 pins (4): PB3, PB6, PB7, PB12. PB3 needs the SWJ remap (SWD only) before use as GPIO.
@@ -191,7 +191,7 @@ Free F103 pins (4): PB3, PB6, PB7, PB12. PB3 needs the SWJ remap (SWD only) befo
 | ICM-45686 (×2) | SPI1, SPI4 | - | `imu/invensense/icm45686` | OK (0.2) |
 | ICP-20100 | I2C2 | 0x63 | `barometer/invensense/icp201xx` | OK (0.2) |
 | BMP581 | I2C2 | 0x46 (SDO low) | `barometer/bmp581` | OK (D7) |
-| BMP384 (fallback only) | I2C2 | 0x76 or 0x77 | `barometer/bmp388` | NEW |
+| BMP384 (fallback only) | I2C2 | 0x76 or 0x77 | `barometer/bmp388` | OK, 0x76 (Q22) |
 | IST8310 | I2C2 | 0x0E | `magnetometer/isentek/ist8310` | OK (0.2) |
 | MS4525DO (external) | I2C4 | 0x28 | `differential_pressure/ms4525do` | OK (0.2) |
 | PM02D power module (external) | I2C4 | 0x45 (INA228) | `power_monitor/ina228` | OK (0.2) |
@@ -200,15 +200,15 @@ Free F103 pins (4): PB3, PB6, PB7, PB12. PB3 needs the SWJ remap (SWD only) befo
 
 **Q20. px4io LEDs.** px4io-v2 drives a blue LED on PB14 (also used as a heater output), an amber LED on PB15 and a green LED on PA11. Do you want them fitted on the board, or left unconnected? They show the IO status during bench work.
 
-Answer:
+Answer: Fit all three. Blue blinks as the px4io heartbeat, amber blinks when the H743 link is down, and green breathes when disarmed and stays on when armed. We need them to bring up our 8 MHz px4io build.
 
 **Q21. px4io console.** PA10 is both USART1_RX and the px4io Spektrum input, so hardware brings out only USART1 TX (PA9) to a pad, with GND. Is a TX-only console enough for you?
 
-Answer:
+Answer: Yes. The px4io console only prints (px4io-v2 has no shell), so TX is enough.
 
 **Q22. BMP384 fallback address.** If the BMP384 is fitted instead of the BMP581, which address do you want, 0x76 or 0x77? Your start script sets it.
 
-Answer:
+Answer: 0x76 (SDO low), the default of the PX4 bmp388 driver.
 
 ## 7. Answers from review 0.2 (kept for reference)
 
@@ -300,3 +300,13 @@ Answer: USB device only. OTG_FS_ID is not needed.
 - ST open pin data: https://github.com/STMicroelectronics/STM32_open_pin_data (commit `7d1f151`)
 - PX4-Autopilot v1.16.2: https://github.com/PX4/PX4-Autopilot/tree/v1.16.2/boards/px4/ (`io-v2`, `fmu-v6c`)
 - PX4 docs, SWD debug port: https://docs.px4.io/main/en/debug/swd_debug.html
+
+## 9. Hardware owner response (2026-10-24)
+
+- All 0.3 answers accepted as written.
+- **IO MCU (row 4.2):** changed to the STM32F100C8T6B with a 24 MHz crystal, as you proposed. Stock px4io-v2 and the stock px4io bootloader run unchanged, so no custom px4io build is needed (spec DEC-002, DEC-017). LCSC stock checked by the hardware owner.
+- **F100 pinout check (your request):** ST pin data for STM32F100C(8-B)Tx and STM32F103C(8-B)Tx, LQFP48: all 48 pin names and types match, and every signal in sections 4.1 to 4.3 is on the same pin. No pin moves. The F100 datasheet (DocID16455 Rev 9) gives HSE 4 to 24 MHz (Table 21).
+- **Bootloader correction:** confirmed. The PX4 F1 bootloader sets its clock with `rcc_clock_setup_in_hsi_out_24mhz()` (PX4-Bootloader `main_f1.c`, `main` branch read 2026-10-24).
+- **PA10 and PB11:** both stay unconnected, with a weak pull-up to 3.3 V. Hardware picks the value.
+- **Q20 LEDs:** blue (PB14), amber (PB15) and green (PA11) fitted.
+- **Q22:** BMP384 fallback at 0x76, SDO low. 0x76 is the default in PX4 v1.16.2 `bmp388_main.cpp`.

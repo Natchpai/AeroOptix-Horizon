@@ -4,7 +4,7 @@
 | -------------------- |---|
 | Project              | AeroOptix-Horizon |
 | Document owner       | Human engineering owner (TBD) |
-| Document revision    | 0.11 |
+| Document revision    | 0.12 |
 | Last updated         | 2026-10-24 |
 | Design tool          | KiCad 10 (saved files written by eeschema 10.0) |
 | Hardware phase       | TBD (declared by the human) |
@@ -18,25 +18,25 @@
 - `TBD`: to be decided. A value written as `TBD`, or left out, is open.
 - A part shown in a diagram is a candidate only. It is not an approved part number.
 
-**Part-number boundary:** Only `STM32H743VIT6`, `STM32F103C8T6`, `ICM-45686` (2 × IMU, DEC-008), `ICP-20100` (barometer 1, DEC-010), `BMP581` (barometer 2, DEC-010; fallback BMP384), `IST8310` (iSentek magnetometer, DEC-011) and `TPS62142RGTR` (main 3.3 V buck, DEC-012) are confirmed part numbers. The H743↔F103 interface is confirmed as `USART` with the px4io protocol (DEC-015). All other part numbers are `TBD`. This includes regulators, protection devices, power modules, connectors, and interface ICs.
+**Part-number boundary:** Only `STM32H743VIT6`, `STM32F100C8T6B`, `ICM-45686` (2 × IMU, DEC-008), `ICP-20100` (barometer 1, DEC-010), `BMP581` (barometer 2, DEC-010; fallback BMP384), `IST8310` (iSentek magnetometer, DEC-011) and `TPS62142RGTR` (main 3.3 V buck, DEC-012) are confirmed part numbers. The H743↔F100 interface is confirmed as `USART` with the px4io protocol (DEC-015). All other part numbers are `TBD`. This includes regulators, protection devices, power modules, connectors, and interface ICs.
 
 ## 1. Project Definition
 
 ### 1.1 Purpose and application
 
-A custom PX4 flight controller hardware platform with a dual-MCU architecture. The STM32H743VIT6 is the main flight-controller MCU and drives the 4 motor outputs. The STM32F103C8T6 is the IO MCU: it runs px4io firmware and drives the 8 servo outputs, the safety switch and the servo failsafe (DEC-015, DEC-016).
+A custom PX4 flight controller hardware platform with a dual-MCU architecture. The STM32H743VIT6 is the main flight-controller MCU and drives the 4 motor outputs. The STM32F100C8T6B is the IO MCU: it runs px4io firmware and drives the 8 servo outputs, the safety switch and the servo failsafe (DEC-015, DEC-016).
 
-Pixhawk 6C and Pixhawk 6X are conceptual and functional references. Their schematic and PCB are not copied. The pin allocation follows Pixhawk 6C (`px4/fmu-v6c`) on the H743 and `px4/io-v2` on the F103, by team decision (DEC-014).
+Pixhawk 6C and Pixhawk 6X are conceptual and functional references. Their schematic and PCB are not copied. The pin allocation follows Pixhawk 6C (`px4/fmu-v6c`) on the H743 and `px4/io-v2` on the F100, by team decision (DEC-014).
 
 ### 1.2 Scope
 
 **In scope:**
 
 - H743 main-MCU hardware architecture
-- F103 IO MCU hardware: servo PWM, safety switch, servo rail sense and failsafe
-- H743↔F103 USART physical interface
+- F100 IO MCU hardware: servo PWM, safety switch, servo rail sense and failsafe
+- H743↔F100 USART physical interface
 - Sensor interfaces: 2 × SPI IMU, 2 × I2C barometer, 1 × I2C magnetometer (DEC-011)
-- H743 external interfaces and F103 PWM/expanded-I/O allocation provided by the user
+- H743 external interfaces and F100 PWM/expanded-I/O allocation provided by the user
 - 5 V flight-controller board input and 6 V servo supply
 - USB FS, BOOT0, SWD, reset, protection, testability, PCB, manufacturing, and bring-up requirements
 - Verification planning through hardware bring-up
@@ -44,7 +44,7 @@ Pixhawk 6C and Pixhawk 6X are conceptual and functional references. Their schema
 **Out of scope or deferred:**
 
 - PX4 board port (software team: PX4 v1.16.2, based on `px4/fmu-v6c`, DEC-014)
-- Bootloader implementation, including the px4io build for the 8 MHz F103 crystal (DEC-017)
+- Bootloader implementation (stock PX4 bootloader and stock px4io-v2 on the F100, DEC-017)
 - Firmware image packaging and software flashing implementation
 - Detailed USART message protocol and Software-owned behavior
 - Final sensor, regulator, protection, connector, power-module, and PDB/UBEC part numbers
@@ -61,11 +61,12 @@ See section 3.2.
 | REF-01    | Pixhawk 6C reference architecture | Not specified | Conceptual and functional reference only |
 | REF-02    | User-provided FC_H743 architecture diagram | 2026-10-12 | Diagram-derived candidate architecture; not native design authority |
 | REF-03    | User-provided power architecture diagram | 2026-10-12 | Diagram-derived power candidates; not an approved power specification |
-| REF-04    | `AO-HORIZON_EXECUTION_CHECKLIST_EN.md` | 0.8 | Execution and evidence checklist |
+| REF-04    | `AO-HORIZON_EXECUTION_CHECKLIST_EN.md` | 0.11 | Execution and evidence checklist |
 | REF-05    | Pixhawk 6X reference architecture | Rev 8 | Conceptual and functional reference only |
 | REF-06    | `AO-HORIZON_PINMAP_DECISIONS_EN.md` | 0.2, 2026-10-24 | Team answers behind DEC-014 to DEC-018 |
-| REF-07    | `AO-HORIZON_PINMAP_REVIEW_EN.md` | 0.3, 2026-10-24 | Pinmap agreed with the software team |
+| REF-07    | `AO-HORIZON_PINMAP_REVIEW_EN.md` | 0.3, answered 2026-10-24 | Pinmap agreed with the software team |
 | REF-08    | PX4-Autopilot `boards/px4/fmu-v6c` and `boards/px4/io-v2` | Tag v1.16.2 | Pin and firmware basis for the port (DEC-014) |
+| REF-09    | `AO-HORIZON_INTEGRATION_QUESTIONS_EN.md` | 0.1, 2026-10-24 | Open questions to the team: servo power, mounting, environment, connectors |
 
 ## 2. Requirements Management
 
@@ -84,16 +85,16 @@ All rows are `CONFIRMED` by the user and `NOT_VERIFIED`. SYS-001 and SYS-002 com
 | ID      | Requirement | Conditions / limits | Verification |
 | ------- |---|---|---|
 | SYS-001 | The system shall be a custom PX4 Flight Controller hardware platform. | Custom hardware; PX4 implementation details deferred. | Inspection of approved system scope. |
-| SYS-002 | Pixhawk 6C (REF-01) and Pixhawk 6X (REF-05) shall be used as conceptual and functional references. | No copied schematic or PCB. The pin allocation follows `px4/fmu-v6c` (H743) and `px4/io-v2` (F103), by team decision (DEC-014). | Architecture review. |
+| SYS-002 | Pixhawk 6C (REF-01) and Pixhawk 6X (REF-05) shall be used as conceptual and functional references. | No copied schematic or PCB. The pin allocation follows `px4/fmu-v6c` (H743) and `px4/io-v2` (F100), by team decision (DEC-014). | Architecture review. |
 | MCU-001 | The main MCU shall be STM32H743VIT6. | Package placement and native design implementation are open. | Native schematic inspection. |
-| MCU-002 | The IO MCU shall be STM32F103C8T6. | Required during operation. Runs px4io firmware: 8 servo outputs, safety switch, servo failsafe (DEC-015, DEC-016). | Native schematic and responsibility review. |
-| IF-001  | The H743↔F103 interface shall be USART with the px4io protocol. | H743 USART6 ↔ F103 USART2, 1.5 Mb/s, 3.3 V (DEC-015). The F103 uses this link to detect that the H743 has stopped. Software owns the protocol. | Allocation review and hardware test. |
+| MCU-002 | The IO MCU shall be STM32F100C8T6B. | Required during operation. Runs px4io firmware: 8 servo outputs, safety switch, servo failsafe (DEC-015, DEC-016). | Native schematic and responsibility review. |
+| IF-001  | The H743↔F100 interface shall be USART with the px4io protocol. | H743 USART6 ↔ F100 USART2, 1.5 Mb/s, 3.3 V (DEC-015). The F100 uses this link to detect that the H743 has stopped. Software owns the protocol. | Allocation review and hardware test. |
 | SEN-001 | The design shall provide 2 × SPI IMU interfaces. | Part: 2 × ICM-45686 (DEC-008). Resource allocation TBD. | Schematic inspection and hardware test. |
 | SEN-002 | The design shall provide 2 × I2C barometer interfaces. | Parts: ICP-20100 at 0x63 and BMP581 at 0x46, both on I2C2 (DEC-010, DEC-018). Fallback for the BMP581: BMP384 (OPEN-019). | Schematic inspection and hardware test. |
 | SEN-003 | The design shall provide 1 × I2C magnetometer interface. | Part: iSentek IST8310 (DEC-011, replaced BMM150 on 2026-10-24). Reduced from 2 by DEC-011. | Architecture and hardware test. |
 | PWR-001 | The flight-controller board shall receive 5 V from the power module. | Limits: see PWR-010. | Power-tree inspection and measurement. |
 | PWR-002 | The servo supply shall be 6 V. | Limits: see PWR-011. | Power-tree inspection and measurement. |
-| SAF-001 | If the H743 stops, the F103 shall set the 8 servo outputs to fixed failsafe values, and the motors shall stop. No landing is commanded. | Stock px4io acts after 0.5 s without H743 data (PX4 v1.16.2 `px4iofirmware/mixer.cpp`). Failsafe values are PX4 parameters, set after flight tests (decisions file D3). The motors stop because their DShot frames stop (SAF-015). Changed from "immediate landing" by DEC-016. | Fault-injection test. |
+| SAF-001 | If the H743 stops, the F100 shall set the 8 servo outputs to fixed failsafe values, and the motors shall stop. No landing is commanded. | Stock px4io acts after 0.5 s without H743 data (PX4 v1.16.2 `px4iofirmware/mixer.cpp`). Failsafe values are PX4 parameters, set after flight tests (decisions file D3). The motors stop because their DShot frames stop (SAF-015). Changed from "immediate landing" by DEC-016. | Fault-injection test. |
 
 ## 3. System Requirements
 
@@ -102,10 +103,10 @@ All rows are `CONFIRMED` by the user and `NOT_VERIFIED`. SYS-001 and SYS-002 com
 | ID      | Required behavior | Condition | Verification |
 | ------- |---|---|---|
 | FUN-001 | H743 shall provide the primary flight-controller processing and primary system interface resources. | Normal operation | Schematic/resource inspection; later bring-up |
-| FUN-002 | H743 shall drive the 4 ESC outputs on one timer with DMA (TIM5), DShot only with no PWM fallback, with bidirectional DShot (RPM feedback). | Normal operation. Changed from F103 ESC outputs by DEC-016. | Resource inspection; DShot bench test |
-| FUN-003 | F103 shall drive the 8 servo outputs (IF-030 to IF-037) at 50 Hz PWM, and the safety switch, safety LED and servo rail sense (IF-049, IF-050). | Normal operation. FlySky input removed (DEC-018). | MCU resource review; hardware test |
-| FUN-004 | F103 shall hold the servo outputs at their failsafe values when H743 data stops (see SAF-001). | H743 unavailable | Fault-injection test; timing measurement |
-| FUN-005 | H743 and F103 shall provide SWD debug/recovery access. | Development, service, bring-up | Probe connection; debug test |
+| FUN-002 | H743 shall drive the 4 ESC outputs on one timer with DMA (TIM5), DShot only with no PWM fallback, with bidirectional DShot (RPM feedback). | Normal operation. Changed from F100 ESC outputs by DEC-016. | Resource inspection; DShot bench test |
+| FUN-003 | F100 shall drive the 8 servo outputs (IF-030 to IF-037) at 50 Hz PWM, and the safety switch, safety LED and servo rail sense (IF-049, IF-050). | Normal operation. FlySky input removed (DEC-018). | MCU resource review; hardware test |
+| FUN-004 | F100 shall hold the servo outputs at their failsafe values when H743 data stops (see SAF-001). | H743 unavailable | Fault-injection test; timing measurement |
+| FUN-005 | H743 and F100 shall provide SWD debug/recovery access. | Development, service, bring-up | Probe connection; debug test |
 | FUN-006 | H743 shall retain selectable BOOT0 access. | Development, recovery | Inspection; boot-state test |
 
 ### 3.2 Operating scenarios and modes
@@ -114,9 +115,9 @@ Exit, transition, recovery, and restart behavior is `TBD` for all rows.
 
 | Scenario / mode   | Entry | Required behavior |
 | ----------------- |---|---|
-| Normal            | Valid power and normal MCU operation | H743 performs primary functions and drives the motors. F103 drives the servos and the safety switch. |
-| H743 unavailable  | No H743 data at the F103 for 0.5 s | F103 holds the servos at their failsafe values. Motors stop when their DShot frames stop (SAF-015). ESC stop time is `NOT_VERIFIED` (OPEN-017). |
-| H743↔F103 link    | Normal operation | USART with the px4io protocol, 1.5 Mb/s (DEC-015). Software owns the protocol. |
+| Normal            | Valid power and normal MCU operation | H743 performs primary functions and drives the motors. F100 drives the servos and the safety switch. |
+| H743 unavailable  | No H743 data at the F100 for 0.5 s | F100 holds the servos at their failsafe values. Motors stop when their DShot frames stop (SAF-015). ESC stop time is `NOT_VERIFIED` (OPEN-017). |
+| H743↔F100 link    | Normal operation | USART with the px4io protocol, 1.5 Mb/s (DEC-015). Software owns the protocol. |
 | Boot / service    | BOOT0 or service procedure selects recovery | SWD and USB service access remain available as designed. USB FS on H743 is for later Software-owned flashing/QGC integration. |
 | Power input       | Power module connected | Board receives 5 V. Servo supply is 6 V. Limits are in PWR-010 and PWR-011. |
 | Power abnormality | Brownout, reset, rail fault, or input loss | Hardware response, sequencing, and safe output state are `TBD`. Verify before release. |
@@ -150,8 +151,8 @@ Allocations are `CONFIRMED` at the logical and peripheral level (DEC-014, DEC-01
 | IF-020 | Conn11 / TL2 | Removed | - | TIM15 dropped; its pins carry motors 3 and 4 (IF-042, IF-043). DEC-016. |
 | IF-021 | Conn12 / TR2 | Removed | - | As IF-020. |
 | IF-022 | USB FS | Service, firmware update, QGC | USB FS | Device only; OTG_FS_ID not used. VBUS sense on OTG_FS_VBUS. ESD/protection, connector and routing TBD. |
-| IF-023 | SWD | Debug and recovery | SWD | H743: on the debug connector (IF-045). F103: IF-051. |
-| IF-024 | H743↔F103 | MCU link | H743 USART6 ↔ F103 USART2 | px4io protocol, 1.5 Mb/s, 3.3 V (DEC-015). Protection and test access TBD. |
+| IF-023 | SWD | Debug and recovery | SWD | H743: on the debug connector (IF-045). F100: IF-051. |
+| IF-024 | H743↔F100 | MCU link | H743 USART6 ↔ F100 USART2 | px4io protocol, 1.5 Mb/s, 3.3 V (DEC-015). Protection and test access TBD. |
 | IF-040 | ESC 1 (front-R) | Motor 1 | TIM5_CH1 | DShot only, bidirectional (FUN-002, DEC-016). Weak pull-down (OPEN-018). |
 | IF-041 | ESC 2 (rear-L) | Motor 2 | TIM5_CH2 | As IF-040. |
 | IF-042 | ESC 3 (front-L) | Motor 3 | TIM5_CH3 | As IF-040. |
@@ -162,7 +163,7 @@ Allocations are `CONFIRMED` at the logical and peripheral level (DEC-014, DEC-01
 | IF-047 | Board LEDs | Red, blue, green, active low | 3 × GPIO | |
 | IF-048 | Power module | Battery voltage and current over I2C | I2C4 | Holybro PM02D with TI INA228 at 0x45 (team; older units INA226 at 0x41). Module label not checked. PC0/PC1 reserved as ADC inputs for an analog module. |
 
-### 3.5 F103 servo outputs and I/O
+### 3.5 F100 servo outputs and I/O
 
 `CONFIRMED` by the team (DEC-014, DEC-018). The timer channels are the px4io-v2 outputs (PX4 v1.16.2 `boards/px4/io-v2/src/timer_config.cpp`), default mapping, no AFIO remap. IF-030 to IF-037 are servo PWM at 50 Hz. Output names changed from TILT, ESC, COAX and AIL in rev 0.11. Electrical output is `TBD`.
 
@@ -179,9 +180,9 @@ Allocations are `CONFIRMED` at the logical and peripheral level (DEC-014, DEC-01
 | IF-038 | Removed | FlySky input dropped; RC comes over ELRS on IF-010 (DEC-018) |
 | IF-049 | Safety switch and LED | Button GPIO in, LED GPIO out open drain active low (px4io-v2 pins) |
 | IF-050 | Servo rail sense | ADC1_IN4, 3:1 divider (px4io-v2) |
-| IF-051 | F103 debug | SWD and px4io console (USART1 TX) on pads or a header, bench use only |
+| IF-051 | F100 debug | SWD and px4io console (USART1 TX) on pads or a header, bench use only |
 
-Other F103 pins that stock px4io-v2 drives or reads (LEDs, RSSI, Spektrum, SBUS, PPM, servo fault, board sense) are reserved for that function and not used for anything else (pin allocation record F-13).
+Other F100 pins that stock px4io-v2 drives or reads (LEDs, RSSI, Spektrum, SBUS, PPM, servo fault, board sense) are reserved for that function and not used for anything else (pin allocation record F-13). The three px4io LEDs (PB14, PB15, PA11) are fitted (pinmap review Q20). PA10 and PB11 stay unconnected with a weak pull-up to 3.3 V (pinmap review 0.3, section 4.3).
 
 ### 3.6 Environmental and reliability requirements
 
@@ -196,8 +197,8 @@ Other F103 pins that stock px4io-v2 drives or reads (LEDs, RSSI, Spektrum, SBUS,
 
 | ID      | Hazard / fault | Required response | Recovery method | Verification |
 | ------- |---|---|---|---|
-| SAF-010 | H743 unavailable | See SAF-001. After 0.5 s without H743 data, the F103 holds the servos at their failsafe values. The H743 owns the 4 motor outputs; the F103 owns the 8 servo outputs (DEC-016). | Reset, recovery and F103-failure behavior are Software-owned. The F103 starts its own IWDG (px4io, team answer S1). | Fault-injection test; NOT_VERIFIED |
-| SAF-011 | H743↔F103 USART loss | Same response as SAF-010; the F103 cannot tell a link loss from an H743 stop (`ASSUMED`). | As SAF-010. | Fault-injection test; NOT_VERIFIED |
+| SAF-010 | H743 unavailable | See SAF-001. After 0.5 s without H743 data, the F100 holds the servos at their failsafe values. The H743 owns the 4 motor outputs; the F100 owns the 8 servo outputs (DEC-016). | Reset, recovery and F100-failure behavior are Software-owned. The F100 starts its own IWDG (px4io, team answer S1). | Fault-injection test; NOT_VERIFIED |
+| SAF-011 | H743↔F100 USART loss | Same response as SAF-010; the F100 cannot tell a link loss from an H743 stop (`ASSUMED`). | As SAF-010. | Fault-injection test; NOT_VERIFIED |
 | SAF-012 | 5 V input abnormality | Safe reset/output state TBD. | Power recovery procedure TBD. | Measurement and fault test; NOT_VERIFIED |
 | SAF-013 | 6 V servo rail fault | Protection and safe actuator state TBD. | TBD | Measurement and fault test; NOT_VERIFIED |
 | SAF-014 | ESD, reverse polarity, overvoltage, short circuit | Protection requirements TBD. | Service/recovery method TBD. | Analysis / test; NOT_VERIFIED |
@@ -207,19 +208,19 @@ Other F103 pins that stock px4io-v2 drives or reads (LEDs, RSSI, Spektrum, SBUS,
 
 ### 4.1 Functional block diagram
 
-The user-provided diagrams show an H743 main MCU, an F103 auxiliary MCU, sensor/interface blocks, USB/SWD, PWM/actuator paths, and a separate power architecture. The images are reference inputs only. Native schematic and PCB files remain the design authority.
+The user-provided diagrams show an H743 main MCU, an F100 auxiliary MCU, sensor/interface blocks, USB/SWD, PWM/actuator paths, and a separate power architecture. The images are reference inputs only. Native schematic and PCB files remain the design authority.
 
 ### 4.2 Functional blocks
 
 | Block                     | Role | Inputs / outputs | Dependencies | Key constraints |
 | ------------------------- |---|---|---|---|
 | H743 main controller      | Primary flight-controller processing and interface host | Sensors, external interfaces, USB, SWD, USART, outputs | 5 V input and defined rails | Pins/resources NOT_VERIFIED. |
-| F103 IO controller        | px4io: servo PWM, safety switch, servo failsafe | USART link, 8 PWM outputs, safety switch and LED, servo rail sense | H743 data; defined power/reset; 8 MHz crystal (DEC-017) | Electrical implementation NOT_VERIFIED. |
+| F100 IO controller        | px4io: servo PWM, safety switch, servo failsafe | USART link, 8 PWM outputs, safety switch and LED, servo rail sense | H743 data; defined power/reset; 24 MHz crystal (DEC-017) | Electrical implementation NOT_VERIFIED. |
 | IMU subsystem             | Two SPI IMU interfaces | SPI, CS, DRDY; reset by software (DEC-009) | Selected sensor parts and rail | 2 × ICM-45686 (DEC-008). Rail TBD. |
 | Barometer subsystem       | Two I2C barometer interfaces | I2C, address, pull-ups | Selected sensor parts and rail | ICP-20100 + BMP581 (DEC-010), both on I2C2 with the IST8310. |
 | Magnetometer subsystem    | One I2C magnetometer interface | I2C, address, placement | Selected sensor part | IST8310 (DEC-011). Placement TBD. |
 | H743 external I/O         | Telemetry/RC, GPS, compass, air-data, rangefinder, power module, 4 motor outputs, 3 spare outputs, microSD, buzzer, LEDs | UART/I2C/timer/SDMMC interfaces | H743 resource allocation | Electrical implementation NOT_VERIFIED. |
-| USB/SWD/BOOT0             | Service, debug, recovery | USB FS, debug connector (IF-045), F103 SWD pads (IF-051), BOOT0 | H743/F103 reset and power | Protection and circuit NOT_VERIFIED. |
+| USB/SWD/BOOT0             | Service, debug, recovery | USB FS, debug connector (IF-045), F100 SWD pads (IF-051), BOOT0 | H743/F100 reset and power | Protection and circuit NOT_VERIFIED. |
 | Power subsystem           | 5 V board input and 6 V servo supply | Rails, returns, protection | Power module and distribution | Tolerances, current, and protection TBD. |
 
 ### 4.3 Power architecture
@@ -245,14 +246,14 @@ The root, `top_hierarchical`, `block_diagram` and `revision_history` sheets hold
 ### 4.4 Clock, reset, boot and programming
 
 - H743 shall retain selectable BOOT0 access (FUN-006).
-- H743 and F103 shall provide SWD access (FUN-005).
+- H743 and F100 shall provide SWD access (FUN-005).
 - USB FS shall be physically available on H743 for later Software-owned flashing/QGC integration.
 - H743 clock: 16 MHz HSE crystal, as `px4/fmu-v6c` (DEC-017). No LSE.
-- F103 clock: 8 MHz HSE crystal, PLL ×3 to 24 MHz SYSCLK (DEC-017). Stock px4io-v2 uses a 24 MHz HSE directly, which is outside the F103 crystal range (4 to 16 MHz, DS5319 Rev 20 Table 22), so the software team builds px4io and its bootloader for 8 MHz. No LSE; PC14 and PC15 unconnected (px4io reads them at boot).
-- F103 boot: BOOT0 and BOOT1 (PB2) pulled down. The software team flashes the px4io bootloader over SWD once; after that PX4 updates the F103 over the USART link. No BOOT0/NRST control from the H743.
+- F100 clock: 24 MHz HSE crystal, used directly as SYSCLK, as in stock px4io-v2 (DEC-017; PX4 v1.16.2 `boards/px4/io-v2/nuttx-config/include/board.h`). The F100 HSE oscillator takes 4 to 24 MHz (DocID16455 Rev 9 Table 21, OPEN-020). The stock px4io bootloader runs from HSI. No LSE; PC14 and PC15 unconnected (px4io reads them at boot).
+- F100 boot: BOOT0 and BOOT1 (PB2) pulled down. The software team flashes the px4io bootloader over SWD once; after that PX4 updates the F100 over the USART link. No BOOT0/NRST control from the H743.
 - H743 first flash: PX4 bootloader over SWD (software team, ST-LINK); updates over USB.
 - Boot-time outputs: every PWM line low before firmware starts, with a weak pull-down and no pull-up (team, pinmap review Q10). Value TBD (OPEN-018).
-- Watchdogs: px4io starts the F103 IWDG; PX4 v1.16.2 does not start the H743 IWDG (team answer S1).
+- Watchdogs: px4io starts the F100 IWDG; PX4 v1.16.2 does not start the H743 IWDG (team answer S1).
 - TBD: crystal parts and load capacitors, reset topology, power-on reset, service procedures.
 
 ### 4.5 Control, sensing, analog and digital considerations
@@ -269,7 +270,7 @@ All items are `TBD` and `NOT_VERIFIED`.
 | ID      | Category | Mandatory constraints | Preferred constraints | Sourcing / lifecycle |
 | ------- |---|---|---|---|
 | CMP-001 | Main MCU | Must be STM32H743VIT6. | TBD | Availability, package, lifecycle, approved source TBD |
-| CMP-002 | IO MCU | Must be STM32F103C8T6. The software team proposed an STM32F100C8T6B (the chip px4io-v2 is built for); the hardware owner kept the F103 (DEC-002, DEC-017). | TBD | Availability, package, lifecycle, approved source TBD |
+| CMP-002 | IO MCU | Must be STM32F100C8T6B, the chip px4io-v2 is built for (DEC-002, DEC-017). Replaced the STM32F103C8T6 on 2026-10-24. | TBD | LCSC availability checked by the human owner on 2026-10-24 (stock value not recorded). Lifecycle and approved source TBD |
 | CMP-003 | IMU | Two SPI positions required. Must be TDK InvenSense ICM-45686 (DEC-008). | TBD | TDK: Production (product page, 2026-10-19). PX4 driver present. SPI support, supply range, availability and approved source NOT_VERIFIED |
 | CMP-004 | Barometer | Two I2C positions required. Position 1 must be TDK ICP-20100 (DEC-010). Position 2 must be Bosch BMP581 (DEC-010), PX4 driver `barometer/bmp581`; fallback Bosch BMP384 (PX4 `bmp388` driver) if the BMP581 cannot be bought (OPEN-019). | TBD | ICP-20100 is EOL (TDK page). TDK SmartPressure page: "Pressure products are EOL and not recommended for new designs" (2026-10-19). BMP390 removed on 2026-10-21 because LCSC C5124834 is not available. BMP581: DigiKey 0 in stock on 2026-10-08, 10,000 due 2026-11-19 (team answer D7, NOT_VERIFIED). Approved source TBD |
 | CMP-005 | Magnetometer | One I2C position required. Must be iSentek IST8310 (DEC-011). AVDD and DVDD 1.72 to 3.6 V; absolute maximum also 3.6 V. LGA-16, 3.0 × 3.0 × 1.0 mm. I2C up to 400 kHz, address 0x0C to 0x0F (CAD1/CAD0). (IST8310 Datasheet V1.2, via NotebookLM.) | TBD | PX4 driver `magnetometer/isentek/ist8310` present. Lifecycle not stated in the datasheet; the iSentek web site did not render (NOT_VERIFIED). Approved source TBD |
@@ -324,12 +325,12 @@ All constraints are `TBD`.
 
 | ID      | Circuit / region | Constraint topics | Reason | Verification |
 | ------- |---|---|---|---|
-| PCB-010 | H743/F103 power and returns | Width, return path, via, load-step | Current and noise control | Layout review / analysis |
+| PCB-010 | H743/F100 power and returns | Width, return path, via, load-step | Current and noise control | Layout review / analysis |
 | PCB-011 | IMU, barometer, magnetometer regions | Placement, vibration, magnetic, noise | Sensor integrity | Placement review / test |
 | PCB-012 | USB FS | Routing, ESD, VBUS, connector, return path | USB physical integrity and protection | Layout review / hardware test |
 | PCB-013 | SWD and BOOT0 | Probe access, reset/boot-state | Debug and recovery | Inspection / debug test |
 | PCB-014 | PWM/actuator outputs | Return path, drive, protection, connector | Actuator integrity and safety | Layout review / electrical test |
-| PCB-015 | USART H743↔F103 | Routing, voltage compatibility, return path, test access | Inter-MCU safety/control path | Review / hardware test |
+| PCB-015 | USART H743↔F100 | Routing, voltage compatibility, return path, test access | Inter-MCU safety/control path | Review / hardware test |
 
 ### 5.4 Power integrity, signal integrity and EMC
 
@@ -365,12 +366,12 @@ TBD: hot components, copper spreading, vias, allowable temperature rise, load pr
 | ID      | Signal / function | Access requirement | Method |
 | ------- |---|---|---|
 | TST-001 | H743 SWD and console | Pixhawk Debug Mini connector (IF-045), reachable on the assembled drone, plus an NRST pad next to it | Inspection; debug test |
-| TST-002 | F103 SWD and console | Pads or header: SWDIO, SWCLK, NRST, GND, USART1 TX. Bench use only (IF-051) | Inspection; debug test |
+| TST-002 | F100 SWD and console | Pads or header: SWDIO, SWCLK, NRST, GND, USART1 TX. Bench use only (IF-051) | Inspection; debug test |
 | TST-003 | H743 BOOT0 | Selectable and observable boot state | Inspection; boot-state test |
 | TST-004 | 5 V board input | Test point; current/voltage measurement access | Inspection; measurement |
 | TST-005 | 6 V servo rail | Test point; current/voltage measurement access | Inspection; measurement |
-| TST-006 | H743↔F103 USART | Physical test access; signal observation | Inspection; hardware test |
-| TST-007 | F103 safety path and motor stop | Fault-injection access for the H743-unavailable condition (halt the H743 over the IF-045 SWD) | Fault-injection test (SAF-001, SAF-015) |
+| TST-006 | H743↔F100 USART | Physical test access; signal observation | Inspection; hardware test |
+| TST-007 | F100 safety path and motor stop | Fault-injection access for the H743-unavailable condition (halt the H743 over the IF-045 SWD) | Fault-injection test (SAF-001, SAF-015) |
 
 ## 7. Verification Plan (Planning Only)
 
@@ -381,7 +382,7 @@ No automatic gates. This table plans how requirements could be checked. It does 
 | IF-001                    | Inspection / Test | USART allocation review; physical link test | NOT_VERIFIED | Human, TBD |
 | SEN-001, SEN-002, SEN-003 | Inspection / Test | Bus allocation review; sensor electrical access test | NOT_VERIFIED | Human, TBD |
 | PWR-001, PWR-002          | Analysis / Test | Power-tree review; rail measurement; load/current test | NOT_VERIFIED | Human, TBD |
-| SAF-001, SAF-015          | Test | Halt the H743 while armed: servo failsafe time at the F103, motor stop time at the ESC | NOT_VERIFIED | Human, TBD |
+| SAF-001, SAF-015          | Test | Halt the H743 while armed: servo failsafe time at the F100, motor stop time at the ESC | NOT_VERIFIED | Human, TBD |
 | IF-010 to IF-024, IF-040 to IF-048 | Inspection / Test | Connector, pin, electrical-level, protection, and interface test; DShot and bidirectional DShot bench test | NOT_VERIFIED | Human, TBD |
 | IF-030 to IF-037, IF-049 to IF-051 | Inspection / Test | Timer/resource review; servo PWM and I/O electrical test | NOT_VERIFIED | Human, TBD |
 | PCB-010 to PCB-015        | Review / Analysis / Test | Layout, return path, DRC, signal, power, and hardware review | NOT_VERIFIED | Human, TBD |
@@ -396,8 +397,8 @@ All decisions are by the human owner, unless the Notes say otherwise.
 | ID      | Topic | Selected option | Notes | Date |
 | ------- |---|---|---|---|
 | DEC-001 | Main MCU part number | STM32H743VIT6 | Implementation not verified. | 2026-10-12 |
-| DEC-002 | Auxiliary (IO) MCU part number | STM32F103C8T6 | Implementation not verified. Kept by the human owner on 2026-10-24 over the software team's STM32F100C8T6B proposal (decisions file S7). | 2026-10-12, reconfirmed 2026-10-24 |
-| DEC-003 | H743↔F103 physical interface protocol | USART | Instance, rate and protocol set by DEC-015. | 2026-10-12 |
+| DEC-002 | Auxiliary (IO) MCU part number | STM32F100C8T6B | Changed from STM32F103C8T6 by the human owner on 2026-10-24, following the software team (pinmap review 0.3 row 4.2, decisions file S7 option (d)): px4io-v2 is built for this chip. Same LQFP48 pin names and types as the STM32F103C8, and every allocated signal is on the same pin (ST pin data, checked 2026-10-24). Implementation not verified. | 2026-10-12, changed 2026-10-24 |
+| DEC-003 | H743↔F100 physical interface protocol | USART | Instance, rate and protocol set by DEC-015. | 2026-10-12 |
 | DEC-004 | Firmware implementation boundary | Deferred and non-blocking for the current hardware path | Software team decides firmware details later. | 2026-10-12 |
 | DEC-005 | H743 availability monitoring path | USART | See SAF-001. | 2026-10-13 |
 | DEC-006 | Maximum PCB dimensions | Limit in MEC-001 | See MEC-001. | 2026-10-13 |
@@ -413,35 +414,36 @@ DEC-014 to DEC-018 come from the software team's answers in the decisions file (
 
 | ID      | Topic | Selected option | Notes | Date |
 | ------- |---|---|---|---|
-| DEC-014 | Pin allocation basis and PX4 port (SYS-002, OPEN-001) | H743 pins mostly from Pixhawk 6C (`px4/fmu-v6c`), F103 pins from `px4/io-v2`. Port based on `px4/fmu-v6c`, PX4 v1.16.2 | Decisions file section 3, pinmap review Q1 and Q18. Pins tested by the team on a NUCLEO-H753ZI only. Schematic and PCB not copied. | 2026-10-24 |
-| DEC-015 | H743↔F103 link (IF-001, IF-024, OPEN-002) | px4io protocol, H743 USART6 ↔ F103 USART2, 1.5 Mb/s | px4io-v2 uses USART2 at 1500000 b/s for the FMU link (PX4 v1.16.2 `io-v2/src/board_config.h`). The F103 runs px4io built for the 8 MHz crystal (DEC-017). | 2026-10-24 |
-| DEC-016 | Output split and H743-failure behavior (SAF-001, FUN-002, FUN-004, SAF-010, SAF-011, OPEN-008) | H743 TIM5 drives the 4 motors, DShot only, bidirectional, TIM5 as timer 0 with DMA. F103 drives the 8 servos. After 0.5 s without H743 data the F103 holds the servos at failsafe values (PX4 disarmed values `PWM_MAIN_DISn` by default). No landing | Decisions file D1, D2, D3, S1, S2, S3. Needs DShot-capable ESCs; planned Holybro Tekko32 F4 4-in-1 with AM32, not confirmed. Motor stop on a hang: OPEN-017. | 2026-10-24 |
-| DEC-017 | Clocks and IO MCU firmware build (OPEN-015) | H743: 16 MHz crystal. F103: 8 MHz crystal, PLL ×3 to 24 MHz, with px4io and its bootloader rebuilt for 8 MHz by the software team | Decisions file H1 and S7 option (a). The team preferred an STM32F100C8T6B with a 24 MHz crystal; the human owner kept the F103 (DEC-002). | 2026-10-24 |
-| DEC-018 | Interface set for Model G (IF-010 to IF-021, IF-038, IF-040 to IF-051) | One GPS; USART3 is the H743 debug console; UART7 TX spare, I2C3 and FlySky dropped; RC and telemetry over one ELRS receiver on UART7; 3 spare outputs kept; microSD on SDMMC1 without card-detect; buzzer TIM3_CH3; 3 LEDs; safety switch on the F103; H743 debug on a Pixhawk Debug Mini connector; F103 debug on pads, bench only | Decisions file section 3, D4, D5, D6, S4, S6, H2. RC over MAVLink is partly tested; the team runs the RC-loss bench test (S5). If it fails, the same receiver can run CRSF on UART7 with no pin change. | 2026-10-24 |
+| DEC-014 | Pin allocation basis and PX4 port (SYS-002, OPEN-001) | H743 pins mostly from Pixhawk 6C (`px4/fmu-v6c`), F100 pins from `px4/io-v2`. Port based on `px4/fmu-v6c`, PX4 v1.16.2 | Decisions file section 3, pinmap review Q1 and Q18. Pins tested by the team on a NUCLEO-H753ZI only. Schematic and PCB not copied. | 2026-10-24 |
+| DEC-015 | H743↔F100 link (IF-001, IF-024, OPEN-002) | px4io protocol, H743 USART6 ↔ F100 USART2, 1.5 Mb/s | px4io-v2 uses USART2 at 1500000 b/s for the FMU link (PX4 v1.16.2 `io-v2/src/board_config.h`). The F100 runs stock px4io-v2 (DEC-017). | 2026-10-24 |
+| DEC-016 | Output split and H743-failure behavior (SAF-001, FUN-002, FUN-004, SAF-010, SAF-011, OPEN-008) | H743 TIM5 drives the 4 motors, DShot only, bidirectional, TIM5 as timer 0 with DMA. F100 drives the 8 servos. After 0.5 s without H743 data the F100 holds the servos at failsafe values (PX4 disarmed values `PWM_MAIN_DISn` by default). No landing | Decisions file D1, D2, D3, S1, S2, S3. Needs DShot-capable ESCs; planned Holybro Tekko32 F4 4-in-1 with AM32, not confirmed. Motor stop on a hang: OPEN-017. | 2026-10-24 |
+| DEC-017 | Clocks and IO MCU firmware build (OPEN-015) | H743: 16 MHz crystal. F100: 24 MHz crystal as SYSCLK, stock px4io-v2 and stock px4io bootloader | Decisions file H1, and S7 option (d) taken after the team's pinmap review 0.3 answer. Replaces option (a) (F103 with an 8 MHz crystal, PLL ×3 and a custom px4io build). The px4io bootloader runs from HSI, so it needs no build for either crystal (PX4-Bootloader `main_f1.c`: `rcc_clock_setup_in_hsi_out_24mhz()`, `main` branch read 2026-10-24). | 2026-10-24, changed in rev 0.12 |
+| DEC-018 | Interface set for Model G (IF-010 to IF-021, IF-038, IF-040 to IF-051) | One GPS; USART3 is the H743 debug console; UART7 TX spare, I2C3 and FlySky dropped; RC and telemetry over one ELRS receiver on UART7; 3 spare outputs kept; microSD on SDMMC1 without card-detect; buzzer TIM3_CH3; 3 LEDs; safety switch on the F100; H743 debug on a Pixhawk Debug Mini connector; F100 debug on pads, bench only | Decisions file section 3, D4, D5, D6, S4, S6, H2. RC over MAVLink is partly tested; the team runs the RC-loss bench test (S5). If it fails, the same receiver can run CRSF on UART7 with no pin change. | 2026-10-24 |
 
 ### 8.2 Open questions and assumptions
 
 | ID       | Description | Impact | Owner / next action |
 | -------- |---|---|---|
-| OPEN-001 | Exact H743/F103 pins and alternate functions. Pinmap review 0.3 (2026-10-24) applies the team's answers; each pin's signal is listed in ST pin data. Not yet drawn in the schematic; DMA streams and interrupt priorities are Software-owned and not checked by hardware (P1-010). | May invalidate the allocation. | Hardware review / P1 |
+| OPEN-001 | Exact H743/F100 pins and alternate functions. Pinmap review 0.3 was answered by the team on 2026-10-24 (REF-07); the IO MCU change to the F100 moves no pin (DEC-002). Each pin's signal is listed in ST pin data. Not yet drawn in the schematic; DMA streams and interrupt priorities are Software-owned and not checked by hardware (P1-010). | May invalidate the allocation. | Hardware review / P1 |
 | OPEN-002 | Closed 2026-10-24 by DEC-015 (instance, pins, rate, protocol). Link protection and test access stay with PCB-015 and TST-006. | Affects safety/control path. | Closed |
-| OPEN-003 | Closed 2026-10-24. F103 labels corrected to TIM3_CH1 to CH4 (IF-034 to IF-037); H743 motors on TIM5_CH1 to CH4 with DMA (DEC-016; the team says PX4 maps DMA for TIM5, decisions file S2). | Resolved by reassignment. | Closed |
+| OPEN-003 | Closed 2026-10-24. F100 labels corrected to TIM3_CH1 to CH4 (IF-034 to IF-037); H743 motors on TIM5_CH1 to CH4 with DMA (DEC-016; the team says PX4 maps DMA for TIM5, decisions file S2). | Resolved by reassignment. | Closed |
 | OPEN-004 | Sensor electrical properties and sourcing. Sensor parts chosen (DEC-008, DEC-010, DEC-011); datasheet values, ICP-20100 EOL, BMP581 stock and IST8310 lifecycle open. IST8310 has only 0.3 V from a 3.3 V rail to its 3.6 V absolute maximum. | Affects footprint, rail, layout, drivers, verification. | Human owner / P0 |
 | OPEN-005 | Second magnetometer allocation. Closed by DEC-011 (single magnetometer). | Affects sensor redundancy and connector/bus architecture. | Closed 2026-10-18 |
 | OPEN-006 | 5 V input transient/protection, board current budget, downstream rail budgets | Affects power design and protection. | Hardware review / P0, P2 |
 | OPEN-007 | 6 V servo rail pulse duration, protection, distribution, actuator load profile | Affects power and actuator safety. | Hardware review / P0, P2 |
-| OPEN-008 | Closed 2026-10-24 by DEC-016: no landing; servo failsafe after 0.5 s; motors on the H743. The servo failsafe values are PX4 parameters that the software team sets after flight tests (decisions file D3). Motor stop: OPEN-017. | Affects F103 behavior, output ownership, test method. | Closed |
+| OPEN-008 | Closed 2026-10-24 by DEC-016: no landing; servo failsafe after 0.5 s; motors on the H743. The servo failsafe values are PX4 parameters that the software team sets after flight tests (decisions file D3). Motor stop: OPEN-017. | Affects F100 behavior, output ownership, test method. | Closed |
 | OPEN-009 | Exact board outline under the MEC-001 limit, mounting, connector orientation, environment | Affects PCB and mechanical release. | Human owner / P0, P3 |
 | OPEN-010 | All non-MCU part numbers except the sensors (DEC-008, DEC-010, DEC-011) and the main 3.3 V buck (DEC-012) | No other non-MCU part is approved by this document. | Human owner / component selection gate |
 | OPEN-011 | `+3V3A` rail: purpose (for example 3.3 V_IMU), load, and LDO part. TPS73533DRBR is drawn but not decided. As drawn, its NR capacitor (100 nF) is above TI's 0.01 µF limit and its output capacitance (2 × 1 µF) is at TI's 2 µF minimum before derating (see 4.3). | Affects sensor supply noise, start-up and the power budget. | Human owner / P0, P2 |
 | OPEN-012 | Path from `+VIN` (power module connector) to `+5V`. Nothing connects them in the schematic yet. | Without it, both regulators have no input. | Hardware / P2 |
 | OPEN-013 | Sensor library starting points (see 4.6 "Library state"): pin maps match the datasheet tables, but pin 1 corner, pad geometry and land patterns are not checked against the datasheet drawings and app notes. The IST8310 uses the stock KiCad symbol and `LGA-16_3x3mm_P0.5mm` footprint; its datasheet has no land pattern, so the fit is `ESTIMATED`. The Bosch LGA-10 pads follow the BMP581 land pattern (Fig. 32, read from an image) since 2026-10-21. | A wrong land pattern or orientation reaches the PCB. | Human owner / P2 |
 | OPEN-014 | Closed 2026-10-24: BMP581 accepted by the team as barometer 2, BMP384 fallback (DEC-010). Fallback fit: OPEN-019. | Affects footprint, I2C address plan, power budget, PX4 driver and sourcing. | Closed |
-| OPEN-015 | Closed 2026-10-24 by DEC-017: 8 MHz F103 crystal with PLL ×3, px4io and its bootloader rebuilt for 8 MHz. Background: stock px4io-v2 uses a 24 MHz HSE directly (PX4 v1.16.2 `boards/px4/io-v2/nuttx-config/include/board.h`); the F103 crystal oscillator is specified for 4 to 16 MHz (DS5319 Rev 20 Table 22, NotebookLM source fulltext). | Software team keeps a custom px4io image in the port's `extras/` folder. | Closed |
+| OPEN-015 | Closed 2026-10-24 by DEC-017: the IO MCU is an STM32F100C8T6B with a 24 MHz crystal, so stock px4io-v2 runs unchanged. Background: stock px4io-v2 uses a 24 MHz HSE directly (PX4 v1.16.2 `boards/px4/io-v2/nuttx-config/include/board.h`); the STM32F103 crystal oscillator is specified for 4 to 16 MHz (DS5319 Rev 20 Table 22, NotebookLM source fulltext). | No custom px4io image needed. The F100 takes a 24 MHz crystal (OPEN-020). | Closed |
 | OPEN-016 | Closed 2026-10-24: the team answered every row (decisions file section 3); applied in rev 0.11. | - | Closed |
 | OPEN-017 | Motor stop on an H743 hang (SAF-015) relies on the ESC stopping when DShot frames stop. ESC not confirmed (Holybro Tekko32 F4 4-in-1 with AM32 planned); its signal-loss behavior and timeout are `NOT_VERIFIED`. No H743 IWDG in PX4 v1.16.2 (team, not checked by hardware). The team's answer covers a full CPU hang, not a partial software stall. | If the ESC holds its last command, a hang leaves the motors running. | Team + Hardware / P4: halt the H743 over SWD while armed on the bench |
 | OPEN-018 | PWM pull-down value. Every PWM line gets a weak pull-down (team, Q10). The motor lines carry bidirectional DShot, where the line idles high and the ESC replies on the same wire; the value and any series resistor must not upset that. | Wrong value can break RPM feedback or boot-time output state. | Hardware / P2, then bench test |
-| OPEN-019 | BMP384 fallback for barometer 2 (DEC-010). Footprint, pinout and I2C address against the BMP581 not checked. Its address (0x76 or 0x77) does not clash with the I2C2 devices (0x63, 0x0E, 0x46). | A fallback that does not fit the BMP581 footprint needs a board change. | Hardware / P0, before PCB placement |
+| OPEN-019 | BMP384 fallback for barometer 2 (DEC-010). Footprint and pinout against the BMP581 not checked. Address 0x76 (SDO low), the PX4 `bmp388` driver default (team, pinmap review Q22); it does not clash with the I2C2 devices (0x63, 0x0E, 0x46). | A fallback that does not fit the BMP581 footprint needs a board change. | Hardware / P0, before PCB placement |
+| OPEN-020 | Closed 2026-10-24. STM32F100C8T6B datasheet checked (ST DocID16455 Rev 9, NotebookLM source fulltext): HSE crystal 4 to 24 MHz (Table 21); VDD 2 to 3.6 V and fHCLK up to 24 MHz (Table 8); POR/PDR and PVD levels (Table 10, recorded in the power budget); PA0 to PA7, PB0, PB1 and PB5 are not 5 V tolerant (Table 4, pin allocation F-03). Crystal load capacitors stay with P1-014. | - | Closed |
 
 ## 9. Specification Change Notes
 
@@ -458,6 +460,7 @@ DEC-014 to DEC-018 come from the software team's answers in the decisions file (
 | 0.9      | 2026-10-24 | Changed the magnetometer in DEC-011 from Bosch BMM150 to iSentek IST8310. Updated SEN-003, the magnetometer subsystem row, CMP-005 (values from IST8310 Datasheet V1.2 via NotebookLM), OPEN-004, OPEN-013 and the library state. | Human owner |
 | 0.10     | 2026-10-24 | Added Pixhawk 6X Rev 8 as a second conceptual and functional reference next to Pixhawk 6C (DEC-013, REF-05, SYS-002, 1.1). The no-copied-pinout wording is unchanged; the team decides it (OPEN-016). Recorded the team's pinmap review 0.2 answers on OPEN-001 to OPEN-003, OPEN-008, OPEN-014 and DEC-011, without changing the requirement rows. Added OPEN-015 (F103 24 MHz clock) and OPEN-016 (spec rows the team's answers change). Updated the IST8310 library row and OPEN-013. | Human owner |
 | 0.11     | 2026-10-24 | Applied the team's answers from the decisions file (REF-06). Added DEC-014 to DEC-018: pin basis `px4/fmu-v6c` and `px4/io-v2`, px4io link on USART6 ↔ USART2 at 1.5 Mb/s, 4 motors on H743 TIM5 with DShot only and 8 servos on the F103, no landing on H743 failure, 16 MHz H743 and 8 MHz F103 crystals (F103 kept over the F100 proposal), and the Model G interface set. BMP581 accepted as barometer 2 (DEC-010). Rewrote SYS-002, MCU-002, IF-001, SEN-002, SAF-001, FUN-002 to FUN-004, SAF-010, SAF-011, IF-010 to IF-024 and IF-030 to IF-038; added IF-040 to IF-051 and SAF-015. Closed OPEN-002, 003, 008, 014, 015 and 016; added OPEN-017 to OPEN-019. | Human owner (team answers) |
+| 0.12     | 2026-10-24 | Applied the team's pinmap review 0.3 answers (REF-07). Changed the IO MCU from STM32F103C8T6 to STM32F100C8T6B with a 24 MHz crystal and stock px4io, following the team (DEC-002, DEC-017, MCU-002, CMP-002); no pin moves. The px4io bootloader needs no rebuild. Renamed F103 to F100 in the current rows. Recorded the fitted px4io LEDs and the PA10 and PB11 pull-ups (3.5) and the BMP384 address 0x76 (OPEN-019). Added and closed OPEN-020 (F100 datasheet checks, DocID16455 Rev 9). Added REF-09 (integration questions to the team). | Human owner (team answers) |
 
 ## Current verdict
 
