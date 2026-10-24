@@ -44,20 +44,20 @@
   - Any small block at least 120 px tall is drawn as a centred column (icon, then name, then sub-line). This also applies to the PDB on the System view.
 - Center blocks (MCUs, FC): icon and text centered, larger type. Other block and link text larger; blocks are 200x60.
 - Link labels must not cover a block, another label or another line. Parallel pairs: labels centered on horizontal pairs, beside the line on vertical pairs (`layout.ts`).
-- Power rails: one colour per rail. Battery is red (danger), +6V orange, +5V yellow, +3.3V pink, +3.3VA indigo. Power lines are 5 px (signals 2.75 px) and never dashed; a candidate power line is faded to 45 % instead.
+- Power rails: one colour per rail. Battery is red (danger), +6V orange, +5V yellow, +3.3V fuchsia, +3.3VA indigo. Power lines are 5 px (signals 2.75 px) and never dashed; a candidate power line is faded to 45 % instead.
 - Line and border weight (engineer's request, 2026-10-24, +1 px on each): block border 2 px, signal line 2.75 px (3 → 4 px selected), power line 5 px (5.5 → 6.5 px selected), end dot 7 px. All sizes are in `src/features/diagram/style.ts`, read by the canvas, the SVG export and the legend. The border sits inside the block, so `block-node.tsx` offsets each handle by the border width to keep the lines exactly straight.
-- +3.3V pink (engineer's request, 2026-10-24): +3.3V and GPIO swapped colours, +3.3VA unchanged.
+- +3.3V and GPIO colours (engineer's requests): on 2026-10-24 +3.3V and GPIO swapped colours (+3.3V pink, GPIO blue). On 2026-10-25 GPIO went back to pink, and +3.3V took fuchsia, since blue is kept for high-speed buses (SPI, USB). +3.3VA unchanged.
 
   | Rail or bus | Bus id | Light | Dark |
   |---|---|---|---|
   | Battery (6S) | `batt` | `#dc2626` | `#ef4444` |
   | +6V | `v6` | `#ea580c` | `#f97316` |
   | +5V (incl. `+VIN`, VBUS) | `v5` | `#ca8a04` | `#facc15` |
-  | +3.3V | `v3v3` | `#db2777` (was `#0284c7`) | `#f472b6` (was `#38bdf8`) |
+  | +3.3V | `v3v3` | `#c026d3` (was `#db2777`) | `#e879f9` (was `#f472b6`) |
   | +3.3VA | `v3v3a` | `#4f46e5` | `#818cf8` |
-  | GPIO (signal) | `gpio` | `#0284c7` (was `#db2777`) | `#38bdf8` (was `#f472b6`) |
+  | GPIO (signal) | `gpio` | `#db2777` (back to the old colour, 2026-10-25) | `#f472b6` (back to the old colour, 2026-10-25) |
 
-  Power blocks that output one rail take its colour (`rail` field in `topology.ts`: battery, PDB, UBEC, eFuse, buck, LDO, rail bars). PM02D keeps the kind colour, since it outputs two rails. The GPIO change also shows on the Pinout page. Open point for the engineer: GPIO blue now sits close to SPI blue and USB cyan there (and to SDMMC teal in dark).
+  Power blocks that output one rail take its colour (`rail` field in `topology.ts`: battery, PDB, UBEC, eFuse, buck, LDO, rail bars). PM02D keeps the kind colour, since it outputs two rails. The GPIO colour also shows on the Pinout page.
 
 ## Verified
 
@@ -83,7 +83,7 @@
 ## Next steps
 
 1. Engineer reviews the rest of the live site (Overview, Interface view, detail panel, search) and lists changes.
-2. Engineer decides whether GPIO keeps the blue (close to SPI and USB) or takes another colour.
+2. Engineer checks fuchsia +3.3V on screen: it sits between GPIO pink and UART purple.
 3. Add the site to the root `README.md` and `CHANGELOG.md`, using `hw-git-readme` and `hw-git-changelog`, when asked.
 4. Keep `topology.ts` in step with the spec as it changes. The build check catches IDs that no longer exist, but not new interfaces: add them by hand.
 5. Showcase, once there is a PCB: a 3D viewer (`@google/model-viewer` with a GLB from KiCad 10; the exact `kicad-cli` export command is `NOT_VERIFIED`), then renders and photos in `web/public/`.

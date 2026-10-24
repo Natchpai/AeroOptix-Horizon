@@ -1,6 +1,6 @@
-# AeroOptix-Horizon
-
-**Dual-MCU PX4 flight controller hardware (STM32H743 + STM32F100) by AeroOptix Club.**
+<p align="center">
+  <img src="assets\github_AO-Horizon.svg" alt="AO-Horizon title" width="100%" >
+</p>
 
 > **Status:** `DRAFT`
 > **Board revision:** `v1.0`
