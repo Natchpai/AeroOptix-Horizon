@@ -12,6 +12,7 @@ export type LinkEdgeType = Edge<
   {
     link: Link
     labelAt: number
+    labelSide?: 'left' | 'right'
     dim?: boolean
     hot?: boolean
     onPick?: (linkId: string) => void
@@ -35,7 +36,7 @@ function LinkEdgeImpl({
   targetPosition,
 }: EdgeProps<LinkEdgeType>) {
   if (!data) return null
-  const { link, labelAt, dim, hot, onPick } = data
+  const { link, labelAt, labelSide, dim, hot, onPick } = data
   const color = busInfo[link.bus].color
   const status = statusOf(link)
   const [d] = getSmoothStepPath({
@@ -51,6 +52,13 @@ function LinkEdgeImpl({
   // the line is straight, so the label sits at a fraction along it
   const lx = sourceX + (targetX - sourceX) * labelAt
   const ly = sourceY + (targetY - sourceY) * labelAt
+  // beside the line (6 px clear) or centered on it
+  const anchor =
+    labelSide === 'left'
+      ? `translate(-100%, -50%) translate(${lx - 6}px, ${ly}px)`
+      : labelSide === 'right'
+        ? `translate(0, -50%) translate(${lx + 6}px, ${ly}px)`
+        : `translate(-50%, -50%) translate(${lx}px, ${ly}px)`
   const strong = selected || hot
   return (
     <>
@@ -79,12 +87,12 @@ function LinkEdgeImpl({
       <EdgeLabelRenderer>
         <div
           className={cn(
-            'nodrag nopan pointer-events-auto absolute cursor-pointer rounded border px-1.5 py-px font-mono text-[10.5px] leading-4 whitespace-nowrap shadow-sm transition-opacity',
+            'nodrag nopan pointer-events-auto absolute cursor-pointer rounded border px-1.5 py-px font-mono text-[12px] leading-4 whitespace-nowrap shadow-sm transition-opacity',
             status === 'open' && 'ring-1 ring-status-open/50',
             dim && 'opacity-20'
           )}
           style={{
-            transform: `translate(-50%, -50%) translate(${lx}px, ${ly}px)`,
+            transform: anchor,
             color,
             borderColor: `color-mix(in oklab, ${color} 45%, transparent)`,
             background: `color-mix(in oklab, ${color} 12%, var(--card))`,

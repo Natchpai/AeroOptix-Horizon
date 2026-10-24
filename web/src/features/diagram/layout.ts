@@ -1,8 +1,8 @@
 import type { Block, Link } from '@/data'
 import type { Place, Side } from '@/data/places'
 
-const NODE_W = 184
-const NODE_H = 56
+const NODE_W = 200
+const NODE_H = 60
 
 export type { Side }
 export type Point = { x: number; y: number }
@@ -30,6 +30,8 @@ export type LaidEdge = {
   targetHandle: string
   /** Label position along the line, 0..1; staggered for parallel links. */
   labelAt: number
+  /** Side of a vertical line the label sits beside; centered when unset. */
+  labelSide?: 'left' | 'right'
 }
 
 export type LaidOut = { nodes: LaidNode[]; edges: LaidEdge[] }
@@ -97,8 +99,10 @@ export function placedLayout(
     want: number
   }
   const ends: End[] = []
+  const sourceSide = new Map<string, Side>()
   const edges: LaidEdge[] = links.map((l) => {
     const [ss, ts] = sides[l.id] ?? facing(l.from, l.to)
+    sourceSide.set(l.id, ss)
     const sa = span(l.from, ss)
     const ta = span(l.to, ts)
     let ws: number
@@ -130,15 +134,6 @@ export function placedLayout(
     return { link: l, sourceHandle, targetHandle, labelAt: 0.5 }
   })
 
-  // Links between the same two blocks run side by side: stagger the labels.
-  const pairs = new Map<string, LaidEdge[]>()
-  for (const e of edges) {
-    const k = [e.link.from, e.link.to].sort().join('|')
-    pairs.set(k, [...(pairs.get(k) ?? []), e])
-  }
-  for (const list of pairs.values())
-    list.forEach((e, i) => (e.labelAt = (i + 1) / (list.length + 1)))
-
   const handles = new Map<string, HandleSpec[]>()
   const groups = new Map<string, End[]>()
   for (const e of ends) {
@@ -166,6 +161,30 @@ export function placedLayout(
         { id: e.id, side: e.side, pos, type: e.type },
       ])
     })
+  }
+
+  // Links between the same two blocks run side by side, END_GAP apart.
+  // On horizontal lines that is taller than a label, so labels stay in the
+  // middle. On vertical lines a label is wider than the gap: the outer two
+  // sit beside their line, facing out, and any others stagger along it.
+  const pairs = new Map<string, LaidEdge[]>()
+  for (const e of edges) {
+    const k = [e.link.from, e.link.to].sort().join('|')
+    pairs.set(k, [...(pairs.get(k) ?? []), e])
+  }
+  const sourceX = (e: LaidEdge) => {
+    const b = box.get(e.link.from)!
+    const h = handles.get(e.link.from)!.find((h) => h.id === e.sourceHandle)!
+    return b.x + h.pos * b.w
+  }
+  for (const list of pairs.values()) {
+    if (list.length < 2 || isVertical(sourceSide.get(list[0].link.id)!))
+      continue
+    list.sort((p, q) => sourceX(p) - sourceX(q))
+    list[0].labelSide = 'left'
+    list[list.length - 1].labelSide = 'right'
+    const inner = list.slice(1, -1)
+    inner.forEach((e, i) => (e.labelAt = (i + 1) / (inner.length + 1)))
   }
 
   return {

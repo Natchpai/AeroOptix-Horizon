@@ -112,6 +112,7 @@ function CanvasInner({
         data: {
           link: e.link,
           labelAt: e.labelAt,
+          labelSide: e.labelSide,
           dim: !!focus && !focus.links.has(e.link.id),
           hot: !!focus && focus.links.has(e.link.id),
           onPick: onLink,

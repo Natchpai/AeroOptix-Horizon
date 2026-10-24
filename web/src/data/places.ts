@@ -1,8 +1,8 @@
 /**
  * Hand placement for the diagrams, like a datasheet block diagram.
  *
- * The MCU (or the board, on the system view) is drawn large, and every
- * block it talks to sits beside one of its edges, so each link is one
+ * The MCU (or the board, on the system view) is drawn just large enough
+ * that every block it talks to sits beside one of its edges, so each link is one
  * straight line. Power rails are wide bars that loads tap with a vertical
  * line. Block order along an edge is chosen so lines do not cross;
  * `npm run check` fails on bent or crossing lines.
@@ -27,13 +27,13 @@ export const places: Record<Level, Record<string, Place>> = {
     probe: { x: 40, y: 640 },
 
     // devices on the FC I/O, right
-    elrs: { x: 1160, y: 170 },
-    tel2dev: { x: 1160, y: 260 },
-    gps: { x: 1160, y: 350 },
-    airspeed: { x: 1160, y: 440 },
-    lidar: { x: 1160, y: 530 },
-    pc: { x: 1160, y: 620 },
-    card: { x: 1160, y: 710 },
+    elrs: { x: 1200, y: 170 },
+    tel2dev: { x: 1200, y: 260 },
+    gps: { x: 1200, y: 350 },
+    airspeed: { x: 1200, y: 440 },
+    lidar: { x: 1200, y: 530 },
+    pc: { x: 1200, y: 620 },
+    card: { x: 1200, y: 710 },
 
     // actuators, below
     esc: { x: 440, y: 950 },
@@ -41,45 +41,46 @@ export const places: Record<Level, Record<string, Place>> = {
   },
 
   board: {
-    // main MCU, large so every link reaches it straight
-    h743: { x: 400, y: 200, w: 900, h: 700 },
+    // main MCU, just large enough for seven blocks per side
+    h743: { x: 400, y: 200, w: 720, h: 640 },
 
     // H743 I/O on the top
-    'j-sd': { x: 440, y: 0 },
+    'j-sd': { x: 420, y: 0 },
     'j-dbg': { x: 660, y: 0 },
-    buzzer: { x: 880, y: 0 },
-    leds: { x: 1100, y: 0 },
+    leds: { x: 900, y: 0 },
 
-    // sensors and the power module port, left
-    imu1: { x: 40, y: 220 },
-    imu2: { x: 40, y: 310 },
-    baro1: { x: 40, y: 430 },
-    baro2: { x: 40, y: 520 },
-    mag: { x: 40, y: 610 },
-    'j-pm': { x: 40, y: 780 },
+    // sensors, buzzer and the power module port, left
+    imu1: { x: 40, y: 214 },
+    imu2: { x: 40, y: 306 },
+    baro1: { x: 40, y: 398 },
+    baro2: { x: 40, y: 490 },
+    mag: { x: 40, y: 582 },
+    buzzer: { x: 40, y: 674 },
+    'j-pm': { x: 40, y: 766 },
 
     // H743 connectors, right
-    'j-tel1': { x: 1440, y: 220 },
-    'j-tel2': { x: 1440, y: 310 },
-    'j-air': { x: 1440, y: 400 },
-    'j-lidar': { x: 1440, y: 490 },
-    'j-esc': { x: 1440, y: 580 },
-    'p-spare': { x: 1440, y: 670 },
-    'j-gps': { x: 1440, y: 790 },
+    'j-tel1': { x: 1260, y: 214 },
+    'j-tel2': { x: 1260, y: 306 },
+    'j-air': { x: 1260, y: 398 },
+    'j-lidar': { x: 1260, y: 490 },
+    'j-esc': { x: 1260, y: 582 },
+    'p-spare': { x: 1260, y: 674 },
+    'j-gps': { x: 1260, y: 766 },
 
-    // IO MCU under the H743, wide enough to reach GPS1 straight up
-    f100: { x: 900, y: 1040, w: 740, h: 200 },
-    'j-servo': { x: 1780, y: 1050, h: 84 },
-    'p-f100dbg': { x: 1780, y: 1170 },
-    xt30: { x: 2060, y: 1060 },
+    // IO MCU under the H743, wide enough to reach GPS1 straight up;
+    // the XT30 input sits above the servo headers
+    f100: { x: 760, y: 980, w: 740, h: 200 },
+    'j-servo': { x: 1680, y: 990, h: 84 },
+    'p-f100dbg': { x: 1680, y: 1110 },
+    xt30: { x: 1680, y: 870 },
 
     // power chain, lower left; rails are wide bars
-    efuse: { x: 40, y: 1040 },
-    'j-usb': { x: 440, y: 1040 },
-    'r-5v': { x: 40, y: 1200, w: 584, h: 40 },
-    ldo: { x: 40, y: 1320 },
-    buck: { x: 260, y: 1320 },
-    'r-3v3': { x: 260, y: 1480, w: 1380, h: 40 },
+    efuse: { x: 40, y: 980 },
+    'j-usb': { x: 420, y: 980 },
+    'r-5v': { x: 40, y: 1140, w: 584, h: 40 },
+    ldo: { x: 40, y: 1260 },
+    buck: { x: 280, y: 1260 },
+    'r-3v3': { x: 280, y: 1420, w: 1220, h: 40 },
   },
 }
 
@@ -92,5 +93,5 @@ export const sideOverrides: Record<string, [Side, Side]> = {}
  * to another block.
  */
 export const lineAt: Record<string, number> = {
-  'b-3v3-h743': 760,
+  'b-3v3-h743': 680,
 }
