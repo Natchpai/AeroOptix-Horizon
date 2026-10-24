@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets\github_AO-Horizon.svg" alt="AO-Horizon title" width="100%" >
+  <img src="assets\github_AO-Horizon-title.png" alt="AO-Horizon title" width="100%" >
 </p>
 
 > **Status:** `DRAFT`
