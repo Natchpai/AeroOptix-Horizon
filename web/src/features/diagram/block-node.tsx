@@ -23,11 +23,14 @@ function BlockNodeImpl({ data, selected }: NodeProps<BlockNodeType>) {
   const k = kindInfo[block.kind]
   const status = statusOf(block)
   const open = openItems(block).length
+  // MCUs and the board are large: icon and text centered, bigger type
+  const big = block.kind === 'mcu' || block.kind === 'board'
   return (
     <div
       style={{ width: w, height: h, ['--k' as string]: k.color }}
       className={cn(
-        'group relative flex items-center gap-2.5 rounded-lg border bg-card px-3 text-card-foreground shadow-sm transition-[opacity,box-shadow,border-color]',
+        'group relative flex items-center rounded-lg border bg-card px-3 text-card-foreground shadow-sm transition-[opacity,box-shadow,border-color]',
+        big ? 'flex-col justify-center gap-3 text-center' : 'gap-2.5',
         'border-[color-mix(in_oklab,var(--k)_45%,var(--border))]',
         'hover:border-[var(--k)] hover:shadow-[0_0_0_1px_var(--k),0_8px_24px_-8px_color-mix(in_oklab,var(--k)_55%,transparent)]',
         status === 'candidate' && 'border-dashed',
@@ -57,18 +60,33 @@ function BlockNodeImpl({ data, selected }: NodeProps<BlockNodeType>) {
         <Handle type='target' position={Position.Left} className='!opacity-0' />
       )}
       <span
-        className='flex size-8 shrink-0 items-center justify-center rounded-md'
+        className={cn(
+          'flex shrink-0 items-center justify-center rounded-md',
+          big ? 'size-12' : 'size-8'
+        )}
         style={{
           color: k.color,
           background: `color-mix(in oklab, ${k.color} 16%, transparent)`,
         }}
       >
-        <k.icon className='size-4' />
+        <k.icon className={big ? 'size-6' : 'size-4'} />
       </span>
-      <div className='min-w-0 flex-1 leading-tight'>
-        <div className='truncate text-[13px] font-semibold'>{block.label}</div>
+      <div className={cn('min-w-0 leading-tight', big ? 'w-full' : 'flex-1')}>
+        <div
+          className={cn(
+            'truncate font-semibold',
+            big ? 'text-2xl' : 'text-[15px]'
+          )}
+        >
+          {block.label}
+        </div>
         {block.sub && (
-          <div className='truncate font-mono text-[10.5px] text-muted-foreground'>
+          <div
+            className={cn(
+              'truncate font-mono text-muted-foreground',
+              big ? 'mt-1 text-base' : 'text-[12px]'
+            )}
+          >
             {block.sub}
           </div>
         )}
@@ -82,7 +100,12 @@ function BlockNodeImpl({ data, selected }: NodeProps<BlockNodeType>) {
         </span>
       )}
       {block.drill && (
-        <ChevronsRight className='size-4 shrink-0 text-primary' />
+        <ChevronsRight
+          className={cn(
+            'shrink-0 text-primary',
+            big ? 'absolute top-1/2 right-3 size-5 -translate-y-1/2' : 'size-4'
+          )}
+        />
       )}
       {!handles && (
         <Handle
