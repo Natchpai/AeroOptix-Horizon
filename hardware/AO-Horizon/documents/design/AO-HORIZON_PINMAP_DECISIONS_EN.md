@@ -12,7 +12,7 @@ Thank you for the answers in pinmap review 0.2 (`AO-HORIZON_PINMAP_REVIEW_EN.md`
 
 You can fill this in by hand or ask Claude to do it.
 
-1. Sections 3 and 4 are for the whole team. Section 5 is for the software team. Section 6 lists hardware proposals for you to accept or change.
+1. Sections 3 and 4 are for the whole team. Section 5 is for the software team. Section 6 lists two hardware proposals that change your board config; accept or change them. Hardware design choices that do not affect the drone spec or the software are not in this file.
 2. In tables, fill only the `Team` column with one of:
    - `OK`: accept the row as written.
    - `CHANGE: <what>`: say exactly what you want instead.
@@ -94,7 +94,7 @@ Decision:
 By:
 
 **D4. Spare outputs.**
-Model G uses 12 outputs: 4 on the H743 and 8 on the F103. That leaves 3 spares on the H743: PD14 and PD15 (TIM4) and PE9 (TIM1). Do you expect more outputs later, for example a gimbal, payload release or landing gear? Hardware can put the spares on a connector now, or leave them on pads.
+Model G uses 12 outputs: 4 on the H743 and 8 on the F103. That leaves 3 spares on the H743: PD14 and PD15 (TIM4) and PE9 (TIM1). Do you expect more outputs later, for example a gimbal, payload release or landing gear? If yes, list them.
 
 Decision:
 By:
@@ -153,50 +153,26 @@ Your bench test covered ELRS telemetry to QGC (Q2). Did you also test RC control
 Answer:
 By:
 
-**S6. LEDs on the F103.**
-px4io drives three status LEDs on the F103: blue PB14, amber PB15, green PA11 (F5). Do you want them fitted? Hardware leaves the pins free either way.
-
-Answer:
-By:
-
-**S7. F103 clock (only if hardware finds a problem).**
-px4io-v2 expects a 24 MHz HSE (F3). Hardware is checking whether a 24 MHz crystal is within the F103 datasheet limits (section 7). If it is not, which do you prefer?
-- (a) Keep the stock px4io build, and hardware fits a 24 MHz oscillator module instead of a crystal. This needs a check that px4io works with an external clock.
-- (b) A custom px4io build with a different HSE.
-
-Answer:
-By:
-
-**S8. Debug and flashing access.**
-Which do you want for each MCU?
-- H743: console on UART3 (PD8, PD9) plus SWD. Options: one combined connector in the Pixhawk debug style, two headers, or test pads.
-- F103: SWD plus the px4io console (USART1 TX, PA9). Connector or test pads? Who flashes the px4io bootloader on the first F103 flash (Q9)?
+**S6. Debug and flashing access.**
+Hardware will give you the H743 console (UART3) and SWD, and the F103 SWD and px4io console (USART1 TX). How will you use them: on the bench only, or also on the assembled drone with a cable plugged in? Who flashes the px4io bootloader on the first F103 flash (Q9)? Hardware picks the connector type from your answer.
 
 Answer:
 By:
 
 ## 6. Hardware proposals for pinmap 0.3
 
-Hardware proposes these. They cost nothing for the drone spec. Fill the `Team` column.
+Both change your board config, so hardware needs your OK. Fill the `Team` column.
 
 | # | Proposal | Reason | Team |
 |---|---|---|---|
-| H1 | H743 crystal 16 MHz instead of 8 MHz. | Same as fmu-v6c (F6), so the clock tree needs no change in the port. You said 16 MHz also works (Q6). | |
-| H2 | Buzzer on TIM3_CH3, PB0, instead of TIM2_CH1, PA15. | Same as fmu-v6c (F7). PB0 is free since the IMU pin-9 rows were dropped. It also avoids the JTDI pull-up on PA15 at reset, which could switch the buzzer driver on before firmware starts (ASSUMED). HRT stays on TIM8. | |
-| H3 | Weak pull-down on every PWM line: H743 PA0 to PA3, PD14, PD15, PE9, and the 8 F103 outputs. No pull-ups. | Your Q10 answer. The value is a hardware choice. | |
-| H4 | F103 PA9 (px4io console TX) on a test pad. | F1. Needed to debug the F103. | |
-| H5 | F103 PC14 and PC15 left unconnected. | Your Q6 answer. px4io reads them at boot with its own pull-down and pull-up (F5). | |
-| H6 | The px4io pins in F5 stay reserved. The free F103 list in pinmap 4.2 will be cut down to match. | F5. Stock px4io drives or reads these pins. | |
-| H7 | H743 USART1 (PB14, PB15) kept as Telemetry 2 on a connector. | Your 3.1 answer; it is also the option for a backup receiver (D6). | |
+| H1 | H743 crystal 16 MHz instead of 8 MHz. | Same as fmu-v6c (F6), so the clock setup needs no change in the port. You said 16 MHz also works (Q6). | |
+| H2 | Buzzer on TIM3_CH3, PB0, instead of TIM2_CH1, PA15. HRT stays on TIM8. | Same as fmu-v6c (F7), so the tone alarm config needs no change. PB0 is free since the IMU pin-9 rows were dropped. | |
 
-## 7. Hardware actions (for information, no reply needed)
+## 7. For information, no reply needed
 
-- Check the F103 datasheet for the HSE crystal range and the external clock limit. Third-party sources say 4 to 16 MHz for a crystal (NOT_VERIFIED). This decides whether S7 is needed.
-- Check that the servo rail divider on PA4 matches the px4io scaling.
-- Check how the ICM-45686 datasheet says to handle pin 9 when unused, and how the IST8310 datasheet says to handle RSTN when unused.
-- Check SDMMC1 pins against ST pin data. Add pull-ups and ESD protection for the card.
-- Read the PM02D label: INA228 at 0x45 or INA226 at 0x41 (Q14).
-- After your reply: update the spec rows in section 3, and issue pinmap 0.3.
+- Hardware follows your answers on the PWM pull-downs (Q10), F103 PC14 and PC15 (Q6), and the px4io-v2 pins (F5).
+- Hardware is checking that a 24 MHz crystal is within the F103 limits (F3). You hear back only if it affects the px4io build.
+- After your reply, hardware updates the spec rows in section 3 and issues pinmap 0.3.
 
 ## 8. Sources
 
