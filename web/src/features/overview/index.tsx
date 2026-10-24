@@ -196,34 +196,35 @@ export function Overview() {
           ))}
         </div>
 
-        <ProgressCard />
+        <div className='grid gap-4 lg:grid-cols-2'>
+          <ProgressCard />
+          <ChangesCard />
+        </div>
+
+        <NextActionCard />
 
         <div className='grid gap-4 lg:grid-cols-7'>
-          <div className='space-y-4 lg:col-span-3'>
-            <Card>
-              <CardHeader>
-                <CardTitle>Key features</CardTitle>
-                <CardDescription>
-                  From <code className='font-mono text-xs'>README.md</code>.
-                  Design targets, not verified results.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className='space-y-2 text-sm'>
-                  {meta.keyFeatures.map((f) => (
-                    <li key={f} className='flex gap-2'>
-                      <span className='mt-1.5 size-1.5 shrink-0 rounded-full bg-primary' />
-                      <span>
-                        <MdText text={f} />
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-
-            <ChangesCard />
-          </div>
+          <Card className='lg:col-span-3'>
+            <CardHeader>
+              <CardTitle>Key features</CardTitle>
+              <CardDescription>
+                From <code className='font-mono text-xs'>README.md</code>.
+                Design targets, not verified results.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className='space-y-2 text-sm'>
+                {meta.keyFeatures.map((f) => (
+                  <li key={f} className='flex gap-2'>
+                    <span className='mt-1.5 size-1.5 shrink-0 rounded-full bg-primary' />
+                    <span>
+                      <MdText text={f} />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
 
           <Card className='lg:col-span-4'>
             <CardHeader>
@@ -301,11 +302,8 @@ function ProgressCard() {
             }))
             const total = parts.reduce((t, p) => t + p.n, 0)
             return (
-              <li
-                key={g.id}
-                className='grid gap-x-3 gap-y-1.5 text-sm sm:grid-cols-[14rem_1fr_9rem] sm:items-center'
-              >
-                <div className='flex min-w-0 items-center gap-2'>
+              <li key={g.id} className='space-y-1.5 text-sm'>
+                <div className='flex items-center gap-2'>
                   <a
                     href={sourceUrl(meta.sources.checklist, g.line)}
                     {...ext}
@@ -313,8 +311,12 @@ function ProgressCard() {
                   >
                     {g.id}
                   </a>
-                  <span className='truncate font-medium' title={g.exit}>
+                  <span className='min-w-0 truncate font-medium' title={g.exit}>
                     {g.name}
+                  </span>
+                  <span className='ms-auto flex shrink-0 items-center gap-2 text-xs text-muted-foreground'>
+                    {g.counts.DONE ?? 0} of {total} done
+                    <Pill className='px-2 py-0.5 text-[11px]'>{g.status}</Pill>
                   </span>
                 </div>
                 <div
@@ -339,10 +341,6 @@ function ProgressCard() {
                       )
                   )}
                 </div>
-                <div className='flex items-center gap-2 text-xs text-muted-foreground sm:justify-end'>
-                  {g.counts.DONE ?? 0} of {total} done
-                  <Pill className='px-2 py-0.5 text-[11px]'>{g.status}</Pill>
-                </div>
               </li>
             )
           })}
@@ -358,32 +356,37 @@ function ProgressCard() {
             </span>
           ))}
         </div>
-        <div className='rounded-md border border-primary/30 bg-primary/5 p-4 text-sm'>
-          <div className='mb-3 text-sm font-semibold text-primary'>
-            Current next action{' '}
-            <a
-              className='text-xs font-normal text-muted-foreground underline-offset-2 hover:underline'
-              href={sourceUrl(meta.sources.checklist, progress.nextActionLine)}
-              {...ext}
-            >
-              (checklist)
-            </a>
-          </div>
-          <ol className='space-y-2'>
-            {progress.nextAction.map((t, i) => (
-              <li key={t} className='flex gap-3 leading-relaxed'>
-                <span className='w-5 shrink-0 text-end font-mono text-xs leading-relaxed text-muted-foreground'>
-                  {i + 1}.
-                </span>
-                <span className='min-w-0'>
-                  <TaskText text={t} />
-                </span>
-              </li>
-            ))}
-          </ol>
-        </div>
       </CardContent>
     </Card>
+  )
+}
+
+function NextActionCard() {
+  return (
+    <div className='rounded-xl border border-primary/30 bg-primary/5 p-6 text-sm'>
+      <div className='mb-3 text-sm font-semibold text-primary'>
+        Current next action{' '}
+        <a
+          className='text-xs font-normal text-muted-foreground underline-offset-2 hover:underline'
+          href={sourceUrl(meta.sources.checklist, progress.nextActionLine)}
+          {...ext}
+        >
+          (checklist)
+        </a>
+      </div>
+      <ol className='space-y-2'>
+        {progress.nextAction.map((t, i) => (
+          <li key={t} className='flex gap-3 leading-relaxed'>
+            <span className='w-5 shrink-0 text-end font-mono text-xs leading-relaxed text-muted-foreground'>
+              {i + 1}.
+            </span>
+            <span className='min-w-0'>
+              <TaskText text={t} />
+            </span>
+          </li>
+        ))}
+      </ol>
+    </div>
   )
 }
 
