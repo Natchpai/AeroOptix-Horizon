@@ -37,8 +37,10 @@ function LinkEdgeImpl({
 }: EdgeProps<LinkEdgeType>) {
   if (!data) return null
   const { link, labelAt, labelSide, dim, hot, onPick } = data
-  const color = busInfo[link.bus].color
+  const { color, power } = busInfo[link.bus]
   const status = statusOf(link)
+  // power lines are thick and never dashed; a candidate one is faded
+  const faded = power && status === 'candidate'
   const [d] = getSmoothStepPath({
     sourceX,
     sourceY,
@@ -67,7 +69,7 @@ function LinkEdgeImpl({
         d={d}
         fill='none'
         stroke='transparent'
-        strokeWidth={14}
+        strokeWidth={power ? 18 : 14}
         className='react-flow__edge-interaction'
       />
       <path
@@ -75,9 +77,9 @@ function LinkEdgeImpl({
         d={d}
         fill='none'
         stroke={color}
-        strokeWidth={strong ? 3 : 1.75}
-        strokeDasharray={status === 'candidate' ? '6 5' : undefined}
-        strokeOpacity={dim ? 0.15 : 1}
+        strokeWidth={power ? (strong ? 5.5 : 4) : strong ? 3 : 1.75}
+        strokeDasharray={!power && status === 'candidate' ? '6 5' : undefined}
+        strokeOpacity={dim ? 0.15 : faded ? 0.45 : 1}
         className={cn(
           'transition-[stroke-width,stroke-opacity]',
           strong && 'drop-shadow-[0_0_6px_currentColor]'

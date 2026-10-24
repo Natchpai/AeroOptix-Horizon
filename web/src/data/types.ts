@@ -1,5 +1,10 @@
+/** Power rails come first, high to low voltage; the rest are signal buses. */
 export type Bus =
-  | 'power'
+  | 'batt'
+  | 'v6'
+  | 'v5'
+  | 'v3v3'
+  | 'v3v3a'
   | 'spi'
   | 'i2c'
   | 'uart'
@@ -43,6 +48,8 @@ export type Block = {
   drill?: Level
   /** For MCU blocks: the pin table to use. */
   mcu?: Mcu
+  /** Power rail the block carries or outputs; sets its colour. */
+  rail?: Bus
 }
 
 /** Picks rows from a pin table. All given filters must match. */

@@ -42,7 +42,15 @@
   --sidebar-border: #d9e1ec;
   --sidebar-ring: #529ad6;
 
-  /* Interface (bus) colours for the diagrams and pinout */
+  /* Power rails: battery red, then warm (high voltage) to cold (low) */
+  --rail-batt: #dc2626;
+  --rail-6v: #c2410c;
+  --rail-5v: #ca8a04;
+  --rail-3v3: #0284c7;
+  --rail-3v3a: #4f46e5;
+
+  /* Interface (bus) colours for the diagrams and pinout; --bus-power is
+     for power parts that output more than one rail */
   --bus-power: #dc2626;
   --bus-spi: #2563eb;
   --bus-i2c: #16a34a;
@@ -93,6 +101,12 @@
   --sidebar-accent-foreground: #d7e8fa;
   --sidebar-border: #1d2a42;
   --sidebar-ring: #529ad6;
+
+  --rail-batt: #ef4444;
+  --rail-6v: #f97316;
+  --rail-5v: #facc15;
+  --rail-3v3: #38bdf8;
+  --rail-3v3a: #818cf8;
 
   --bus-power: #f87171;
   --bus-spi: #60a5fa;

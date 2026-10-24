@@ -3,7 +3,7 @@ import { type Block, openItems, statusOf } from '@/data'
 import { Handle, Position, type Node, type NodeProps } from '@xyflow/react'
 import { ChevronsRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { kindInfo } from './kinds'
+import { blockColor, kindInfo } from './kinds'
 import type { HandleSpec, Side } from './layout'
 
 export type BlockNodeType = Node<
@@ -21,13 +21,14 @@ const position: Record<Side, Position> = {
 function BlockNodeImpl({ data, selected }: NodeProps<BlockNodeType>) {
   const { block, w, h, handles, dim } = data
   const k = kindInfo[block.kind]
+  const color = blockColor(block)
   const status = statusOf(block)
   const open = openItems(block).length
   // MCUs and the board are large: icon and text centered, bigger type
   const big = block.kind === 'mcu' || block.kind === 'board'
   return (
     <div
-      style={{ width: w, height: h, ['--k' as string]: k.color }}
+      style={{ width: w, height: h, ['--k' as string]: color }}
       className={cn(
         'group relative flex items-center rounded-lg border bg-card px-3 text-card-foreground shadow-sm transition-[opacity,box-shadow,border-color]',
         big ? 'flex-col justify-center gap-3 text-center' : 'gap-2.5',
@@ -65,8 +66,8 @@ function BlockNodeImpl({ data, selected }: NodeProps<BlockNodeType>) {
           big ? 'size-12' : 'size-8'
         )}
         style={{
-          color: k.color,
-          background: `color-mix(in oklab, ${k.color} 16%, transparent)`,
+          color,
+          background: `color-mix(in oklab, ${color} 16%, transparent)`,
         }}
       >
         <k.icon className={big ? 'size-6' : 'size-4'} />
