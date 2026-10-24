@@ -4,7 +4,7 @@ Guidance for Claude Code in this repository.
 
 ## Project
 
-AeroOptix-Horizon is a KiCad 10 hardware design for a dual-MCU flight controller (STM32H743 + STM32F103) by AeroOptix Club. There is no firmware and no build, test or lint command. The human engineer makes every design and approval decision and declares the phase (DRAFT, PRELIMINARY, CHECK, RELEASE). Read the current status and phase from `README.md`; never infer them. Write files, code, error messages, Git text and chat in English unless the user asks otherwise.
+AeroOptix-Horizon is a KiCad 10 hardware design for a dual-MCU flight controller (STM32H743 + STM32F100) by AeroOptix Club. There is no firmware and no build, test or lint command. The human engineer makes every design and approval decision and declares the phase (DRAFT, PRELIMINARY, CHECK, RELEASE). Read the current status and phase from `README.md`; never infer them. Write files, code, error messages, Git text and chat in English unless the user asks otherwise.
 
 ## Layout
 

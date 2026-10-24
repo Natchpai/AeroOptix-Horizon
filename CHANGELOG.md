@@ -29,6 +29,7 @@ Notable changes to this hardware project are documented here.
 - PX4 Matek H743-Slim board port files as a pin-map reference in `documents/reference/px4-matek-h743-slim/`: unmodified copies from PX4-Autopilot `b26146e` and PX4/NuttX `8626377`. Not design data.
 - `documents/design/what-next.md`: personal reminder list of next steps.
 - Pinmap decisions file for the team (`AO-HORIZON_PINMAP_DECISIONS_EN.md`): spec rows that the team's pinmap answers change, decisions D1 to D7, software questions S1 to S7 and proposals H1 and H2, checked against PX4 v1.16.2 board files.
+- Integration questions for the team (`AO-HORIZON_INTEGRATION_QUESTIONS_EN.md`, rev 0.1): servo power path (D8), mounting and cable entry (D9), environment (D10), safety switch and GPS module (D11), external devices and connectors, and software questions S8 to S10. The proposed Pixhawk-style JST-GH pinouts are `NOT_VERIFIED`. Tracked as P0-021 and spec REF-09.
 
 ### Changed
 
@@ -63,6 +64,31 @@ Notable changes to this hardware project are documented here.
   BMP581 is accepted as barometer 2 (BMP384 fallback). Interface rows IF-040 to IF-051 and SAF-015 are added. OPEN-002, 003, 008, 014, 015 and 016 are closed. New open items: motor stop depends on the ESC (OPEN-017), pull-down value with bidirectional DShot (OPEN-018), BMP384 fit (OPEN-019).
 - Pin allocation rev 0.5: team changes applied to both MCU tables. New pins checked against ST open pin data, and the TIM5 and TIM3 AF numbers checked against the NuttX pinmap. px4io-v2 reserved F103 pins listed. Pinmap review rev 0.3 sent to the team for the new rows and questions Q20 to Q22, with the 0.2 answers kept.
 - Checklist rev 0.10, barometer and magnetometer selection rev 0.7, root `README.md` and `what-next.md` updated to match. New tasks: P0-020 (team reply to pinmap 0.3), P1-015 (BMP384 fit), P2-013 (pull-down value) and P4-011 (H743 halt bench test). No KiCad file changed. ERC and DRC not run.
+- IO MCU changed from STM32F103C8T6 to STM32F100C8T6B with a 24 MHz crystal, following the software team (specification rev 0.12: DEC-002, DEC-017, MCU-002, CMP-002). Stock px4io-v2 and its stock bootloader run unchanged; the bootloader runs from HSI (PX4-Bootloader `main_f1.c`). No pin moved: ST open pin data for both LQFP48 parts match on all 48 pins. F100 values from DocID16455 Rev 9 through NotebookLM: HSE 4 to 24 MHz, VDD 2 to 3.6 V, reset and PVD levels, 5 V tolerance (OPEN-020, added and closed). LCSC stock checked by the human owner. The F100 library part and the `block_diagram` text are still to do (P2-014).
+- Pinmap review rev 0.3 now holds the software team's answers and a hardware response. Applied: the three px4io LEDs are fitted, F100 PA10 and PB11 get weak pull-ups, the BMP384 fallback is at 0x76 (OPEN-019), and the debug connector pinout is accepted.
+- Pin allocation rev 0.6, checklist rev 0.11 (P0-020 done; new P0-021 and P2-014), power budget rev 0.5 (F100 current, reset and PVD levels), barometer and magnetometer selection rev 0.8, the decisions file, root `README.md`, `CLAUDE.md`, the design README and `what-next.md` updated to match. No KiCad file changed. ERC and DRC not run.
+- Specification rev 0.13: the software team's answers to the integration questions are applied. New decisions:
+  - DEC-019: 8 × 3-pin servo headers (signal, +6 V, GND) on an on-board 6 V rail, with the UBEC plugged into the board, Pixhawk style. The human owner chose this instead of the team's answer (signal and GND only, 6 V through the harness).
+  - DEC-020: parts rated −40 to +85 °C, no conformal coating, no rain exposure.
+  - DEC-021: GPS1 is the 10-pin full GPS port with the safety switch lines; Model G flies with the safety switch disabled in PX4; the board buzzer stays.
+  - DEC-022: stock px4io image in the board's `extras/` folder, no IMU heater.
+  - DEC-023: PC1 stays reserved for an analog power module; the ESC current sense goes to another ADC pin (human owner).
+
+  Interface rows updated, and IF-052 (ESC current sense) and IF-053 (ESC telemetry) added. Mounting stays a proposal (30.5 × 30.5 mm M3, soft mount) until the CAD team confirms it (OPEN-009). New open items: UBEC input rating and servo rail copper (OPEN-021), ESC sense and telemetry pins (OPEN-022), connector pinouts and the PM02D connector, where the power sheet's JST-GH may not match the team's CLIK-Mate cable (OPEN-023).
+- Checklist rev 0.12 (P0-021 done; new P0-022, P1-016, P2-015, P2-016), power budget rev 0.6 (servo rail on the board, USB-only bench power), the design README and `what-next.md` updated to match. No KiCad file changed. ERC and DRC not run.
+- Integration questions rev 0.3: the team's answers kept, a note on what hardware decided after them, and follow-up questions for the team (mounting for the CAD team, devices needed on USB, ESC current use in PX4, part models and photos, test results).
+- Specification rev 0.14: the human owner answered the hardware side of the follow-up questions.
+  - Mounting: M3 screws, 3.2 mm holes, soft mount, board on its own tray, USB-C and microSD on adjacent edges, part height about 10 to 15 mm. Hardware sets the outline, cable entry sides and dampers at placement; the CAD team follows (MEC-002 to MEC-004, OPEN-009).
+  - USB powers the board and all external 5 V ports on the bench (IF-022, OPEN-006).
+  - UBEC input on a board-mount XT30 instead of a servo header position (DEC-019, PWR-011, OPEN-021).
+  - PM02D board connector to match its 6-pin 2.00 mm CLIK-Mate cable; the power sheet still draws JST-GH (IF-048, OPEN-023).
+  - ESC connectors: 4 × 3-pin headers with the + pin removed (IF-040).
+  - DEC-024: TPS16412DRC eFuse between the PM02D and `+5V`, current limit 1.5 A. Placed, not wired (OPEN-012).
+  - Team parts recorded: 4 × Skywalker 80A V2 ESCs, 4 × RDS3235 tilt servos, Kingmax C507 and DS-843MG servos (all rated for 6 V), 10 A UBEC with XT30, MS4525DO.
+
+  The Skywalker ESCs look PWM-only (no source found for DShot), which conflicts with FUN-002 and SAF-015. FUN-002 is unchanged; the team is asked in D13 (OPEN-017).
+- Integration questions rev 0.4: cleaned to open items only (D13 on the ESC, parts table, team tests). Answered sections are in rev 0.3 in Git history.
+- Checklist rev 0.13 (P0-022 rewritten; P1-016 `N/A`; new P2-017 eFuse and P2-018 ESC headers), power budget rev 0.7, design README, root `README.md` and `what-next.md` updated to match. No KiCad file read or changed. ERC and DRC not run.
 
 ### Fixed
 
@@ -77,9 +103,12 @@ Notable changes to this hardware project are documented here.
 - `.claude/settings.local.json` is no longer tracked (local-only file, now git-ignored).
 - `AO-HORIZON_HANDOFF_EN.md`: its content was merged into the execution checklist.
 - DNP DF2S6.2CT ESD diode removed from `power_supplies.kicad_sch`.
+- ESC current sense and ESC telemetry (IF-052, IF-053) removed from the specification: the separate Skywalker ESCs have neither wire (human owner). OPEN-022 closed.
+- Stale rows in the design records: GPS2 and FlySky loads and the "barometer 2 not chosen" row in the power budget, the BMP390 and BMM150 columns in the barometer sourcing table (kept as one history line), and done items in `what-next.md` and the barometer record.
 
 ### Verification
 
 - None recorded. No ERC, DRC or design review results are confirmed. `NOT_VERIFIED`.
 - Read-only checks run by Claude on 2026-10-19 against the saved files at commit b34343e: a library link audit found no broken links, and a net trace of `power_supplies.kicad_sch` matched the spec's schematic-state table. The four sensor symbols' pin maps match their datasheet pin tables, and the TPS62142 and TPS73533 circuits were compared with TI SLVSAJ0F Rev F and SBVS087M (checked through NotebookLM, text confirmed in the source fulltext). These are not ERC, DRC or a human review.
 - Read-only checks run by Claude on 2026-10-24: `klc_verify` passes, the IST8310 symbol pins match the LGA-16 footprint pads, and the library link audit is clean. Not ERC, DRC or a human review.
+- Read-only checks run by Claude on 2026-10-24: STM32F100C(8-B)Tx and STM32F103C(8-B)Tx compared in ST open pin data, F100 datasheet values found in the NotebookLM source fulltext, and the `progress-update` preflight found no em dashes, undefined IDs, broken links or open items without a tracker row. Not ERC, DRC or a human review.
