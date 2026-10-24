@@ -88,6 +88,7 @@ export function PackageView({ mcu, selected, onPick }: Props) {
 
   return (
     <svg
+      id={`package-view-${mcu}`}
       viewBox={`0 0 ${S} ${S}`}
       className='h-auto w-full select-none'
       role='img'

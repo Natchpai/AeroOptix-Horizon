@@ -1,14 +1,14 @@
 # Handoff: team website
 
 **Updated:** 2026-10-24
-**Status:** Clickable mockup, live on GitHub Pages. The engineer approved the Pinout page and reviewed the Block diagram for size and labels. The diagram update (`6d00f58`) is on `dev` only: the live site still shows the old diagram until it reaches `main`.
+**Status:** Clickable mockup, live on GitHub Pages. The engineer approved the Pinout page and reviewed the Block diagram for size and labels. The diagram update is live (PR #19, squash commit `0e8ba9e`).
 
 ## Where things are
 
 - Live site: https://natchpai.github.io/AeroOptix-Horizon/
 - Code: `web/`, merged to `main` in PR #18 (squash commit `e7def40`). Deploy: `.github/workflows/pages.yml`, on push to `main` when `web/`, the design docs or `README.md` change; it can also be started by hand.
 - Pages is enabled with source "GitHub Actions". The first run failed because Pages was not enabled yet; the re-run passed.
-- Branches: `dev` is still 1 commit behind `origin/main` (the squash commit `e7def40`), and `6d00f58` is not pushed. Merge `main` into `dev` before the next PR, with the engineer's approval.
+- Branches: `dev` contains all of `main` (the engineer merged `main` into `dev` after PR #19). PRs #18 and #19 were squash-merged, which leaves `dev` behind `main` each time. Merge with "Create a merge commit" to avoid that.
 
 ## What the site does
 
@@ -17,6 +17,7 @@
 - Pinout: LQFP100 / LQFP48 package views and pin tables; a pin links back to its diagram link.
 - Showcase: placeholder.
 - Ctrl+K search over pins, signals, blocks and spec IDs.
+- SVG export (engineer's request, 2026-10-24): "Export SVG" on the System and Board views, "SVG" on each pinout package card. Native SVG (rect, line, text; no `foreignObject`), in the current site theme, with a title and a footer (spec revision, phase, "not for fabrication", export date). Diagrams are drawn from the same `placedLayout` as the canvas (`src/features/diagram/export-svg.ts`); the package view is the on-screen SVG with colours written out as hex (`src/features/pinout/export-svg.ts`). Shared helpers: `src/lib/svg-export.ts`.
 
 ## Decisions the engineer made (2026-10-24)
 
@@ -29,6 +30,17 @@
 - Block diagram, Board view only: Main MCU block 720x640 (was 900x700), Buzzer moved from the top edge to the left edge, XT30 above the servo headers. The System view keeps its FC block size.
 - Center blocks (MCUs, FC): icon and text centered, larger type. Other block and link text larger; blocks are 200x60.
 - Link labels must not cover a block, another label or another line. Parallel pairs: labels centered on horizontal pairs, beside the line on vertical pairs (`layout.ts`).
+- Power rails: one colour per rail, by voltage. Battery is red (danger), then warm (high voltage) to cold (low). Power lines are 4 px (signals 1.75 px) and never dashed; a candidate power line is faded to 45 % instead.
+
+  | Rail | Bus id | Light | Dark |
+  |---|---|---|---|
+  | Battery (6S) | `batt` | `#dc2626` | `#ef4444` |
+  | +6V | `v6` | `#c2410c` | `#f97316` |
+  | +5V (incl. `+VIN`, VBUS) | `v5` | `#ca8a04` | `#facc15` |
+  | +3.3V | `v3v3` | `#0284c7` | `#38bdf8` |
+  | +3.3VA | `v3v3a` | `#4f46e5` | `#818cf8` |
+
+  Power blocks that output one rail take its colour (`rail` field in `topology.ts`: battery, PDB, UBEC, eFuse, buck, LDO, rail bars). PM02D keeps the kind colour, since it outputs two rails. Signal bus colours did not change, so the Pinout page is unchanged.
 
 ## Verified
 
@@ -40,18 +52,18 @@
 
 ## Not verified
 
-- Light theme on the diagram and pinout pages.
+- Light theme on the pinout page. The diagram was checked in both themes after the rail colours: in the light theme, Battery and +6V look close (both dark red-orange on white); a lighter +6V, such as `#f97316`, would fix it if the engineer agrees.
 - Every block and link text against the spec: only spot checks were done. `topology.ts` is hand-written.
 - Same-tab deep links: pasting a new `#/…` URL into an open tab was not tested (a fresh load works).
+- SVG export: all 8 files (4 views × 2 themes) were downloaded in headless Edge from the production build, parse as valid SVG, contain no CSS variables, `color-mix` or classes, and render correctly in Edge. Opening them in Inkscape, PowerPoint or Word was not tested. Text uses Inter and JetBrains Mono when installed, else the generic sans-serif and monospace.
 
 ## Next steps
 
-1. Publish the diagram update. Each step needs its own approval: merge `main` into `dev`, push `dev`, open a PR to `main` with `.github/pull_request_template.md`. The engineer merges it, and the Pages workflow deploys.
-2. Engineer reviews the rest of the live site (Overview, Interface view, detail panel, search) and lists changes.
-3. Optional: add the label-overlap script to `web/` as its own command (it needs `playwright-core` and Edge, so keep it out of `npm run build` and CI).
-4. Add the site to the root `README.md` and `CHANGELOG.md`, using `hw-git-readme` and `hw-git-changelog`, when asked.
-5. Keep `topology.ts` in step with the spec as it changes. The build check catches IDs that no longer exist, but not new interfaces: add them by hand.
-6. Showcase, once there is a PCB: a 3D viewer (`@google/model-viewer` with a GLB from KiCad 10; the exact `kicad-cli` export command is `NOT_VERIFIED`), then renders and photos in `web/public/`.
+1. Engineer reviews the rest of the live site (Overview, Interface view, detail panel, search) and lists changes.
+2. Optional: add the label-overlap script to `web/` as its own command (it needs `playwright-core` and Edge, so keep it out of `npm run build` and CI).
+3. Add the site to the root `README.md` and `CHANGELOG.md`, using `hw-git-readme` and `hw-git-changelog`, when asked.
+4. Keep `topology.ts` in step with the spec as it changes. The build check catches IDs that no longer exist, but not new interfaces: add them by hand.
+5. Showcase, once there is a PCB: a 3D viewer (`@google/model-viewer` with a GLB from KiCad 10; the exact `kicad-cli` export command is `NOT_VERIFIED`), then renders and photos in `web/public/`.
 
 ## Known gaps in the content
 
