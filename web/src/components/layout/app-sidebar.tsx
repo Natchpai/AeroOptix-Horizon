@@ -1,0 +1,60 @@
+import { Link } from '@tanstack/react-router'
+import { meta } from '@/data'
+import { useLayout } from '@/context/layout-provider'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+  useSidebar,
+} from '@/components/ui/sidebar'
+import { BrandLogo } from '@/components/brand-logo'
+import { sidebarData } from './data/sidebar-data'
+import { NavGroup } from './nav-group'
+
+export function AppSidebar() {
+  const { collapsible, variant } = useLayout()
+  const { setOpenMobile } = useSidebar()
+  return (
+    <Sidebar collapsible={collapsible} variant={variant}>
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size='lg' asChild>
+              <Link to='/' onClick={() => setOpenMobile(false)}>
+                <BrandLogo className='size-8 shrink-0' />
+                <div className='grid flex-1 text-start text-sm leading-tight'>
+                  <span className='truncate font-bold tracking-tight'>
+                    AeroOptix-Horizon
+                  </span>
+                  <span className='truncate text-xs text-muted-foreground'>
+                    Flight controller {meta.boardRevision}
+                  </span>
+                </div>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent>
+        {sidebarData.navGroups.map((props) => (
+          <NavGroup key={props.title} {...props} />
+        ))}
+      </SidebarContent>
+      <SidebarFooter>
+        <div className='rounded-md border border-status-open/40 bg-status-open/10 px-3 py-2 text-xs leading-snug group-data-[collapsible=icon]:hidden'>
+          <span className='font-semibold text-status-open'>{meta.phase}</span>
+          <span className='text-muted-foreground'>
+            {' '}
+            · spec rev {meta.specRevision} · not for fabrication
+          </span>
+        </div>
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
+  )
+}
