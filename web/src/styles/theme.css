@@ -47,7 +47,7 @@
   --rail-batt: #dc2626;
   --rail-6v: #ea580c;
   --rail-5v: #ca8a04;
-  --rail-3v3: #db2777;
+  --rail-3v3: #c026d3;
   --rail-3v3a: #4f46e5;
 
   /* Interface (bus) colours for the diagrams and pinout; --bus-power is
@@ -60,7 +60,7 @@
   --bus-usb: #0891b2;
   --bus-sdmmc: #0d9488;
   --bus-debug: #64748b;
-  --bus-gpio: #0284c7;
+  --bus-gpio: #db2777;
   --bus-analog: #ea580c;
 
   /* Design state */
@@ -106,7 +106,7 @@
   --rail-batt: #ef4444;
   --rail-6v: #f97316;
   --rail-5v: #facc15;
-  --rail-3v3: #f472b6;
+  --rail-3v3: #e879f9;
   --rail-3v3a: #818cf8;
 
   --bus-power: #f87171;
@@ -117,7 +117,7 @@
   --bus-usb: #22d3ee;
   --bus-sdmmc: #2dd4bf;
   --bus-debug: #94a3b8;
-  --bus-gpio: #38bdf8;
+  --bus-gpio: #f472b6;
   --bus-analog: #fb923c;
 
   --status-decided: #4ade80;
