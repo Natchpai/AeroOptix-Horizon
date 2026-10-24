@@ -1,8 +1,6 @@
 <p align="center">
-  <img src="assets\github_AO-Horizon.svg" alt="Cosmic particle vortex" width="100%" >
+  <img src="assets\github_AO-Horizon.svg" alt="AO-Horizon title" width="100%" >
 </p>
-
-**Dual-MCU PX4 flight controller hardware (STM32H743 + STM32F100) by AeroOptix Club.**
 
 > **Status:** `DRAFT`
 > **Board revision:** `v1.0`
