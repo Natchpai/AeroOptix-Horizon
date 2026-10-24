@@ -14,6 +14,7 @@ npm ci
 npm run dev      # http://localhost:5173/AeroOptix-Horizon/
 npm run build    # extract + check + type-check + build to dist/
 npm run preview  # serve dist/ under /AeroOptix-Horizon/
+npm run test:ui  # browser checks on dist/, after build (local only)
 ```
 
 `npm run check` re-reads the docs and checks the hand-written data on its own.
@@ -43,7 +44,22 @@ The build fails when:
 - a block has no position, or two blocks are closer than 24 px
 - a link is not one straight line, runs through another block, or crosses another link
 
+## Browser checks (`tests/ui.ts`)
+
+`npm run test:ui` serves `dist/` and opens it in the installed Microsoft Edge (through `playwright-core`; no browser download). It lists every failure and exits 1 when:
+
+- a page throws an error (Overview, both diagram views, an Interface view, both pinouts)
+- a drawn line is not straight on screen
+- a link label covers a block, another label or another line, with no block selected and with five blocks selected in turn
+- an SVG export (4 views, dark and light) is not valid XML, or still holds CSS (`var(`, `color-mix`, `oklab`, `class=`)
+- a page scrolls sideways at 390 px
+
+It takes about 2 minutes. CI does not run it, because CI has no Edge. Google Fonts are fetched once per run and then served from memory. If they cannot be fetched, the run warns that label checks used fallback fonts.
+
 ## Editing the diagram
+
+- Line widths, block border, corner radius, end dots, dashes and label box sizes are in `src/features/diagram/style.ts`. The canvas, the SVG export and the legend all read them from there.
+- Colours are tokens in `src/styles/theme.css` (`--rail-*`, `--bus-*`).
 
 - New link or block: add it to `topology.ts` with its spec IDs, then give each new block a place in `places.ts`.
 - Keep every link straight. Put a block beside the edge of the block it talks to, inside that edge's span. Make the MCU larger if it needs more room.

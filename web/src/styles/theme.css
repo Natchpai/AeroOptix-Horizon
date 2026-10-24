@@ -42,11 +42,12 @@
   --sidebar-border: #d9e1ec;
   --sidebar-ring: #529ad6;
 
-  /* Power rails: battery red, then warm (high voltage) to cold (low) */
+  /* Power rails, one colour each: battery red, 6 V orange, 5 V yellow,
+     3.3 V pink (engineer's choice), 3.3 VA indigo */
   --rail-batt: #dc2626;
   --rail-6v: #ea580c;
   --rail-5v: #ca8a04;
-  --rail-3v3: #0284c7;
+  --rail-3v3: #db2777;
   --rail-3v3a: #4f46e5;
 
   /* Interface (bus) colours for the diagrams and pinout; --bus-power is
@@ -59,7 +60,7 @@
   --bus-usb: #0891b2;
   --bus-sdmmc: #0d9488;
   --bus-debug: #64748b;
-  --bus-gpio: #db2777;
+  --bus-gpio: #0284c7;
   --bus-analog: #ea580c;
 
   /* Design state */
@@ -105,7 +106,7 @@
   --rail-batt: #ef4444;
   --rail-6v: #f97316;
   --rail-5v: #facc15;
-  --rail-3v3: #38bdf8;
+  --rail-3v3: #f472b6;
   --rail-3v3a: #818cf8;
 
   --bus-power: #f87171;
@@ -116,7 +117,7 @@
   --bus-usb: #22d3ee;
   --bus-sdmmc: #2dd4bf;
   --bus-debug: #94a3b8;
-  --bus-gpio: #f472b6;
+  --bus-gpio: #38bdf8;
   --bus-analog: #fb923c;
 
   --status-decided: #4ade80;

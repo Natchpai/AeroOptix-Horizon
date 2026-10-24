@@ -43,17 +43,20 @@
   - Any small block at least 120 px tall is drawn as a centred column (icon, then name, then sub-line). This also applies to the PDB on the System view.
 - Center blocks (MCUs, FC): icon and text centered, larger type. Other block and link text larger; blocks are 200x60.
 - Link labels must not cover a block, another label or another line. Parallel pairs: labels centered on horizontal pairs, beside the line on vertical pairs (`layout.ts`).
-- Power rails: one colour per rail, by voltage. Battery is red (danger), then warm (high voltage) to cold (low). Power lines are 4 px (signals 1.75 px) and never dashed; a candidate power line is faded to 45 % instead.
+- Power rails: one colour per rail. Battery is red (danger), +6V orange, +5V yellow, +3.3V pink, +3.3VA indigo. Power lines are 5 px (signals 2.75 px) and never dashed; a candidate power line is faded to 45 % instead.
+- Line and border weight (engineer's request, 2026-10-24, +1 px on each): block border 2 px, signal line 2.75 px (3 → 4 px selected), power line 5 px (5.5 → 6.5 px selected), end dot 7 px. All sizes are in `src/features/diagram/style.ts`, read by the canvas, the SVG export and the legend. The border sits inside the block, so `block-node.tsx` offsets each handle by the border width to keep the lines exactly straight.
+- +3.3V pink (engineer's request, 2026-10-24): +3.3V and GPIO swapped colours, +3.3VA unchanged.
 
-  | Rail | Bus id | Light | Dark |
+  | Rail or bus | Bus id | Light | Dark |
   |---|---|---|---|
   | Battery (6S) | `batt` | `#dc2626` | `#ef4444` |
   | +6V | `v6` | `#ea580c` | `#f97316` |
   | +5V (incl. `+VIN`, VBUS) | `v5` | `#ca8a04` | `#facc15` |
-  | +3.3V | `v3v3` | `#0284c7` | `#38bdf8` |
+  | +3.3V | `v3v3` | `#db2777` (was `#0284c7`) | `#f472b6` (was `#38bdf8`) |
   | +3.3VA | `v3v3a` | `#4f46e5` | `#818cf8` |
+  | GPIO (signal) | `gpio` | `#0284c7` (was `#db2777`) | `#38bdf8` (was `#f472b6`) |
 
-  Power blocks that output one rail take its colour (`rail` field in `topology.ts`: battery, PDB, UBEC, eFuse, buck, LDO, rail bars). PM02D keeps the kind colour, since it outputs two rails. Signal bus colours did not change, so the Pinout page is unchanged.
+  Power blocks that output one rail take its colour (`rail` field in `topology.ts`: battery, PDB, UBEC, eFuse, buck, LDO, rail bars). PM02D keeps the kind colour, since it outputs two rails. The GPIO change also shows on the Pinout page. Open point for the engineer: GPIO blue now sits close to SPI blue and USB cyan there (and to SDMMC teal in dark).
 
 ## Verified
 
@@ -61,7 +64,9 @@
 - `npm ci` + `npm run build` on a fresh clone of `dev`.
 - Pins spot-checked against the pin allocation record: H743 PE8 UART7_TX #38, H743 PA5 SPI1_SCK #29, F100 PA2 USART2_TX #12.
 - Screenshots at 1440 px and 390 px: no horizontal scroll. The live Board view renders.
-- After `6d00f58`: `npm run check` and `npm run build` pass. A headless Edge script measured every link label on both views, also with a block selected (bold labels): no label overlaps a block, a label or a line. The script lives outside the repo; `npm run check` cannot test this, because it has no font widths.
+- After `6d00f58`: `npm run check` and `npm run build` pass. A headless Edge script measured every link label on both views, also with a block selected (bold labels): no label overlaps a block, a label or a line. That script is now `npm run test:ui` (see below).
+- `npm run test:ui` (2026-10-24): passes in about 1.5 minutes. It fails, as intended, on a broken attribute in the SVG dot markup (all 4 diagram exports reported as invalid XML). Moving the servo headers 40 px down makes `npm run check` report all 8 PWM lines as bent. Both faults were put back.
+- Code review (2026-10-24) found and fixed: the legend drew 2 px / 4 px line samples and the old dash after the +1 px change; SVG block corners were 8 px against 10 px on the canvas; a misplaced comment in `layout.ts`.
 
 - Record-driven Overview: `npm run build` passes. The extracted gate counts match a separate count of the checklist (P0 17 done of 22; P1 0 of 15 plus 1 N/A; P2 0 of 18; P3 0 of 11; P4 0 of 11). A copy of the records with `Gate summary` renamed makes `extract-docs` fail. `GITHUB_SHA` sets the build stamp. Screenshots at 1440 and 390 px, dark and light: no horizontal scroll.
 - Live after PR #20: the deploy passed and the sidebar shows `Build 2fd8638`, the merge commit, so the CI build stamp works. The Progress card, the 8 servo lines and Export SVG are on the live site.
@@ -77,7 +82,7 @@
 ## Next steps
 
 1. Engineer reviews the rest of the live site (Overview, Interface view, detail panel, search) and lists changes.
-2. Optional: add the label-overlap script to `web/` as its own command (it needs `playwright-core` and Edge, so keep it out of `npm run build` and CI).
+2. Engineer decides whether GPIO keeps the blue (close to SPI and USB) or takes another colour.
 3. Add the site to the root `README.md` and `CHANGELOG.md`, using `hw-git-readme` and `hw-git-changelog`, when asked.
 4. Keep `topology.ts` in step with the spec as it changes. The build check catches IDs that no longer exist, but not new interfaces: add them by hand.
 5. Showcase, once there is a PCB: a 3D viewer (`@google/model-viewer` with a GLB from KiCad 10; the exact `kicad-cli` export command is `NOT_VERIFIED`), then renders and photos in `web/public/`.
@@ -88,7 +93,7 @@
 - Which rail feeds each sensor is not drawn: only the `ASSUMED` 3.3 V feeds to the MCUs are, as candidate (dashed) links.
 - The F100 reserved pins have no package pin numbers in the record, so they appear in a table only, not on the package view.
 - The KiCad `block_diagram.kicad_sch` still says F103 (P2-014, the engineer's item); the site does not use it.
-- Long block names are cut with "…" on the Board view ("Power module conn", "Servo headers × 8"); the full name is in the detail panel.
+- Some long block names are cut with "…" on the Board view ("Power module c…"); the full name is in the detail panel.
 - At 390 px the whole Board view is tiny on first load; the canvas zoom controls work.
 - Light theme on the new diagram layout is not checked.
 

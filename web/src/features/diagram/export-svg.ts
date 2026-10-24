@@ -27,6 +27,7 @@ import {
 } from '@/lib/svg-export'
 import { blockColor, kindInfo } from './kinds'
 import { type LaidNode, TALL, handlePoint, placedLayout } from './layout'
+import { draw } from './style'
 
 const PAD = 40
 const HEAD = 44
@@ -69,11 +70,15 @@ function blockSvg(n: LaidNode, f: ReturnType<typeof fonts>) {
   const color = blockColor(b)
   const big = b.kind === 'mcu' || b.kind === 'board'
   const out: string[] = []
+  // the canvas draws the border inside the box: inset the stroke by half
+  const half = draw.border / 2
   out.push(
-    `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" ` +
+    `<rect x="${x + half}" y="${y + half}" width="${w - draw.border}" height="${h - draw.border}" rx="${draw.radius - half}" ` +
       `${b.kind === 'board' ? 'fill="url(#board-fill)"' : paintAttr('fill', 'var(--card)')} ` +
-      `${paintAttr('stroke', `color-mix(in oklab, ${color} 45%, var(--border))`)} stroke-width="1"` +
-      (statusOf(b) === 'candidate' ? ' stroke-dasharray="4 3"' : '') +
+      `${paintAttr('stroke', `color-mix(in oklab, ${color} 45%, var(--border))`)} stroke-width="${draw.border}"` +
+      (statusOf(b) === 'candidate'
+        ? ` stroke-dasharray="${draw.dash.block}"`
+        : '') +
       '/>'
   )
   const box = (bx: number, by: number, s: number) =>
@@ -230,9 +235,13 @@ export function diagramSvg(level: Level) {
     const { color, power } = busInfo[e.link.bus]
     const status = statusOf(e.link)
     lines.push(
-      `<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}" ${paintAttr('stroke', color)} stroke-width="${power ? 4 : 1.75}" stroke-linecap="butt"` +
-        (!power && status === 'candidate' ? ' stroke-dasharray="6 5"' : '') +
-        (power && status === 'candidate' ? ' opacity="0.45"' : '') +
+      `<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}" ${paintAttr('stroke', color)} stroke-width="${draw.line[power ? 'power' : 'signal']}" stroke-linecap="butt"` +
+        (!power && status === 'candidate'
+          ? ` stroke-dasharray="${draw.dash.signal}"`
+          : '') +
+        (power && status === 'candidate'
+          ? ` opacity="${draw.candidatePower}"`
+          : '') +
         '/>'
     )
     for (const [n, pt] of [
@@ -240,20 +249,20 @@ export function diagramSvg(level: Level) {
       [t, q],
     ] as const)
       dots.push(
-        `<circle cx="${pt.x}" cy="${pt.y}" r="3" ${paintAttr('fill', blockColor(n.block))}/>`
+        `<circle cx="${pt.x}" cy="${pt.y}" r="${draw.dot / 2}" ${paintAttr('fill', blockColor(n.block))}/>`
       )
 
-    // label, placed as on the canvas (link-edge.tsx)
+    // label, placed as on the canvas (link-edge.tsx); the box has a 1 px border
     const lx = p.x + (q.x - p.x) * e.labelAt
     const ly = p.y + (q.y - p.y) * e.labelAt
-    const font = `500 12px ${f.mono}`
-    const bw = textWidth(e.link.label, font) + 14
-    const bh = 20
+    const { font: fs, padX, height: bh, gap } = draw.label
+    const font = `500 ${fs}px ${f.mono}`
+    const bw = textWidth(e.link.label, font) + 2 * (padX + 1)
     const bx =
       e.labelSide === 'left'
-        ? lx - 6 - bw
+        ? lx - gap - bw
         : e.labelSide === 'right'
-          ? lx + 6
+          ? lx + gap
           : lx - bw / 2
     const by = ly - bh / 2
     xs.push(bx, bx + bw)
@@ -263,7 +272,7 @@ export function diagramSvg(level: Level) {
         (status === 'open'
           ? `<rect x="${bx - 1.5}" y="${by - 1.5}" width="${bw + 3}" height="${bh + 3}" rx="5" fill="none" ${paintAttr('stroke', 'color-mix(in oklab, var(--status-open) 50%, transparent)')}/>`
           : '') +
-        `<text x="${bx + bw / 2}" y="${ly + 12 * 0.35}" font-family="${esc(f.mono)}" font-size="12" font-weight="500" text-anchor="middle" ${paintAttr('fill', color)}>${esc(e.link.label)}</text>`
+        `<text x="${bx + bw / 2}" y="${ly + fs * 0.35}" font-family="${esc(f.mono)}" font-size="${fs}" font-weight="500" text-anchor="middle" ${paintAttr('fill', color)}>${esc(e.link.label)}</text>`
     )
   }
 
