@@ -13,5 +13,5 @@ The specification is the requirements source of truth. The other records point t
 | `AO-HORIZON_H7_MCU_SOURCING_EN.md` | STM32H743VI price and stock snapshot. |
 | `AO-HORIZON_PINMAP_REVIEW_EN.md` | H743 and IO MCU pinmap review 0.3, answered by the software team on 2026-10-24 (0.2 answers kept). Applied in spec rev 0.12, with the IO MCU changed to the F100. Not approved. |
 | `AO-HORIZON_PINMAP_DECISIONS_EN.md` | Spec changes, team decisions and software answers after pinmap review 0.2. Answered 2026-10-24; applied in spec rev 0.11, S7 update in 0.12. |
-| `AO-HORIZON_INTEGRATION_QUESTIONS_EN.md` | Questions for the team rev 0.1: servo power path, mounting, environment, safety switch and GPS, external devices and connectors (P0-021). Sent, not answered. |
+| `AO-HORIZON_INTEGRATION_QUESTIONS_EN.md` | Integration questions rev 0.3: servo power path, mounting, environment, safety switch and GPS, external devices and connectors (P0-021). Answered by the software team on 2026-10-24; applied in spec rev 0.13. Section 8 tells the team what hardware decided after (servo rail, ESC current pin). Section 9 holds follow-up questions, not answered yet (P0-022). |
 | `what-next.md` | Personal reminder list of next steps. Points to spec and checklist IDs; not a record. |

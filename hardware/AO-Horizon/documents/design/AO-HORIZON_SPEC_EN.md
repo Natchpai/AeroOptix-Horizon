@@ -4,7 +4,7 @@
 | -------------------- |---|
 | Project              | AeroOptix-Horizon |
 | Document owner       | Human engineering owner (TBD) |
-| Document revision    | 0.12 |
+| Document revision    | 0.13 |
 | Last updated         | 2026-10-24 |
 | Design tool          | KiCad 10 (saved files written by eeschema 10.0) |
 | Hardware phase       | TBD (declared by the human) |
@@ -61,12 +61,12 @@ See section 3.2.
 | REF-01    | Pixhawk 6C reference architecture | Not specified | Conceptual and functional reference only |
 | REF-02    | User-provided FC_H743 architecture diagram | 2026-10-12 | Diagram-derived candidate architecture; not native design authority |
 | REF-03    | User-provided power architecture diagram | 2026-10-12 | Diagram-derived power candidates; not an approved power specification |
-| REF-04    | `AO-HORIZON_EXECUTION_CHECKLIST_EN.md` | 0.11 | Execution and evidence checklist |
+| REF-04    | `AO-HORIZON_EXECUTION_CHECKLIST_EN.md` | 0.12 | Execution and evidence checklist |
 | REF-05    | Pixhawk 6X reference architecture | Rev 8 | Conceptual and functional reference only |
 | REF-06    | `AO-HORIZON_PINMAP_DECISIONS_EN.md` | 0.2, 2026-10-24 | Team answers behind DEC-014 to DEC-018 |
 | REF-07    | `AO-HORIZON_PINMAP_REVIEW_EN.md` | 0.3, answered 2026-10-24 | Pinmap agreed with the software team |
 | REF-08    | PX4-Autopilot `boards/px4/fmu-v6c` and `boards/px4/io-v2` | Tag v1.16.2 | Pin and firmware basis for the port (DEC-014) |
-| REF-09    | `AO-HORIZON_INTEGRATION_QUESTIONS_EN.md` | 0.1, 2026-10-24 | Open questions to the team: servo power, mounting, environment, connectors |
+| REF-09    | `AO-HORIZON_INTEGRATION_QUESTIONS_EN.md` | 0.3; sections 3 to 5 answered 2026-10-24, section 9 sent | Team answers behind DEC-019 to DEC-022: servo power, mounting, environment, connectors. Section 9: follow-up questions (P0-022) |
 
 ## 2. Requirements Management
 
@@ -93,7 +93,7 @@ All rows are `CONFIRMED` by the user and `NOT_VERIFIED`. SYS-001 and SYS-002 com
 | SEN-002 | The design shall provide 2 × I2C barometer interfaces. | Parts: ICP-20100 at 0x63 and BMP581 at 0x46, both on I2C2 (DEC-010, DEC-018). Fallback for the BMP581: BMP384 (OPEN-019). | Schematic inspection and hardware test. |
 | SEN-003 | The design shall provide 1 × I2C magnetometer interface. | Part: iSentek IST8310 (DEC-011, replaced BMM150 on 2026-10-24). Reduced from 2 by DEC-011. | Architecture and hardware test. |
 | PWR-001 | The flight-controller board shall receive 5 V from the power module. | Limits: see PWR-010. | Power-tree inspection and measurement. |
-| PWR-002 | The servo supply shall be 6 V. | Limits: see PWR-011. | Power-tree inspection and measurement. |
+| PWR-002 | The servo supply shall be 6 V. | Limits: see PWR-011. The UBEC plugs into one servo header; the 8 servo headers share a 6 V bus on the board, Pixhawk style (DEC-019). The board reads the bus (IF-050). | Power-tree inspection and measurement. |
 | SAF-001 | If the H743 stops, the F100 shall set the 8 servo outputs to fixed failsafe values, and the motors shall stop. No landing is commanded. | Stock px4io acts after 0.5 s without H743 data (PX4 v1.16.2 `px4iofirmware/mixer.cpp`). Failsafe values are PX4 parameters, set after flight tests (decisions file D3). The motors stop because their DShot frames stop (SAF-015). Changed from "immediate landing" by DEC-016. | Fault-injection test. |
 
 ## 3. System Requirements
@@ -119,7 +119,8 @@ Exit, transition, recovery, and restart behavior is `TBD` for all rows.
 | H743 unavailable  | No H743 data at the F100 for 0.5 s | F100 holds the servos at their failsafe values. Motors stop when their DShot frames stop (SAF-015). ESC stop time is `NOT_VERIFIED` (OPEN-017). |
 | H743↔F100 link    | Normal operation | USART with the px4io protocol, 1.5 Mb/s (DEC-015). Software owns the protocol. |
 | Boot / service    | BOOT0 or service procedure selects recovery | SWD and USB service access remain available as designed. USB FS on H743 is for later Software-owned flashing/QGC integration. |
-| Power input       | Power module connected | Board receives 5 V. Servo supply is 6 V. Limits are in PWR-010 and PWR-011. |
+| Power input       | Power module connected | Board receives 5 V. Servo supply is 6 V from the UBEC into a servo header (DEC-019). Limits are in PWR-010 and PWR-011. |
+| USB only          | USB connected, no battery | USB powers the board on the bench (team, REF-09). Which external 5 V ports get power is TBD (OPEN-006). |
 | Power abnormality | Brownout, reset, rail fault, or input loss | Hardware response, sequencing, and safe output state are `TBD`. Verify before release. |
 
 ### 3.3 Electrical system requirements
@@ -127,7 +128,7 @@ Exit, transition, recovery, and restart behavior is `TBD` for all rows.
 | ID      | Parameter | Min | Nom | Max | Unit | Note |
 | ------- |---|---:|---:|---:|---|---|
 | PWR-010 | Flight-controller board input | 4.5 | 5 | 5.5 | V | ±10%; source capacity 2 A. Transients and protection TBD. |
-| PWR-011 | Servo supply | TBD | 6 | TBD | V | 10 A continuous, 15 A instantaneous, from the user-provided UBEC-10A specification reference. Pulse duration, protection, and distribution TBD. This does not approve a UBEC part. |
+| PWR-011 | Servo supply | TBD | 6 | TBD | V | 10 A continuous, 15 A instantaneous, from the user-provided UBEC-10A specification reference. Pulse duration, protection, and distribution TBD. This does not approve a UBEC part. Servo current passes through the board (DEC-019): the UBEC input header and the 6 V and GND bus carry the total (OPEN-021). |
 | PWR-012 | Board continuous current | TBD | TBD | TBD | A | Separate MCU, sensor, external-I/O, and servo budgets required. |
 | PWR-013 | Sensor/MCU rail tolerance | TBD | TBD | TBD | V / % | Diagram rails are candidates, not approved. |
 | PWR-014 | Brownout/reset threshold | TBD | TBD | TBD | V | Per MCU and rail. |
@@ -138,34 +139,36 @@ Allocations are `CONFIRMED` at the logical and peripheral level (DEC-014, DEC-01
 
 | ID     | Connector | Function | Resource | Note |
 | ------ |---|---|---|---|
-| IF-010 | Conn1 / Tel1 | Telemetry 1 and RC | UART7 | ELRS receiver in MAVLink mode, 460800 baud, 3.3 V. Carries RC and telemetry; no backup RC input (DEC-018). |
-| IF-011 | Conn2 / Tel2 | Telemetry 2 | USART1 | Free; a second receiver can be added here later. |
-| IF-012 | Conn3 / GPS1 + compass | GPS (UBX) and compass | USART2 + I2C1 | Single GPS (DEC-018). Compass address and pull-ups TBD. |
+| IF-010 | Conn1 / Tel1 | Telemetry 1 and RC | UART7 | ELRS receiver in MAVLink mode, 460800 baud, 3.3 V. Carries RC and telemetry; no backup RC input (DEC-018). JST-GH 6-pin, Pixhawk TELEM layout, 5 V supply, TX and RX only (team, REF-09). Receiver model TBD (team). |
+| IF-011 | Conn2 / Tel2 | Telemetry 2 | USART1 | Free; a second receiver can be added here later. Connector fitted, as IF-010 (team, REF-09). |
+| IF-012 | Conn3 / GPS1 + compass | GPS (UBX) and compass | USART2 + I2C1 | Single GPS (DEC-018). 10-pin full GPS port with the safety switch and LED lines to the F100 (DEC-021). GPS: Holybro M9N (NEO-M9N + IST8310), to be confirmed by the team. Its IST8310 is on I2C1; the board IST8310 is on I2C2, so no address clash. Pull-ups TBD. Pinout and the 3.3 V and buzzer pins: OPEN-023. |
 | IF-013 | Conn4 / GPS2 | Removed | - | GPS2 dropped; USART3 is the debug console (IF-045). DEC-018. |
-| IF-014 | Conn5 / MS4525DO | Air-data sensor | I2C4, address `0x28` | Shares I2C4 with the power module (IF-048). Pull-ups TBD. |
-| IF-015 | Conn6 / TF-Luna | Rangefinder | UART8 | |
+| IF-014 | Conn5 / MS4525DO | Air-data sensor | I2C4, address `0x28` | Shares I2C4 with the power module (IF-048). Pull-ups TBD. JST-GH 4-pin, Pixhawk I2C layout with 5 V supply, if the module has its own regulator; part number TBD (team, REF-09). 5 V pull-ups: OPEN-023. |
+| IF-015 | Conn6 / TF-Luna | Rangefinder | UART8 | JST-GH 4-pin (5 V, TX, RX, GND). The team makes an adapter cable from the TF-Luna 6-pin connector (REF-09). |
 | IF-016 | Conn7 / UART7 TX | Removed | - | Dropped by the team (DEC-018). |
-| IF-017 | Spare output 1 | Spare PWM output | TIM4_CH3 | Output. Was VT L. No use planned for Model G (DEC-018). |
+| IF-017 | Spare output 1 | Spare PWM output | TIM4_CH3 | Output. Was VT L. No use planned for Model G (DEC-018). Pads only, no connector (team, REF-09). |
 | IF-018 | Spare output 2 | Spare PWM output | TIM4_CH4 | Output. Was VT R. As IF-017. |
 | IF-019 | Spare output 3 | Spare PWM output | TIM1_CH1 | Output. Was SP2. As IF-017. |
 | IF-020 | Conn11 / TL2 | Removed | - | TIM15 dropped; its pins carry motors 3 and 4 (IF-042, IF-043). DEC-016. |
 | IF-021 | Conn12 / TR2 | Removed | - | As IF-020. |
-| IF-022 | USB FS | Service, firmware update, QGC | USB FS | Device only; OTG_FS_ID not used. VBUS sense on OTG_FS_VBUS. ESD/protection, connector and routing TBD. |
+| IF-022 | USB FS | Service, firmware update, QGC | USB FS | Device only; OTG_FS_ID not used. VBUS sense on OTG_FS_VBUS. USB-C on a board edge, reachable with the canopy open; USB powers the board on the bench without the battery (team, REF-09). VBUS and PM02D 5 V must not back-feed each other. ESD/protection and routing TBD. |
 | IF-023 | SWD | Debug and recovery | SWD | H743: on the debug connector (IF-045). F100: IF-051. |
 | IF-024 | H743↔F100 | MCU link | H743 USART6 ↔ F100 USART2 | px4io protocol, 1.5 Mb/s, 3.3 V (DEC-015). Protection and test access TBD. |
-| IF-040 | ESC 1 (front-R) | Motor 1 | TIM5_CH1 | DShot only, bidirectional (FUN-002, DEC-016). Weak pull-down (OPEN-018). |
+| IF-040 | ESC 1 (front-R) | Motor 1 | TIM5_CH1 | DShot only, bidirectional (FUN-002, DEC-016). Weak pull-down (OPEN-018). One connector for IF-040 to IF-043, IF-052 and IF-053 that matches the ESC signal cable; ESC (Tekko32 F4 4-in-1 50 A, AM32) and its cable pinout not confirmed (team, REF-09). |
 | IF-041 | ESC 2 (rear-L) | Motor 2 | TIM5_CH2 | As IF-040. |
 | IF-042 | ESC 3 (front-L) | Motor 3 | TIM5_CH3 | As IF-040. |
 | IF-043 | ESC 4 (rear-R) | Motor 4 | TIM5_CH4 | As IF-040. |
 | IF-044 | microSD | Flight logs | SDMMC1, 4-bit | No card-detect pin. |
 | IF-045 | H743 debug | Console and SWD | USART3 + SWD | One 6-pin JST-SH in the Pixhawk Debug Mini layout (1 VREF, 2 Console TX, 3 Console RX, 4 SWDIO, 5 SWCLK, 6 GND; PX4 docs, DS-009 not read). Reachable after assembly. NRST on a pad next to it (TST-001). |
-| IF-046 | Buzzer | Passive buzzer, PX4 tone alarm | TIM3_CH3 | Same timer and pin as `px4/fmu-v6c`. HRT on TIM8 (no pin). |
+| IF-046 | Buzzer | Passive buzzer, PX4 tone alarm | TIM3_CH3 | Same timer and pin as `px4/fmu-v6c`. HRT on TIM8 (no pin). Board buzzer stays (DEC-021). Buzzer pin on GPS1: OPEN-023. |
 | IF-047 | Board LEDs | Red, blue, green, active low | 3 × GPIO | |
-| IF-048 | Power module | Battery voltage and current over I2C | I2C4 | Holybro PM02D with TI INA228 at 0x45 (team; older units INA226 at 0x41). Module label not checked. PC0/PC1 reserved as ADC inputs for an analog module. |
+| IF-048 | Power module | Battery voltage and current over I2C | I2C4 | Holybro PM02D with TI INA228 at 0x45 (team; older units INA226 at 0x41). Module label not checked (team to send). PC0/PC1 stay reserved as ADC inputs for an analog module (DEC-023). The team says the PM02D ships with a 6-pin 2.00 mm CLIK-Mate cable; the power sheet draws a 6-pin JST-GH (OPEN-023). |
+| IF-052 | ESC current sense | ESC current, analog | ADC, pin TBD | Requested by the team (REF-09). Not on PC1: a free ADC pin chosen by hardware (DEC-023). Pin, scaling and PX4 use: OPEN-022. |
+| IF-053 | ESC telemetry | ESC serial telemetry in | UART RX, pin TBD | Requested by the team (REF-09); proposed on UART4_RX, PD0. AF not checked: OPEN-022. |
 
 ### 3.5 F100 servo outputs and I/O
 
-`CONFIRMED` by the team (DEC-014, DEC-018). The timer channels are the px4io-v2 outputs (PX4 v1.16.2 `boards/px4/io-v2/src/timer_config.cpp`), default mapping, no AFIO remap. IF-030 to IF-037 are servo PWM at 50 Hz. Output names changed from TILT, ESC, COAX and AIL in rev 0.11. Electrical output is `TBD`.
+`CONFIRMED` by the team (DEC-014, DEC-018). The timer channels are the px4io-v2 outputs (PX4 v1.16.2 `boards/px4/io-v2/src/timer_config.cpp`), default mapping, no AFIO remap. IF-030 to IF-037 are servo PWM at 50 Hz. Output names changed from TILT, ESC, COAX and AIL in rev 0.11. Electrical output is `TBD`. Each servo plugs into a 3-pin header (signal, +6 V, GND). The + pins and GND pins are bussed on the board, and the UBEC plugs into one header position, Pixhawk style (DEC-019). UBEC input rating, copper and bulk capacitance: OPEN-021.
 
 | ID     | Logical output | Allocation |
 | ------ |---|---|
@@ -178,8 +181,8 @@ Allocations are `CONFIRMED` at the logical and peripheral level (DEC-014, DEC-01
 | IF-036 | Tilt servo 3 (front-L) | TIM3_CH3 |
 | IF-037 | Tilt servo 4 (rear-R) | TIM3_CH4 |
 | IF-038 | Removed | FlySky input dropped; RC comes over ELRS on IF-010 (DEC-018) |
-| IF-049 | Safety switch and LED | Button GPIO in, LED GPIO out open drain active low (px4io-v2 pins) |
-| IF-050 | Servo rail sense | ADC1_IN4, 3:1 divider (px4io-v2) |
+| IF-049 | Safety switch and LED | Button GPIO in, LED GPIO out open drain active low (px4io-v2 pins). Reached through GPS1 (IF-012). Disabled in PX4 on Model G; no separate switch (DEC-021) |
+| IF-050 | Servo rail sense | ADC1_IN4, 3:1 divider (px4io-v2). Reads the on-board 6 V servo bus (DEC-019) |
 | IF-051 | F100 debug | SWD and px4io console (USART1 TX) on pads or a header, bench use only |
 
 Other F100 pins that stock px4io-v2 drives or reads (LEDs, RSSI, Spektrum, SBUS, PPM, servo fault, board sense) are reserved for that function and not used for anything else (pin allocation record F-13). The three px4io LEDs (PB14, PB15, PA11) are fitted (pinmap review Q20). PA10 and PB11 stay unconnected with a weak pull-up to 3.3 V (pinmap review 0.3, section 4.3).
@@ -188,10 +191,10 @@ Other F100 pins that stock px4io-v2 drives or reads (LEDs, RSSI, Spektrum, SBUS,
 
 | ID      | Parameter / condition | Required range or limit | Verification |
 | ------- |---|---|---|
-| ENV-001 | Operating temperature | TBD | Analysis / test TBD |
-| ENV-002 | Storage temperature | TBD | Analysis / test TBD |
-| ENV-003 | Vibration and shock | TBD | Analysis / test TBD |
-| ENV-004 | Humidity, ingress, altitude, and maintenance | TBD | Analysis / test TBD |
+| ENV-001 | Operating temperature | Parts rated −40 to +85 °C (DEC-020). Field ambient about 32 °C near Bangkok (team model); the fuselage inside gets hotter in the sun, not measured | Part ratings in the BOM; temperature in the fuselage NOT_VERIFIED |
+| ENV-002 | Storage temperature | Within the −40 to +85 °C part ratings (DEC-020); no separate limit given | BOM review |
+| ENV-003 | Vibration and shock | TBD. Soft mount proposed (MEC-002) | Analysis / test TBD |
+| ENV-004 | Humidity, ingress, altitude, and maintenance | No rain exposure, no conformal coating, low-altitude flight near sea level (DEC-020). Maintenance: microSD logs read after every flight (MEC-003) | Inspection |
 
 ### 3.7 Protection and fault behavior
 
@@ -200,7 +203,7 @@ Other F100 pins that stock px4io-v2 drives or reads (LEDs, RSSI, Spektrum, SBUS,
 | SAF-010 | H743 unavailable | See SAF-001. After 0.5 s without H743 data, the F100 holds the servos at their failsafe values. The H743 owns the 4 motor outputs; the F100 owns the 8 servo outputs (DEC-016). | Reset, recovery and F100-failure behavior are Software-owned. The F100 starts its own IWDG (px4io, team answer S1). | Fault-injection test; NOT_VERIFIED |
 | SAF-011 | H743↔F100 USART loss | Same response as SAF-010; the F100 cannot tell a link loss from an H743 stop (`ASSUMED`). | As SAF-010. | Fault-injection test; NOT_VERIFIED |
 | SAF-012 | 5 V input abnormality | Safe reset/output state TBD. | Power recovery procedure TBD. | Measurement and fault test; NOT_VERIFIED |
-| SAF-013 | 6 V servo rail fault | Protection and safe actuator state TBD. | TBD | Measurement and fault test; NOT_VERIFIED |
+| SAF-013 | 6 V servo rail fault | Protection and safe actuator state TBD. The 6 V servo bus is on the board (DEC-019); the F100 reads it (IF-050). | TBD | Measurement and fault test; NOT_VERIFIED |
 | SAF-014 | ESD, reverse polarity, overvoltage, short circuit | Protection requirements TBD. | Service/recovery method TBD. | Analysis / test; NOT_VERIFIED |
 | SAF-015 | H743 hang with motors running | Motors stop. The motors run DShot only with no PWM fallback; PX4 starts each DShot frame from software, so a hang stops the frames and the ESC sees signal loss (team answer S1). PX4 v1.16.2 does not start the H743 IWDG (team answer S1, not checked by hardware). Depends on the ESC's signal-loss behavior (OPEN-017). | H743 reset or power cycle. | Bench test: halt the H743 over SWD while armed; NOT_VERIFIED |
 
@@ -227,6 +230,8 @@ The user-provided diagrams show an H743 main MCU, an F100 auxiliary MCU, sensor/
 
 - Board input and servo supply limits: see PWR-010 and PWR-011.
 - The diagram-derived arrangement is a candidate only: 6S battery, XT90-S, PM02D, CRIUS PDB v1.0, 5 V, 3.3 V, 3.3 V_IMU, 6 V UBEC.
+- The 6 V UBEC plugs into one servo header. The 8 headers share an on-board 6 V and servo GND bus, so all servo current passes through the board (DEC-019, OPEN-021).
+- USB VBUS powers the board on the bench without the battery (IF-022). OR-ing with the PM02D 5 V and the loads USB powers are TBD (OPEN-006).
 - Main 3.3 V rail: TPS62142RGTR buck from the 5 V board input (DEC-012).
 - TBD: rail dependencies, current budgets, load steps, sequencing, brownout, reverse-polarity protection, overvoltage protection, transient handling, grounding, filtering, thermal limits.
 
@@ -293,7 +298,7 @@ All items are `TBD` and `NOT_VERIFIED`.
 | Analysis               | Inputs / operating corner | Method / reference | Result | Margin / open questions |
 | ---------------------- |---|---|---|---|
 | Board input current    | 5 V input, MCU/sensor/I/O load | TBD | NOT_VERIFIED | Current budget and duty cycle TBD |
-| Servo rail current     | 6 V rail and actuator load | TBD | NOT_VERIFIED | Servo count, peak current, and protection TBD |
+| Servo rail current     | 6 V rail and actuator load (on the board, DEC-019) | TBD | NOT_VERIFIED | 8 servos can move at once (team). Tilt servo model (RDS3235 or DS3218) and all stall currents TBD; team bench target: 4 tilt servos at or below 10 A. Sizes the UBEC (OPEN-007) and the board input and bus (OPEN-021) |
 | Power rail tolerance   | All MCU/sensor rails | TBD | NOT_VERIFIED | Nominal, min, max, and load-step limits TBD |
 | Thermal margin         | MCU, regulator, protection, output drivers | TBD | NOT_VERIFIED | Ambient, dissipation, copper, and cooling TBD |
 | Safety response timing | H743 stop to servo failsafe; H743 hang to motor stop | px4io `FMU_INPUT_DROP_LIMIT_US` = 500000 (PX4 v1.16.2 `px4iofirmware/mixer.cpp`) | Servos: 0.5 s by firmware design (VERIFIED in source, not measured). Motors: NOT_VERIFIED | Motor stop time depends on the ESC signal-loss timeout (OPEN-017). Test: halt the H743 over SWD |
@@ -305,9 +310,9 @@ All items are `TBD` and `NOT_VERIFIED`.
 | ID      | Item | Requirement / limit | Verification |
 | ------- |---|---|---|
 | MEC-001 | Board outline | Each board dimension shall be less than `80 mm × 80 mm`. Exact outline and shape TBD. This supersedes the older diagram size of about `90 mm × 95 mm`. | Native PCB inspection / measurement |
-| MEC-002 | Mounting pattern | TBD | Native PCB inspection / measurement |
-| MEC-003 | Connector orientation and service access | TBD | Mechanical inspection |
-| MEC-004 | Height, keepouts, enclosure, environmental constraints | TBD | Mechanical inspection / analysis |
+| MEC-002 | Mounting pattern | TBD. Team proposal: 30.5 × 30.5 mm with M3, soft mount (rubber dampers) on a tray on the fuselage floor near the CG. The CAD team confirms soft or rigid mount and the hole size (OPEN-009) | Native PCB inspection / measurement |
+| MEC-003 | Connector orientation and service access | Any edge may face forward (PX4 sets the board rotation); the forward direction shall be marked on the silkscreen. USB-C, microSD and the H743 debug connector shall be reachable with the canopy open (team, REF-09). Cable entry sides TBD (CAD team) | Mechanical inspection |
+| MEC-004 | Height, keepouts, enclosure, environmental constraints | TBD. The GPS sits above the board under the canopy and limits the height above; clearances from the CAD team (OPEN-009) | Mechanical inspection / analysis |
 
 ### 5.2 Fabrication and stackup
 
@@ -369,7 +374,7 @@ TBD: hot components, copper spreading, vias, allowable temperature rise, load pr
 | TST-002 | F100 SWD and console | Pads or header: SWDIO, SWCLK, NRST, GND, USART1 TX. Bench use only (IF-051) | Inspection; debug test |
 | TST-003 | H743 BOOT0 | Selectable and observable boot state | Inspection; boot-state test |
 | TST-004 | 5 V board input | Test point; current/voltage measurement access | Inspection; measurement |
-| TST-005 | 6 V servo rail | Test point; current/voltage measurement access | Inspection; measurement |
+| TST-005 | 6 V servo rail | Test point on the on-board 6 V servo bus (DEC-019); current measured in the UBEC lead | Inspection; measurement |
 | TST-006 | H743↔F100 USART | Physical test access; signal observation | Inspection; hardware test |
 | TST-007 | F100 safety path and motor stop | Fault-injection access for the H743-unavailable condition (halt the H743 over the IF-045 SWD) | Fault-injection test (SAF-001, SAF-015) |
 
@@ -383,7 +388,7 @@ No automatic gates. This table plans how requirements could be checked. It does 
 | SEN-001, SEN-002, SEN-003 | Inspection / Test | Bus allocation review; sensor electrical access test | NOT_VERIFIED | Human, TBD |
 | PWR-001, PWR-002          | Analysis / Test | Power-tree review; rail measurement; load/current test | NOT_VERIFIED | Human, TBD |
 | SAF-001, SAF-015          | Test | Halt the H743 while armed: servo failsafe time at the F100, motor stop time at the ESC | NOT_VERIFIED | Human, TBD |
-| IF-010 to IF-024, IF-040 to IF-048 | Inspection / Test | Connector, pin, electrical-level, protection, and interface test; DShot and bidirectional DShot bench test | NOT_VERIFIED | Human, TBD |
+| IF-010 to IF-024, IF-040 to IF-048, IF-052, IF-053 | Inspection / Test | Connector, pin, electrical-level, protection, and interface test; DShot and bidirectional DShot bench test | NOT_VERIFIED | Human, TBD |
 | IF-030 to IF-037, IF-049 to IF-051 | Inspection / Test | Timer/resource review; servo PWM and I/O electrical test | NOT_VERIFIED | Human, TBD |
 | PCB-010 to PCB-015        | Review / Analysis / Test | Layout, return path, DRC, signal, power, and hardware review | NOT_VERIFIED | Human, TBD |
 | TST-001 to TST-007        | Inspection / Test | Test-point and debug-access inspection, then bring-up tests | NOT_VERIFIED | Human, TBD |
@@ -420,6 +425,16 @@ DEC-014 to DEC-018 come from the software team's answers in the decisions file (
 | DEC-017 | Clocks and IO MCU firmware build (OPEN-015) | H743: 16 MHz crystal. F100: 24 MHz crystal as SYSCLK, stock px4io-v2 and stock px4io bootloader | Decisions file H1, and S7 option (d) taken after the team's pinmap review 0.3 answer. Replaces option (a) (F103 with an 8 MHz crystal, PLL ×3 and a custom px4io build). The px4io bootloader runs from HSI, so it needs no build for either crystal (PX4-Bootloader `main_f1.c`: `rcc_clock_setup_in_hsi_out_24mhz()`, `main` branch read 2026-10-24). | 2026-10-24, changed in rev 0.12 |
 | DEC-018 | Interface set for Model G (IF-010 to IF-021, IF-038, IF-040 to IF-051) | One GPS; USART3 is the H743 debug console; UART7 TX spare, I2C3 and FlySky dropped; RC and telemetry over one ELRS receiver on UART7; 3 spare outputs kept; microSD on SDMMC1 without card-detect; buzzer TIM3_CH3; 3 LEDs; safety switch on the F100; H743 debug on a Pixhawk Debug Mini connector; F100 debug on pads, bench only | Decisions file section 3, D4, D5, D6, S4, S6, H2. RC over MAVLink is partly tested; the team runs the RC-loss bench test (S5). If it fails, the same receiver can run CRSF on UART7 with no pin change. | 2026-10-24 |
 
+DEC-020 to DEC-022 come from the software team's answers to the integration questions (REF-09), accepted by the human owner on 2026-10-24. D10 and D11 are signed "Software team (proposal for the team)"; a separate whole-team confirmation is not recorded. DEC-019 started from the team's D8 answer and was changed by the human owner the same day. DEC-023 is the human owner's. D9 (mounting) is not a decision: the CAD team must confirm it, so it stays a proposal in MEC-002 to MEC-004 and OPEN-009.
+
+| ID      | Topic | Selected option | Notes | Date |
+| ------- |---|---|---|---|
+| DEC-019 | Servo power path (PWR-002, PWR-011, IF-030 to IF-037, IF-050) | 8 × 3-pin servo headers (signal, +6 V, GND) with the + and GND pins bussed on the board. The UBEC plugs into one header position, Pixhawk style | Human owner: "PWR + SIG + GND", then "2. but 10A mean 10A all servo runing : 10A/6 if 6 servo because UBEC can give 10A contd." Replaces the team's D8 option (b) (signal and GND only, REF-09). Each servo pin carries one servo's current; the UBEC input pins and the bus carry the total, up to 10 A continuous and 15 A peak (OPEN-021). All 8 servos can move at once; stall current not known (OPEN-007). | 2026-10-24 |
+| DEC-020 | Environment (ENV-001, ENV-002, ENV-004) | Parts rated −40 to +85 °C, no conformal coating, no rain exposure | REF-09 D10. Hot-weather flights near sea level, low altitude only. Vibration (ENV-003) still TBD. | 2026-10-24 |
+| DEC-021 | Safety switch, buzzer and GPS port (IF-012, IF-046, IF-049) | GPS1 is the 10-pin full GPS port; the GPS module's safety switch and LED reach the F100. Model G flies with the safety switch disabled in PX4; no separate switch. Board buzzer stays | REF-09 D11. The switch can be enabled later with no hardware change. GPS: Holybro M9N, to be confirmed. Pinout: OPEN-023. | 2026-10-24 |
+| DEC-022 | IO MCU image and IMU heater (DEC-017) | Stock `px4_io-v2_default` image in the board's `extras/` folder, as `px4/fmu-v6c`. No IMU heater; PB14 drives only the px4io blue LED | REF-09 S8 and S9. No 8 MHz px4io build. PX4 IMU temperature calibration if needed. | 2026-10-24 |
+| DEC-023 | ESC current-sense pin (IF-048, IF-052) | PC1 stays reserved for an analog power module. The ESC current goes to another free ADC pin that hardware picks after checking ST pin data | Human owner: "Keep PC1, use other ADC pin". The team asked for PC1 (REF-09). Candidates PC5, PB1, PC2_C, PC3_C (pinmap review 0.3 free list). Pin, scaling and PX4 use: OPEN-022. | 2026-10-24 |
+
 ### 8.2 Open questions and assumptions
 
 | ID       | Description | Impact | Owner / next action |
@@ -429,10 +444,10 @@ DEC-014 to DEC-018 come from the software team's answers in the decisions file (
 | OPEN-003 | Closed 2026-10-24. F100 labels corrected to TIM3_CH1 to CH4 (IF-034 to IF-037); H743 motors on TIM5_CH1 to CH4 with DMA (DEC-016; the team says PX4 maps DMA for TIM5, decisions file S2). | Resolved by reassignment. | Closed |
 | OPEN-004 | Sensor electrical properties and sourcing. Sensor parts chosen (DEC-008, DEC-010, DEC-011); datasheet values, ICP-20100 EOL, BMP581 stock and IST8310 lifecycle open. IST8310 has only 0.3 V from a 3.3 V rail to its 3.6 V absolute maximum. | Affects footprint, rail, layout, drivers, verification. | Human owner / P0 |
 | OPEN-005 | Second magnetometer allocation. Closed by DEC-011 (single magnetometer). | Affects sensor redundancy and connector/bus architecture. | Closed 2026-10-18 |
-| OPEN-006 | 5 V input transient/protection, board current budget, downstream rail budgets | Affects power design and protection. | Hardware review / P0, P2 |
-| OPEN-007 | 6 V servo rail pulse duration, protection, distribution, actuator load profile | Affects power and actuator safety. | Hardware review / P0, P2 |
+| OPEN-006 | 5 V input transient/protection, board current budget, downstream rail budgets. USB powers the board on the bench (IF-022): which external 5 V ports it feeds, and the VBUS current limit, are TBD. | Affects power design and protection. | Hardware review / P0, P2 |
+| OPEN-007 | 6 V servo rail pulse duration, protection, distribution, actuator load profile. On the board since DEC-019. All 8 servos can move at once; tilt servo model (RDS3235 or DS3218) and stall currents not known; team bench target: 4 tilt servos at or below 10 A while tilting 0 to 90° at hover thrust. The 4 ES08-class servos add to that in cruise. | UBEC may be undersized; the stall total also sizes the board input and bus (OPEN-021). | Team (bench test) + Hardware / P0, P2, P4 |
 | OPEN-008 | Closed 2026-10-24 by DEC-016: no landing; servo failsafe after 0.5 s; motors on the H743. The servo failsafe values are PX4 parameters that the software team sets after flight tests (decisions file D3). Motor stop: OPEN-017. | Affects F100 behavior, output ownership, test method. | Closed |
-| OPEN-009 | Exact board outline under the MEC-001 limit, mounting, connector orientation, environment | Affects PCB and mechanical release. | Human owner / P0, P3 |
+| OPEN-009 | Exact board outline under the MEC-001 limit, mounting, connector orientation. Environment set by DEC-020. Team proposal (REF-09 D9): 30.5 × 30.5 mm M3, soft mount. Open with the CAD team: soft or rigid mount (older CAD notes ask for rigid), hole size for the damper, height clearances under the GPS, cable entry sides, and whether the board stacks on the ESC (also on 30.5 mm standoffs). | Affects PCB and mechanical release. | CAD team + Human owner / P0, P3 |
 | OPEN-010 | All non-MCU part numbers except the sensors (DEC-008, DEC-010, DEC-011) and the main 3.3 V buck (DEC-012) | No other non-MCU part is approved by this document. | Human owner / component selection gate |
 | OPEN-011 | `+3V3A` rail: purpose (for example 3.3 V_IMU), load, and LDO part. TPS73533DRBR is drawn but not decided. As drawn, its NR capacitor (100 nF) is above TI's 0.01 µF limit and its output capacitance (2 × 1 µF) is at TI's 2 µF minimum before derating (see 4.3). | Affects sensor supply noise, start-up and the power budget. | Human owner / P0, P2 |
 | OPEN-012 | Path from `+VIN` (power module connector) to `+5V`. Nothing connects them in the schematic yet. | Without it, both regulators have no input. | Hardware / P2 |
@@ -444,6 +459,9 @@ DEC-014 to DEC-018 come from the software team's answers in the decisions file (
 | OPEN-018 | PWM pull-down value. Every PWM line gets a weak pull-down (team, Q10). The motor lines carry bidirectional DShot, where the line idles high and the ESC replies on the same wire; the value and any series resistor must not upset that. | Wrong value can break RPM feedback or boot-time output state. | Hardware / P2, then bench test |
 | OPEN-019 | BMP384 fallback for barometer 2 (DEC-010). Footprint and pinout against the BMP581 not checked. Address 0x76 (SDO low), the PX4 `bmp388` driver default (team, pinmap review Q22); it does not clash with the I2C2 devices (0x63, 0x0E, 0x46). | A fallback that does not fit the BMP581 footprint needs a board change. | Hardware / P0, before PCB placement |
 | OPEN-020 | Closed 2026-10-24. STM32F100C8T6B datasheet checked (ST DocID16455 Rev 9, NotebookLM source fulltext): HSE crystal 4 to 24 MHz (Table 21); VDD 2 to 3.6 V and fHCLK up to 24 MHz (Table 8); POR/PDR and PVD levels (Table 10, recorded in the power budget); PA0 to PA7, PB0, PB1 and PB5 are not 5 V tolerant (Table 4, pin allocation F-03). Crystal load capacitors stay with P1-014. | - | Closed |
+| OPEN-021 | On-board servo bus (DEC-019). The UBEC input + and GND pins carry the total servo current, up to 10 A continuous and 15 A peak (PWR-011). One 2.54 mm header pin is usually rated about 3 A (`ESTIMATED`; header not chosen, rating NOT_VERIFIED). Open: UBEC input rating (several header positions in parallel, or a rated input connector), 6 V and servo GND copper width, where the servo GND joins the logic GND (keep servo current away from the sensors), bulk capacitance, and back-feed into the 5 V side. | An overloaded input pin heats and drops voltage; servo current in the logic GND adds noise near the sensors. | Hardware / P2, P3 |
+| OPEN-022 | ESC current sense and telemetry (IF-052, IF-053). PC1 stays reserved (DEC-023); the ESC current goes to a free ADC pin: PC5, PB1, PC2_C or PC3_C (pinmap review 0.3), not checked in ST pin data yet. ESC current-sense output range and divider TBD (from the ESC data once the model is confirmed). PX4 use (battery monitor or log only): team. PD0 is free; PD0 as UART4_RX (AF8) not checked in ST pin data (`ASSUMED`). ESC cable pinout TBD; 4-in-1 ESC cables often carry VBAT on one pin (`ASSUMED`). | Wrong scaling or a VBAT pin next to 3.3 V signals can damage the H743. | Hardware + team / P1 |
+| OPEN-023 | External connector pinouts. The Pixhawk connector standard (DS-009) is not read; every JST-GH pinout is `NOT_VERIFIED`. GPS1 10-pin: whether it has 3.3 V and buzzer pins, and if TIM3_CH3 drives the buzzer pin. PM02D: the power sheet draws a 6-pin JST-GH (`SM06B-GHS-TB`); the team says the PM02D ships with a 6-pin 2.00 mm CLIK-Mate cable (PX4 docs, not checked by hardware). I2C4: if the airspeed module or PM02D pulls up to 5 V, PD12 and PD13 must be 5 V tolerant (not checked). | A wrong pinout or connector means new cables or a board change. | Hardware / P1, P2 |
 
 ## 9. Specification Change Notes
 
@@ -461,9 +479,10 @@ DEC-014 to DEC-018 come from the software team's answers in the decisions file (
 | 0.10     | 2026-10-24 | Added Pixhawk 6X Rev 8 as a second conceptual and functional reference next to Pixhawk 6C (DEC-013, REF-05, SYS-002, 1.1). The no-copied-pinout wording is unchanged; the team decides it (OPEN-016). Recorded the team's pinmap review 0.2 answers on OPEN-001 to OPEN-003, OPEN-008, OPEN-014 and DEC-011, without changing the requirement rows. Added OPEN-015 (F103 24 MHz clock) and OPEN-016 (spec rows the team's answers change). Updated the IST8310 library row and OPEN-013. | Human owner |
 | 0.11     | 2026-10-24 | Applied the team's answers from the decisions file (REF-06). Added DEC-014 to DEC-018: pin basis `px4/fmu-v6c` and `px4/io-v2`, px4io link on USART6 ↔ USART2 at 1.5 Mb/s, 4 motors on H743 TIM5 with DShot only and 8 servos on the F103, no landing on H743 failure, 16 MHz H743 and 8 MHz F103 crystals (F103 kept over the F100 proposal), and the Model G interface set. BMP581 accepted as barometer 2 (DEC-010). Rewrote SYS-002, MCU-002, IF-001, SEN-002, SAF-001, FUN-002 to FUN-004, SAF-010, SAF-011, IF-010 to IF-024 and IF-030 to IF-038; added IF-040 to IF-051 and SAF-015. Closed OPEN-002, 003, 008, 014, 015 and 016; added OPEN-017 to OPEN-019. | Human owner (team answers) |
 | 0.12     | 2026-10-24 | Applied the team's pinmap review 0.3 answers (REF-07). Changed the IO MCU from STM32F103C8T6 to STM32F100C8T6B with a 24 MHz crystal and stock px4io, following the team (DEC-002, DEC-017, MCU-002, CMP-002); no pin moves. The px4io bootloader needs no rebuild. Renamed F103 to F100 in the current rows. Recorded the fitted px4io LEDs and the PA10 and PB11 pull-ups (3.5) and the BMP384 address 0x76 (OPEN-019). Added and closed OPEN-020 (F100 datasheet checks, DocID16455 Rev 9). Added REF-09 (integration questions to the team). | Human owner (team answers) |
+| 0.13     | 2026-10-24 | Applied the team's answers to the integration questions (REF-09 rev 0.2). Added DEC-019 (8 × 3-pin servo headers with an on-board 6 V bus and the UBEC in one header, chosen by the human owner instead of the team's D8 option (b)), DEC-020 (environment), DEC-021 (GPS1 10-pin full port, safety switch disabled in use, buzzer kept), DEC-022 (stock px4io image, no IMU heater) and DEC-023 (PC1 kept for an analog power module; ESC current on another ADC pin). Recorded the D9 mounting proposal in MEC-002 to MEC-004 without a decision. Updated PWR-002, PWR-011, the operating scenarios, IF-010 to IF-012, IF-014, IF-015, IF-017, IF-022, IF-040, IF-046, IF-048 to IF-050, section 3.5, ENV-001 to ENV-004, SAF-013, 4.3, 4.7, TST-005, OPEN-006, OPEN-007 and OPEN-009. Added IF-052 (ESC current sense) and IF-053 (ESC telemetry), and OPEN-021 to OPEN-023. | Human owner (team answers) |
 
 ## Current verdict
 
 **Draft only. NOT_VERIFIED and NOT FOR FABRICATION.**
 
-The specification is structured enough for schematic capture against the agreed pinmap (REF-07). It does not approve any non-MCU part number other than the sensors (DEC-008, DEC-010, DEC-011) and the main 3.3 V buck (DEC-012), nor power protection or rail detail, safety timing, schematic, PCB, or fabrication release. Sensor lifecycle and sourcing risks are open (OPEN-004): ICP-20100 is EOL, BMP581 stock is short, and the IST8310 lifecycle is not confirmed. Motor stop on an H743 hang depends on the ESC (OPEN-017). The PWM pull-down value must suit bidirectional DShot (OPEN-018). The sensor library parts are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked (OPEN-013).
+The specification is structured enough for schematic capture against the agreed pinmap (REF-07). It does not approve any non-MCU part number other than the sensors (DEC-008, DEC-010, DEC-011) and the main 3.3 V buck (DEC-012), nor power protection or rail detail, safety timing, schematic, PCB, or fabrication release. Sensor lifecycle and sourcing risks are open (OPEN-004): ICP-20100 is EOL, BMP581 stock is short, and the IST8310 lifecycle is not confirmed. Motor stop on an H743 hang depends on the ESC (OPEN-017). The PWM pull-down value must suit bidirectional DShot (OPEN-018). All servo current now passes through the board (DEC-019); the UBEC input rating and the servo bus copper are open (OPEN-021). The external connector pinouts (OPEN-023) are open, and the mounting is still a proposal (OPEN-009). The sensor library parts are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked (OPEN-013).

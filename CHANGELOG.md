@@ -67,6 +67,16 @@ Notable changes to this hardware project are documented here.
 - IO MCU changed from STM32F103C8T6 to STM32F100C8T6B with a 24 MHz crystal, following the software team (specification rev 0.12: DEC-002, DEC-017, MCU-002, CMP-002). Stock px4io-v2 and its stock bootloader run unchanged; the bootloader runs from HSI (PX4-Bootloader `main_f1.c`). No pin moved: ST open pin data for both LQFP48 parts match on all 48 pins. F100 values from DocID16455 Rev 9 through NotebookLM: HSE 4 to 24 MHz, VDD 2 to 3.6 V, reset and PVD levels, 5 V tolerance (OPEN-020, added and closed). LCSC stock checked by the human owner. The F100 library part and the `block_diagram` text are still to do (P2-014).
 - Pinmap review rev 0.3 now holds the software team's answers and a hardware response. Applied: the three px4io LEDs are fitted, F100 PA10 and PB11 get weak pull-ups, the BMP384 fallback is at 0x76 (OPEN-019), and the debug connector pinout is accepted.
 - Pin allocation rev 0.6, checklist rev 0.11 (P0-020 done; new P0-021 and P2-014), power budget rev 0.5 (F100 current, reset and PVD levels), barometer and magnetometer selection rev 0.8, the decisions file, root `README.md`, `CLAUDE.md`, the design README and `what-next.md` updated to match. No KiCad file changed. ERC and DRC not run.
+- Specification rev 0.13: the software team's answers to the integration questions are applied. New decisions:
+  - DEC-019: 8 × 3-pin servo headers (signal, +6 V, GND) on an on-board 6 V rail, with the UBEC plugged into the board, Pixhawk style. The human owner chose this instead of the team's answer (signal and GND only, 6 V through the harness).
+  - DEC-020: parts rated −40 to +85 °C, no conformal coating, no rain exposure.
+  - DEC-021: GPS1 is the 10-pin full GPS port with the safety switch lines; Model G flies with the safety switch disabled in PX4; the board buzzer stays.
+  - DEC-022: stock px4io image in the board's `extras/` folder, no IMU heater.
+  - DEC-023: PC1 stays reserved for an analog power module; the ESC current sense goes to another ADC pin (human owner).
+
+  Interface rows updated, and IF-052 (ESC current sense) and IF-053 (ESC telemetry) added. Mounting stays a proposal (30.5 × 30.5 mm M3, soft mount) until the CAD team confirms it (OPEN-009). New open items: UBEC input rating and servo rail copper (OPEN-021), ESC sense and telemetry pins (OPEN-022), connector pinouts and the PM02D connector, where the power sheet's JST-GH may not match the team's CLIK-Mate cable (OPEN-023).
+- Checklist rev 0.12 (P0-021 done; new P0-022, P1-016, P2-015, P2-016), power budget rev 0.6 (servo rail on the board, USB-only bench power), the design README and `what-next.md` updated to match. No KiCad file changed. ERC and DRC not run.
+- Integration questions rev 0.3: the team's answers kept, a note on what hardware decided after them, and follow-up questions for the team (mounting for the CAD team, devices needed on USB, ESC current use in PX4, part models and photos, test results).
 
 ### Fixed
 
