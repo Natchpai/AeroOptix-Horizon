@@ -44,7 +44,7 @@
 
   /* Power rails: battery red, then warm (high voltage) to cold (low) */
   --rail-batt: #dc2626;
-  --rail-6v: #c2410c;
+  --rail-6v: #ea580c;
   --rail-5v: #ca8a04;
   --rail-3v3: #0284c7;
   --rail-3v3a: #4f46e5;
