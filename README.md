@@ -3,17 +3,17 @@
 **Dual-MCU PX4 flight controller hardware (STM32H743 + STM32F103) by AeroOptix Club.**
 
 > **Status:** `DRAFT`
-> **Revision:** `v1.0`
+> **Board revision:** `v1.0`
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.7`
 
-> **Draft specification (rev 0.8, 2026-10-21): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.10, 2026-10-24): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
 AeroOptix-Horizon is a custom PX4 flight controller with two MCUs. The STM32H743VIT6 is the main flight-controller MCU. The STM32F103C8T6 is an auxiliary MCU for PWM/ESC outputs, expanded I/O and a safety function. A USART link connects the two MCUs, and the F103 uses it to watch the H743.
 
-Pixhawk 6C is only a conceptual and functional reference. Its schematic, PCB and pinout are not copied.
+Pixhawk 6C and Pixhawk 6X are only conceptual and functional references. Their schematics, PCBs and pinouts are not copied.
 
 ## Key Features
 
@@ -136,7 +136,9 @@ These allocations are user-confirmed at the logical level only. Exact pins, alte
 
 ### Design Considerations
 
-- Timer labels are not confirmed (OPEN-003). The draft pin allocation finds that the F103 TIM3 has CH1 to CH4 only, so the COAX and AIL labels need a human correction.
+- Timer labels are not confirmed (OPEN-003). The F103 TIM3 has CH1 to CH4 only; the team confirmed CH1 to CH4 on PA6, PA7, PB0, PB1.
+- The software team answered the pinmap review on 2026-10-24. Their answers change several spec rows: 4 ESCs on the H743 (TIM5) and 8 servos on the F103, stock PX4 IO firmware on the F103, no FlySky, no GPS2, and the SAF-001 landing wording. These wait for team decisions (OPEN-016, `AO-HORIZON_PINMAP_DECISIONS_EN.md`).
+- Stock PX4 IO firmware expects a 24 MHz F103 clock, which is outside the F103 crystal range of 4 to 16 MHz (OPEN-015).
 - Sourcing risk on the sensors (OPEN-004): ICP-20100 is EOL (TDK says its pressure products are not for new designs), and the IST8310 lifecycle is not confirmed.
 - The magnetometer changed from BMM150 to IST8310 (DEC-011). Its absolute maximum supply is 3.6 V, so the 3.3 V rail has only 0.3 V of margin.
 - BMP390 was removed because LCSC does not sell it. BMP581 (LCSC C5362283) is proposed as the second barometer and waits for team confirmation (OPEN-014).
@@ -145,7 +147,6 @@ These allocations are user-confirmed at the logical level only. Exact pins, alte
 - Clock sources, reset topology and F103 boot behavior are `TBD`.
 - Safety detection method, timing and output ownership for the H743-failure case are `TBD`.
 - Firmware (PX4 version and target, bootloader, USART message protocol) is deferred. The PX4 Matek H743-Slim board port is kept in `documents/reference/` as a pin-map reference only.
-- The pinmap review is with the software team. Questions Q1 to Q19 (pin source, safety switch, LEDs, PM02D I2C bus, IMU CLKIN and others) have no answers yet.
 - Confirmed part numbers: STM32H743VIT6, STM32F103C8T6, ICM-45686, ICP-20100, IST8310 and TPS62142RGTR. All other parts are `TBD`.
 
 ## Verification
@@ -160,7 +161,7 @@ These allocations are user-confirmed at the logical level only. Exact pins, alte
 
 ## Open Items
 
-The specification tracks OPEN-001 to OPEN-014 (OPEN-005 is closed):
+The specification tracks OPEN-001 to OPEN-016 (OPEN-005 is closed):
 
 - MCU pins, alternate functions and timer validity (OPEN-001, OPEN-003)
 - USART instance, levels and timing (OPEN-002)
@@ -172,6 +173,8 @@ The specification tracks OPEN-001 to OPEN-014 (OPEN-005 is closed):
 - Remaining non-MCU part numbers (OPEN-010)
 - `+3V3A` rail (OPEN-011) and the `+VIN` to `+5V` path (OPEN-012)
 - Sensor footprints to check against the datasheet drawings and app notes (OPEN-013)
+- F103 clock for the stock PX4 IO firmware (OPEN-015)
+- Spec rows changed by the team's pinmap answers, waiting for team decisions (OPEN-016)
 
 ## How we work
 
@@ -226,7 +229,8 @@ AeroOptix-Horizon/
 | [Barometer and magnetometer selection](hardware/AO-Horizon/documents/design/AO-HORIZON_BARO_MAG_SELECTION_EN.md) | ICP-20100 and IST8310 selection and lifecycle (BMM150 replaced), BMP390 removal, BMP581 candidate |
 | [Power budget](hardware/AO-Horizon/documents/design/AO-HORIZON_POWER_BUDGET_EN.md) | Draft rail and load budget (P0-017) |
 | [Pin allocation](hardware/AO-Horizon/documents/design/AO-HORIZON_PIN_ALLOCATION_EN.md) | Draft H743 and F103 pin allocation |
-| [Pinmap review](hardware/AO-Horizon/documents/design/AO-HORIZON_PINMAP_REVIEW_EN.md) | Pinmap and questions sent to the software team (no answers yet) |
+| [Pinmap review](hardware/AO-Horizon/documents/design/AO-HORIZON_PINMAP_REVIEW_EN.md) | Pinmap review 0.2 with the software team's answers |
+| [Pinmap decisions](hardware/AO-Horizon/documents/design/AO-HORIZON_PINMAP_DECISIONS_EN.md) | Spec changes, team decisions and software questions from the pinmap answers (OPEN-016) |
 | [H7 MCU sourcing](hardware/AO-Horizon/documents/design/AO-HORIZON_H7_MCU_SOURCING_EN.md) | STM32H743VI price and stock |
 | [KiCad project](hardware/AO-Horizon/README.md) | Project folder layout |
 

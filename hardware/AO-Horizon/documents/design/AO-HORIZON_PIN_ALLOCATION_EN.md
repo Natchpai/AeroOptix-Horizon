@@ -1,8 +1,8 @@
 # AeroOptix-Horizon: MCU Pin Allocation
 
-**Revision:** 0.3
+**Revision:** 0.4
 **Updated:** 2026-10-24
-**Status:** Draft proposal. Pin choices are not approved. DMA, interrupt priority and clock checks (P1-010) are not done. Not a verification record.
+**Status:** Draft. Pin choices are not approved. The team answered pinmap review 0.2 on 2026-10-24; sections 1 and 2 still show the rev 0.3 pins, and the changes the team asked for are in section 2.1 until the team decides the spec rows (OPEN-016). DMA, interrupt priority and clock checks (P1-010) are not done. Not a verification record.
 **Requirement refs:** IF-010 to IF-024, IF-030 to IF-038, SEN-001 to SEN-003 (spec). Checklist tasks: P1-001, P1-002, P1-003 to P1-005 (partial), P1-009 (partial).
 **Decision owner:** Hardware
 
@@ -19,7 +19,7 @@ How each row was checked:
 - **Pin/signal**: a script confirmed the signal is listed for that pin in ST XML, so it is `VERIFIED`.
 - **DS**: a script found the signal name in that pin's row of the datasheet text. This is a text match on extracted PDF text, so a human should still confirm the critical pins against the datasheet.
 - **Conflicts**: a script confirmed that no pin is assigned twice and that the interrupt pins use different EXTI lines.
-- **Choice**: which pin and instance to use is a proposal (`ASSUMED`) for the human to accept or change.
+- **Source**: the pins in sections 1 and 2 come from the pinout the software team sent to hardware. ST data was used only to check them. The team says most H743 pins match Pixhawk 6C (`px4/fmu-v6c`), the sensor list follows Pixhawk 6X Rev 8, and the F103 PWM pins follow `px4/io-v2` (pinmap review Q1). It was tested on a NUCLEO-H753ZI and in PX4 SITL only, not on a Pixhawk (Q2). The pins in section 1.1 were proposed by hardware. Whether a pinout taken from Pixhawk 6C fits SYS-002 is for the team to decide (OPEN-016).
 
 Script inputs and outputs are not kept in the repo.
 
@@ -146,32 +146,55 @@ Design choices behind the table (`ASSUMED`, for review):
 
 Free I/O after this allocation (20 pins): PA4, PA5, PA8, PA11, PA12, PA15, PB3 to PB7, PB10 to PB15, PC13 to PC15. PB2 is BOOT1 and is not counted as free. PA15, PB3 and PB4 are JTAG pins after reset and need the SWJ remap (SWD only) in firmware before use as GPIO (`ASSUMED`, F1 reference manual not checked).
 
+## 2.1 Changes asked by the team (pinmap review 0.2, 2026-10-24)
+
+Team answers, not yet applied to sections 1 and 2. They wait for the team decisions in `AO-HORIZON_PINMAP_DECISIONS_EN.md` (OPEN-016).
+
+| MCU | Change | Team ref |
+| --- | ------ | -------- |
+| H743 | USART3 (PD8, PD9) becomes the debug console; no GPS2. | 3.1 |
+| H743 | Reserved UART7 TX (IF-016) dropped. | Q4 |
+| H743 | I2C3 (PA8, PC9) dropped. BMP581 moves to I2C2 at 0x46. PC9 goes to microSD. | 3.2 |
+| H743 | Motors 1 to 4 on TIM5_CH1 to CH4 (AF2), PA0 to PA3, for DShot. PD14, PD15 (TIM4) and PE9 (TIM1) become spare outputs. TIM15 dropped. | Q17 |
+| H743 | microSD on SDMMC1: CK PC12, CMD PD2, D0 to D3 PC8 to PC11. | Section 7 |
+| H743 | LEDs on PE2, PE3, PE4 and buzzer on PA15 (TIM2_CH1) accepted. Safety switch, IST8310 DRDY and RSTN, IMU pin 9 and F103 NRST/BOOT0 rows not needed. PC0/PC1 kept as an ADC reserve. | 3.6, Q9, Q11, Q12, Q16 |
+| H743 | HSE 8 MHz (16 MHz also works). USB device only; OTG_FS_ID not needed. HRT on TIM8. | Q6, Q15, Q19 |
+| F103 | H743 link moves to USART2 (PA2 TX, PA3 RX), 1.5 Mb/s, as px4io-v2 needs. FlySky dropped. | Q5, Q7 |
+| F103 | The 8 PWM pins stay; outputs renamed: flaperon L/R (PA0, PA1), ruddervator L/R (PB8, PB9), tilt servo 1 to 4 (PA6, PA7, PB0, PB1). | Q3, Q17 |
+| F103 | Safety button PB5, safety LED PB13 (open drain, active low), servo rail sense PA4 (ADC). | Q12, section 7 |
+| F103 | HSE 24 MHz (px4io-v2); see F-11. No LSE; PC14 and PC15 left unconnected. | Q6 |
+
 ## 3. Findings
 
 | ID | Severity | Ref | Label | Finding | Source |
 | -- | -------- | --- | ----- | ------- | ------ |
-| F-02 | MAJOR | IF-034 to IF-037 | `VERIFIED` | Spec labels TIM3_CH5 to TIM3_CH8 do not exist. F103 TIM3 has CH1 to CH4 only. Proposed: TIM3_CH1 to CH4 on PA6, PA7, PB0, PB1. The spec needs correcting. | ST XML; F1 DS Table 5 |
-| F-01 | MINOR | IF-016 | `VERIFIED` | IF-016 "UART7 TX (reserved)" uses the same UART7 as Telemetry 1 (IF-010). One UART7 TX pin cannot serve both. The intent of IF-016 needs clarifying (drop it, or move it to another UART such as UART4 or UART5). | Spec section 3 |
-| F-03 | MINOR | F103 PA0 to PA3 | `VERIFIED` | PA0 to PA3 are not 5 V tolerant (no FT in the type column). A 5 V receiver signal on PA3 (FlySky) or 5 V servo feedback needs a level check. The TIM2 outputs on PA0/PA1 are outputs only. | F1 DS Table 5 |
-| F-04 | MINOR | IF-038 | `ASSUMED` | FlySky receiver protocol (PPM, PWM, i-BUS or S.BUS) is not defined. USART2 is held as a candidate. PPM would need a timer input instead, and S.BUS would need an inverter. | Spec IF-038 |
+| F-02 | MAJOR | IF-034 to IF-037 | `VERIFIED` | Spec labels TIM3_CH5 to TIM3_CH8 do not exist. F103 TIM3 has CH1 to CH4 only. Proposed: TIM3_CH1 to CH4 on PA6, PA7, PB0, PB1. The spec needs correcting. Team confirmed CH1 to CH4 (Q3). | ST XML; F1 DS Table 5 |
+| F-11 | MAJOR | F103 HSE | `VERIFIED` | Stock px4io-v2 uses a 24 MHz HSE directly as SYSCLK. The F103 HSE crystal oscillator is specified for 4 to 16 MHz (Table 22); an external clock on OSC_IN may be 1 to 25 MHz (Table 20). A 24 MHz crystal is out of range (OPEN-015, decisions file S7). | F1 DS Tables 20 and 22 (NotebookLM source fulltext); PX4 v1.16.2 `boards/px4/io-v2/nuttx-config/include/board.h` |
+| F-01 | MINOR | IF-016 | `VERIFIED` | IF-016 "UART7 TX (reserved)" uses the same UART7 as Telemetry 1 (IF-010). One UART7 TX pin cannot serve both. The intent of IF-016 needs clarifying (drop it, or move it to another UART such as UART4 or UART5). Team: drop it (Q4). | Spec section 3 |
+| F-03 | MINOR | F103 PA0 to PA3 | `VERIFIED` | PA0 to PA3 are not 5 V tolerant (no FT in the type column). A 5 V receiver signal on PA3 (FlySky) or 5 V servo feedback needs a level check. The TIM2 outputs on PA0/PA1 are outputs only. With the team's answers, PA2/PA3 carry the 3.3 V px4io link and no receiver connects to the F103 (Q5, Q7). | F1 DS Table 5 |
+| F-04 | MINOR | IF-038 | `ASSUMED` | FlySky receiver protocol (PPM, PWM, i-BUS or S.BUS) is not defined. USART2 is held as a candidate. PPM would need a timer input instead, and S.BUS would need an inverter. Team: no FlySky; RC comes from ELRS (MAVLink) on UART7 (Q5). | Spec IF-038 |
+| F-12 | MINOR | H743 TIM5 | `VERIFIED` | The team's base target `px4/fmu-v6c` gives DMA only to TIM1 and TIM4, so DShot on TIM5 (PA0 to PA3) needs a port change (decisions file S2). | PX4 v1.16.2 `boards/px4/fmu-v6c/src/timer_config.cpp` |
+| F-13 | MINOR | F103 free pins | `VERIFIED` | Stock px4io-v2 also drives or reads PB14, PB15, PA11 (LEDs), PA15 (servo fault), PA5 and PA12 (RSSI), PC13 and PA10 (Spektrum), PB10, PB11, PB4 (SBUS), PA8 (PPM), PC14 and PC15 (board sense). They are not free for other uses, so the free list in section 2 shrinks once the team's answers are applied. | PX4 v1.16.2 `boards/px4/io-v2/src/board_config.h` |
 | F-05 | INFO | H743 PC4 | `VERIFIED` | PC4 (IMU1 INT1) is TT_a, so it is 3.3 V tolerant only, not 5 V. This is fine for a 3.3 V IMU. | H7 DS Table 9 |
 | F-06 | INFO | H743 PA9 | `NOT_VERIFIED` | PA9 (OTG_FS_VBUS) is FT_u. Whether VBUS can connect directly, or needs a divider when VDD is off, is not checked. | H7 DS Table 9 |
-| F-07 | INFO | IF-024 | `ASSUMED` | The F103 USART1 link may also serve as the F103 bootloader path. Needs AN2606 confirmation and a BOOT0 control plan for the F103. | Section 2 |
-| F-08 | MINOR | H743 PA10 | `VERIFIED` | The design-choice note says PA9/PA10 are used for USB VBUS sensing and OTG_FS_ID, but OTG_FS_ID is not allocated and PA10 is in the free list. Either allocate PA10 to OTG_FS_ID or reword the note. | Section 1 |
-| F-09 | MINOR | Power module | `VERIFIED` | The power sheet draws the PM02D connector with `PM02_SCL` and `PM02_SDA`, which reach only the connector (spec 4.3). Battery sensing is over I2C, so no ADC is needed, but no H743 I2C bus is assigned. All four I2C buses are in use. Draft: share I2C4 with MS4525DO (0x28). The PM02D address is `NOT_VERIFIED`. | Spec 4.3 |
-| F-10 | INFO | H743 TIM15 (TL2, TR2) | `NOT_VERIFIED` | The PX4 Matek H743-Slim port gives TIM15 no DMA entry in `timer_config.cpp`, so DShot on TL2/TR2 may not work. Fine if they are plain PWM. Part of P1-010. | `documents/reference/px4-matek-h743-slim/timer_config.cpp` |
+| F-07 | INFO | IF-024 | `ASSUMED` | The F103 USART1 link may also serve as the F103 bootloader path. Needs AN2606 confirmation and a BOOT0 control plan for the F103. Team: not needed; PX4 updates the F103 over the link, and the first flash is over SWD (Q9). | Section 2 |
+| F-08 | MINOR | H743 PA10 | `VERIFIED` | The design-choice note says PA9/PA10 are used for USB VBUS sensing and OTG_FS_ID, but OTG_FS_ID is not allocated and PA10 is in the free list. Either allocate PA10 to OTG_FS_ID or reword the note. Team: USB device only, OTG_FS_ID not needed (Q19), so the note needs rewording. | Section 1 |
+| F-09 | MINOR | Power module | `VERIFIED` | The power sheet draws the PM02D connector with `PM02_SCL` and `PM02_SDA`, which reach only the connector (spec 4.3). Battery sensing is over I2C, so no ADC is needed, but no H743 I2C bus is assigned. All four I2C buses are in use. Draft: share I2C4 with MS4525DO (0x28). Team: I2C4 is OK; they name a TI INA228 at 0x45 (older units INA226 at 0x41). The module label is not checked, so the address is `NOT_VERIFIED` (Q14). | Spec 4.3 |
+| F-10 | INFO | H743 TIM15 (TL2, TR2) | `NOT_VERIFIED` | The PX4 Matek H743-Slim port gives TIM15 no DMA entry in `timer_config.cpp`, so DShot on TL2/TR2 may not work. Fine if they are plain PWM. Part of P1-010. Team: motors move to TIM5 and TIM15 is dropped (Q17); see F-12. | `documents/reference/px4-matek-h743-slim/timer_config.cpp` |
+| F-14 | INFO | H743 microSD | `VERIFIED` | `px4/fmu-v6c` puts microSD on SDMMC2 (PD6, PD7, PB14, PB15, PB3, PB4), which clashes with GPS1 RX (PD6) and Telemetry 2 (PB14, PB15) here. The team's SDMMC1 choice avoids that; the port's `board.h` needs the change (decisions file S4). SDMMC1 pins against ST XML not checked yet. | PX4 v1.16.2 `boards/px4/fmu-v6c/nuttx-config/include/board.h` |
 
 ## 4. Open checks
 
 - [ ] Human reviews the pin choices and the design choices in sections 1 and 2.
-- [ ] Correct the TIM3 channel labels in the spec (F-02), and clarify IF-016 (F-01).
-- [ ] Define the FlySky receiver protocol and signal level (F-03, F-04).
-- [ ] P1-010: DMA streams, interrupt priorities and timer clock per peripheral.
-- [ ] P1-011: pull-ups, reset states and boot-time pin states (for example the PWM outputs before firmware starts).
-- [ ] P1-014: HSE frequency for both MCUs, and whether LSE (PC14/PC15) is used.
-- [ ] Accept or change the draft pins in section 1.1 (LEDs, buzzer, safety switch, IST8310 DRDY/RSTN, IMU pin 9, F103 control).
-- [ ] Assign a bus for the PM02D power module I2C (F-09).
-- [ ] Resolve the PA10 / OTG_FS_ID note (F-08).
+- [ ] Correct the TIM3 channel labels in the spec (F-02), and clarify IF-016 (F-01). Team answered (Q3, Q4); the spec rows change with OPEN-016.
+- [x] Define the FlySky receiver protocol and signal level (F-03, F-04). Team: no FlySky (Q5).
+- [ ] P1-010: DMA streams, interrupt priorities and timer clock per peripheral. Includes TIM5 DMA (F-12).
+- [ ] P1-011: pull-ups, reset states and boot-time pin states. Team: PWM lines low before firmware, with weak pull-downs and no pull-ups (Q10).
+- [ ] P1-014: HSE frequency for both MCUs. Team: no LSE on either MCU (Q6). H743: 8 or 16 MHz (16 MHz proposed, decisions file H1). F103: see F-11.
+- [x] Accept or change the draft pins in section 1.1. Team answered (section 2.1).
+- [x] Assign a bus for the PM02D power module I2C (F-09). Team: I2C4.
+- [ ] Reword the PA10 / OTG_FS_ID note (F-08).
+- [ ] Apply section 2.1 to sections 1 and 2 after the team decides (OPEN-016), and check the new pins (TIM5 on PA0 to PA3, SDMMC1, F103 USART2) against ST XML.
 - [ ] Human confirms critical pins (power, SWD, USB, BOOT0) against the datasheet pinout figures.
 
 ## 5. Sources
@@ -182,3 +205,5 @@ Free I/O after this allocation (20 pins): PA4, PA5, PA8, PA11, PA12, PA15, PB3 t
 - Requirements: `AO-HORIZON_SPEC_EN.md` section 3
 - PX4 Matek H743-Slim board port and NuttX pinmap (reference copies): `documents/reference/px4-matek-h743-slim/`
 - ICM-45686 DS-000489 Rev 1.1 and IST8310 Datasheet V1.2 (NotebookLM sources)
+- Team answers: `AO-HORIZON_PINMAP_REVIEW_EN.md` rev 0.2 (2026-10-24)
+- PX4-Autopilot v1.16.2 board files: https://github.com/PX4/PX4-Autopilot/tree/v1.16.2/boards/px4/ (`io-v2`, `fmu-v6c`)

@@ -41,14 +41,15 @@ Hardware checked your answers against the PX4 source at tag v1.16.2 (`boards/px4
 | F10 | fmu-v6c `defconfig` has `CONFIG_WATCHDOG=y`. Whether PX4 starts the H743 IWDG was not checked. | fmu-v6c `defconfig` | NOT_VERIFIED |
 | F11 | Bidirectional DShot on STM32H7 must use the first 4 FMU outputs, all on one timer. Read in the v1.17 docs; v1.16.2 not checked. | docs.px4.io/v1.17/en/peripherals/dshot | NOT_VERIFIED for v1.16.2 |
 | F12 | An STM32 timer in PWM mode keeps sending its last pulse width if the CPU hangs. DShot stops, because it needs the CPU to refill DMA for each frame. | General STM32 timer behavior | ASSUMED |
+| F13 | The STM32F103 HSE crystal oscillator is specified for 4 to 16 MHz. An external clock on OSC_IN (HSE bypass) may be 1 to 25 MHz. So the 24 MHz crystal that stock px4io-v2 expects (F3) is outside the F103 datasheet range. | ST DS5319 Rev 20, Table 22 (HSE 4-16 MHz oscillator) and Table 20 (HSE user external clock), read in the datasheet text | VERIFIED |
 
 ## 3. Spec items your answers change
 
-Your 0.2 answers do not match these spec rows. For each row, say whether the spec should change as listed.
+Your 0.2 answers do not match these spec rows. For each row, say whether the spec should change as listed. The spec tracks this list as OPEN-016.
 
 | Spec ID | Spec now (short) | What your 0.2 answers mean | Team |
 |---|---|---|---|
-| SYS-002 | Pixhawk 6C is a reference only; no copied pinout. | Most H743 pins come from Pixhawk 6C, and the port is based on `px4/fmu-v6c` (Q1, Q18). | |
+| SYS-002 | Pixhawk 6C and 6X are references only; no copied pinout. | Most H743 pins come from Pixhawk 6C, and the port is based on `px4/fmu-v6c` (Q1, Q18). | |
 | IF-001, IF-024, OPEN-002 | H743↔F103 link is USART; instance, pins and rate are open. | H743 USART6 (PC6, PC7) to F103 USART2 (PA2, PA3), 1.5 Mb/s, px4io protocol (Q7, F1). | |
 | SAF-001, FUN-004 | If the H743 stops, the F103 commands an immediate landing. | Stock px4io cannot land. It sets its outputs to failsafe values after 0.5 s (Q7, F4). See D1. | |
 | SAF-010, SAF-011 | F103 monitors the H743; output ownership after a link loss is open. | Same as above. The motors are no longer on the F103 (Q17). See D1, D2. | |
@@ -159,6 +160,17 @@ Hardware will give you the H743 console (UART3) and SWD, and the F103 SWD and px
 Answer:
 By:
 
+**S7. F103 clock for px4io.**
+Stock px4io-v2 runs the F103 straight from a 24 MHz HSE (F3), but a 24 MHz crystal is outside the F103 datasheet range (F13). Hardware sees three ways out:
+- (a) An 8 MHz crystal (inside the range), and a px4io build that uses the PLL (×3) to make 24 MHz. Needs a changed `board.h` in your px4io build.
+- (b) A 24 MHz oscillator module on OSC_IN (inside the external-clock range), and a px4io build with HSE bypass on. Needs a changed `board.h` in your px4io build.
+- (c) Stock px4io with a 24 MHz crystal. No firmware change, but the F103 runs outside its datasheet. Hardware does not recommend it.
+
+PX4 updates the F103 from the px4io image inside your H743 build (Q9), so a custom px4io build ships with your firmware (ASSUMED). Can you build and keep a custom px4io image? Which option do you accept?
+
+Answer:
+By:
+
 ## 6. Hardware proposals for pinmap 0.3
 
 Both change your board config, so hardware needs your OK. Fill the `Team` column.
@@ -171,7 +183,7 @@ Both change your board config, so hardware needs your OK. Fill the `Team` column
 ## 7. For information, no reply needed
 
 - Hardware follows your answers on the PWM pull-downs (Q10), F103 PC14 and PC15 (Q6), and the px4io-v2 pins (F5).
-- Hardware is checking that a 24 MHz crystal is within the F103 limits (F3). You hear back only if it affects the px4io build.
+- Hardware checked the F103 clock limits (F13). The result affects the px4io build, so it is asked in S7.
 - After your reply, hardware updates the spec rows in section 3 and issues pinmap 0.3.
 
 ## 8. Sources
@@ -183,3 +195,5 @@ PX4-Autopilot, tag v1.16.2, `https://github.com/PX4/PX4-Autopilot/tree/v1.16.2/b
 - `fmu-v6c/nuttx-config/nsh/defconfig`, `fmu-v6c/nuttx-config/include/board.h`, `fmu-v6c/src/board_config.h`, `fmu-v6c/src/timer_config.cpp`
 
 PX4 docs: `https://docs.px4.io/v1.17/en/peripherals/dshot` (bidirectional DShot).
+
+ST: DS5319 Rev 20, STM32F103x8/B datasheet, Tables 20 and 22 (`https://www.st.com/resource/en/datasheet/stm32f103c8.pdf`).

@@ -28,6 +28,7 @@ Notable changes to this hardware project are documented here.
 - Pin allocation rev 0.3: draft pins for LEDs, buzzer, safety switch, IST8310 DRDY and RSTN, IMU pin 9 and F103 NRST/BOOT0 control (`ASSUMED`, not approved), and findings F-08 to F-10 (PA10 note, PM02D I2C bus not assigned, TIM15 DMA).
 - PX4 Matek H743-Slim board port files as a pin-map reference in `documents/reference/px4-matek-h743-slim/`: unmodified copies from PX4-Autopilot `b26146e` and PX4/NuttX `8626377`. Not design data.
 - `documents/design/what-next.md`: personal reminder list of next steps.
+- Pinmap decisions file for the team (`AO-HORIZON_PINMAP_DECISIONS_EN.md`): spec rows that the team's pinmap answers change, decisions D1 to D7, software questions S1 to S7 and proposals H1 and H2, checked against PX4 v1.16.2 board files.
 
 ### Changed
 
@@ -47,6 +48,10 @@ Notable changes to this hardware project are documented here.
 - Magnetometer changed from Bosch BMM150 to iSentek IST8310 by the human owner (DEC-011 revised, specification rev 0.9, checklist rev 0.8, selection record rev 0.5, power budget rev 0.4). IST8310 values come from its datasheet V1.2 through NotebookLM. Its absolute maximum supply is 3.6 V, so the 3.3 V rail has only 0.3 V of margin. The BMM150 library files are kept and marked not used.
 - Project library restyled to the KLC house style: symbols redrawn with separate pins, footprint fab, silkscreen and courtyard redrawn. Later, field and body positions moved on the IST8310, BMP390, BMP581 and TPS62142 symbols.
 - `.gitignore` now ignores the `hardware/AO-Horizon/libDump/` staging folder.
+- Pinmap review rev 0.2 now holds the software team's answers (2026-10-24).
+- Specification rev 0.10 and checklist rev 0.9: Pixhawk 6X Rev 8 added as a reference next to Pixhawk 6C by the human owner (DEC-013, REF-05, SYS-002). Team answers recorded on OPEN-001 to OPEN-003, OPEN-008, OPEN-014 and DEC-011 without changing requirement rows. New open items OPEN-015 (stock px4io expects a 24 MHz F103 clock; DS5319 Rev 20 Table 22 limits the crystal to 4 to 16 MHz) and OPEN-016 (spec rows the team's answers change), with task P0-019. The IST8310 library row now names the stock symbol and footprint.
+- Pin allocation rev 0.4 (pin source note, team changes in section 2.1, findings F-11 to F-14), barometer and magnetometer selection rev 0.6 and IMU selection rev 0.8 record the team's answers. Pin tables are unchanged until the team decides. No KiCad file changed; ERC and DRC not run.
+- Root `README.md`: header field `Revision` renamed `Board revision`.
 
 ### Fixed
 
