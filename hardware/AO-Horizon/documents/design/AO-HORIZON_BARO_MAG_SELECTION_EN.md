@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Barometer and Magnetometer Selection Summary
 
-**Revision:** 0.6
+**Revision:** 0.7
 **Updated:** 2026-10-24
-**Status:** ICP-20100 confirmed by the team (DEC-010). BMP390 removed on 2026-10-21; the second barometer is open (OPEN-014, BMP581 proposed). Magnetometer changed from BMM150 to iSentek IST8310 by the human owner on 2026-10-24 (DEC-011); the team accepted it at 0x0E the same day (pinmap review Q11). Lifecycle and availability risks are open. Datasheet values and implementation are not verified. Not a verification record.
-**Requirement refs:** SEN-002, SEN-003, CMP-004, CMP-005, OPEN-014 (spec). Checklist tasks: P0-009, P0-010.
+**Status:** ICP-20100 confirmed by the team (DEC-010). BMP390 removed on 2026-10-21. The team accepted BMP581 as barometer 2 on 2026-10-24, with BMP384 as fallback (DEC-010, decisions file D7); the fallback fit is open (OPEN-019). Magnetometer changed from BMM150 to iSentek IST8310 by the human owner on 2026-10-24 (DEC-011); the team accepted it at 0x0E the same day (pinmap review Q11). Lifecycle and availability risks are open. Datasheet values and implementation are not verified. Not a verification record.
+**Requirement refs:** SEN-002, SEN-003, CMP-004, CMP-005, OPEN-019 (spec). Checklist tasks: P0-009, P0-010.
 **Decision owner:** Team (barometers); human owner (magnetometer change)
 
 Single record for the barometer and magnetometer parts, their key data and sourcing.
@@ -24,11 +24,11 @@ Source keys used below:
 
 | Item | Value |
 | ---- | ----- |
-| Barometers (SEN-002) | 1 × TDK InvenSense ICP-20100 (LCSC C5343527), DEC-010, 2026-10-18. Second barometer TBD (OPEN-014). |
+| Barometers (SEN-002) | 1 × TDK InvenSense ICP-20100 (LCSC C5343527), DEC-010, 2026-10-18, and 1 × Bosch BMP581 (LCSC C5362283), DEC-010, 2026-10-24. |
 | BMP390 removed | The human owner removed Bosch BMP390 (LCSC C5124834) on 2026-10-21 because LCSC does not sell it. Its data stays below as a record. |
-| Second barometer candidate | Bosch BMP581 (LCSC C5362283, checked at LCSC by the user). Proposed, not confirmed: the team decides (OPEN-014). In pinmap review 0.2 the team put it on I2C2 at 0x46 but did not confirm the part (decisions file D7). |
+| Second barometer | Bosch BMP581, PX4 driver `barometer/bmp581`, I2C2 at 0x46. Accepted by the team on 2026-10-24 (decisions file D7). Team note: DigiKey showed 0 in stock on 2026-10-08, 10,000 due 2026-11-19 (`NOT_VERIFIED`). Fallback if it cannot be bought: Bosch BMP384 (PX4 `bmp388` driver). BMP384 footprint, pinout and address fit against the BMP581 are not checked (OPEN-019). |
 | Magnetometer (SEN-003) | 1 × iSentek IST8310. DEC-011, revised 2026-10-24 by the human owner. The team accepted it at 0x0E, with DRDY and RSTN not connected (pinmap review Q11, 2026-10-24). |
-| Addresses (team, pinmap review Q8) | No preference; set in the PX4 start script. Defaults: ICP-20100 0x63, IST8310 0x0E, BMP581 0x46. All three on I2C2 if the team's I2C3 drop is accepted (OPEN-016). |
+| Addresses (team, pinmap review Q8) | No preference; set in the PX4 start script. Defaults: ICP-20100 0x63, IST8310 0x0E, BMP581 0x46. All three on I2C2 (I2C3 dropped, DEC-018). |
 | BMM150 replaced | The team chose Bosch BMM150 (LCSC C171681) on 2026-10-18. The human owner replaced it with IST8310 on 2026-10-24. Its data stays below as a record. |
 | Requirement change | SEN-003 reduced from 2 × to 1 × I2C magnetometer (DEC-011). OPEN-005 closed. |
 | Barometer gain | Vendor diversity between the two barometers. |
@@ -59,7 +59,7 @@ Source keys used below:
 
 | Severity | Part | Label | Finding | Source |
 | -------- | ---- | ----- | ------- | ------ |
-| INFO | BMP390 | `ASSUMED` | Removed from DEC-010 by the human owner because LCSC C5124834 is not available. Library files kept until OPEN-014 is decided. | User |
+| INFO | BMP390 | `ASSUMED` | Removed from DEC-010 by the human owner because LCSC C5124834 is not available. Library files kept until the human decides to remove them. | User |
 | INFO | BMP581 | `VERIFIED` | 2.0 × 2.0 × 0.75 mm metal-lid LGA, the same body size as BMP390. Pin count and pinout are not on the Bosch page, so reuse of `Bosch_LGA-10_2x2mm_P0.5mm_LayoutBorder3x2y` is `NOT_VERIFIED`. | Bosch |
 | INFO | I2C addresses | `VERIFIED` | BMP581 is 0x46 (primary) or 0x47 (secondary). This does not overlap ICP-20100 (0x63, 0x64) or BMM150 (0x10 to 0x13). The address-select pin is `NOT_VERIFIED`. | Bosch API |
 | MINOR | BMP581 | `VERIFIED` | Bosch page states no lifecycle status. Every distributor listed on it showed 0 stock on 2026-10-21. | Bosch |
@@ -111,7 +111,7 @@ Source keys used below:
 | Relative accuracy | ±0.03 hPa typ (700 to 1100 hPa, 25 to 40 °C) | Bosch | `VERIFIED` |
 | PX4 driver | `barometer/bmp388`; header defines `BMP390_CHIP_ID = 0x60` | PX4 | `VERIFIED` |
 
-### BMP581 (barometer 2 candidate, OPEN-014)
+### BMP581 (barometer 2, DEC-010)
 
 | Parameter | Value | Source | Label |
 | --------- | ----- | ------ | ----- |
@@ -182,13 +182,15 @@ LCSC, fetched 2026-10-18. USD. Not a quote.
 
 ## 5. Open checks
 
-- [ ] Team confirms the second barometer (OPEN-014). Proposed: BMP581 (LCSC C5362283). ICP-20100 EOL still needs a last-time buy or a replacement.
+- [x] Team confirms the second barometer. BMP581 accepted on 2026-10-24, BMP384 fallback (DEC-010, decisions file D7).
+- [ ] Check the BMP384 fallback against the BMP581 footprint and pinout (OPEN-019), and buy BMP581 stock early (DigiKey 0 on 2026-10-08, per the team).
+- [ ] ICP-20100 EOL still needs a last-time buy or a replacement.
 - [ ] Check the BMP581 footprint against the datasheet figures (pin 1 corner, Fig. 32 pad sizes) before placing it. Library starting point: `0_Sensor_Pressure:BMP581` on the Bosch LGA-10 footprint (OPEN-013, P2-012).
 - [ ] Confirm IST8310 lifecycle and a supplier (iSentek, LCSC or distributor).
 - [x] Make the IST8310 library starting point. Done with the stock KiCad symbol and `LGA-16_3x3mm_P0.5mm` footprint (CHANGELOG). The land pattern still needs the datasheet drawing or an iSentek layout note; the fit is `ESTIMATED`.
 - [ ] Decide the IST8310 CAD0/CAD1 straps for 0x0E. Team: 0x0E, DRDY and RSTN not connected (Q11). RSTN has an internal pull-up and an MCU connection is "not necessary" (re-check table above).
 - [ ] Get supply, temperature, I2C address selection and land pattern from each datasheet (user-supplied values, or an approved datasheet route).
-- [ ] Check the I2C address plan for all three parts on the chosen buses (P1-004, P1-005). The address sets do not overlap (re-check table); the strap choice for each part is open.
+- [ ] Set the address straps on I2C2: ICP-20100 0x63, BMP581 0x46 (SDO low), IST8310 0x0E (P1-004, P1-005). The address sets do not overlap (re-check table).
 - [ ] Check the library footprints against the datasheet drawings (OPEN-013, P2-012). The ICP-20100 symbol pin map matches Table 18. Open: ICP-20100 has no land pattern in its datasheet (AN-000140) and its pads are wider than terminal b.
 - [ ] Confirm that PX4 `icp201xx` supports ICP-20100. The team says it does (pinmap review section 5); not checked by hardware (`NOT_VERIFIED`).
 - [ ] Check JLCPCB assembly eligibility.

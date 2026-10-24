@@ -11,6 +11,6 @@ The specification is the requirements source of truth. The other records point t
 | `AO-HORIZON_POWER_BUDGET_EN.md` | Draft rail loads, tolerances, brownout and protection needs (P0-017). |
 | `AO-HORIZON_PIN_ALLOCATION_EN.md` | Draft STM32H743 and STM32F103 pin allocation (P1). |
 | `AO-HORIZON_H7_MCU_SOURCING_EN.md` | STM32H743VI price and stock snapshot. |
-| `AO-HORIZON_PINMAP_REVIEW_EN.md` | H743 and F103 pinmap review 0.2 with the software team's answers. Not approved. |
-| `AO-HORIZON_PINMAP_DECISIONS_EN.md` | Spec changes, team decisions and software questions raised by the team's pinmap review 0.2 answers. Open. |
+| `AO-HORIZON_PINMAP_REVIEW_EN.md` | H743 and F103 pinmap review 0.3 for the software team, with the 0.2 answers kept. Not approved. |
+| `AO-HORIZON_PINMAP_DECISIONS_EN.md` | Spec changes, team decisions and software answers after pinmap review 0.2. Answered 2026-10-24; applied in spec rev 0.11. |
 | `what-next.md` | Personal reminder list of next steps. Points to spec and checklist IDs; not a record. |
