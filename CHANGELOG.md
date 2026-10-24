@@ -77,6 +77,18 @@ Notable changes to this hardware project are documented here.
   Interface rows updated, and IF-052 (ESC current sense) and IF-053 (ESC telemetry) added. Mounting stays a proposal (30.5 × 30.5 mm M3, soft mount) until the CAD team confirms it (OPEN-009). New open items: UBEC input rating and servo rail copper (OPEN-021), ESC sense and telemetry pins (OPEN-022), connector pinouts and the PM02D connector, where the power sheet's JST-GH may not match the team's CLIK-Mate cable (OPEN-023).
 - Checklist rev 0.12 (P0-021 done; new P0-022, P1-016, P2-015, P2-016), power budget rev 0.6 (servo rail on the board, USB-only bench power), the design README and `what-next.md` updated to match. No KiCad file changed. ERC and DRC not run.
 - Integration questions rev 0.3: the team's answers kept, a note on what hardware decided after them, and follow-up questions for the team (mounting for the CAD team, devices needed on USB, ESC current use in PX4, part models and photos, test results).
+- Specification rev 0.14: the human owner answered the hardware side of the follow-up questions.
+  - Mounting: M3 screws, 3.2 mm holes, soft mount, board on its own tray, USB-C and microSD on adjacent edges, part height about 10 to 15 mm. Hardware sets the outline, cable entry sides and dampers at placement; the CAD team follows (MEC-002 to MEC-004, OPEN-009).
+  - USB powers the board and all external 5 V ports on the bench (IF-022, OPEN-006).
+  - UBEC input on a board-mount XT30 instead of a servo header position (DEC-019, PWR-011, OPEN-021).
+  - PM02D board connector to match its 6-pin 2.00 mm CLIK-Mate cable; the power sheet still draws JST-GH (IF-048, OPEN-023).
+  - ESC connectors: 4 × 3-pin headers with the + pin removed (IF-040).
+  - DEC-024: TPS16412DRC eFuse between the PM02D and `+5V`, current limit 1.5 A. Placed, not wired (OPEN-012).
+  - Team parts recorded: 4 × Skywalker 80A V2 ESCs, 4 × RDS3235 tilt servos, Kingmax C507 and DS-843MG servos (all rated for 6 V), 10 A UBEC with XT30, MS4525DO.
+
+  The Skywalker ESCs look PWM-only (no source found for DShot), which conflicts with FUN-002 and SAF-015. FUN-002 is unchanged; the team is asked in D13 (OPEN-017).
+- Integration questions rev 0.4: cleaned to open items only (D13 on the ESC, parts table, team tests). Answered sections are in rev 0.3 in Git history.
+- Checklist rev 0.13 (P0-022 rewritten; P1-016 `N/A`; new P2-017 eFuse and P2-018 ESC headers), power budget rev 0.7, design README, root `README.md` and `what-next.md` updated to match. No KiCad file read or changed. ERC and DRC not run.
 
 ### Fixed
 
@@ -91,6 +103,7 @@ Notable changes to this hardware project are documented here.
 - `.claude/settings.local.json` is no longer tracked (local-only file, now git-ignored).
 - `AO-HORIZON_HANDOFF_EN.md`: its content was merged into the execution checklist.
 - DNP DF2S6.2CT ESD diode removed from `power_supplies.kicad_sch`.
+- ESC current sense and ESC telemetry (IF-052, IF-053) removed from the specification: the separate Skywalker ESCs have neither wire (human owner). OPEN-022 closed.
 - Stale rows in the design records: GPS2 and FlySky loads and the "barometer 2 not chosen" row in the power budget, the BMP390 and BMM150 columns in the barometer sourcing table (kept as one history line), and done items in `what-next.md` and the barometer record.
 
 ### Verification

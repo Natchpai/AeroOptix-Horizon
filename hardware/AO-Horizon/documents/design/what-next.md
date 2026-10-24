@@ -8,8 +8,8 @@ The specification and the execution checklist stay the source of truth. This lis
 ## 1. Git
 
 - [x] Commit and push the pinmap 0.3 answers and the F100 change (`134ec91`, on `origin/dev`).
-- [ ] Run `/progress-update` for the root README and CHANGELOG (integration answers, spec 0.13).
-- [ ] Commit the integration answers: spec 0.13, checklist 0.12, power budget 0.6, integration questions 0.3, design README, this file, plus the root README and CHANGELOG after `/progress-update`.
+- [x] Commit and push the integration answers, spec 0.13 (`98896c0`, on `origin/dev`).
+- [ ] Commit the hardware answers: spec 0.14, checklist 0.13, power budget 0.7, integration questions 0.4, design README, this file, root README and CHANGELOG.
 - [ ] Push `dev` to `origin`.
 - [ ] Open a PR from `dev` to `main` with `.github/pull_request_template.md`.
 
@@ -17,7 +17,8 @@ The specification and the execution checklist stay the source of truth. This lis
 
 Does not depend on the pinout or sensor answers. See spec 4.3 "Schematic state".
 
-- [ ] Draw the `+VIN` to `+5V` path. Nothing drives `+5V` yet (OPEN-012).
+- [ ] Wire the TPS16412DRC eFuse between `+VIN` and `+5V` (DEC-024). Placed, only GND wired. Set the ILIM resistor for 1.5 A and the OVP, EN/UVLO, dV/dt and FLT parts from TI data; check reverse current with USB (P2-017, OPEN-012).
+- [ ] Change the PM02D connector from JST-GH to a 6-pin 2.00 mm CLIK-Mate (decided 2026-10-24, OPEN-023).
 - [ ] Decide the `+3V3A` rail and its LDO (OPEN-011). As drawn, the TPS73533DRBR NR capacitor is above TI's limit.
 - [ ] Add the 0.1 µF AVIN capacitor TI recommends for the TPS62142.
 - [ ] Fix the LCSC field: C162430 is on both the 1 µF and the 10 µF capacitor.
@@ -35,12 +36,12 @@ Check against the datasheet figures yourself:
 
 ## 4. Waiting on the team
 
-Pinmap review 0.3 is answered and applied (spec rev 0.12). The integration answers are applied in spec rev 0.13 (DEC-019 to DEC-023, 2026-10-24): Pixhawk-style servo rail on the board (your change to D8), GPS1 10-pin, parts −40 to +85 °C, stock px4io, no IMU heater, PC1 kept (ESC current on another ADC pin). Mounting (D9) is still a proposal.
+Pinmap review 0.3 is answered and applied (spec rev 0.12). The integration answers are applied in spec rev 0.13 (DEC-019 to DEC-023, 2026-10-24): Pixhawk-style servo rail on the board (your change to D8), GPS1 10-pin, parts −40 to +85 °C, stock px4io, no IMU heater, PC1 kept. On 2026-10-24 you set mounting, USB loads, the ESC connector, the UBEC XT30 and the PM02D connector, and dropped the ESC current sense (spec rev 0.14).
 
 - [x] Send integration questions rev 0.1 (P0-021). Answered and applied 2026-10-24.
-- [ ] Send `AO-HORIZON_INTEGRATION_QUESTIONS_EN.md` rev 0.3 to the team (P0-022). Section 8 tells them about the servo rail and PC1. Section 9 asks: mounting for the CAD team (D12), devices needed on USB (S11), ESC current use in PX4 (S12), part models and photos, test results.
-- [ ] After the reply: ask Claude to apply it to the spec, power budget, pin allocation and checklist.
-- [ ] Team bench tests, not hardware work: RC-loss failsafe over ELRS MAVLink (S5); ESC on DShot loss (OPEN-017, P4-011); servo current and stall current (OPEN-007).
+- [ ] Send `AO-HORIZON_INTEGRATION_QUESTIONS_EN.md` rev 0.4 to the team (P0-022). It asks only D13 (Skywalker ESCs look PWM-only: how do the motors stop on an H743 hang?), the parts table and test results.
+- [ ] After the reply: ask Claude to apply it to the spec, power budget and checklist.
+- [ ] Team bench tests, not hardware work: RC-loss failsafe over ELRS MAVLink (S5); ESC on signal loss (OPEN-017, P4-011); servo current and stall current (OPEN-007).
 
 ## 5. Hardware items (from the pinmap work)
 
@@ -59,18 +60,18 @@ Hardware-only choices. None changes the drone spec or the software.
 - [ ] Servo rail divider on F100 PA4: match the px4io 3:1 scaling. It reads the on-board 6 V servo bus (DEC-019).
 - [ ] ICM-45686 pin 9 unused: the IMU record (section 3) says leave it NC or tie it to VDDIO, but that note came from agy and is `NOT_VERIFIED`. Confirm in the datasheet.
 - [ ] SDMMC1: add pull-ups and ESD protection.
-- [ ] PM02D label (INA228 at 0x45, or INA226 at 0x41): asked in integration questions 9.1.
-- [ ] ESC model and DShot signal-loss behavior: asked in 9.1 and 9.2 (OPEN-017, P4-011).
+- [ ] PM02D label (INA228 at 0x45, or INA226 at 0x41): asked in the integration questions parts table.
+- [ ] ESC: 4 × Skywalker 80A V2 (team design). DShot or PWM and signal-loss behavior: asked in D13 (OPEN-017, P4-011).
 - [ ] Buy BMP581 early: DigiKey showed 0 in stock on 2026-10-08 (team note, not checked).
 
 ## 6. Hardware items (from the integration answers)
 
 Hardware work that does not need the team's section 9 reply, unless noted.
 
-- [ ] PM02D connector: the power sheet draws a 6-pin JST-GH; the team says the PM02D cable is 6-pin CLIK-Mate 2.00 mm. Check the Holybro page or your unit before changing it (OPEN-023, P2-015).
+- [ ] PM02D connector: CLIK-Mate chosen (section 2). Confirm with the team's plug photo or the Holybro page (OPEN-023, P2-015).
 - [ ] Connector pinouts against the Pixhawk standard DS-009: Telemetry 1 and 2, GPS1 10-pin (3.3 V and buzzer pins), airspeed, TF-Luna (OPEN-023, P2-015).
 - [ ] I2C4 (PD12, PD13): check 5 V tolerance in case a module pulls up to 5 V (OPEN-023).
-- [ ] ESC telemetry: check PD0 as UART4_RX in ST pin data. ESC current: pick a free ADC pin, not PC1 (DEC-023): PC5, PB1, PC2_C or PC3_C (OPEN-022, P1-016). Tell the team the pin.
-- [ ] Servo rail (DEC-019): size the UBEC input for 10 A continuous and 15 A peak. One 2.54 mm pin is about 3 A, so use several header positions or a rated connector. Then the 6 V and servo GND copper, the servo GND to logic GND join, and bulk capacitors (OPEN-021, P2-016). Tell the team the UBEC plug.
-- [ ] USB VBUS and PM02D 5 V OR-ing; USB-fed ports after S11 (OPEN-006).
-- [ ] PCB: forward arrow on the silkscreen; USB-C, microSD and the H743 debug connector reachable with the canopy open (MEC-003). Mounting holes wait on D12.
+- [ ] ESC connectors: 4 × 3-pin headers with the + pin removed (IF-040 to IF-043, P2-018).
+- [ ] Servo rail (DEC-019): check the board-mount XT30 rating against 10 A continuous and 15 A peak. Then the 6 V and servo GND copper, the servo GND to logic GND join, and bulk capacitors (OPEN-021, P2-016).
+- [ ] USB VBUS and PM02D 5 V OR-ing. USB feeds all external 5 V ports: check the VBUS budget (OPEN-006).
+- [ ] PCB: forward arrow on the silkscreen; USB-C and microSD on adjacent edges, reachable with the canopy open, with the H743 debug connector (MEC-003). M3, 3.2 mm holes, soft mount; pick the outline, cable entry sides and dampers at placement, then send them to the CAD team (MEC-002, MEC-004).

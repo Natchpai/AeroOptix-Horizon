@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.6
+**Revision:** 0.7
 **Updated:** 2026-10-24
-**Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012). No other rail, regulator or protection part is approved. Not a verification record.
-**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012, OPEN-021 (spec rev 0.13). Decisions: DEC-010, DEC-012, DEC-016, DEC-018, DEC-019. Checklist task: P0-017.
+**Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012) and the 5 V input eFuse is TPS16412DRC (DEC-024). No other rail, regulator or protection part is approved. Not a verification record.
+**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012, OPEN-021 (spec rev 0.14). Decisions: DEC-010, DEC-012, DEC-016, DEC-018, DEC-019, DEC-024. Checklist task: P0-017.
 **Decision owner:** Hardware
 
 Single record for rail loads, rail tolerances, brownout thresholds and power protection requirements.
@@ -24,7 +24,7 @@ Fetches to st.com, invensense.tdk.com, te.com and en.benewake.com failed on 2026
 | Item | Value | Source | Label |
 | ---- | ----- | ------ | ----- |
 | Board input (PWR-010) | 4.5 / 5 / 5.5 V min/nom/max, ±10 %, source capacity 2 A | Spec, DEC-007 | `VERIFIED` (requirement) |
-| Servo supply (PWR-011) | 6 V nominal, min/max TBD; 10 A continuous, 15 A instantaneous (UBEC-10A reference, not an approved part). On the board: the UBEC plugs into one servo header and the 8 headers share a 6 V bus (DEC-019) | Spec, DEC-007, DEC-019 | `VERIFIED` (requirement) |
+| Servo supply (PWR-011) | 6 V nominal, min/max TBD; 10 A continuous, 15 A instantaneous (UBEC-10A reference, not an approved part). On the board: the UBEC (10 A, XT30, model TBD) plugs into a board-mount XT30 and the 8 headers share a 6 V bus (DEC-019) | Spec, DEC-007, DEC-019 | `VERIFIED` (requirement) |
 
 ## 2. Candidate power tree
 
@@ -33,18 +33,18 @@ From the spec diagram. Candidate only, not approved (spec PWR-013).
 ```text
 6S battery -> XT90-S -> PM02D -> CRIUS PDB v1.0
                            |            |
-                           |            +-> 6 V UBEC -> board servo header -> on-board 6 V bus
+                           |            +-> 6 V UBEC -> board XT30 -> on-board 6 V bus
                            |                             -> 8 servo headers (+ IF-050 sense)
-                           +-> 5 V board input -> 3.3 V (MCUs, baro, mag)
-                                              +-> 3.3 V_IMU (2 × IMU)
-                                              +-> 5 V external connectors
+                           +-> TPS16412DRC eFuse, 1.5 A (DEC-024) -> 5 V bus -> 3.3 V (MCUs, baro, mag)
+                                                                  +-> 3.3 V_IMU (2 × IMU)
+                                                                  +-> 5 V external connectors
 USB VBUS (bench, no battery) -> OR-ing TBD -> 5 V board rail
 ```
 
 - `ASSUMED`: the 5 V input feeds the external connectors directly, and both 3.3 V rails come from the 5 V input.
 - `TBD`: whether 3.3 V_IMU is a separate LDO or a filtered branch of 3.3 V. The schematic draws a separate `+3V3A` LDO, but its purpose is not decided (OPEN-011).
-- USB VBUS powers the board on the bench without the battery (team, integration questions). `TBD`: how it is isolated from the PM02D 5 V, and which external 5 V ports it feeds (OPEN-006).
-- The saved `power_supplies.kicad_sch` (re-checked 2026-10-19) draws `+3V3` from the TPS62142RGTR buck (DEC-012) and `+3V3A` from a TPS73533DRBR LDO (drawn, not decided), both fed from `+5V`. Nothing drives `+5V` yet (OPEN-012). Details: spec 4.3 "Schematic state".
+- USB VBUS powers the board and all external 5 V ports on the bench without the battery (team; all ports: human owner, 2026-10-24). `TBD`: how it is isolated from the PM02D 5 V, and whether the eFuse blocks reverse current (OPEN-006, OPEN-012).
+- The saved `power_supplies.kicad_sch` draws `+3V3` from the TPS62142RGTR buck (DEC-012) and `+3V3A` from a TPS73533DRBR LDO (drawn, not decided), both fed from `+5V`. The TPS16412DRC eFuse is placed but not wired (2026-10-24), so nothing drives `+5V` yet (OPEN-012). Details: spec 4.3 "Schematic state".
 
 ## 3. Load table
 
@@ -76,23 +76,23 @@ Typical or average current per load. Peak current listed where known. "TBD" mean
 | Telemetry 1, ELRS receiver | IF-010 | TBD (5 V supply; model TBD, team) | TBD | Team | `TBD` |
 | Telemetry 2 | IF-011 | TBD (no device planned; connector fitted for a second receiver) | TBD | Team | `TBD` |
 | GPS1 + compass | IF-012 | TBD (Holybro M9N, to be confirmed) | TBD | Team | `TBD` |
-| MS4525DO | IF-014 | TBD (5 V Pixhawk layout if the module has a regulator; part number TBD, team) | TBD | Snippet | `NOT_VERIFIED` |
+| MS4525DO | IF-014 | TBD (5 V Pixhawk layout if the module has a regulator; 3.3 V or 5 V version TBD, team) | TBD | Snippet | `NOT_VERIFIED` |
 | TF-Luna | IF-015 | 70 mA or less average (3.7 to 5.2 V supply) | 150 mA | Snippet (third-party PDF) | `NOT_VERIFIED` |
 | 3.3 V regulator input | - | Sum of section 3.3 V loads | TBD | - | `TBD` |
 
 ### 6 V servo rail (on the board, DEC-019)
 
-All of this current passes through the UBEC input header and the on-board 6 V and servo GND bus (OPEN-021). Each servo header pin carries only its own servo's current.
+All of this current passes through the XT30 input and the on-board 6 V and servo GND bus (OPEN-021). Every servo model is rated for 6 V (human owner). Each servo header pin carries only its own servo's current.
 
 | Load | Ref | Qty | Current each | Stall / peak | Label |
 | ---- | --- | --- | ------------ | ------------ | ----- |
-| Tilt servos, RDS3235 or DS3218 (not chosen) | IF-034 to IF-037 | 4 | TBD; team bench target: all 4 at or below 10 A while tilting 0 to 90° at hover thrust | TBD (team bench test) | `TBD` |
-| Flaperon and ruddervator servos, ES08 class | IF-030 to IF-033 | 4 | TBD | TBD (team bench test) | `TBD` |
+| Tilt servos, RDS3235 (team design) | IF-034 to IF-037 | 4 | TBD; team bench target: all 4 at or below 10 A while tilting 0 to 90° at hover thrust | TBD (team bench test) | `TBD` |
+| Flaperon and ruddervator servos, Kingmax C507 and DS-843MG (positions TBD, team) | IF-030 to IF-033 | 4 | TBD | TBD (team bench test) | `TBD` |
 | Spare outputs on the H743 | IF-017 to IF-019 | 0 planned (DEC-018); pads only | - | - | - |
 
 All 8 servos can move at the same time (team): the tilt servos move all the time in hover, and the 4 surface servos move together in cruise.
 
-The 4 motor outputs (IF-040 to IF-043) carry only the DShot signal to the ESCs (DEC-016); motor power does not pass through the board (`ASSUMED`).
+The 4 motor outputs (IF-040 to IF-043) carry only the signal to 4 separate Skywalker 80A V2 ESCs; motor power does not pass through the board (`ASSUMED`). The ESC headers have the + pin removed, so the ESC BECs (5 V) do not reach the board.
 
 ## 4. Totals
 
@@ -100,8 +100,8 @@ The 4 motor outputs (IF-040 to IF-043) carry only the DShot signal to the ESCs (
 | ---- | -------------- | ------- | ------ | ------ | ----- |
 | 3.3 V_IMU | 0.88 mA (2 × 0.44 mA) | IMU peak | TBD. The drawn `+3V3A` LDO TPS73533DRBR is rated 500 mA (TI SBVS087M 5.3) but is not decided (OPEN-011). | TBD | `ESTIMATED` from `NOT_VERIFIED` inputs |
 | 3.3 V | about 17 mA (IST8310 at 200 sps, F100 max 15.4 mA) | H743, ICP-20100, BMP581, pull-ups, LEDs | 2 A, TPS62142RGTR (DEC-012, TI SLVSAJ0F) | TBD | `ESTIMATED` from partial inputs |
-| 5 V | 70 mA average, 150 mA peak (TF-Luna only) | All other external loads, 3.3 V regulator input | 2 A source (PWR-010) | TBD | `ESTIMATED` from partial inputs |
-| 6 V (on the board) | none | All servo loads | 10 A cont., 15 A inst. (PWR-011), UBEC and board input | TBD | `TBD` |
+| 5 V | 70 mA average, 150 mA peak (TF-Luna only) | All other external loads, 3.3 V regulator input | 2 A source (PWR-010); eFuse limit 1.5 A (DEC-024) | TBD | `ESTIMATED` from partial inputs |
+| 6 V (on the board) | none | All servo loads | 10 A cont., 15 A inst. (PWR-011), UBEC and XT30 input | TBD | `TBD` |
 
 The subtotals are far from complete. Do not use them to size a regulator. The MCUs and the external 5 V devices are likely the largest loads (`ASSUMED`).
 
@@ -135,11 +135,11 @@ Known upper bounds for the 3.3 V rails:
 
 All `TBD`. Items to decide:
 
-- [ ] 5 V input: reverse polarity, overvoltage clamp, transient (TVS) rating, inrush.
-- [ ] USB VBUS and PM02D 5 V: OR-ing or isolation, so neither back-feeds the other.
-- [ ] 6 V servo bus on the board (DEC-019): UBEC input rated for 10 A continuous and 15 A peak; 6 V and servo GND copper; servo GND joined to logic GND at one point away from the sensors; no back-feed from the 6 V bus into the 5 V side (OPEN-021).
+- [ ] 5 V input: TPS16412DRC eFuse chosen, limit 1.5 A (DEC-024). Open: ILIM resistor, OVP and UVLO settings, inrush (dV/dt), reverse polarity, transient (TVS) rating, all from TI data (P2-017).
+- [ ] USB VBUS and PM02D 5 V: OR-ing or isolation, so neither back-feeds the other. Check whether the eFuse blocks reverse current.
+- [ ] 6 V servo bus on the board (DEC-019): board-mount XT30 input, rating against 10 A continuous and 15 A peak `NOT_VERIFIED`; 6 V and servo GND copper; servo GND joined to logic GND at one point away from the sensors; no back-feed from the 6 V bus into the 5 V side (OPEN-021).
 - [ ] 6 V servo rail: overcurrent behavior, pulse duration of the 15 A rating, bulk capacitance.
-- [ ] USB-only power: VBUS current limit and which external 5 V ports it feeds (OPEN-006).
+- [ ] USB-only power: VBUS current limit. USB feeds all external 5 V ports (human owner, 2026-10-24) (OPEN-006).
 - [ ] External 5 V connectors: short-circuit protection per connector or per group.
 - [ ] ESD on external connectors and USB (SAF-014).
 - [ ] Safe output state on 5 V loss or 6 V fault (SAF-012, SAF-013).
@@ -150,20 +150,23 @@ All `TBD`. Items to decide:
 | -------- | --- | ----- | ------- | ------ |
 | MAJOR | PWR-012 | `NOT_VERIFIED` | Board current budget cannot be closed: MCU currents and all external 5 V device models are missing. | Section 4 |
 | MAJOR | IF-030 to IF-037 / UBEC | `NOT_VERIFIED` | All 8 servos can move at once and stall current is not known. The 10 A team target covers only the 4 tilt servos (OPEN-007). | Section 3 |
-| MAJOR | UBEC input header / 6 V bus | `ESTIMATED` | The UBEC input + and GND pins carry the total servo current, up to 10 A continuous and 15 A peak. One 2.54 mm header pin is usually rated about 3 A (header not chosen, NOT_VERIFIED), so one header position is not enough (OPEN-021). | DEC-019, PWR-011 |
+| MAJOR | XT30 input / 6 V bus | `NOT_VERIFIED` | The XT30 input carries the total servo current, up to 10 A continuous and 15 A peak. Its rating is not checked. A header position (about 3 A per pin, `ESTIMATED`) was replaced by the XT30 on 2026-10-24 (OPEN-021). | DEC-019, PWR-011 |
+| MINOR | DEC-024 / 5 V | `NOT_VERIFIED` | The eFuse limit (1.5 A) is below the 2 A source (PWR-010), so the board plus all external 5 V loads must fit under 1.5 A, with the load currents still unknown. | Section 4 |
 | MINOR | IST8310 / 3.3 V | `VERIFIED` | IST8310 absolute maximum supply is 3.6 V, so the 3.3 V rail must never overshoot by more than 0.3 V (9 %), including start-up and load steps. | IST8310 DS V1.2, 4.1 |
 | INFO | IF-022 / 5 V | `VERIFIED` (team answer) | USB VBUS powers the board on the bench, so it needs OR-ing or isolation from the PM02D 5 V. | Section 2 |
-| INFO | IF-022 / 5 V | `ESTIMATED` | If USB also feeds the external 5 V ports, GPS, ELRS, TF-Luna (150 mA peak alone) and airspeed together may exceed a 500 mA USB port. | Section 3 |
+| MINOR | IF-022 / 5 V | `ESTIMATED` | USB feeds all external 5 V ports (human owner). GPS, ELRS, TF-Luna (150 mA peak alone) and airspeed together with the board may exceed a 500 mA USB port. | Section 3 |
 
 ## 9. Open inputs
 
 - [ ] ELRS receiver model and supply current (team, P0-022). GPS: Holybro M9N supply current. Telemetry 2: no device planned.
 - [ ] Servo stall current (team bench test, P0-022). Servo power passes through the board (DEC-019), so it also sizes the board input and bus.
 - [ ] 3.3 V_IMU rail structure: separate LDO or filtered branch (human).
-- [x] USB VBUS as a board power source: yes, on the bench (team). Which loads it feeds: open (section 7).
+- [x] USB VBUS as a board power source: yes, on the bench (team). It feeds all external 5 V ports (human owner, 2026-10-24).
+- [ ] TPS16412DRC values from TI: ILIM for 1.5 A, the 1.8 A rating, reverse-current behavior (P2-017).
+- [ ] XT30 current rating (OPEN-021).
 - [ ] STM32H743 VDD range, run current at the planned clock, BOR/PVD levels (user-supplied values or approved datasheet route). STM32F100: done (VDD 2 to 3.6 V, Table 8; sections 3.3 V and 6).
 - [ ] ICP-20100 supply range and current.
-- [ ] MS4525DO part number and supply current (team, P0-022). The team accepts the 5 V Pixhawk layout if the module has its own regulator.
+- [ ] MS4525DO version (3.3 V or 5 V) and supply current (team, P0-022). The team accepts the 5 V Pixhawk layout if the module has its own regulator.
 - [ ] Retry the official pages for TF-Luna and MS4525DO.
 
 ## 10. Sources

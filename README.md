@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.7`
 
-> **Draft specification (rev 0.13, 2026-10-24): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.14, 2026-10-24): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -19,10 +19,11 @@ Pixhawk 6C and Pixhawk 6X are conceptual and functional references. Their schema
 
 - Main MCU: STM32H743VIT6
 - IO MCU: STM32F100C8T6B running px4io (8 servo outputs, safety switch)
-- 8 servo headers (signal, +6 V, GND) on an on-board 6 V servo rail fed by a UBEC, Pixhawk style
+- 8 servo headers (signal, +6 V, GND) on an on-board 6 V servo rail fed by a UBEC through a board-mount XT30, Pixhawk style
 - H743 to F100 link over USART, px4io protocol at 1.5 Mb/s
 - 4 motor outputs on the H743 (TIM5, DShot with RPM feedback), 3 spare outputs
 - 2× SPI IMU (ICM-45686), 2× I2C barometer (ICP-20100 + BMP581), 1× I2C magnetometer (IST8310)
+- 5 V board input through a TPS16412DRC eFuse (1.5 A limit)
 - 3.3 V rail from a TPS62142RGTR buck on the 5 V board input
 - USB FS, microSD (SDMMC1), H743 debug on a Pixhawk Debug Mini connector, F100 SWD pads, selectable BOOT0 on the H743
 - If the H743 stops, the F100 holds the servos at failsafe values after 0.5 s and the motors stop when their DShot signal stops (no landing)
@@ -39,12 +40,12 @@ Pixhawk 6C and Pixhawk 6X are conceptual and functional references. Their schema
 | IMU | 2× SPI, ICM-45686 |
 | Barometer | 2× I2C, ICP-20100 + BMP581 (BMP384 fallback) |
 | Magnetometer | 1× I2C, iSentek IST8310 (DEC-011, replaced BMM150) |
-| Board input | 5 V from power module, 4.5 to 5.5 V, 2 A source |
+| Board input | 5 V from power module, 4.5 to 5.5 V, 2 A source; TPS16412DRC eFuse, limit 1.5 A (DEC-024) |
 | 3.3 V rail | TPS62142RGTR buck from 5 V, 2 A part (load current `TBD`) |
 | 3.3 V analog rail (`+3V3A`) | Purpose and part `TBD` (TPS73533DRBR drawn, not decided) |
-| Servo supply | 6 V from a UBEC into the on-board servo rail, 10 A continuous, 15 A instantaneous (UBEC input rating and protection `TBD`, OPEN-021) |
-| Board outline | Each dimension under 80 mm; exact outline `TBD` |
-| Mounting pattern | `TBD`; team proposal 30.5 × 30.5 mm M3, soft mount (CAD team to confirm) |
+| Servo supply | 6 V from a UBEC into a board-mount XT30 and the on-board servo rail, 10 A continuous, 15 A instantaneous (XT30 rating and protection `TBD`, OPEN-021) |
+| Board outline | Each dimension under 80 mm; exact outline `TBD`; part height about 10 to 15 mm |
+| Mounting | M3 screws, 3.2 mm holes, soft mount on a separate tray; hole pattern and dampers `TBD` (set by hardware at placement) |
 | Copper layers / stackup | `TBD` |
 | Operating / storage temperature | Parts rated −40 to +85 °C; no conformal coating, no rain (DEC-020) |
 | Vibration and shock | `TBD` |
@@ -97,7 +98,7 @@ State of the saved KiCad files on 2026-10-24. Details are in the specification (
 
 | Area | State |
 |---|---|
-| Schematic | Only `power_supplies.kicad_sch` has parts (19, all unannotated): power module connector, TPS16412DRC eFuse, TPS62142RGTR buck, TPS73533DRBR LDO and a 3.3 V LED. Nothing drives `+5V` yet. The other sheets hold no parts. |
+| Schematic | Only `power_supplies.kicad_sch` has parts (19, all unannotated): power module connector, TPS16412DRC eFuse, TPS62142RGTR buck, TPS73533DRBR LDO and a 3.3 V LED. The eFuse is placed but only its GND pad is wired, so nothing drives `+5V` yet. The other sheets hold no parts. |
 | PCB | Empty: no footprints and no board outline. |
 | Library | Project symbols, footprints and 3D models for the MCUs, regulators, ESD parts, connectors and passives. Sensor symbols and footprints are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked yet. A BMP581 symbol is a starting point for the second barometer, and the Bosch LGA-10 footprint pads now follow the BMP581 land pattern (not checked against the drawing). The IST8310 uses the stock KiCad symbol and `LGA-16_3x3mm_P0.5mm` footprint; its datasheet has no land pattern, so the fit is estimated. A read-only link audit found no broken links. |
 | ERC / DRC | Not run. |
@@ -129,30 +130,30 @@ Peripheral allocations agreed with the software team (DEC-014, DEC-018). Pins ar
 | Debug | H743 console and SWD, Pixhawk Debug Mini | USART3 + SWD |
 | MS4525DO + PM02D | Air-data sensor (`0x28`) and power module (`0x45`) | I2C4 |
 | TF-Luna | Rangefinder | UART8 |
-| Motors 1 to 4 | ESC outputs, DShot only, RPM feedback | TIM5_CH1 to CH4 |
+| Motors 1 to 4 | 4 × Skywalker 80A V2 ESCs, 3-pin headers with the + pin removed. Spec says DShot only; the ESC looks PWM-only (OPEN-017) | TIM5_CH1 to CH4 |
 | Spare 1 to 3 | Spare outputs | TIM4_CH3, TIM4_CH4, TIM1_CH1 |
 | microSD | Flight logs | SDMMC1, 4-bit |
 | Buzzer | PX4 tone alarm | TIM3_CH3 |
 | F100 servos 1 to 8 | Flaperon L/R, ruddervator L/R, tilt servo 1 to 4 | TIM2_CH1/CH2, TIM4_CH3/CH4, TIM3_CH1 to CH4 |
 | F100 safety | Safety button and LED, through GPS1; disabled in PX4 on Model G | GPIO |
-| ESC current / telemetry | ESC current sense and serial telemetry | ADC (pin `TBD`, not PC1), UART4_RX |
 
 ### Design Considerations
 
 - The software team's pinmap answers were applied in spec rev 0.11 and 0.12 (DEC-014 to DEC-018). The software team signed decisions D1 to D7 as proposals for the team; a separate whole-team confirmation is not recorded.
 - The IO MCU changed from STM32F103C8T6 to STM32F100C8T6B on 2026-10-24, following the software team (DEC-002, DEC-017). Stock PX4 IO firmware expects a 24 MHz crystal, which is outside the F103 range (4 to 16 MHz) and inside the F100 range (4 to 24 MHz). With the F100, stock px4io runs unchanged. No pin moved.
-- The software team answered the integration questions on 2026-10-24 (spec rev 0.13, DEC-019 to DEC-022). The human owner changed their servo answer: the servos plug into 3-pin headers on an on-board 6 V rail, and the UBEC plugs into the board (DEC-019). The UBEC input carries up to 10 A continuous and 15 A peak, more than one 2.54 mm header pin is usually rated for, so its connector is open (OPEN-021).
-- GPS1 is a 10-pin full GPS port (DEC-021). PC1 stays reserved for an analog power module; the ESC current sense goes to another ADC pin (DEC-023). The connector pinouts are not checked against the Pixhawk standard yet, and the power sheet's JST-GH power module connector may not match the PM02D cable (OPEN-023).
-- The motors stop on an H743 hang only if the ESC stops when DShot frames stop. ESC model and behavior are not confirmed (OPEN-017).
+- The software team answered the integration questions on 2026-10-24 (spec rev 0.13, DEC-019 to DEC-022). The human owner changed their servo answer: the servos plug into 3-pin headers on an on-board 6 V rail, and the UBEC plugs into a board-mount XT30 (DEC-019). The XT30 carries up to 10 A continuous and 15 A peak; its rating is not checked (OPEN-021).
+- GPS1 is a 10-pin full GPS port (DEC-021). PC1 stays reserved for an analog power module (DEC-023). No ESC current sense or telemetry (IF-052, IF-053 removed). The connector pinouts are not checked against the Pixhawk standard yet. The PM02D connector will be a CLIK-Mate to match its cable; the power sheet still draws JST-GH (OPEN-023).
+- The team's ESCs are 4 × Skywalker 80A V2. No source says they support DShot. With PWM, the motors may keep running after an H743 hang, which conflicts with FUN-002 and SAF-015. Asked the team in D13 (OPEN-017).
+- USB powers the board and all external 5 V ports on the bench. The VBUS budget and back-feed through the eFuse are open (OPEN-006, OPEN-012).
 - PWM lines get weak pull-downs; the value must still let bidirectional DShot work (OPEN-018).
 - Sourcing risk on the sensors (OPEN-004): ICP-20100 is EOL (TDK says its pressure products are not for new designs), BMP581 stock is short, and the IST8310 lifecycle is not confirmed.
 - The magnetometer changed from BMM150 to IST8310 (DEC-011). Its absolute maximum supply is 3.6 V, so the 3.3 V rail has only 0.3 V of margin.
 - BMP390 was removed because LCSC does not sell it. The team accepted BMP581 as the second barometer, with BMP384 as fallback; the fallback fit is not checked (OPEN-019).
-- The power sheet is in progress: `+VIN` to `+5V` is not drawn (OPEN-012), and the `+3V3A` LDO is not decided (OPEN-011). As drawn, the LDO's NR capacitor (100 nF) is above TI's 0.01 µF limit, and the TPS62142 lacks the 0.1 µF AVIN capacitor TI recommends.
+- The power sheet is in progress: the `+VIN` to `+5V` eFuse (TPS16412DRC, DEC-024) is placed but not wired, and its ILIM resistor is not drawn (OPEN-012), and the `+3V3A` LDO is not decided (OPEN-011). As drawn, the LDO's NR capacitor (100 nF) is above TI's 0.01 µF limit, and the TPS62142 lacks the 0.1 µF AVIN capacitor TI recommends.
 - Power budgets, rail tolerances, sequencing, brownout/reset thresholds and protection (reverse polarity, overvoltage, ESD, short circuit) are `TBD`.
 - Crystal parts, load capacitors and reset topology are `TBD`.
 - Firmware is owned by the software team: PX4 v1.16.2, port based on `px4/fmu-v6c`. The PX4 Matek H743-Slim board port is kept in `documents/reference/` as a pin-map reference only.
-- Confirmed part numbers: STM32H743VIT6, STM32F100C8T6B, ICM-45686, ICP-20100, BMP581, IST8310 and TPS62142RGTR. All other parts are `TBD`.
+- Confirmed part numbers: STM32H743VIT6, STM32F100C8T6B, ICM-45686, ICP-20100, BMP581, IST8310, TPS62142RGTR and TPS16412DRC. All other parts are `TBD`.
 
 ## Verification
 
@@ -166,20 +167,19 @@ Peripheral allocations agreed with the software team (DEC-014, DEC-018). Pins ar
 
 ## Open Items
 
-The specification tracks OPEN-001 to OPEN-023. Closed: OPEN-002, OPEN-003, OPEN-005, OPEN-008, OPEN-014, OPEN-015, OPEN-016, OPEN-020. Open:
+The specification tracks OPEN-001 to OPEN-023. Closed: OPEN-002, OPEN-003, OPEN-005, OPEN-008, OPEN-014, OPEN-015, OPEN-016, OPEN-020, OPEN-022. Open:
 
 - MCU pins: pinmap review 0.3 answered by the team, not in the schematic yet (OPEN-001)
 - Sensor electrical data and sourcing (OPEN-004)
 - 5 V and 6 V budgets and protection (OPEN-006, OPEN-007)
-- Board outline and mounting (OPEN-009); environment set by DEC-020
+- Board outline, cable entry sides and dampers, set by hardware at placement (OPEN-009); environment set by DEC-020
 - Remaining non-MCU part numbers (OPEN-010)
-- `+3V3A` rail (OPEN-011) and the `+VIN` to `+5V` path (OPEN-012)
+- `+3V3A` rail (OPEN-011) and the `+VIN` to `+5V` eFuse wiring and values (OPEN-012)
 - Sensor footprints to check against the datasheet drawings and app notes (OPEN-013)
-- Motor stop on an H743 hang, which depends on the ESC (OPEN-017)
+- Motor stop on an H743 hang with PWM-only ESCs (OPEN-017, team question D13)
 - PWM pull-down value with bidirectional DShot (OPEN-018)
 - BMP384 fallback fit (OPEN-019)
-- On-board servo rail: UBEC input rating, copper and GND (OPEN-021)
-- ESC current-sense and telemetry pins (OPEN-022)
+- On-board servo rail: XT30 rating, copper and GND (OPEN-021)
 - External connector pinouts and the PM02D connector (OPEN-023)
 
 ## How we work
@@ -237,7 +237,7 @@ AeroOptix-Horizon/
 | [Pin allocation](hardware/AO-Horizon/documents/design/AO-HORIZON_PIN_ALLOCATION_EN.md) | Draft H743 and F100 pin allocation (rev 0.6) |
 | [Pinmap review](hardware/AO-Horizon/documents/design/AO-HORIZON_PINMAP_REVIEW_EN.md) | Pinmap review 0.3, answered by the software team (0.2 answers kept) |
 | [Pinmap decisions](hardware/AO-Horizon/documents/design/AO-HORIZON_PINMAP_DECISIONS_EN.md) | Team decisions and software answers behind DEC-014 to DEC-018 |
-| [Integration questions](hardware/AO-Horizon/documents/design/AO-HORIZON_INTEGRATION_QUESTIONS_EN.md) | Questions for the team: servo power, mounting, environment, connectors and devices (rev 0.3: answers applied in spec rev 0.13, follow-up questions sent) |
+| [Integration questions](hardware/AO-Horizon/documents/design/AO-HORIZON_INTEGRATION_QUESTIONS_EN.md) | Open questions for the team (rev 0.4): ESC (D13), parts and team tests. Earlier answers applied in spec rev 0.13 and 0.14 |
 | [H7 MCU sourcing](hardware/AO-Horizon/documents/design/AO-HORIZON_H7_MCU_SOURCING_EN.md) | STM32H743VI price and stock |
 | [KiCad project](hardware/AO-Horizon/README.md) | Project folder layout |
 
