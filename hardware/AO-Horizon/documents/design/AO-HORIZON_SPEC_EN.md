@@ -4,7 +4,7 @@
 | -------------------- |---|
 | Project              | AeroOptix-Horizon |
 | Document owner       | Human engineering owner (TBD) |
-| Document revision    | 0.9 |
+| Document revision    | 0.10 |
 | Last updated         | 2026-10-24 |
 | Design tool          | KiCad 10 (saved files written by eeschema 10.0) |
 | Hardware phase       | TBD (declared by the human) |
@@ -26,7 +26,7 @@
 
 A custom PX4 flight controller hardware platform with a dual-MCU architecture. The STM32H743VIT6 is the main flight-controller MCU. The STM32F103C8T6 is an operational auxiliary MCU for expanded I/O, PWM/ESC control, and safety behavior.
 
-Pixhawk 6C is a conceptual and functional reference only. It does not authorize copying the Pixhawk schematic, PCB, or pinout.
+Pixhawk 6C and Pixhawk 6X are conceptual and functional references only. They do not authorize copying the Pixhawk schematic, PCB, or pinout.
 
 ### 1.2 Scope
 
@@ -62,6 +62,7 @@ See section 3.2.
 | REF-02    | User-provided FC_H743 architecture diagram | 2026-10-12 | Diagram-derived candidate architecture; not native design authority |
 | REF-03    | User-provided power architecture diagram | 2026-10-12 | Diagram-derived power candidates; not an approved power specification |
 | REF-04    | `AO-HORIZON_EXECUTION_CHECKLIST_EN.md` | 0.8 | Execution and evidence checklist |
+| REF-05    | Pixhawk 6X reference architecture | Rev 8 | Conceptual and functional reference only |
 
 ## 2. Requirements Management
 
@@ -80,7 +81,7 @@ All rows are `CONFIRMED` by the user and `NOT_VERIFIED`. SYS-001 and SYS-002 com
 | ID      | Requirement | Conditions / limits | Verification |
 | ------- |---|---|---|
 | SYS-001 | The system shall be a custom PX4 Flight Controller hardware platform. | Custom hardware; PX4 implementation details deferred. | Inspection of approved system scope. |
-| SYS-002 | Pixhawk 6C shall be used as a conceptual and functional reference only. | No copied schematic, PCB, or pinout is assumed. | Architecture review. |
+| SYS-002 | Pixhawk 6C (REF-01) and Pixhawk 6X (REF-05) shall be used as conceptual and functional references only. | No copied schematic, PCB, or pinout is assumed. | Architecture review. |
 | MCU-001 | The main MCU shall be STM32H743VIT6. | Package placement and native design implementation are open. | Native schematic inspection. |
 | MCU-002 | The operational auxiliary MCU shall be STM32F103C8T6. | Required during operation for auxiliary I/O, PWM/ESC, expanded I/O, and safety. | Native schematic and responsibility review. |
 | IF-001  | The H743↔F103 interface protocol shall be USART. | Path for F103 to monitor H743 availability. Instance, pins, levels, rate, timeout, and message details are open. Software owns detection and command behavior. | Allocation review and hardware test. |
@@ -229,6 +230,7 @@ The root, `top_hierarchical`, `block_diagram` and `revision_history` sheets hold
 - H743 shall retain selectable BOOT0 access (FUN-006).
 - H743 and F103 shall provide SWD access (FUN-005).
 - USB FS shall be physically available on H743 for later Software-owned flashing/QGC integration.
+- F103 clock: stock px4io-v2 expects 24 MHz, which is outside the F103 crystal range (OPEN-015).
 - TBD: clock sources, reset topology, power-on reset, watchdog interaction, boot-time pin states, F103 boot behavior, service procedures.
 
 ### 4.5 Control, sensing, analog and digital considerations
@@ -261,7 +263,7 @@ All items are `TBD` and `NOT_VERIFIED`.
 | BMP390 (not used) | `0_Sensor_Pressure:BMP390` | `0_Package_LGA:Bosch_LGA-10_2x2mm_P0.5mm_LayoutBorder3x2y` (pads set to the BMP581 land pattern on 2026-10-21, see the BMP581 row; local model, source not recorded) | Matches BST-BMP390-DS002-07 Rev 1.7 Table 52 (pins 1 to 10). | Removed from DEC-010 on 2026-10-21; library files kept until OPEN-014 is decided. The footprint now follows the BMP581 land pattern; not checked against the BMP390 drawing (7.2). Pin 1 corner; 3D model rotation |
 | BMP581 (candidate, OPEN-014) | `0_Sensor_Pressure:BMP581` | `0_Package_LGA:Bosch_LGA-10_2x2mm_P0.5mm_LayoutBorder3x2y` (shared with BMP390; pads 0.325 × 0.30 mm on ±0.7625 mm centers, smallest gap 0.20 mm) | Matches BST-BMP581-DS004-13 Rev 1.13 Table 28 (pins 1 to 10), the same pin map as BMP390. 10 pins, body 2.0 × 2.0 × 0.75 mm (Table 3). | Pad sizes, pad centers, pin 1 corner and numbering were read by NotebookLM from Fig. 29 to 32 with no citation (`NOT_VERIFIED`). §8.2: no solder mask, vias or traces under the part, 20 µm mask clearance; the footprint uses the board default mask. |
 | BMM150 (not used) | `0_Sensor_Magnetic:BMM150` | `0_Package_CSP:WLCSP-12_1.56x1.56mm_P0.4mm` (stock copy) | Matches BST-BMM150-DS001-05 Rev 1.4 Table 32 (12 balls). Body 1.56 mm and 0.283 mm grid (0.4 mm diagonal) match. | Replaced by IST8310 in DEC-011 on 2026-10-24. Library files kept until the human decides to remove them |
-| IST8310 | None yet | None yet | - | Library starting point not made (`kicad-part-start`). Land pattern is not in the datasheet text; the package drawing is an image |
+| IST8310 | `0_Sensor_Magnetic:IST8310` (stock KiCad copy, with MFR, MPN and LCSC C2683055 fields) | `0_Package_LGA:LGA-16_3x3mm_P0.5mm` (stock) | Not recorded here | Added after the 2026-10-21 check (CHANGELOG); not re-read for this table. The datasheet (V1.2 and V1.8) has no land pattern, so the footprint fit is `ESTIMATED` from the package drawing. Pin 1 corner |
 
 ### 4.7 Engineering calculations and margins
 
@@ -381,27 +383,30 @@ All decisions are by the human owner, unless the Notes say otherwise.
 | DEC-008 | IMU part number (SEN-001, CMP-003) | 2 × TDK InvenSense ICM-45686 | Confirmed by the team. Implementation not verified. SPI, supply range and sourcing open; see `AO-HORIZON_IMU_SELECTION_EN.md`. | 2026-10-18 |
 | DEC-009 | IMU reset method | Software reset only (ICM-45686 `SOFT_RST`); no hardware reset line | ICM-45686 has no reset pin (DS-000489 Rev 1.1 Table 10, checked through NotebookLM on 2026-10-19). No hardware power control of the IMU rail is planned. | 2026-10-18 |
 | DEC-010 | Barometer part numbers (SEN-002, CMP-004) | 1 × TDK ICP-20100; second barometer TBD (OPEN-014) | Confirmed by the team on 2026-10-18 as ICP-20100 + Bosch BMP390. The human owner removed BMP390 on 2026-10-21 because LCSC C5124834 is not available. ICP-20100 is EOL per TDK. See `AO-HORIZON_BARO_MAG_SELECTION_EN.md`. | 2026-10-18, revised 2026-10-21 |
-| DEC-011 | Magnetometer count and part number (SEN-003, CMP-005) | 1 × iSentek IST8310 | Confirmed by the team as 1 × Bosch BMM150 on 2026-10-18. Reduces SEN-003 from 2 to 1 magnetometer and closes OPEN-005. The human owner changed the part to IST8310 on 2026-10-24. Lifecycle NOT_VERIFIED. See `AO-HORIZON_BARO_MAG_SELECTION_EN.md`. | 2026-10-18, revised 2026-10-24 |
+| DEC-011 | Magnetometer count and part number (SEN-003, CMP-005) | 1 × iSentek IST8310 | Confirmed by the team as 1 × Bosch BMM150 on 2026-10-18. Reduces SEN-003 from 2 to 1 magnetometer and closes OPEN-005. The human owner changed the part to IST8310 on 2026-10-24. The team accepted IST8310 at 0x0E, with DRDY and RSTN not connected, in pinmap review 0.2 (Q11, 2026-10-24). Lifecycle NOT_VERIFIED. See `AO-HORIZON_BARO_MAG_SELECTION_EN.md`. | 2026-10-18, revised 2026-10-24 |
 | DEC-012 | Main 3.3 V supply (CMP-007) | TI TPS62142RGTR buck, 5 V to 3.3 V (LCSC C129331) | Selected by the human owner. Datasheet fit checked against TI HTML (SLVSAJ0F Rev. F). 3.3 V load current, inductor and output-capacitor derating NOT_VERIFIED. | 2026-10-18 |
+| DEC-013 | Reference designs (SYS-002, REF-01, REF-05) | Pixhawk 6C and Pixhawk 6X Rev 8, conceptual and functional references only | Human owner: "6X and 6C are ref." This does not authorize copying their schematic, PCB or pinout. The team decides the pinout question (OPEN-016). | 2026-10-24 |
 
 ### 8.2 Open questions and assumptions
 
 | ID       | Description | Impact | Owner / next action |
 | -------- |---|---|---|
-| OPEN-001 | Exact H743/F103 pins and alternate functions | May invalidate the candidate allocation. | Hardware review / P1 |
-| OPEN-002 | USART instance, pins, voltage levels, rate, timeout, recovery | Affects safety/control path. | Hardware + Software / P1, P2 |
-| OPEN-003 | Timer/channel validity for all H743/F103 labels. The pin allocation record (F-02) finds that F103 TIM3 has CH1 to CH4 only, so the IF-034 to IF-037 labels need a human correction. | May require reassignment or a logical-to-physical mapping. | Hardware review / P1 |
+| OPEN-001 | Exact H743/F103 pins and alternate functions. The team answered pinmap review 0.2 on 2026-10-24 (`AO-HORIZON_PINMAP_REVIEW_EN.md`). Pinmap 0.3 waits for OPEN-016. | May invalidate the candidate allocation. | Hardware review / P1 |
+| OPEN-002 | USART instance, pins, voltage levels, rate, timeout, recovery. Team answer (Q7): stock PX4 IO firmware (px4io-v2), H743 USART6 (PC6, PC7) to F103 USART2 (PA2, PA3), 1.5 Mb/s. Not yet in the spec (OPEN-016). | Affects safety/control path. | Hardware + Software / P1, P2 |
+| OPEN-003 | Timer/channel validity for all H743/F103 labels. The pin allocation record (F-02) finds that F103 TIM3 has CH1 to CH4 only. The team confirmed TIM3_CH1 to CH4 on PA6, PA7, PB0, PB1 (Q3). The IF-034 to IF-037 labels change with OPEN-016. | May require reassignment or a logical-to-physical mapping. | Hardware review / P1 |
 | OPEN-004 | Sensor electrical properties and sourcing. Sensor parts chosen (DEC-008, DEC-010, DEC-011) except barometer 2 (OPEN-014); datasheet values, ICP-20100 EOL and IST8310 lifecycle open. IST8310 has only 0.3 V from a 3.3 V rail to its 3.6 V absolute maximum. | Affects footprint, rail, layout, drivers, verification. | Human owner / P0 |
 | OPEN-005 | Second magnetometer allocation. Closed by DEC-011 (single magnetometer). | Affects sensor redundancy and connector/bus architecture. | Closed 2026-10-18 |
 | OPEN-006 | 5 V input transient/protection, board current budget, downstream rail budgets | Affects power design and protection. | Hardware review / P0, P2 |
 | OPEN-007 | 6 V servo rail pulse duration, protection, distribution, actuator load profile | Affects power and actuator safety. | Hardware review / P0, P2 |
-| OPEN-008 | Software-owned safety detection timing, immediate-landing behavior, F103-failure response | Affects F103 behavior, output ownership, test method. | Software / P2, P4 |
+| OPEN-008 | Software-owned safety detection timing, immediate-landing behavior, F103-failure response. Team answer (Q7): stock px4io cannot command a landing; after 0.5 s without H743 data it sets its outputs to failsafe values (PX4 v1.16.2 `px4iofirmware/mixer.cpp`). The team decides the SAF-001 wording and where the motor outputs go (OPEN-016). | Affects F103 behavior, output ownership, test method. | Team + Software / P0, P2, P4 |
 | OPEN-009 | Exact board outline under the MEC-001 limit, mounting, connector orientation, environment | Affects PCB and mechanical release. | Human owner / P0, P3 |
 | OPEN-010 | All non-MCU part numbers except the sensors (DEC-008, DEC-010, DEC-011) and the main 3.3 V buck (DEC-012) | No other non-MCU part is approved by this document. | Human owner / component selection gate |
 | OPEN-011 | `+3V3A` rail: purpose (for example 3.3 V_IMU), load, and LDO part. TPS73533DRBR is drawn but not decided. As drawn, its NR capacitor (100 nF) is above TI's 0.01 µF limit and its output capacitance (2 × 1 µF) is at TI's 2 µF minimum before derating (see 4.3). | Affects sensor supply noise, start-up and the power budget. | Human owner / P0, P2 |
 | OPEN-012 | Path from `+VIN` (power module connector) to `+5V`. Nothing connects them in the schematic yet. | Without it, both regulators have no input. | Hardware / P2 |
-| OPEN-013 | Sensor library starting points (see 4.6 "Library state"): pin maps match the datasheet tables, but pin 1 corner, pad geometry and land patterns are not checked against the datasheet drawings and app notes. The IST8310 has no library part yet. The Bosch LGA-10 pads follow the BMP581 land pattern (Fig. 32, read from an image) since 2026-10-21. | A wrong land pattern or orientation reaches the PCB. | Human owner / P2 |
-| OPEN-014 | Second barometer part number (SEN-002, CMP-004). BMP390 removed from DEC-010 on 2026-10-21 (LCSC C5124834 not available). Proposed: Bosch BMP581 (LCSC C5362283), to be confirmed by the team. A library starting point exists (4.6). | Affects footprint, I2C address plan, power budget, PX4 driver and sourcing. | Team / P0 |
+| OPEN-013 | Sensor library starting points (see 4.6 "Library state"): pin maps match the datasheet tables, but pin 1 corner, pad geometry and land patterns are not checked against the datasheet drawings and app notes. The IST8310 uses the stock KiCad symbol and `LGA-16_3x3mm_P0.5mm` footprint; its datasheet has no land pattern, so the fit is `ESTIMATED`. The Bosch LGA-10 pads follow the BMP581 land pattern (Fig. 32, read from an image) since 2026-10-21. | A wrong land pattern or orientation reaches the PCB. | Human owner / P2 |
+| OPEN-014 | Second barometer part number (SEN-002, CMP-004). BMP390 removed from DEC-010 on 2026-10-21 (LCSC C5124834 not available). Proposed: Bosch BMP581 (LCSC C5362283), to be confirmed by the team. A library starting point exists (4.6). In pinmap review 0.2 the team put BMP581 on I2C2 at 0x46 but did not confirm the part; asked again (decisions file D7). | Affects footprint, I2C address plan, power budget, PX4 driver and sourcing. | Team / P0 |
+| OPEN-015 | F103 clock. Stock px4io-v2 is built for a 24 MHz HSE used directly as SYSCLK (PX4 v1.16.2 `boards/px4/io-v2/nuttx-config/include/board.h`). The STM32F103 HSE crystal oscillator is specified for 4 to 16 MHz (DS5319 Rev 20 Table 22); an external clock on OSC_IN may be 1 to 25 MHz (Table 20). Both read in the NotebookLM source fulltext. | A 24 MHz crystal is outside the F103 crystal range. The fix changes the clock part, the px4io build, or both. | Hardware + Team / P1 (decisions file S7) |
+| OPEN-016 | Spec rows that the team's pinmap review 0.2 answers change: SYS-002 (pins mostly from Pixhawk 6C), IF-001 and IF-024 (link instance and rate), SAF-001, FUN-004, SAF-010 and SAF-011 (no landing by stock px4io), FUN-002 (ESCs move to the H743), FUN-003 and IF-030 to IF-038 (servo names, no FlySky), IF-013 (no GPS2), IF-016 to IF-021 (dropped or spare outputs, motors on TIM5), SEN-002 (BMP581), and new interfaces (microSD, buzzer, LEDs, F103 safety switch, power module I2C, servo rail sense, debug console). Listed in `AO-HORIZON_PINMAP_DECISIONS_EN.md` section 3. | Until the team decides, the spec and the team's plan disagree, and P1 allocation cannot close. | Team / P0 |
 
 ## 9. Specification Change Notes
 
@@ -416,9 +421,10 @@ All decisions are by the human owner, unless the Notes say otherwise.
 | 0.7      | 2026-10-19 | No new decisions. Re-checked the power-sheet state (4.3) against the saved file and the TPS62142 and TPS735 datasheets: added the DNP `+VIN` ESD diode, the missing TPS62142 AVIN capacitor and the TPS73533DRBR NR and output capacitor notes. Added the sensor library state (4.6), with pin maps checked against the datasheet tables through NotebookLM, and OPEN-013. Recorded sensor and regulator lifecycle checks (CMP-003 to CMP-005, CMP-007). Set the design tool and the checklist revision (REF-04). | Pending human review |
 | 0.8      | 2026-10-21 | Removed BMP390 from DEC-010 because LCSC C5124834 is not available. Barometer 2 is open (OPEN-014); BMP581 (LCSC C5362283) is proposed and waits for team confirmation. Updated SEN-002, CMP-004, OPEN-004 and the library state. Added the BMP581 library starting point and set the Bosch LGA-10 footprint pads to the BMP581 land pattern (4.6, OPEN-013). | Human owner |
 | 0.9      | 2026-10-24 | Changed the magnetometer in DEC-011 from Bosch BMM150 to iSentek IST8310. Updated SEN-003, the magnetometer subsystem row, CMP-005 (values from IST8310 Datasheet V1.2 via NotebookLM), OPEN-004, OPEN-013 and the library state. | Human owner |
+| 0.10     | 2026-10-24 | Added Pixhawk 6X Rev 8 as a second conceptual and functional reference next to Pixhawk 6C (DEC-013, REF-05, SYS-002, 1.1). The no-copied-pinout wording is unchanged; the team decides it (OPEN-016). Recorded the team's pinmap review 0.2 answers on OPEN-001 to OPEN-003, OPEN-008, OPEN-014 and DEC-011, without changing the requirement rows. Added OPEN-015 (F103 24 MHz clock) and OPEN-016 (spec rows the team's answers change). Updated the IST8310 library row and OPEN-013. | Human owner |
 
 ## Current verdict
 
 **Draft only. NOT_VERIFIED and NOT FOR FABRICATION.**
 
-The specification is structured enough for hardware P1 allocation and conflict review. It does not approve any non-MCU part number other than the sensors (DEC-008, DEC-010, DEC-011) and the main 3.3 V buck (DEC-012), pin mapping, timer allocation, power protection or rail detail, safety timing, schematic, PCB, or fabrication release. Sensor lifecycle and sourcing risks are open (OPEN-004): ICP-20100 is EOL and the IST8310 lifecycle is not confirmed. The second barometer is not chosen (OPEN-014). The sensor library parts are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked (OPEN-013).
+The specification is structured enough for hardware P1 allocation and conflict review. It does not approve any non-MCU part number other than the sensors (DEC-008, DEC-010, DEC-011) and the main 3.3 V buck (DEC-012), pin mapping, timer allocation, power protection or rail detail, safety timing, schematic, PCB, or fabrication release. Sensor lifecycle and sourcing risks are open (OPEN-004): ICP-20100 is EOL and the IST8310 lifecycle is not confirmed. The second barometer is not chosen (OPEN-014). The software team's pinmap answers change several requirement rows, and those rows wait for team decisions (OPEN-016). The F103 clock that stock px4io expects is outside the F103 crystal range (OPEN-015). The sensor library parts are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked (OPEN-013).
