@@ -1,0 +1,209 @@
+# AeroOptix-Horizon: Decisions and Questions after Pinmap Review 0.2
+
+**Revision:** 0.1
+**Updated:** 2026-10-24
+**From:** Hardware
+**To:** Software team and all members
+**Status:** Open. Nothing here is decided. Hardware follows the team's answers.
+
+## 1. How to reply
+
+Thank you for the answers in pinmap review 0.2 (`AO-HORIZON_PINMAP_REVIEW_EN.md`). They change several spec items and leave some decisions open. The team owns the drone spec and the software function spec. Hardware follows them.
+
+You can fill this in by hand or ask Claude to do it.
+
+1. Sections 3 and 4 are for the whole team. Section 5 is for the software team. Section 6 lists hardware proposals for you to accept or change.
+2. In tables, fill only the `Team` column with one of:
+   - `OK`: accept the row as written.
+   - `CHANGE: <what>`: say exactly what you want instead.
+   - `?: <question>`: you need hardware to explain.
+3. Under each question, fill the `Decision:` or `Answer:` line, and the `By:` line with the name or role of whoever decided.
+4. Section 7 is for information only. It lists what hardware will check by itself.
+5. Keep the file name. Send the whole file back.
+
+After your reply, hardware updates the spec (`AO-HORIZON_SPEC_EN.md`) and the pinmap to revision 0.3.
+
+## 2. What hardware checked
+
+Hardware checked your answers against the PX4 source at tag v1.16.2 (`boards/px4/io-v2` and `boards/px4/fmu-v6c`). These facts are used below. Labels: `VERIFIED` = read in the source, `ASSUMED` = not checked, `NOT_VERIFIED` = check still open.
+
+| # | Fact | Source | Label |
+|---|---|---|---|
+| F1 | px4io-v2 talks to the FMU on USART2 at 1.5 Mb/s. Its console is USART1. | io-v2 `board_config.h`: `PX4FMU_SERIAL_BASE STM32_USART2_BASE`, `PX4FMU_SERIAL_BITRATE 1500000`; `defconfig`: `CONFIG_USART1_SERIAL_CONSOLE=y` | VERIFIED |
+| F2 | px4io-v2 PWM: TIM2 CH1/2 on PA0/PA1, TIM4 CH3/4 on PB8/PB9, TIM3 CH1 to CH4 on PA6, PA7, PB0, PB1. Same as pinmap 4.1. | io-v2 `timer_config.cpp` | VERIFIED |
+| F3 | px4io-v2 is built for an STM32F100C8, with SYSCLK taken straight from a 24 MHz HSE. | io-v2 `defconfig`: `CONFIG_ARCH_CHIP_STM32F100C8=y`; `board.h`: `STM32_BOARD_XTAL 24000000ul`, `STM32_SYSCLK_SW RCC_CFGR_SW_HSE` | VERIFIED |
+| F4 | If no FMU data arrives for 0.5 s, px4io sets its outputs to the failsafe values. | `px4iofirmware/mixer.cpp`: `FMU_INPUT_DROP_LIMIT_US 500000`, `r_page_servos[i] = r_page_servo_failsafe[i]` | VERIFIED |
+| F5 | px4io-v2 also uses these F103 pins: LEDs PB14 (blue, also heater output), PB15 (amber), PA11 (green); servo fault input PA15; RSSI PA5 and PA12; Spektrum PC13 and PA10; SBUS PB10, PB11, PB4; PPM PA8; board sense PC14 and PC15. Safety button PB5, safety LED PB13, servo rail sense PA4. | io-v2 `board_config.h` | VERIFIED |
+| F6 | fmu-v6c uses a 16 MHz HSE. | fmu-v6c `board.h`: `STM32_BOARD_XTAL 16000000ul` | VERIFIED |
+| F7 | fmu-v6c: HRT on TIM8 CH3. Tone alarm on TIM3 CH3, PB0. | fmu-v6c `board_config.h` | VERIFIED |
+| F8 | fmu-v6c: PWM on TIM1 (PA8, PE11, PE13, PE14), TIM4 (PD14, PD15), TIM5 (PA0, PA1). Only TIM1 and TIM4 have DMA. | fmu-v6c `timer_config.cpp`: `initIOTimer(Timer::Timer1, DMA{DMA::Index1})`, same for Timer4 | VERIFIED |
+| F9 | fmu-v6c: console USART3 (PD8, PD9). PX4IO on USART6 (PC6, PC7). microSD on SDMMC2 (PD6, PD7, PB14, PB15, PB3, PB4), with no card-detect pin. | fmu-v6c `defconfig`, `board.h`, `board_config.h` | VERIFIED |
+| F10 | fmu-v6c `defconfig` has `CONFIG_WATCHDOG=y`. Whether PX4 starts the H743 IWDG was not checked. | fmu-v6c `defconfig` | NOT_VERIFIED |
+| F11 | Bidirectional DShot on STM32H7 must use the first 4 FMU outputs, all on one timer. Read in the v1.17 docs; v1.16.2 not checked. | docs.px4.io/v1.17/en/peripherals/dshot | NOT_VERIFIED for v1.16.2 |
+| F12 | An STM32 timer in PWM mode keeps sending its last pulse width if the CPU hangs. DShot stops, because it needs the CPU to refill DMA for each frame. | General STM32 timer behavior | ASSUMED |
+
+## 3. Spec items your answers change
+
+Your 0.2 answers do not match these spec rows. For each row, say whether the spec should change as listed.
+
+| Spec ID | Spec now (short) | What your 0.2 answers mean | Team |
+|---|---|---|---|
+| SYS-002 | Pixhawk 6C is a reference only; no copied pinout. | Most H743 pins come from Pixhawk 6C, and the port is based on `px4/fmu-v6c` (Q1, Q18). | |
+| IF-001, IF-024, OPEN-002 | H743↔F103 link is USART; instance, pins and rate are open. | H743 USART6 (PC6, PC7) to F103 USART2 (PA2, PA3), 1.5 Mb/s, px4io protocol (Q7, F1). | |
+| SAF-001, FUN-004 | If the H743 stops, the F103 commands an immediate landing. | Stock px4io cannot land. It sets its outputs to failsafe values after 0.5 s (Q7, F4). See D1. | |
+| SAF-010, SAF-011 | F103 monitors the H743; output ownership after a link loss is open. | Same as above. The motors are no longer on the F103 (Q17). See D1, D2. | |
+| FUN-002 | F103 drives the ESC-related PWM outputs. | All 4 ESCs move to the H743 (TIM5, PA0 to PA3). The F103 drives the 8 servos only (Q17). See D2. | |
+| FUN-003, IF-030 to IF-037 | F103 outputs TILT, ESC, COAX, AIL. | 8 servo outputs, renamed: flaperon L/R, ruddervator L/R, tilt servo 1 to 4 (Q17, pinmap 4.1). | |
+| IF-038 | FlySky receiver on the F103. | Dropped. RC comes from ELRS (MAVLink) on Telemetry 1, UART7 (Q5). See D6. | |
+| IF-013 | GPS2 reserved on UART3. | Dropped. UART3 is the debug console (pinmap 3.1). See D5. | |
+| IF-016 | Reserved UART7 TX. | Dropped (Q4). | |
+| IF-017 to IF-021 | VT L/R (TIM4), SP2 (TIM1), TL2/TR2 (TIM15). | PD14, PD15 and PE9 are spare outputs. PA2 and PA3 become motors 3 and 4 on TIM5. Motors 1 and 2 are added on PA0 and PA1 (Q17). | |
+| SEN-002, OPEN-014 | Barometer 2 is open; BMP581 proposed. | BMP581 on I2C2 at 0x46 (pinmap section 5). See D7. | |
+| New | Not in the spec. | Add interface rows for: microSD (SDMMC1), buzzer, 3 board LEDs, safety switch and LED on the F103, power module on I2C4, servo rail sense on F103 PA4, H743 debug console (UART3). | |
+
+## 4. Decisions for the whole team
+
+Each decision sets drone behavior or the drone spec. Hardware can build any of the options; the hardware impact is listed so you can compare.
+
+**D1. Behavior when the H743 stops (SAF-001, FUN-004, SAF-010).**
+Options:
+- (a) Reword the spec to match stock px4io: after 0.5 s without the H743, the F103 holds its outputs at fixed failsafe values (F4). No landing.
+- (b) Keep "immediate landing". That needs custom F103 firmware, and a definition of how the F103 lands the aircraft without an IMU.
+- (c) Other.
+
+Hardware impact: none for (a). For (b), it depends on the definition; the F103 might need sensors or more pins.
+
+Decision:
+By:
+
+**D2. Where the 4 ESC outputs connect: H743 or F103 (FUN-002).**
+Your plan puts them on the H743, TIM5, so they can run DShot (Q17). The trade-off: on the H743, the F103 failsafe (F4) does not cover the motors. If the H743 hangs with the motors in PWM mode, they keep their last throttle (F12). DShot or a watchdog reset would stop them (see S1).
+Options:
+- (a) H743 TIM5, PA0 to PA3, as you planned. Requires a safe answer to S1.
+- (b) F103, with the F103 failsafe covering the motors. No DShot (px4io has no DShot), and the F103 runs out of outputs for the 8 servos.
+
+Hardware impact: pin assignment only. Both options fit the board.
+
+Decision:
+By:
+
+**D3. Failsafe positions for the 8 servos.**
+When the H743 stops, px4io moves each servo to a fixed failsafe value (F4). For a tilt-rotor this sets the aircraft's state after the failure. Give the position you want for the tilt servos (1 to 4), the flaperons (L, R) and the ruddervators (L, R). For example: tilt up for hover, or tilt forward for cruise. Flaperons and ruddervators centred.
+
+Decision:
+By:
+
+**D4. Spare outputs.**
+Model G uses 12 outputs: 4 on the H743 and 8 on the F103. That leaves 3 spares on the H743: PD14 and PD15 (TIM4) and PE9 (TIM1). Do you expect more outputs later, for example a gimbal, payload release or landing gear? Hardware can put the spares on a connector now, or leave them on pads.
+
+Decision:
+By:
+
+**D5. Single GPS.**
+GPS2 is dropped, and UART3 becomes the debug console. Is one GPS enough for Model G?
+
+Decision:
+By:
+
+**D6. One link for RC and telemetry.**
+RC and telemetry share one ELRS receiver on UART7, so losing that link loses both. There is no backup RC input on the board. Is that OK for Model G? If not, hardware can keep a second receiver input. Telemetry 2 (USART1) is free for this.
+
+Decision:
+By:
+
+**D7. Barometer 2 (OPEN-014).**
+Your section 5 reply puts the BMP581 on I2C2 at 0x46, but it does not say that the BMP581 is accepted. Please confirm the BMP581 as barometer 2, or name another part.
+
+Decision:
+By:
+
+## 5. Questions for the software team
+
+**S1. Motor outputs when the H743 hangs (linked to D2).**
+How will the port make sure the motors stop if the H743 hangs? Choose one or both:
+- (a) The motors run DShot only, with no PWM fallback.
+- (b) The H743 IWDG is enabled, so a hang resets the MCU and the pins go to their reset state.
+
+F10: fmu-v6c has `CONFIG_WATCHDOG=y`, but hardware did not check that the IWDG is started.
+
+Answer:
+By:
+
+**S2. DMA for TIM5.**
+In fmu-v6c, TIM5 has no DMA (F8). DShot on PA0 to PA3 needs it. Can the AO-Horizon port add DMA for TIM5?
+
+Answer:
+By:
+
+**S3. Bidirectional DShot and PX4 version.**
+Do you need bidirectional DShot (RPM feedback)? If yes, TIM5 must be the first timer in `timer_config.cpp` (F11). Which PX4 version will the port use (v1.16.2, or later)?
+
+Answer:
+By:
+
+**S4. microSD on SDMMC1.**
+fmu-v6c uses SDMMC2 (F9), but its pins clash with GPS1 RX (PD6) and Telemetry 2 (PB14, PB15) on our board. So the board uses SDMMC1: CK PC12, CMD PD2, D0 to D3 on PC8 to PC11. Is that OK for your `board.h`? Do you want a card-detect pin? fmu-v6c has none.
+
+Answer:
+By:
+
+**S5. RC over ELRS MAVLink.**
+Your bench test covered ELRS telemetry to QGC (Q2). Did you also test RC control and RC-loss failsafe over MAVLink? If not, please test both before the pinmap is frozen.
+
+Answer:
+By:
+
+**S6. LEDs on the F103.**
+px4io drives three status LEDs on the F103: blue PB14, amber PB15, green PA11 (F5). Do you want them fitted? Hardware leaves the pins free either way.
+
+Answer:
+By:
+
+**S7. F103 clock (only if hardware finds a problem).**
+px4io-v2 expects a 24 MHz HSE (F3). Hardware is checking whether a 24 MHz crystal is within the F103 datasheet limits (section 7). If it is not, which do you prefer?
+- (a) Keep the stock px4io build, and hardware fits a 24 MHz oscillator module instead of a crystal. This needs a check that px4io works with an external clock.
+- (b) A custom px4io build with a different HSE.
+
+Answer:
+By:
+
+**S8. Debug and flashing access.**
+Which do you want for each MCU?
+- H743: console on UART3 (PD8, PD9) plus SWD. Options: one combined connector in the Pixhawk debug style, two headers, or test pads.
+- F103: SWD plus the px4io console (USART1 TX, PA9). Connector or test pads? Who flashes the px4io bootloader on the first F103 flash (Q9)?
+
+Answer:
+By:
+
+## 6. Hardware proposals for pinmap 0.3
+
+Hardware proposes these. They cost nothing for the drone spec. Fill the `Team` column.
+
+| # | Proposal | Reason | Team |
+|---|---|---|---|
+| H1 | H743 crystal 16 MHz instead of 8 MHz. | Same as fmu-v6c (F6), so the clock tree needs no change in the port. You said 16 MHz also works (Q6). | |
+| H2 | Buzzer on TIM3_CH3, PB0, instead of TIM2_CH1, PA15. | Same as fmu-v6c (F7). PB0 is free since the IMU pin-9 rows were dropped. It also avoids the JTDI pull-up on PA15 at reset, which could switch the buzzer driver on before firmware starts (ASSUMED). HRT stays on TIM8. | |
+| H3 | Weak pull-down on every PWM line: H743 PA0 to PA3, PD14, PD15, PE9, and the 8 F103 outputs. No pull-ups. | Your Q10 answer. The value is a hardware choice. | |
+| H4 | F103 PA9 (px4io console TX) on a test pad. | F1. Needed to debug the F103. | |
+| H5 | F103 PC14 and PC15 left unconnected. | Your Q6 answer. px4io reads them at boot with its own pull-down and pull-up (F5). | |
+| H6 | The px4io pins in F5 stay reserved. The free F103 list in pinmap 4.2 will be cut down to match. | F5. Stock px4io drives or reads these pins. | |
+| H7 | H743 USART1 (PB14, PB15) kept as Telemetry 2 on a connector. | Your 3.1 answer; it is also the option for a backup receiver (D6). | |
+
+## 7. Hardware actions (for information, no reply needed)
+
+- Check the F103 datasheet for the HSE crystal range and the external clock limit. Third-party sources say 4 to 16 MHz for a crystal (NOT_VERIFIED). This decides whether S7 is needed.
+- Check that the servo rail divider on PA4 matches the px4io scaling.
+- Check how the ICM-45686 datasheet says to handle pin 9 when unused, and how the IST8310 datasheet says to handle RSTN when unused.
+- Check SDMMC1 pins against ST pin data. Add pull-ups and ESD protection for the card.
+- Read the PM02D label: INA228 at 0x45 or INA226 at 0x41 (Q14).
+- After your reply: update the spec rows in section 3, and issue pinmap 0.3.
+
+## 8. Sources
+
+PX4-Autopilot, tag v1.16.2, `https://github.com/PX4/PX4-Autopilot/tree/v1.16.2/boards/px4/`:
+
+- `io-v2/nuttx-config/nsh/defconfig`, `io-v2/nuttx-config/include/board.h`, `io-v2/src/board_config.h`, `io-v2/src/timer_config.cpp`
+- `src/modules/px4iofirmware/mixer.cpp`
+- `fmu-v6c/nuttx-config/nsh/defconfig`, `fmu-v6c/nuttx-config/include/board.h`, `fmu-v6c/src/board_config.h`, `fmu-v6c/src/timer_config.cpp`
+
+PX4 docs: `https://docs.px4.io/v1.17/en/peripherals/dshot` (bidirectional DShot).
