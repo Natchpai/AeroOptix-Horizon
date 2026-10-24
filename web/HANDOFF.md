@@ -30,7 +30,8 @@
 
 - GitHub Pages hosting; the site is public with the repo.
 - Template: satnaing/shadcn-admin (chosen over the ThemeSelection templates).
-- Dark theme, logo colours as accents.
+- Dark theme, with blue and navy accents from the nP mark (the engineer's co-op logo).
+- Logos (engineer's request, 2026-10-24): the team AeroOptix flame (`aeroOptix_light_logo.png` / `aeroOptix_dark_logo.png`, 1468 px square, sized by the engineer) is the main logo in the sidebar, the Overview hero and the tab icon. The nP mark is a small "In co-op with" credit in the sidebar footer. The theme colours did not change.
 - Diagram: straight lines, wide spacing, no shared line ends, no crossings. No Mermaid. The ELK auto-layout was tried and dropped for hand placement (`src/data/places.ts`).
 - Mockup first, then deploy (done).
 - Pinout page: OK as it is.

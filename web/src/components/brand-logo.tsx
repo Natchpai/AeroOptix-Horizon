@@ -2,20 +2,54 @@ import { cn } from '@/lib/utils'
 
 const base = import.meta.env.BASE_URL
 
-/** Club logo. The dark variant has the navy letters recoloured to light. */
-export function BrandLogo({ className }: { className?: string }) {
+/** A logo with a light-theme and a dark-theme file. */
+function ThemedImage({
+  light,
+  dark,
+  alt,
+  className,
+}: {
+  light: string
+  dark: string
+  alt: string
+  className?: string
+}) {
   return (
     <span className={cn('relative inline-flex items-center', className)}>
       <img
-        src={`${base}images/logo-light.png`}
-        alt='AeroOptix logo'
+        src={`${base}images/${light}`}
+        alt={alt}
         className='h-full w-full object-contain dark:hidden'
       />
       <img
-        src={`${base}images/logo-dark.png`}
-        alt='AeroOptix logo'
+        src={`${base}images/${dark}`}
+        alt={alt}
         className='hidden h-full w-full object-contain dark:block'
       />
     </span>
+  )
+}
+
+/** Team logo (AeroOptix flame). The dark variant has a white plane. */
+export function BrandLogo({ className }: { className?: string }) {
+  return (
+    <ThemedImage
+      light='aeroOptix_light_logo.png'
+      dark='aeroOptix_dark_logo.png'
+      alt='AeroOptix logo'
+      className={className}
+    />
+  )
+}
+
+/** Co-op partner mark (nP), shown small as a credit. */
+export function CoopLogo({ className }: { className?: string }) {
+  return (
+    <ThemedImage
+      light='logo-light.png'
+      dark='logo-dark.png'
+      alt='nP'
+      className={className}
+    />
   )
 }

@@ -25,7 +25,7 @@ Line widths, the block border, corners, end dots, dashes and label box sizes liv
 
 ## Look
 
-Dark theme by default, with the club logo colours as accents (blue `#529AD6`, navy `#35496A`), not plain black and white. Colour tokens are in `src/styles/theme.css`, including the bus colours (`--bus-*`), the power rail colours (`--rail-*`) and design-state colours (`--status-*`). Each power rail has its own colour (the engineer picked them; the table is in `HANDOFF.md`), drawn thicker than signals and never dashed: a candidate power line is faded instead. The engineer chose this template and look; propose larger visual changes before making them.
+Dark theme by default, with blue `#529AD6` and navy `#35496A` accents, not plain black and white. Those colours come from the nP mark, the engineer's co-op logo; the engineer keeps them as the theme. The team logo is the orange AeroOptix flame (`public/images/aeroOptix_*_logo.png`): it is the main logo (sidebar, Overview hero, tab icon), and the nP mark appears only as a small "In co-op with" credit in the sidebar footer (`src/components/brand-logo.tsx`). Keep the flame's orange in the logo only. Colour tokens are in `src/styles/theme.css`, including the bus colours (`--bus-*`), the power rail colours (`--rail-*`) and design-state colours (`--status-*`). Each power rail has its own colour (the engineer picked them; the table is in `HANDOFF.md`), drawn thicker than signals and never dashed: a candidate power line is faded instead. The engineer chose this template and look; propose larger visual changes before making them.
 
 ## Checking your work
 

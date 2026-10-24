@@ -125,7 +125,7 @@ export function Overview() {
         <Card className='relative overflow-hidden border-primary/30'>
           <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_20%,color-mix(in_oklab,var(--brand)_28%,transparent),transparent_55%),linear-gradient(135deg,color-mix(in_oklab,var(--navy)_35%,transparent),transparent_60%)]' />
           <CardContent className='relative flex flex-col gap-6 sm:flex-row sm:items-center'>
-            <BrandLogo className='h-20 w-28 shrink-0' />
+            <BrandLogo className='size-20 shrink-0' />
             <div className='space-y-3'>
               <div>
                 <h1 className='text-2xl font-bold tracking-tight sm:text-3xl'>
