@@ -7,7 +7,14 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { lineAt, places, sideOverrides } from '../src/data/places'
 import { blocks, links, pinsNotOnDiagram } from '../src/data/topology'
-import type { Level, Mcu, PinRow, PinSelect, SpecId } from '../src/data/types'
+import type {
+  Level,
+  Mcu,
+  PinRow,
+  PinSelect,
+  Progress,
+  SpecId,
+} from '../src/data/types'
 import { handlePoint, placedLayout } from '../src/features/diagram/layout'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -17,6 +24,7 @@ const load = <T>(name: string): T =>
 
 const ids = load<Record<string, SpecId>>('ids.json')
 const pins = load<Record<Mcu, PinRow[]>>('pins.json')
+const progress = load<Progress>('progress.json')
 
 const errors: string[] = []
 const err = (msg: string) => errors.push(msg)
@@ -147,6 +155,10 @@ if (errors.length) {
   for (const e of errors) console.error(`  - ${e}`)
   process.exit(1)
 }
+const openCount = Object.values(ids).filter(
+  (s) => s.kind === 'OPEN' && !s.closed
+).length
 console.log(
-  `check-data: OK (${blocks.length} blocks, ${links.length} links, ${used.size} pins on links)`
+  `check-data: OK (${blocks.length} blocks, ${links.length} links, ${used.size} pins on links, ` +
+    `${openCount} open items, ${progress.gates.length} gates)`
 )

@@ -67,12 +67,13 @@ export const places: Record<Level, Record<string, Place>> = {
     'p-spare': { x: 1260, y: 674 },
     'j-gps': { x: 1260, y: 766 },
 
-    // IO MCU under the H743, wide enough to reach GPS1 straight up;
-    // the XT30 input sits above the servo headers
-    f100: { x: 760, y: 980, w: 740, h: 200 },
-    'j-servo': { x: 1680, y: 990, h: 84 },
-    'p-f100dbg': { x: 1680, y: 1110 },
-    xt30: { x: 1680, y: 870 },
+    // IO MCU under the H743, square, reaching both the H743 and GPS1
+    // straight up. The tall servo header block takes one line per servo
+    // output; the XT30 input sits above it, the SWD pads under the F100.
+    f100: { x: 1000, y: 980, w: 400, h: 400 },
+    'j-servo': { x: 1600, y: 1000, h: 300 },
+    xt30: { x: 1600, y: 860 },
+    'p-f100dbg': { x: 1180, y: 1440 },
 
     // power chain, lower left; rails are wide bars
     efuse: { x: 40, y: 980 },
@@ -80,7 +81,7 @@ export const places: Record<Level, Record<string, Place>> = {
     'r-5v': { x: 40, y: 1140, w: 584, h: 40 },
     ldo: { x: 40, y: 1260 },
     buck: { x: 280, y: 1260 },
-    'r-3v3': { x: 280, y: 1420, w: 1220, h: 40 },
+    'r-3v3': { x: 280, y: 1560, w: 1220, h: 40 },
   },
 }
 
@@ -94,4 +95,11 @@ export const sideOverrides: Record<string, [Side, Side]> = {}
  */
 export const lineAt: Record<string, number> = {
   'b-3v3-h743': 680,
+  // 3.3 V tap to the F100 runs left of the SWD pads
+  'b-3v3-f100': 1060,
+  // servo PWM lines 28 px apart, then the rail sense line set apart
+  ...Object.fromEntries(
+    Array.from({ length: 8 }, (_, i) => [`b-servo-${i + 1}`, 1030 + i * 28])
+  ),
+  'b-servo-sense': 1270,
 }

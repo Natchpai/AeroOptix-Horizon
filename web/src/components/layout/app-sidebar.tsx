@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { meta } from '@/data'
+import { commitUrl, meta } from '@/data'
 import { useLayout } from '@/context/layout-provider'
 import {
   Sidebar,
@@ -52,6 +52,16 @@ export function AppSidebar() {
             {' '}
             · spec rev {meta.specRevision} · not for fabrication
           </span>
+          <a
+            href={commitUrl(meta.build.commit)}
+            target='_blank'
+            rel='noreferrer'
+            className='mt-1 block text-[11px] text-muted-foreground hover:text-foreground'
+          >
+            Build{' '}
+            <span className='font-mono'>{meta.build.commit.slice(0, 7)}</span> ·{' '}
+            {meta.build.date}
+          </a>
         </div>
       </SidebarFooter>
       <SidebarRail />

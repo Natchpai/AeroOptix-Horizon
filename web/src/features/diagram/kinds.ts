@@ -1,4 +1,4 @@
-import type { BlockKind } from '@/data'
+import { type Block, type BlockKind, busInfo } from '@/data'
 import {
   Box,
   Cable,
@@ -25,4 +25,9 @@ export const kindInfo: Record<
     color: 'var(--bus-debug)',
   },
   external: { label: 'External device', icon: Box, color: 'var(--bus-usb)' },
+}
+
+/** A block on one power rail takes the rail colour; others their kind's. */
+export function blockColor(block: Block) {
+  return block.rail ? busInfo[block.rail].color : kindInfo[block.kind].color
 }

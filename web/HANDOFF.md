@@ -1,22 +1,30 @@
 # Handoff: team website
 
 **Updated:** 2026-10-24
-**Status:** Clickable mockup, live on GitHub Pages. The engineer approved the Pinout page and reviewed the Block diagram for size and labels. The diagram update (`6d00f58`) is on `dev` only: the live site still shows the old diagram until it reaches `main`.
+**Status:** Clickable mockup, live on GitHub Pages. The engineer approved the Pinout page and reviewed the Block diagram for size and labels. The diagram update is live (PR #19, squash commit `0e8ba9e`). Rail colours, SVG export and the record-driven Overview (progress, spec changes, next action, build stamp) are on `dev`, not live until the next `dev` → `main` PR.
 
 ## Where things are
 
 - Live site: https://natchpai.github.io/AeroOptix-Horizon/
 - Code: `web/`, merged to `main` in PR #18 (squash commit `e7def40`). Deploy: `.github/workflows/pages.yml`, on push to `main` when `web/`, the design docs or `README.md` change; it can also be started by hand.
+- What the build reads, so a merge to `main` updates the site with no code change:
+  - spec: every ID row (open items, decisions, interfaces), the header (revision, date) and the last 5 rows of section 9 change notes
+  - pin allocation: the H743, F100 and F100-reserved tables
+  - execution checklist: `Gate summary`, every `P<n>-<nnn>` task status, `Current next action`
+  - root `README.md`: phase, board revision, baseline, KiCad, key features, `Main MCU` and `IO MCU`
+  - `extract-docs` throws when one of these is missing, so a changed record layout fails the build and the old site stays up.
+- Still hand-written: blocks and links (`topology.ts`) and their positions (`places.ts`).
 - Pages is enabled with source "GitHub Actions". The first run failed because Pages was not enabled yet; the re-run passed.
-- Branches: `dev` is still 1 commit behind `origin/main` (the squash commit `e7def40`), and `6d00f58` is not pushed. Merge `main` into `dev` before the next PR, with the engineer's approval.
+- Branches: `dev` contains all of `main` (the engineer merged `main` into `dev` after PR #19). PRs #18 and #19 were squash-merged, which leaves `dev` behind `main` each time. Merge with "Create a merge commit" to avoid that.
 
 ## What the site does
 
-- Overview: phase, revisions, key features, open OPEN items.
+- Overview: phase, revisions, key features, open OPEN items, and (engineer's request, 2026-10-24) gate progress per checklist gate with a stacked task bar, the checklist's current next action (one numbered line per sentence or list item, words unchanged; task IDs link to their checklist row and take their status colour), the last 5 spec change notes, and a build stamp (commit and date, also in the sidebar).
 - Block Diagram: System (L0) and Board (L1) views, hand-placed, every link straight. Click a block for its detail panel; click a link label for the Interface view (L2): each signal with the MCU pin at each end, far end `TBD`.
 - Pinout: LQFP100 / LQFP48 package views and pin tables; a pin links back to its diagram link.
 - Showcase: placeholder.
 - Ctrl+K search over pins, signals, blocks and spec IDs.
+- SVG export (engineer's request, 2026-10-24): "Export SVG" on the System and Board views, "SVG" on each pinout package card. Native SVG (rect, line, text; no `foreignObject`), in the current site theme, with a title and a footer (spec revision, phase, "not for fabrication", export date). Diagrams are drawn from the same `placedLayout` as the canvas (`src/features/diagram/export-svg.ts`); the package view is the on-screen SVG with colours written out as hex (`src/features/pinout/export-svg.ts`). Shared helpers: `src/lib/svg-export.ts`.
 
 ## Decisions the engineer made (2026-10-24)
 
@@ -27,8 +35,25 @@
 - Mockup first, then deploy (done).
 - Pinout page: OK as it is.
 - Block diagram, Board view only: Main MCU block 720x640 (was 900x700), Buzzer moved from the top edge to the left edge, XT30 above the servo headers. The System view keeps its FC block size.
+- Board view, IO MCU area (engineer's request, 2026-10-24):
+  - The F100 block is square, 400x400.
+  - Servo headers are one tall block, 200x300, so "Servo headers × 8" shows in full.
+  - One PWM line per servo output (IF-030 to IF-037), labelled with its timer channel from the spec, 28 px apart. The rail-sense line is set apart below them.
+  - The F100 SWD pads moved under the F100, so XT30 and the servo headers are the only blocks on its right. The +3V3 rail bar moved down to make room.
+  - Any small block at least 120 px tall is drawn as a centred column (icon, then name, then sub-line). This also applies to the PDB on the System view.
 - Center blocks (MCUs, FC): icon and text centered, larger type. Other block and link text larger; blocks are 200x60.
 - Link labels must not cover a block, another label or another line. Parallel pairs: labels centered on horizontal pairs, beside the line on vertical pairs (`layout.ts`).
+- Power rails: one colour per rail, by voltage. Battery is red (danger), then warm (high voltage) to cold (low). Power lines are 4 px (signals 1.75 px) and never dashed; a candidate power line is faded to 45 % instead.
+
+  | Rail | Bus id | Light | Dark |
+  |---|---|---|---|
+  | Battery (6S) | `batt` | `#dc2626` | `#ef4444` |
+  | +6V | `v6` | `#c2410c` | `#f97316` |
+  | +5V (incl. `+VIN`, VBUS) | `v5` | `#ca8a04` | `#facc15` |
+  | +3.3V | `v3v3` | `#0284c7` | `#38bdf8` |
+  | +3.3VA | `v3v3a` | `#4f46e5` | `#818cf8` |
+
+  Power blocks that output one rail take its colour (`rail` field in `topology.ts`: battery, PDB, UBEC, eFuse, buck, LDO, rail bars). PM02D keeps the kind colour, since it outputs two rails. Signal bus colours did not change, so the Pinout page is unchanged.
 
 ## Verified
 
@@ -38,20 +63,23 @@
 - Screenshots at 1440 px and 390 px: no horizontal scroll. The live Board view renders.
 - After `6d00f58`: `npm run check` and `npm run build` pass. A headless Edge script measured every link label on both views, also with a block selected (bold labels): no label overlaps a block, a label or a line. The script lives outside the repo; `npm run check` cannot test this, because it has no font widths.
 
+- Record-driven Overview: `npm run build` passes. The extracted gate counts match a separate count of the checklist (P0 17 done of 22; P1 0 of 15 plus 1 N/A; P2 0 of 18; P3 0 of 11; P4 0 of 11). A copy of the records with `Gate summary` renamed makes `extract-docs` fail. `GITHUB_SHA` sets the build stamp. Screenshots at 1440 and 390 px, dark and light: no horizontal scroll.
+
 ## Not verified
 
-- Light theme on the diagram and pinout pages.
+- Light theme on the pinout page. The diagram was checked in both themes after the rail colours: in the light theme, Battery and +6V look close (both dark red-orange on white); a lighter +6V, such as `#f97316`, would fix it if the engineer agrees.
 - Every block and link text against the spec: only spot checks were done. `topology.ts` is hand-written.
 - Same-tab deep links: pasting a new `#/…` URL into an open tab was not tested (a fresh load works).
+- The first CI deploy with the new Overview: the build stamp from `GITHUB_SHA` was tested locally only.
+- SVG export: all 8 files (4 views × 2 themes) were downloaded in headless Edge from the production build, parse as valid SVG, contain no CSS variables, `color-mix` or classes, and render correctly in Edge. Opening them in Inkscape, PowerPoint or Word was not tested. Text uses Inter and JetBrains Mono when installed, else the generic sans-serif and monospace.
 
 ## Next steps
 
-1. Publish the diagram update. Each step needs its own approval: merge `main` into `dev`, push `dev`, open a PR to `main` with `.github/pull_request_template.md`. The engineer merges it, and the Pages workflow deploys.
-2. Engineer reviews the rest of the live site (Overview, Interface view, detail panel, search) and lists changes.
-3. Optional: add the label-overlap script to `web/` as its own command (it needs `playwright-core` and Edge, so keep it out of `npm run build` and CI).
-4. Add the site to the root `README.md` and `CHANGELOG.md`, using `hw-git-readme` and `hw-git-changelog`, when asked.
-5. Keep `topology.ts` in step with the spec as it changes. The build check catches IDs that no longer exist, but not new interfaces: add them by hand.
-6. Showcase, once there is a PCB: a 3D viewer (`@google/model-viewer` with a GLB from KiCad 10; the exact `kicad-cli` export command is `NOT_VERIFIED`), then renders and photos in `web/public/`.
+1. Engineer reviews the rest of the live site (Overview, Interface view, detail panel, search) and lists changes.
+2. Optional: add the label-overlap script to `web/` as its own command (it needs `playwright-core` and Edge, so keep it out of `npm run build` and CI).
+3. Add the site to the root `README.md` and `CHANGELOG.md`, using `hw-git-readme` and `hw-git-changelog`, when asked.
+4. Keep `topology.ts` in step with the spec as it changes. The build check catches IDs that no longer exist, but not new interfaces: add them by hand.
+5. Showcase, once there is a PCB: a 3D viewer (`@google/model-viewer` with a GLB from KiCad 10; the exact `kicad-cli` export command is `NOT_VERIFIED`), then renders and photos in `web/public/`.
 
 ## Known gaps in the content
 

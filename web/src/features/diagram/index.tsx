@@ -1,8 +1,9 @@
 import { useCallback } from 'react'
 import { getRouteApi, Link as RouterLink } from '@tanstack/react-router'
 import { type Level, blockById, linkById } from '@/data'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, Download } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 import { Main } from '@/components/layout/main'
 import { SiteHeader } from '@/components/layout/site-header'
 import { DiagramCanvas } from './canvas'
@@ -127,6 +128,18 @@ export function DiagramPage() {
             {view === 'interface' &&
               'Every signal on the selected link, with MCU pins at each end.'}
           </p>
+          {view !== 'interface' && (
+            <Button
+              variant='outline'
+              size='sm'
+              className='ms-auto'
+              onClick={() =>
+                import('./export-svg').then((m) => m.exportDiagram(level))
+              }
+            >
+              <Download /> Export SVG
+            </Button>
+          )}
         </div>
 
         <div className='relative min-h-0 flex-1 overflow-hidden rounded-xl border bg-[radial-gradient(ellipse_at_top,color-mix(in_oklab,var(--navy)_25%,transparent),transparent_70%)]'>

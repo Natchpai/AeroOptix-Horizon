@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button'
 import { IdChip, IdList } from '@/components/id-chip'
 import { MdText } from '@/components/md-text'
 import { StatusBadge } from '@/components/status-badge'
-import { kindInfo } from './kinds'
+import { blockColor, kindInfo } from './kinds'
 
 type PanelProps = {
   block?: Block
@@ -62,13 +62,14 @@ export function DetailPanel({ block, link, onClose, onLink }: PanelProps) {
 
 function BlockHead({ block }: { block: Block }) {
   const k = kindInfo[block.kind]
+  const color = blockColor(block)
   return (
     <div className='flex items-start gap-2.5'>
       <span
         className='mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md'
         style={{
-          color: k.color,
-          background: `color-mix(in oklab, ${k.color} 16%, transparent)`,
+          color,
+          background: `color-mix(in oklab, ${color} 16%, transparent)`,
         }}
       >
         <k.icon className='size-4' />

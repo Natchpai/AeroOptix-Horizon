@@ -1,6 +1,7 @@
 import idsJson from './generated/ids.json'
 import metaJson from './generated/meta.json'
 import pinsJson from './generated/pins.json'
+import progressJson from './generated/progress.json'
 import { blocks, links } from './topology'
 import type {
   Block,
@@ -11,6 +12,7 @@ import type {
   Meta,
   PinRow,
   PinSelect,
+  Progress,
   ReservedRow,
   SpecId,
   Status,
@@ -26,6 +28,8 @@ export const pins = pinsJson as {
   f100: PinRow[]
   f100Reserved: ReservedRow[]
 }
+// counts keys differ per gate, so the JSON type does not match Record directly
+export const progress = progressJson as unknown as Progress
 
 export const REPO_URL = 'https://github.com/Natchpai/AeroOptix-Horizon'
 
@@ -33,6 +37,11 @@ export const REPO_URL = 'https://github.com/Natchpai/AeroOptix-Horizon'
 export function sourceUrl(file: string, line?: number) {
   const base = `${REPO_URL}/blob/main/${file}`
   return line ? `${base}?plain=1#L${line}` : base
+}
+
+/** Link to a commit on GitHub. A local build has no commit to link. */
+export function commitUrl(sha: string) {
+  return /^[0-9a-f]{7,40}$/.test(sha) ? `${REPO_URL}/commit/${sha}` : undefined
 }
 
 export const mcuInfo: Record<
@@ -43,8 +52,16 @@ export const mcuInfo: Record<
   f100: { label: 'F100', part: 'STM32F100C8T6B', pkg: 'LQFP48', pinCount: 48 },
 }
 
-export const busInfo: Record<Bus, { label: string; color: string }> = {
-  power: { label: 'Power', color: 'var(--bus-power)' },
+/** Power rails run warm (high voltage) to cold (low) and draw thicker. */
+export const busInfo: Record<
+  Bus,
+  { label: string; color: string; power?: boolean }
+> = {
+  batt: { label: 'Battery', color: 'var(--rail-batt)', power: true },
+  v6: { label: '+6V', color: 'var(--rail-6v)', power: true },
+  v5: { label: '+5V', color: 'var(--rail-5v)', power: true },
+  v3v3: { label: '+3.3V', color: 'var(--rail-3v3)', power: true },
+  v3v3a: { label: '+3.3VA', color: 'var(--rail-3v3a)', power: true },
   spi: { label: 'SPI', color: 'var(--bus-spi)' },
   i2c: { label: 'I2C', color: 'var(--bus-i2c)' },
   uart: { label: 'UART', color: 'var(--bus-uart)' },

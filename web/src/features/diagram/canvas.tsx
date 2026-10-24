@@ -13,7 +13,7 @@ import {
 import '@xyflow/react/dist/style.css'
 import { useTheme } from '@/context/theme-provider'
 import { BlockNode, type BlockNodeType } from './block-node'
-import { kindInfo } from './kinds'
+import { blockColor } from './kinds'
 import { placedLayout } from './layout'
 import { LinkEdge, type LinkEdgeType } from './link-edge'
 
@@ -152,7 +152,7 @@ function CanvasInner({
         style={{ width: 170, height: 110 }}
         className='!hidden !rounded-md !border !bg-card lg:!block'
         maskColor='color-mix(in oklab, var(--background) 70%, transparent)'
-        nodeColor={(n) => kindInfo[(n as BlockNodeType).data.block.kind].color}
+        nodeColor={(n) => blockColor((n as BlockNodeType).data.block)}
         nodeStrokeWidth={0}
       />
     </ReactFlow>

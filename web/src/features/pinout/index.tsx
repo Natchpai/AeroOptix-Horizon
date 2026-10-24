@@ -20,11 +20,12 @@ import {
   pins,
   sourceUrl,
 } from '@/data'
-import { Network, X } from 'lucide-react'
+import { Download, Network, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -105,6 +106,17 @@ export function PinoutPage() {
                 Pin 1 top left, numbers counter-clockwise. Coloured pins are
                 allocated.
               </CardDescription>
+              <CardAction>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={() =>
+                    import('./export-svg').then((m) => m.exportPackage(mcu))
+                  }
+                >
+                  <Download /> SVG
+                </Button>
+              </CardAction>
             </CardHeader>
             <CardContent className='px-2 sm:px-6'>
               <PackageView mcu={mcu} selected={search.pin} onPick={pick} />
