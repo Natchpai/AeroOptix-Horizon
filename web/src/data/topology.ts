@@ -433,7 +433,7 @@ export const boardBlocks: Block[] = [
     rail: 'v5',
     label: 'eFuse, 1.5 A',
     sub: 'TPS16412DRC',
-    refs: ['DEC-024', 'PWR-010'],
+    refs: ['DEC-024', 'CMP-008', 'PWR-010'],
     open: ['OPEN-012'],
   },
   {

@@ -7,13 +7,15 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.7`
 
-> **Draft specification (rev 0.14, 2026-10-24): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.15, 2026-10-26): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
 AeroOptix-Horizon is a custom PX4 flight controller with two MCUs. The STM32H743VIT6 is the main flight-controller MCU and drives the 4 motor outputs. The STM32F100C8T6B is the IO MCU: it runs PX4 IO firmware (px4io) and drives the 8 servo outputs, the safety switch and the servo failsafe. A USART link connects the two MCUs.
 
 Pixhawk 6C and Pixhawk 6X are conceptual and functional references. Their schematics and PCBs are not copied. By team decision, the H743 pins mostly follow Pixhawk 6C (`px4/fmu-v6c`) and the F100 pins follow `px4/io-v2` (DEC-014).
+
+The team website, [natchpai.github.io/AeroOptix-Horizon](https://natchpai.github.io/AeroOptix-Horizon/), shows the block diagram, the MCU pinouts and the project status. It is built from the design records on each merge to `main` and adds no values of its own.
 
 ## Key Features
 
@@ -98,7 +100,7 @@ State of the saved KiCad files on 2026-10-24. Details are in the specification (
 
 | Area | State |
 |---|---|
-| Schematic | Only `power_supplies.kicad_sch` has parts (19, all unannotated): power module connector, TPS16412DRC eFuse, TPS62142RGTR buck, TPS73533DRBR LDO and a 3.3 V LED. The eFuse is placed but only its GND pad is wired, so nothing drives `+5V` yet. The other sheets hold no parts. |
+| Schematic | Only `power_supplies.kicad_sch` has parts (19, all unannotated): power module connector, TPS16412DRC eFuse, TPS62142RGTR buck, TPS73533DRBR LDO and a 3.3 V LED. The eFuse is placed but only its GND pad is wired, so nothing drives `+5V` yet. The other sheets hold no parts. The spec 4.3 table still lists 17 parts and the DNP DF2S6.2CT; the sheet is to be re-checked (spec rev 0.15). |
 | PCB | Empty: no footprints and no board outline. |
 | Library | Project symbols, footprints and 3D models for the MCUs, regulators, ESD parts, connectors and passives. Sensor symbols and footprints are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked yet. A BMP581 symbol is a starting point for the second barometer, and the Bosch LGA-10 footprint pads now follow the BMP581 land pattern (not checked against the drawing). The IST8310 uses the stock KiCad symbol and `LGA-16_3x3mm_P0.5mm` footprint; its datasheet has no land pattern, so the fit is estimated. A read-only link audit found no broken links. |
 | ERC / DRC | Not run. |
@@ -217,8 +219,10 @@ AeroOptix-Horizon/
 │   │   ├── verification/              # Review reports and test evidence
 │   │   └── images/                    # Documentation images
 │   └── templates/                     # Worksheets, theme, fab/assembly notes
+├── web/                               # Team website (Vite + React), built from the records
+├── assets/                            # README title image
 ├── .claude/                           # Claude Code rules, skills and hooks
-├── .github/                           # Pull request template
+├── .github/                           # Pull request template, Pages deploy workflow
 ├── CLAUDE.md
 ├── CHANGELOG.md
 ├── LICENSE
@@ -240,6 +244,7 @@ AeroOptix-Horizon/
 | [Integration questions](hardware/AO-Horizon/documents/design/AO-HORIZON_INTEGRATION_QUESTIONS_EN.md) | Open questions for the team (rev 0.4): ESC (D13), parts and team tests. Earlier answers applied in spec rev 0.13 and 0.14 |
 | [H7 MCU sourcing](hardware/AO-Horizon/documents/design/AO-HORIZON_H7_MCU_SOURCING_EN.md) | STM32H743VI price and stock |
 | [KiCad project](hardware/AO-Horizon/README.md) | Project folder layout |
+| [Team website](https://natchpai.github.io/AeroOptix-Horizon/) | Block diagram, MCU pinouts and status, built from these records ([source](web/README.md)) |
 
 ## License
 

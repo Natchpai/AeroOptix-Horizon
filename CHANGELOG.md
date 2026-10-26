@@ -30,6 +30,8 @@ Notable changes to this hardware project are documented here.
 - `documents/design/what-next.md`: personal reminder list of next steps.
 - Pinmap decisions file for the team (`AO-HORIZON_PINMAP_DECISIONS_EN.md`): spec rows that the team's pinmap answers change, decisions D1 to D7, software questions S1 to S7 and proposals H1 and H2, checked against PX4 v1.16.2 board files.
 - Integration questions for the team (`AO-HORIZON_INTEGRATION_QUESTIONS_EN.md`, rev 0.1): servo power path (D8), mounting and cable entry (D9), environment (D10), safety switch and GPS module (D11), external devices and connectors, and software questions S8 to S10. The proposed Pixhawk-style JST-GH pinouts are `NOT_VERIFIED`. Tracked as P0-021 and spec REF-09.
+- Team website in `web/` (Vite, React, shadcn-admin template): block diagram (system and board views), MCU pinouts, and an Overview with phase, gate progress, open items and recent spec changes. It reads the spec, checklist, pin allocation and root README at build time and adds no values of its own. Deployed to GitHub Pages by `.github/workflows/pages.yml` on merges to `main` (PRs #18 to #24).
+- README title image (`assets/AO-Horizon-title-v2.png`) and the AeroOptix black-and-white logo (`documents/images/Logos/`); the two old nP logo files were replaced by `np_black.png`.
 
 ### Changed
 
@@ -89,6 +91,8 @@ Notable changes to this hardware project are documented here.
   The Skywalker ESCs look PWM-only (no source found for DShot), which conflicts with FUN-002 and SAF-015. FUN-002 is unchanged; the team is asked in D13 (OPEN-017).
 - Integration questions rev 0.4: cleaned to open items only (D13 on the ESC, parts table, team tests). Answered sections are in rev 0.3 in Git history.
 - Checklist rev 0.13 (P0-022 rewritten; P1-016 `N/A`; new P2-017 eFuse and P2-018 ESC headers), power budget rev 0.7, design README, root `README.md` and `what-next.md` updated to match. No KiCad file read or changed. ERC and DRC not run.
+- Specification rev 0.15, a consistency pass with no new decisions: CMP-008 added for the TPS16412DRC eFuse (DEC-024) and the eFuse named in OPEN-010 and the verdict. Older text now matches rev 0.14 (UBEC on a board-mount XT30 in DEC-019 and the power-input scenario, USB feeding all 5 V ports, Skywalker ESCs in the DEC-016 notes). The spec now records that its power-sheet table (17 parts, DNP DF2S6.2CT) disagrees with the README and this changelog; not re-checked.
+- Checklist rev 0.14 (P0-013 XT30 wording, P0-016 adds DEC-024, next action), root `README.md` (spec rev, website link, repository tree), `what-next.md` and `web/HANDOFF.md` updated to match. The website eFuse block names CMP-008. No KiCad file read or changed. ERC and DRC not run.
 
 ### Fixed
 

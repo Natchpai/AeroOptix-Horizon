@@ -1,6 +1,6 @@
 # Handoff: team website
 
-**Updated:** 2026-10-24
+**Updated:** 2026-10-26
 **Status:** Clickable mockup, live on GitHub Pages. The engineer approved the Pinout page and reviewed the Block diagram for size and labels. Rail colours, SVG export, the record-driven Overview (progress, spec changes, next action, build stamp) and the IO MCU layout are live (PR #20, squash commit `2fd8638`).
 
 ## Where things are
@@ -84,7 +84,7 @@
 
 1. Engineer reviews the rest of the live site (Overview, Interface view, detail panel, search) and lists changes.
 2. Engineer checks fuchsia +3.3V on screen: it sits between GPIO pink and UART purple.
-3. Add the site to the root `README.md` and `CHANGELOG.md`, using `hw-git-readme` and `hw-git-changelog`, when asked.
+3. Done 2026-10-26: the root `README.md` links the site (Overview, Documentation, repository tree) and `CHANGELOG.md` records it. The eFuse block now also names `CMP-008` (spec rev 0.15).
 4. Keep `topology.ts` in step with the spec as it changes. The build check catches IDs that no longer exist, but not new interfaces: add them by hand.
 5. Showcase, once there is a PCB: a 3D viewer (`@google/model-viewer` with a GLB from KiCad 10; the exact `kicad-cli` export command is `NOT_VERIFIED`), then renders and photos in `web/public/`.
 
