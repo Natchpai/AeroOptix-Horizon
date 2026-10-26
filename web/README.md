@@ -66,7 +66,7 @@ It takes about 2 minutes. CI does not run it, because CI has no Edge. Google Fon
 - New link or block: add it to `topology.ts` with its spec IDs, then give each new block a place in `places.ts`.
 - Views: id `system` is shown as Overview (L0), id `board` as System (L1), id `power` as Power. The Power view (ids `pw-*`) holds every power part and runs left to right: source, input, protection, +5V bar, converters, +3V3 bar, loads. The System (L1) view has no power parts. A power change in the spec goes into the Power view, and into the Overview (L0) when it touches the battery chain.
 - Link ends on one side of a block are spaced equally and centred on that side; a `bundles` group in `places.ts` counts as one end. `npm run check` names the block and side that break it.
-- Zones: `zones` in `places.ts` lists the blocks of each titled box (System view: Connectors, USB and debug, On-board I/O). The box is sized to fit them. Connectors (kind `connector`) draw a tab on the cable side; on-board parts with no cable are kind `io`.
+- Zones: `zones` in `places.ts` lists the blocks of each titled box (System view: Connectors, USB and debug, On-board I/O; Overview: one In board (PCB) zone with the FC and its ports, out-board power, devices and actuators). The box is sized to fit them. Connectors (kind `connector`) draw a tab on the cable side; on-board parts with no cable are kind `io`.
 - A shared bus (kind `bus`, such as I2C2) is a bar: one line from the MCU, one tap per device. The MCU pins sit on the MCU line.
 - Keep every link straight. Put a block beside the edge of the block it talks to, inside that edge's span. Make the MCU larger if it needs more room.
 - To stop two links crossing, swap the order of the blocks along the edge.

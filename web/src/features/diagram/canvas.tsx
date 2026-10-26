@@ -86,7 +86,12 @@ function CanvasInner({
         id: z.zone.id,
         type: 'zone',
         position: { x: z.x, y: z.y },
-        data: { label: z.zone.label, w: z.w, h: z.h },
+        data: {
+          label: z.zone.label,
+          w: z.w,
+          h: z.h,
+          center: z.zone.title === 'center',
+        },
         width: z.w,
         height: z.h,
         zIndex: -1,

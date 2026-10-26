@@ -72,15 +72,21 @@ export function zoneBoxes(zones: Zone[], nodes: LaidNode[]): LaidZone[] {
   })
 }
 
-/** Side of a connector where its cable plugs in: away from its links. */
-export function cableSide(handles: HandleSpec[]): Side {
+/**
+ * Side of a connector where its cable plugs in. On the Overview its links
+ * are the cables, so the tab faces them; inside the board its links go to
+ * the MCU, so the tab faces away.
+ */
+export function cableSide(block: Block, handles: HandleSpec[]): Side {
   const opposite: Record<Side, Side> = {
     left: 'right',
     right: 'left',
     top: 'bottom',
     bottom: 'top',
   }
-  return handles.length ? opposite[handles[0].side] : 'right'
+  if (!handles.length) return 'right'
+  const side = handles[0].side
+  return block.level === 'system' ? side : opposite[side]
 }
 
 /** Height from which a small block is drawn as a centred column. */

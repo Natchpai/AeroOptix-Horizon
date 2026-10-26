@@ -210,6 +210,7 @@ async function main() {
       'diagram?level=system&block=servos',
       'diagram?level=system&block=gps',
       'diagram?level=system&block=pm02d',
+      'diagram?level=system&block=o-servo',
       'diagram?level=board&block=f100',
       'diagram?level=board&block=h743',
       'diagram?level=board&block=j-servo',

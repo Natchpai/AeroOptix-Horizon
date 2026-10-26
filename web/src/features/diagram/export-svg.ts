@@ -97,7 +97,7 @@ function blockSvg(n: LaidNode, f: ReturnType<typeof fonts>) {
     // tab on the cable side, inside the border, as block-node.tsx draws it
     const t = draw.port.tab
     const i = draw.border
-    const side = cableSide(n.handles)
+    const side = cableSide(b, n.handles)
     const [tx, ty, tw, th] =
       side === 'left'
         ? [x + i, y + i, t, h - 2 * i]
@@ -232,11 +232,12 @@ function blockSvg(n: LaidNode, f: ReturnType<typeof fonts>) {
 /** Zone box and title, as zone-node.tsx draws it. */
 function zoneSvg(z: LaidZone, f: ReturnType<typeof fonts>) {
   const { pad, head, radius, font } = draw.zone
+  const center = z.zone.title === 'center'
   return (
     `<rect x="${z.x + 0.5}" y="${z.y + 0.5}" width="${z.w - 1}" height="${z.h - 1}" rx="${radius}" ` +
     `${paintAttr('fill', 'color-mix(in oklab, var(--brand) 6%, transparent)')} ` +
     `${paintAttr('stroke', 'color-mix(in oklab, var(--brand) 30%, var(--border))')}/>` +
-    `<text x="${z.x + pad}" y="${z.y + (head + pad / 2) / 2 + font * 0.35}" font-family="${esc(f.sans)}" font-size="${font}" font-weight="600" letter-spacing="0.6" ${paintAttr('fill', 'var(--muted-foreground)')}>${esc(z.zone.label.toUpperCase())}</text>`
+    `<text x="${center ? z.x + z.w / 2 : z.x + pad}" y="${z.y + (head + pad / 2) / 2 + font * 0.35}" font-family="${esc(f.sans)}" font-size="${font}" font-weight="600" letter-spacing="0.6" text-anchor="${center ? 'middle' : 'start'}" ${paintAttr('fill', 'var(--muted-foreground)')}>${esc(z.zone.label.toUpperCase())}</text>`
   )
 }
 

@@ -21,33 +21,51 @@ export type Place = { x: number; y: number; w?: number; h?: number }
 export type Side = 'left' | 'right' | 'top' | 'bottom'
 
 export const places: Record<Level, Record<string, Place>> = {
-  // Overview (L0). FC left side ends at 300, 420, 540, 660: 120 apart,
-  // centred on 150..810.
+  // Overview (L0), in zones. In board (one zone, the PCB): the FC with its
+  // ports, power in and out on the left, normal connectors on the right. Out board: the
+  // power chain far left, devices far right, actuators below. Each device
+  // line starts at the port it plugs into; the FC itself has no lines.
   system: {
-    fc: { x: 400, y: 150, w: 600, h: 660 },
+    fc: { x: -100, y: 60, w: 480, h: 580 },
 
-    // power path, left to right: battery, PM02D (5 V and I2C4 out to the
-    // FC, battery down to the PDB), PDB, then the UBEC into the FC and the
-    // ESCs
-    battery: { x: -1040, y: 330 },
-    pm02d: { x: -720, y: 270, h: 180 },
-    pdb: { x: -720, y: 510, h: 560 },
-    ubec: { x: 40, y: 510 },
-    probe: { x: 40, y: 630 },
+    // power in / out ports, left of the FC
+    'o-pm': { x: -460, y: 200, w: 240 },
+    'o-xt30': { x: -460, y: 400, w: 240 },
+    'o-servo': { x: -460, y: 540, w: 240 },
 
-    // devices on the FC I/O, right: 90 apart, centred on the FC side
-    elrs: { x: 1200, y: 180 },
-    tel2dev: { x: 1200, y: 270 },
-    gps: { x: 1200, y: 360 },
-    airspeed: { x: 1200, y: 450 },
-    lidar: { x: 1200, y: 540 },
-    pc: { x: 1200, y: 630 },
-    card: { x: 1200, y: 720 },
+    // normal connectors, right of the FC, 92 apart; ESC headers last, with
+    // their line going down
+    'o-tel1': { x: 480, y: 0, w: 240 },
+    'o-tel2': { x: 480, y: 92, w: 240 },
+    'o-gps': { x: 480, y: 184, w: 240 },
+    'o-air': { x: 480, y: 276, w: 240 },
+    'o-lidar': { x: 480, y: 368, w: 240 },
+    'o-usb': { x: 480, y: 460, w: 240 },
+    'o-sd': { x: 480, y: 552, w: 240 },
+    'o-dbg': { x: 480, y: 644, w: 240 },
+    'o-esc': { x: 480, y: 736, w: 240 },
 
-    // actuators, below: ESC line at 540 and the servo pair centred at 860,
-    // both 160 from the FC bottom centre (700)
-    esc: { x: 440, y: 1010 },
-    servos: { x: 760, y: 1010 },
+    // power chain, left to right: battery, PM02D (battery down to the PDB),
+    // PDB (tall: UBEC at 430, ESCs at 1020), UBEC into the XT30
+    battery: { x: -1540, y: 200 },
+    pm02d: { x: -1180, y: 140, h: 180 },
+    pdb: { x: -1180, y: 380, h: 690 },
+    ubec: { x: -820, y: 400 },
+
+    // devices, level with their ports, wide enough for their notes
+    elrs: { x: 940, y: 0, w: 260 },
+    tel2dev: { x: 940, y: 92, w: 260 },
+    gps: { x: 940, y: 184, w: 260 },
+    airspeed: { x: 940, y: 276, w: 260 },
+    lidar: { x: 940, y: 368, w: 260 },
+    pc: { x: 940, y: 460, w: 260 },
+    card: { x: 940, y: 552, w: 260 },
+    probe: { x: 940, y: 644, w: 260 },
+
+    // actuators under their ports; the ESC line from the PDB runs under
+    // the servos
+    servos: { x: -490, y: 900, w: 300 },
+    esc: { x: 470, y: 990, w: 260 },
   },
 
   // System (L1), in zones: on-board I/O on top, sensors and the I2C2 bus
@@ -130,9 +148,64 @@ export const places: Record<Level, Record<string, Place>> = {
  * Zones: a titled box drawn behind a group of blocks, sized to fit them.
  * No other block may sit inside a zone (`npm run check`).
  */
-export type Zone = { id: string; label: string; blocks: string[] }
+export type Zone = {
+  id: string
+  label: string
+  blocks: string[]
+  /** Title place; left unless a line passes there. */
+  title?: 'center'
+}
 
 export const zones: Partial<Record<Level, Zone[]>> = {
+  system: [
+    {
+      // the PCB: the FC and every port on it. Power ports sit left of the
+      // FC, normal connectors right of it.
+      id: 'z-in',
+      label: 'In board (PCB)',
+      blocks: [
+        'fc',
+        'o-pm',
+        'o-xt30',
+        'o-servo',
+        'o-tel1',
+        'o-tel2',
+        'o-gps',
+        'o-air',
+        'o-lidar',
+        'o-usb',
+        'o-sd',
+        'o-dbg',
+        'o-esc',
+      ],
+    },
+    {
+      id: 'z-out-pwr',
+      label: 'Out board: power',
+      blocks: ['battery', 'pm02d', 'pdb', 'ubec'],
+    },
+    {
+      id: 'z-out-dev',
+      label: 'Out board: devices',
+      blocks: [
+        'elrs',
+        'tel2dev',
+        'gps',
+        'airspeed',
+        'lidar',
+        'pc',
+        'card',
+        'probe',
+      ],
+    },
+    {
+      id: 'z-out-act',
+      label: 'Out board: actuators',
+      // centred: the servo and ESC lines pass the left and right ends
+      title: 'center',
+      blocks: ['servos', 'esc'],
+    },
+  ],
   board: [
     {
       id: 'z-io',
@@ -171,7 +244,7 @@ export const sideOverrides: Record<string, [Side, Side]> = {}
 export const bundles: string[][] = [
   // servo PWM lines, with the rail sense line set apart (engineer's rule)
   [...Array.from({ length: 8 }, (_, i) => `b-servo-${i + 1}`), 'b-servo-sense'],
-  // FC to servos: PWM and the 6 V bus side by side
+  // servo headers to servos: PWM and the 6 V bus side by side
   ['s-fc-servo', 's-fc-servo-pwr'],
 ]
 
@@ -181,12 +254,15 @@ export const bundles: string[][] = [
  * equal-spacing rule needs it.
  */
 export const lineAt: Record<string, number> = {
-  // PM02D (y 270 to 450) right side: two ends, 120 apart, centred
-  's-pm-fc-pwr': 300,
-  's-pm-fc-i2c': 420,
-  // FC to servos pair, centred on the servos block (860)
-  's-fc-servo': 846,
-  's-fc-servo-pwr': 874,
+  // Overview: PM02D to its port, two lines 28 apart, centred on both
+  's-pm-fc-pwr': 216,
+  's-pm-fc-i2c': 244,
+  // PDB right side: UBEC and ESC lines, centred on the PDB (725)
+  's-pdb-ubec': 430,
+  's-pdb-esc': 1020,
+  // servo headers to servos pair, centred on both (-340)
+  's-fc-servo': -354,
+  's-fc-servo-pwr': -326,
   // H743 top: the outer two lines through the middle of their blocks
   'b-sd': 418,
   'b-buzzer': 1102,

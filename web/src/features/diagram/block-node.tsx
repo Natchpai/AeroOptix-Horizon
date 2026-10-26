@@ -39,7 +39,7 @@ function BlockNodeImpl({ data, selected }: NodeProps<BlockNodeType>) {
   const tall = !big && h >= TALL
   // connectors: square corners and a solid tab where the cable plugs in
   const port = block.kind === 'connector'
-  const tab = port ? cableSide(handles ?? []) : null
+  const tab = port ? cableSide(block, handles ?? []) : null
   return (
     <div
       style={{
