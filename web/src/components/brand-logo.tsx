@@ -34,8 +34,8 @@ function ThemedImage({
 export function BrandLogo({ className }: { className?: string }) {
   return (
     <ThemedImage
-      light='aeroOptix_light_logo.png'
-      dark='aeroOptix_dark_logo.png'
+      light='AeroOptix_v2_light_theme.png'
+      dark='AeroOptix_v2_dark_theme.png'
       alt='AeroOptix logo'
       className={className}
     />
