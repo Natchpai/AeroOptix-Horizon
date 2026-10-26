@@ -13,9 +13,13 @@ import { Legend } from './legend'
 
 const route = getRouteApi('/_site/diagram')
 
+// Display names are swapped against the ids (engineer, 2026-10-26): the
+// outer view (id `system`) is called Overview, the inner view (id `board`)
+// is called System. Ids stay so old links keep working.
 const levels: { id: Level | 'interface'; label: string; hint: string }[] = [
-  { id: 'system', label: 'System', hint: 'L0' },
-  { id: 'board', label: 'Board', hint: 'L1' },
+  { id: 'system', label: 'Overview', hint: 'L0' },
+  { id: 'board', label: 'System', hint: 'L1' },
+  { id: 'power', label: 'Power', hint: 'L1' },
   { id: 'interface', label: 'Interface', hint: 'L2' },
 ]
 
@@ -48,9 +52,12 @@ export function DiagramPage() {
   const onPane = useCallback(() => set({ level }), [set, level])
 
   const crumbs = [
-    { label: 'System', search: { level: 'system' as Level } },
+    { label: 'Overview', search: { level: 'system' as Level } },
     ...(level === 'board'
-      ? [{ label: 'Board', search: { level: 'board' as Level } }]
+      ? [{ label: 'System', search: { level: 'board' as Level } }]
+      : []),
+    ...(level === 'power'
+      ? [{ label: 'Power', search: { level: 'power' as Level } }]
       : []),
     ...(block && !link
       ? [{ label: block.label, search: { level, block: block.id } }]
@@ -124,7 +131,9 @@ export function DiagramPage() {
             {view === 'system' &&
               'The board and the devices it connects to. Click the board to open it.'}
             {view === 'board' &&
-              'Blocks inside the board. Click a link label for its signals and pins.'}
+              'How the blocks inside the board connect. Click a link label for its signals and pins.'}
+            {view === 'power' &&
+              'Power from source to load, left to right. Faded lines are candidate feeds.'}
             {view === 'interface' &&
               'Every signal on the selected link, with MCU pins at each end.'}
           </p>

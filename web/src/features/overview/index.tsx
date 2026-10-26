@@ -18,6 +18,7 @@ import {
   Microchip,
   Network,
   Workflow,
+  Zap,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
@@ -71,7 +72,8 @@ const stats = [
 
 const explore = [
   {
-    title: 'System view',
+    // display names swapped against the level ids, as on the diagram page
+    title: 'Overview diagram',
     text: 'The board and everything it connects to on the aircraft.',
     to: '/diagram',
     search: { level: 'system' },
@@ -79,12 +81,20 @@ const explore = [
     color: 'var(--bus-usb)',
   },
   {
-    title: 'Board view',
-    text: 'MCUs, sensors, power chain and connectors. Click a link for signals and pins.',
+    title: 'System view',
+    text: 'How the MCUs, sensors and connectors connect. Click a link for signals and pins.',
     to: '/diagram',
     search: { level: 'board' },
     icon: Network,
     color: 'var(--bus-spi)',
+  },
+  {
+    title: 'Power view',
+    text: 'Power from the battery and USB to every load, left to right.',
+    to: '/diagram',
+    search: { level: 'power' },
+    icon: Zap,
+    color: 'var(--rail-5v)',
   },
   {
     title: 'H743 pinout',
@@ -177,7 +187,7 @@ export function Overview() {
         </div>
 
         {/* Explore */}
-        <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+        <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'>
           {explore.map((e) => (
             <Link key={e.title} to={e.to} search={e.search} className='group'>
               <Card className='h-full gap-3 transition-colors group-hover:border-primary/60'>

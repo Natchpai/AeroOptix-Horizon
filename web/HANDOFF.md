@@ -20,7 +20,11 @@
 ## What the site does
 
 - Overview: phase, revisions, key features, open OPEN items, and (engineer's request, 2026-10-24) gate progress per checklist gate with a stacked task bar, the checklist's current next action (one numbered line per sentence or list item, words unchanged; task IDs link to their checklist row and take their status colour), the last 5 spec change notes, and a build stamp (commit and date, also in the sidebar). Order, from `lg` up: Progress (left half) beside Recent spec changes (right half), then the next action at full width, then Key features beside Open items. Below `lg` the cards stack.
-- Block Diagram: System (L0) and Board (L1) views, hand-placed, every link straight. Click a block for its detail panel; click a link label for the Interface view (L2): each signal with the MCU pin at each end, far end `TBD`.
+- **View names (engineer, 2026-10-26):** the outer view was renamed Board ("board mean overview system, system mean how to connect in board"), then **Overview** (L0, URL id `system`); the inner view is **System** (L1, URL id `board`). Only the labels changed; the ids stayed so old links work. History below uses the names of its date.
+- **Equal spacing (engineer, 2026-10-26):** link ends on one side of a block are spaced equally and centred, first asked for the PM02D on the Overview, then for every block. `bundles` in `places.ts` count as one end (servo PWM group with the rail-sense line, Overview FC-to-servos pair). `npm run check` enforces it. To meet it, the Overview PM02D now sends the battery down to the PDB (PDB under the PM02D), and the Power view columns were re-spaced: the +5V bar is centred on the LDO line, the +3V3 bar on the buck line.
+- **System view zones (engineer, 2026-10-26):** I2C2 is one line out of the H743 to a bus bar, which taps Baro 1, Baro 2 and the magnetometer (addresses on the taps, from the pin allocation). Blocks sit in titled zones: Connectors (right column: Tel1, Tel2, power module, air-data, TF-Luna, ESC, GPS1, servo headers), USB and debug (USB-C, H743 debug, F100 SWD pads, kept apart at the engineer's request) and On-board I/O (top: microSD, spare pads, LEDs, buzzer). Connectors have small corners and a tab on the cable side; parts with no cable are the new kind `io`. GPS1 is tall so it faces both MCUs; the F100 sits centred under the H743 and its SWD pads are on its left. `npm run check` tests the zone boxes.
+- Block Diagram: Overview (L0) and System (L1) views, hand-placed, every link straight. Click a block for its detail panel; click a link label for the Interface view (L2): each signal with the MCU pin at each end, far end `TBD`.
+- Power view (L1, engineer's request, 2026-10-26): power only, left to right: battery, PM02D (tall, `+VIN` out at the top, battery out at the bottom), eFuse and USB-C, the +5V bar, the buck, LDO, UBEC and XT30, the +3V3 bar, then grouped loads (Main MCU, IO MCU, baro × 2 + mag, IMU × 2 on `+3V3A` (DEC-025), 5 V external ports, 8 servos, 4 ESCs). Feeds the records do not give (3.3 V to the MCUs, baro and mag, and the battery chain) are candidate; the LDO block is dashed because its part is not decided. Rail bars stand upright, 120 px wide, so the name fits.
 - Pinout: LQFP100 / LQFP48 package views and pin tables; a pin links back to its diagram link.
 - Showcase: placeholder.
 - Ctrl+K search over pins, signals, blocks and spec IDs.
@@ -73,6 +77,9 @@
 - Live after PR #20: the deploy passed and the sidebar shows `Build 2fd8638`, the merge commit, so the CI build stamp works. The Progress card, the 8 servo lines and Export SVG are on the live site.
 - Light-theme +6V changed from `#c2410c` to `#ea580c` (engineer's request, 2026-10-24): the old one looked like Battery red. `#ea580c` was compared with `#f97316` on the System view; `#f97316` drifts toward the +5V amber and its 12 px label reads weaker on white (about 2.8:1 against white, `#ea580c` about 3.6:1).
 
+- 2026-10-26, second pass (engineer's requests): view names swapped; power parts removed from the System (L1) view (the `+5V` and `+3V3` bars, eFuse, buck, LDO, XT30 and their lines), USB-C moved level with the F100, the power module port drawn tall so its name shows in full; the Board (L0) power chain runs left to right (battery, PM02D, PDB, UBEC); the Power view splits the sensors into IMU × 2 on `+3V3A` (DEC-025, decided) and baro × 2 + mag on `+3V3` (candidate). `npm run check` (55 blocks, 65 links), `npm run build` and `npm run test:ui` pass; screenshots of all three views at 1440 px dark and light, and the Overview with the new Power card.
+- Power view (2026-10-26): `npm run check` passes (61 blocks, 74 links), `npm run build` and `npm run test:ui` pass with the Power view in the page-error, straight-line, label-overlap (4 states) and SVG-export lists. Headless Edge screenshots at 1440 px (dark and light) show every name and sub in full. At 390 px the view is tiny on first load, as the Board view is.
+
 ## Not verified
 
 - Light theme on the pinout page.
@@ -94,8 +101,7 @@
 - Which rail feeds each sensor is not drawn: only the `ASSUMED` 3.3 V feeds to the MCUs are, as candidate (dashed) links.
 - The F100 reserved pins have no package pin numbers in the record, so they appear in a table only, not on the package view.
 - The KiCad `block_diagram.kicad_sch` still says F103 (P2-014, the engineer's item); the site does not use it.
-- Some long block names are cut with "…" on the Board view ("Power module c…"); the full name is in the detail panel.
-- At 390 px the whole Board view is tiny on first load; the canvas zoom controls work.
+- At 390 px the System (L1) and Power views are tiny on first load; the canvas zoom controls work.
 - Light theme on the new diagram layout is not checked.
 
 ## Preview in VS Code

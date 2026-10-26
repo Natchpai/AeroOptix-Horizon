@@ -24,8 +24,9 @@ export const sidebarData: SidebarData = {
           title: 'Block Diagram',
           icon: Network,
           items: [
-            { title: 'System', url: '/diagram', search: { level: 'system' } },
-            { title: 'Board', url: '/diagram', search: { level: 'board' } },
+            { title: 'Overview', url: '/diagram', search: { level: 'system' } },
+            { title: 'System', url: '/diagram', search: { level: 'board' } },
+            { title: 'Power', url: '/diagram', search: { level: 'power' } },
           ],
         },
         {

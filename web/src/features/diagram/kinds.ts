@@ -5,7 +5,9 @@ import {
   CircuitBoard,
   Cpu,
   Gauge,
+  Network,
   Plug,
+  ToggleRight,
   Zap,
   type LucideIcon,
 } from 'lucide-react'
@@ -19,11 +21,9 @@ export const kindInfo: Record<
   sensor: { label: 'Sensor', icon: Gauge, color: 'var(--bus-i2c)' },
   power: { label: 'Power part', icon: Zap, color: 'var(--bus-power)' },
   rail: { label: 'Power rail', icon: Cable, color: 'var(--bus-power)' },
-  connector: {
-    label: 'Connector / on-board I/O',
-    icon: Plug,
-    color: 'var(--bus-debug)',
-  },
+  bus: { label: 'Shared bus', icon: Network, color: 'var(--bus-i2c)' },
+  connector: { label: 'Connector', icon: Plug, color: 'var(--bus-debug)' },
+  io: { label: 'On-board I/O', icon: ToggleRight, color: 'var(--bus-gpio)' },
   external: { label: 'External device', icon: Box, color: 'var(--bus-usb)' },
 }
 

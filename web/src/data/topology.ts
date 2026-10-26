@@ -25,7 +25,7 @@ export const systemBlocks: Block[] = [
     sub: 'STM32H743 + STM32F100',
     refs: ['SYS-001', 'MCU-001', 'MCU-002'],
     drill: 'board',
-    note: 'Open the board view for the blocks inside.',
+    note: 'Open the System view for the blocks inside.',
   },
   {
     id: 'battery',
@@ -393,7 +393,7 @@ export const boardBlocks: Block[] = [
     level: 'board',
     kind: 'sensor',
     label: 'Baro 1',
-    sub: 'ICP-20100 @ 0x63',
+    sub: 'ICP-20100',
     refs: ['SEN-002', 'DEC-010'],
     open: ['OPEN-013'],
   },
@@ -402,7 +402,7 @@ export const boardBlocks: Block[] = [
     level: 'board',
     kind: 'sensor',
     label: 'Baro 2',
-    sub: 'BMP581 @ 0x46',
+    sub: 'BMP581',
     refs: ['SEN-002', 'DEC-010'],
     open: ['OPEN-013', 'OPEN-019'],
   },
@@ -411,11 +411,21 @@ export const boardBlocks: Block[] = [
     level: 'board',
     kind: 'sensor',
     label: 'Magnetometer',
-    sub: 'IST8310 @ 0x0E',
+    sub: 'IST8310',
     refs: ['SEN-003', 'DEC-011'],
     open: ['OPEN-013'],
   },
-  // Power
+  // I2C2: one bus out of the H743, then a tap per sensor
+  {
+    id: 'i2c2',
+    level: 'board',
+    kind: 'bus',
+    label: 'I2C2',
+    rail: 'i2c',
+    refs: ['SEN-002', 'SEN-003'],
+    note: 'Both barometers and the magnetometer share I2C2. Addresses do not overlap. One bus fault can take out both barometers.',
+  },
+  // Power module port: I2C4 only here; power parts are on the Power view
   {
     id: 'j-pm',
     level: 'board',
@@ -426,64 +436,7 @@ export const boardBlocks: Block[] = [
     open: ['OPEN-023'],
     note: 'The power sheet still draws a 6-pin JST-GH (OPEN-023).',
   },
-  {
-    id: 'efuse',
-    level: 'board',
-    kind: 'power',
-    rail: 'v5',
-    label: 'eFuse, 1.5 A',
-    sub: 'TPS16412DRC',
-    refs: ['DEC-024', 'CMP-008', 'PWR-010'],
-    open: ['OPEN-012'],
-  },
-  {
-    id: 'r-5v',
-    level: 'board',
-    kind: 'rail',
-    rail: 'v5',
-    label: '+5V bus',
-    refs: ['PWR-010'],
-    open: ['OPEN-006'],
-  },
-  {
-    id: 'buck',
-    level: 'board',
-    kind: 'power',
-    rail: 'v3v3',
-    label: '3.3 V buck',
-    sub: 'TPS62142RGTR',
-    refs: ['DEC-012'],
-  },
-  {
-    id: 'r-3v3',
-    level: 'board',
-    kind: 'rail',
-    rail: 'v3v3',
-    label: '+3V3 rail',
-    refs: ['DEC-012', 'PWR-013'],
-  },
-  {
-    id: 'ldo',
-    level: 'board',
-    kind: 'power',
-    rail: 'v3v3a',
-    label: '+3V3A LDO',
-    sub: 'TPS73533DRBR (drawn)',
-    refs: ['PWR-013'],
-    open: ['OPEN-011'],
-    status: 'candidate',
-    note: 'Drawn in the schematic, not a recorded decision. Purpose of +3V3A is open.',
-  },
-  {
-    id: 'xt30',
-    level: 'board',
-    kind: 'connector',
-    label: 'XT30, 6 V in',
-    sub: 'From UBEC',
-    refs: ['PWR-011', 'DEC-019'],
-    open: ['OPEN-021'],
-  },
-  // Connectors and outputs
+  // Connectors (cable side) and on-board I/O (kind io)
   {
     id: 'j-tel1',
     level: 'board',
@@ -541,7 +494,7 @@ export const boardBlocks: Block[] = [
   {
     id: 'j-sd',
     level: 'board',
-    kind: 'connector',
+    kind: 'io',
     label: 'microSD slot',
     sub: 'No card detect',
     refs: ['IF-044'],
@@ -557,7 +510,7 @@ export const boardBlocks: Block[] = [
   {
     id: 'p-f100dbg',
     level: 'board',
-    kind: 'connector',
+    kind: 'io',
     label: 'F100 SWD pads',
     sub: 'Bench only',
     refs: ['IF-051'],
@@ -583,7 +536,7 @@ export const boardBlocks: Block[] = [
   {
     id: 'p-spare',
     level: 'board',
-    kind: 'connector',
+    kind: 'io',
     label: 'Spare outputs × 3',
     sub: 'Pads only',
     refs: range('IF', 17, 19),
@@ -591,7 +544,7 @@ export const boardBlocks: Block[] = [
   {
     id: 'buzzer',
     level: 'board',
-    kind: 'connector',
+    kind: 'io',
     label: 'Buzzer',
     sub: 'Passive',
     refs: ['IF-046'],
@@ -599,7 +552,7 @@ export const boardBlocks: Block[] = [
   {
     id: 'leds',
     level: 'board',
-    kind: 'connector',
+    kind: 'io',
     label: 'Board LEDs',
     sub: 'Red, blue, green',
     refs: ['IF-047'],
@@ -607,98 +560,7 @@ export const boardBlocks: Block[] = [
 ]
 
 export const boardLinks: Link[] = [
-  // Power
-  {
-    id: 'b-pm-efuse',
-    level: 'board',
-    from: 'j-pm',
-    to: 'efuse',
-    bus: 'v5',
-    label: '+VIN',
-    refs: ['PWR-010', 'DEC-024'],
-    open: ['OPEN-012'],
-  },
-  {
-    id: 'b-efuse-5v',
-    level: 'board',
-    from: 'efuse',
-    to: 'r-5v',
-    bus: 'v5',
-    label: '+5V',
-    refs: ['DEC-024'],
-    open: ['OPEN-012'],
-  },
-  {
-    id: 'b-usb-5v',
-    level: 'board',
-    from: 'j-usb',
-    to: 'r-5v',
-    bus: 'v5',
-    label: 'VBUS, OR-ing TBD',
-    refs: ['IF-022'],
-    open: ['OPEN-006'],
-  },
-  {
-    id: 'b-5v-buck',
-    level: 'board',
-    from: 'r-5v',
-    to: 'buck',
-    bus: 'v5',
-    label: '5 V',
-    refs: ['DEC-012'],
-  },
-  {
-    id: 'b-buck-3v3',
-    level: 'board',
-    from: 'buck',
-    to: 'r-3v3',
-    bus: 'v3v3',
-    label: '3.3 V',
-    refs: ['DEC-012'],
-  },
-  {
-    id: 'b-5v-ldo',
-    level: 'board',
-    from: 'r-5v',
-    to: 'ldo',
-    bus: 'v5',
-    label: '5 V',
-    refs: ['PWR-013'],
-    open: ['OPEN-011'],
-    status: 'candidate',
-  },
-  {
-    id: 'b-3v3-h743',
-    level: 'board',
-    from: 'r-3v3',
-    to: 'h743',
-    bus: 'v3v3',
-    label: '3.3 V',
-    refs: ['PWR-013'],
-    status: 'candidate',
-    note: 'ASSUMED in the power budget: 3.3 V feeds the MCUs, baro and mag.',
-  },
-  {
-    id: 'b-3v3-f100',
-    level: 'board',
-    from: 'r-3v3',
-    to: 'f100',
-    bus: 'v3v3',
-    label: '3.3 V',
-    refs: ['PWR-013'],
-    status: 'candidate',
-    note: 'ASSUMED in the power budget: 3.3 V feeds the MCUs, baro and mag.',
-  },
-  {
-    id: 'b-xt30-servo',
-    level: 'board',
-    from: 'xt30',
-    to: 'j-servo',
-    bus: 'v6',
-    label: '6 V servo bus',
-    refs: ['DEC-019', 'PWR-011'],
-    open: ['OPEN-021'],
-  },
+  // Servo rail sense (power lines are on the Power view)
   {
     id: 'b-servo-sense',
     level: 'board',
@@ -731,34 +593,41 @@ export const boardLinks: Link[] = [
     pins: [{ mcu: 'h743', refs: ['SEN-001'], fn: '^IMU2' }],
   },
   {
-    id: 'b-baro1',
+    id: 'b-i2c2',
     level: 'board',
     from: 'h743',
-    to: 'baro1',
+    to: 'i2c2',
     bus: 'i2c',
     label: 'I2C2',
+    refs: ['SEN-002', 'SEN-003'],
+    pins: [{ mcu: 'h743', refs: ['SEN-002', 'SEN-003'] }],
+  },
+  {
+    id: 'b-baro1',
+    level: 'board',
+    from: 'i2c2',
+    to: 'baro1',
+    bus: 'i2c',
+    label: '0x63',
     refs: ['SEN-002'],
-    pins: [{ mcu: 'h743', refs: ['SEN-002'] }],
   },
   {
     id: 'b-baro2',
     level: 'board',
-    from: 'h743',
+    from: 'i2c2',
     to: 'baro2',
     bus: 'i2c',
-    label: 'I2C2',
+    label: '0x46',
     refs: ['SEN-002'],
-    pins: [{ mcu: 'h743', refs: ['SEN-002'] }],
   },
   {
     id: 'b-mag',
     level: 'board',
-    from: 'h743',
+    from: 'i2c2',
     to: 'mag',
     bus: 'i2c',
-    label: 'I2C2',
+    label: '0x0E',
     refs: ['SEN-003'],
-    pins: [{ mcu: 'h743', refs: ['SEN-003'] }],
   },
   // MCU link
   {
@@ -954,6 +823,277 @@ export const boardLinks: Link[] = [
   },
 ]
 
+// ----------------------------------------------------------------- power
+// Power flow, left to right: source, input, protection, rail, converter,
+// rail, loads. Loads are grouped (engineer's choice, 2026-10-26); a feed
+// the records do not give is a candidate (faded).
+const assumed3v3 =
+  'ASSUMED in the power budget: 3.3 V feeds the MCUs, baro and mag.'
+
+export const powerBlocks: Block[] = [
+  {
+    id: 'pw-batt',
+    level: 'power',
+    kind: 'external',
+    rail: 'batt',
+    label: '6S battery',
+    sub: 'XT90-S',
+    refs: ['PWR-013'],
+    status: 'candidate',
+    note: 'From the spec diagram (4.3). Candidate only.',
+  },
+  {
+    id: 'pw-pm02d',
+    level: 'power',
+    kind: 'external',
+    label: 'Power module',
+    sub: 'Holybro PM02D',
+    refs: ['IF-048', 'PWR-001'],
+    open: ['OPEN-023'],
+    note: 'Passes the battery on to the PDB and gives the board 5 V (+VIN).',
+  },
+  {
+    id: 'pw-efuse',
+    level: 'power',
+    kind: 'power',
+    rail: 'v5',
+    label: 'eFuse, 1.5 A',
+    sub: 'TPS16412DRC',
+    refs: ['DEC-024', 'CMP-008', 'PWR-010'],
+    open: ['OPEN-012'],
+  },
+  {
+    id: 'pw-usb',
+    level: 'power',
+    kind: 'connector',
+    rail: 'v5',
+    label: 'USB-C',
+    sub: 'VBUS, bench power',
+    refs: ['IF-022'],
+    open: ['OPEN-006'],
+  },
+  {
+    id: 'pw-r5v',
+    level: 'power',
+    kind: 'rail',
+    rail: 'v5',
+    label: '+5V bus',
+    refs: ['PWR-010'],
+    open: ['OPEN-006'],
+  },
+  {
+    id: 'pw-buck',
+    level: 'power',
+    kind: 'power',
+    rail: 'v3v3',
+    label: '3.3 V buck',
+    sub: 'TPS62142RGTR',
+    refs: ['DEC-012', 'CMP-007'],
+  },
+  {
+    id: 'pw-ldo',
+    level: 'power',
+    kind: 'power',
+    rail: 'v3v3a',
+    label: '+3V3A LDO',
+    sub: 'TPS73533DRBR (drawn)',
+    refs: ['PWR-013', 'DEC-025'],
+    open: ['OPEN-011'],
+    status: 'candidate',
+    note: 'The +3V3A use is decided: the 2 IMUs only (DEC-025). The LDO part is not decided (OPEN-011).',
+  },
+  {
+    id: 'pw-r3v3',
+    level: 'power',
+    kind: 'rail',
+    rail: 'v3v3',
+    label: '+3V3 rail',
+    refs: ['DEC-012', 'PWR-013'],
+  },
+  {
+    id: 'pw-h743',
+    level: 'power',
+    kind: 'mcu',
+    label: 'Main MCU',
+    sub: 'STM32H743VIT6',
+    refs: ['MCU-001'],
+  },
+  {
+    id: 'pw-f100',
+    level: 'power',
+    kind: 'mcu',
+    label: 'IO MCU',
+    sub: 'STM32F100C8T6B',
+    refs: ['MCU-002'],
+  },
+  {
+    id: 'pw-baro-mag',
+    level: 'power',
+    kind: 'sensor',
+    label: 'Baro × 2 + mag',
+    sub: 'ICP-20100, BMP581, IST8310',
+    refs: ['SEN-002', 'SEN-003'],
+    open: ['OPEN-004'],
+  },
+  {
+    id: 'pw-imu',
+    level: 'power',
+    kind: 'sensor',
+    label: 'IMU × 2',
+    sub: 'ICM-45686, VDD + VDDIO',
+    refs: ['SEN-001', 'DEC-025'],
+    open: ['OPEN-011'],
+    note: 'Only load on +3V3A (DEC-025). SPI level match with the H743 on +3V3 is not checked (OPEN-011).',
+  },
+  {
+    id: 'pw-ports',
+    level: 'power',
+    kind: 'connector',
+    label: '5 V external ports',
+    sub: 'Tel1, Tel2, GPS1, air, TF-Luna',
+    refs: ['IF-010', 'IF-011', 'IF-012', 'IF-014', 'IF-015', 'IF-022'],
+    open: ['OPEN-006', 'OPEN-023'],
+    note: 'USB also feeds these ports on the bench (IF-022).',
+  },
+  {
+    id: 'pw-pdb',
+    level: 'power',
+    kind: 'external',
+    rail: 'batt',
+    label: 'PDB',
+    sub: 'CRIUS PDB v1.0',
+    refs: ['PWR-013'],
+    status: 'candidate',
+    note: 'From the spec diagram (4.3). Candidate only.',
+  },
+  {
+    id: 'pw-ubec',
+    level: 'power',
+    kind: 'external',
+    rail: 'v6',
+    label: '6 V UBEC',
+    sub: '10 A continuous',
+    refs: ['PWR-002', 'PWR-011', 'DEC-019'],
+    open: ['OPEN-007'],
+  },
+  {
+    id: 'pw-xt30',
+    level: 'power',
+    kind: 'connector',
+    rail: 'v6',
+    label: 'XT30, 6 V in',
+    sub: 'Board-mount',
+    refs: ['PWR-011', 'DEC-019'],
+    open: ['OPEN-021'],
+  },
+  {
+    id: 'pw-servos',
+    level: 'power',
+    kind: 'external',
+    label: '8 × servo',
+    sub: '6 V bus on the board',
+    refs: [...range('IF', 30, 37), 'DEC-019'],
+    open: ['OPEN-007', 'OPEN-021'],
+  },
+  {
+    id: 'pw-esc',
+    level: 'power',
+    kind: 'external',
+    label: '4 × ESC + motor',
+    sub: 'Hobbywing Skywalker 80A V2',
+    refs: range('IF', 40, 43),
+    open: ['OPEN-017'],
+    note: 'ESC headers have the + pin removed, so the ESC BEC 5 V does not reach the board (IF-040).',
+  },
+]
+
+const pw = (
+  id: string,
+  from: string,
+  to: string,
+  bus: Link['bus'],
+  label: string,
+  refs: string[],
+  extra: Partial<Link> = {}
+): Link => ({ id, level: 'power', from, to, bus, label, refs, ...extra })
+
+export const powerLinks: Link[] = [
+  pw('pw-batt-pm', 'pw-batt', 'pw-pm02d', 'batt', 'Battery', ['PWR-013'], {
+    status: 'candidate',
+  }),
+  pw(
+    'pw-pm-efuse',
+    'pw-pm02d',
+    'pw-efuse',
+    'v5',
+    '+VIN',
+    ['PWR-010', 'DEC-024'],
+    {
+      open: ['OPEN-012'],
+    }
+  ),
+  pw('pw-efuse-5v', 'pw-efuse', 'pw-r5v', 'v5', '+5V', ['DEC-024'], {
+    open: ['OPEN-012'],
+  }),
+  pw('pw-usb-5v', 'pw-usb', 'pw-r5v', 'v5', 'VBUS, OR-ing TBD', ['IF-022'], {
+    open: ['OPEN-006'],
+  }),
+  pw('pw-5v-buck', 'pw-r5v', 'pw-buck', 'v5', '5 V', ['DEC-012']),
+  pw('pw-5v-ldo', 'pw-r5v', 'pw-ldo', 'v5', '5 V', ['DEC-025'], {
+    open: ['OPEN-011'],
+  }),
+  pw('pw-5v-ports', 'pw-r5v', 'pw-ports', 'v5', '5 V', ['IF-010', 'IF-022'], {
+    open: ['OPEN-006'],
+  }),
+  pw('pw-buck-3v3', 'pw-buck', 'pw-r3v3', 'v3v3', '3.3 V', ['DEC-012']),
+  pw('pw-3v3-h743', 'pw-r3v3', 'pw-h743', 'v3v3', '3.3 V', ['PWR-013'], {
+    status: 'candidate',
+    note: assumed3v3,
+  }),
+  pw('pw-3v3-f100', 'pw-r3v3', 'pw-f100', 'v3v3', '3.3 V', ['PWR-013'], {
+    status: 'candidate',
+    note: assumed3v3,
+  }),
+  pw(
+    'pw-3v3-baro-mag',
+    'pw-r3v3',
+    'pw-baro-mag',
+    'v3v3',
+    '3.3 V',
+    ['PWR-013'],
+    {
+      status: 'candidate',
+      note: assumed3v3,
+    }
+  ),
+  pw('pw-ldo-imu', 'pw-ldo', 'pw-imu', 'v3v3a', '+3V3A', ['DEC-025'], {
+    open: ['OPEN-011'],
+  }),
+  pw('pw-pm-pdb', 'pw-pm02d', 'pw-pdb', 'batt', 'Battery', ['PWR-013'], {
+    status: 'candidate',
+  }),
+  pw('pw-pdb-ubec', 'pw-pdb', 'pw-ubec', 'batt', 'Battery', ['PWR-013'], {
+    status: 'candidate',
+  }),
+  pw('pw-pdb-esc', 'pw-pdb', 'pw-esc', 'batt', 'Battery', ['PWR-013'], {
+    status: 'candidate',
+  }),
+  pw(
+    'pw-ubec-xt30',
+    'pw-ubec',
+    'pw-xt30',
+    'v6',
+    '6 V',
+    ['PWR-011', 'DEC-019'],
+    {
+      open: ['OPEN-021'],
+    }
+  ),
+  pw('pw-xt30-servo', 'pw-xt30', 'pw-servos', 'v6', '6 V bus', ['DEC-019'], {
+    open: ['OPEN-007', 'OPEN-021'],
+  }),
+]
+
 /**
  * Pin rows that are shown in the pinout but on no diagram link, with the
  * reason. `npm run check` fails on any other pin row that no link uses.
@@ -975,5 +1115,5 @@ export const pinsNotOnDiagram: {
   { mcu: 'f100', refs: ['P1-014'], reason: 'Boot select' },
 ]
 
-export const blocks: Block[] = [...systemBlocks, ...boardBlocks]
-export const links: Link[] = [...systemLinks, ...boardLinks]
+export const blocks: Block[] = [...systemBlocks, ...boardBlocks, ...powerBlocks]
+export const links: Link[] = [...systemLinks, ...boardLinks, ...powerLinks]

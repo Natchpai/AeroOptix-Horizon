@@ -5,7 +5,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { lineAt, places, sideOverrides } from '../src/data/places'
+import { bundles, lineAt, places, sideOverrides, zones } from '../src/data/places'
 import { blocks, links, pinsNotOnDiagram } from '../src/data/topology'
 import type {
   Level,
@@ -15,7 +15,7 @@ import type {
   Progress,
   SpecId,
 } from '../src/data/types'
-import { handlePoint, placedLayout } from '../src/features/diagram/layout'
+import { handlePoint, placedLayout, zoneBoxes } from '../src/features/diagram/layout'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const gen = path.resolve(here, '../src/data/generated')
@@ -97,7 +97,7 @@ for (const mcu of ['h743', 'f100'] as Mcu[]) {
 // 4. Drawing: every block is placed, blocks keep apart, and every link is
 //    one straight line that crosses no other line and no other block.
 const GAP = 24
-for (const level of ['system', 'board'] as Level[]) {
+for (const level of Object.keys(places) as Level[]) {
   const lv = blocks.filter((b) => b.level === level)
   const pl = places[level]
   for (const b of lv)
@@ -114,6 +114,24 @@ for (const level of ['system', 'board'] as Level[]) {
           a.x < b.x + b.w + GAP && b.x < a.x + a.w + GAP &&
           a.y < b.y + b.h + GAP && b.y < a.y + a.h + GAP)
         err(`${level}: blocks ${a.block.id} and ${b.block.id} are closer than ${GAP}px`)
+
+  // Zones: their blocks exist here, no other block comes within GAP of a
+  // zone, and zones keep GAP apart.
+  const zs = zones[level] ?? []
+  for (const z of zs)
+    for (const id of z.blocks)
+      if (!node.has(id)) err(`${level}: zone ${z.id} lists unknown block ${id}`)
+  const zb = zoneBoxes(zs.filter((z) => z.blocks.every((id) => node.has(id))), laid.nodes)
+  const near = (a: { x: number; y: number; w: number; h: number }, b: typeof a) =>
+    a.x < b.x + b.w + GAP && b.x < a.x + a.w + GAP && a.y < b.y + b.h + GAP && b.y < a.y + a.h + GAP
+  for (const z of zb) {
+    for (const n of laid.nodes)
+      if (!z.zone.blocks.includes(n.block.id) && near(z, n))
+        err(`${level}: block ${n.block.id} is inside or within ${GAP}px of zone ${z.zone.id}`)
+    for (const o of zb)
+      if (z.zone.id < o.zone.id && near(z, o))
+        err(`${level}: zones ${z.zone.id} and ${o.zone.id} are closer than ${GAP}px`)
+  }
 
   const segs = laid.edges.map((e) => {
     const s = node.get(e.link.from)!
@@ -148,6 +166,38 @@ for (const level of ['system', 'board'] as Level[]) {
       if (inside(v.p.x, h.p.x, h.q.x) && inside(h.p.y, v.p.y, v.q.y))
         err(`${level}: links ${a.id} and ${b.id} cross`)
     }
+
+  // Link ends on one side of a block are equally spaced and centred on
+  // that side; a bundle counts as one end, at its middle.
+  const bundleOf = new Map(bundles.flatMap((g, i) => g.map((id) => [id, i])))
+  for (const n of laid.nodes) {
+    const sides = new Map<string, Map<string, number[]>>()
+    for (const h of n.handles) {
+      const linkId = h.id.slice(0, h.id.lastIndexOf(':'))
+      const key = bundleOf.has(linkId) ? `bundle${bundleOf.get(linkId)}` : linkId
+      const p = handlePoint(n, h)
+      const v = h.side === 'left' || h.side === 'right' ? p.y : p.x
+      const units = sides.get(h.side) ?? new Map<string, number[]>()
+      units.set(key, [...(units.get(key) ?? []), v])
+      sides.set(h.side, units)
+    }
+    for (const [side, units] of sides) {
+      const at = [...units.values()]
+        .map((vs) => (Math.min(...vs) + Math.max(...vs)) / 2)
+        .sort((a, b) => a - b)
+      const [lo, hi] =
+        side === 'left' || side === 'right' ? [n.y, n.y + n.h] : [n.x, n.x + n.w]
+      const gaps = at.slice(1).map((v, i) => v - at[i])
+      const even = gaps.every((g) => Math.abs(g - gaps[0]) <= 1)
+      const centred = Math.abs(at[0] - lo - (hi - at[at.length - 1])) <= 1
+      if (!even || !centred)
+        err(
+          `${level}: ends on the ${side} of ${n.block.id} are ${even ? '' : 'not equally spaced'}` +
+            `${!even && !centred ? ' and ' : ''}${centred ? '' : 'not centred'} ` +
+            `(at ${at.map(Math.round).join(', ')} on ${Math.round(lo)} to ${Math.round(hi)})`
+        )
+    }
+  }
 }
 
 if (errors.length) {

@@ -14,7 +14,7 @@ import {
   openItems,
   statusOf,
 } from '@/data'
-import { lineAt, places, sideOverrides } from '@/data/places'
+import { lineAt, places, sideOverrides, zones } from '@/data/places'
 import { flushSync } from 'react-dom'
 import {
   downloadSvg,
@@ -26,7 +26,15 @@ import {
   textWidth,
 } from '@/lib/svg-export'
 import { blockColor, kindInfo } from './kinds'
-import { type LaidNode, TALL, handlePoint, placedLayout } from './layout'
+import {
+  type LaidNode,
+  type LaidZone,
+  TALL,
+  cableSide,
+  handlePoint,
+  placedLayout,
+  zoneBoxes,
+} from './layout'
 import { draw } from './style'
 
 const PAD = 40
@@ -34,8 +42,10 @@ const HEAD = 44
 const FOOT = 36
 
 const levelTitle: Record<Level, string> = {
-  system: 'Block diagram, System (L0)',
-  board: 'Block diagram, Board (L1)',
+  // display names swapped against the ids, as in index.tsx
+  system: 'Block diagram, Overview (L0)',
+  board: 'Block diagram, System (L1)',
+  power: 'Power flow (L1)',
 }
 
 const iconMarkup = new Map<string, string>()
@@ -72,8 +82,10 @@ function blockSvg(n: LaidNode, f: ReturnType<typeof fonts>) {
   const out: string[] = []
   // the canvas draws the border inside the box: inset the stroke by half
   const half = draw.border / 2
+  const port = b.kind === 'connector'
+  const radius = port ? draw.port.radius : draw.radius
   out.push(
-    `<rect x="${x + half}" y="${y + half}" width="${w - draw.border}" height="${h - draw.border}" rx="${draw.radius - half}" ` +
+    `<rect x="${x + half}" y="${y + half}" width="${w - draw.border}" height="${h - draw.border}" rx="${radius - half}" ` +
       `${b.kind === 'board' ? 'fill="url(#board-fill)"' : paintAttr('fill', 'var(--card)')} ` +
       `${paintAttr('stroke', `color-mix(in oklab, ${color} 45%, var(--border))`)} stroke-width="${draw.border}"` +
       (statusOf(b) === 'candidate'
@@ -81,6 +93,23 @@ function blockSvg(n: LaidNode, f: ReturnType<typeof fonts>) {
         : '') +
       '/>'
   )
+  if (port) {
+    // tab on the cable side, inside the border, as block-node.tsx draws it
+    const t = draw.port.tab
+    const i = draw.border
+    const side = cableSide(n.handles)
+    const [tx, ty, tw, th] =
+      side === 'left'
+        ? [x + i, y + i, t, h - 2 * i]
+        : side === 'right'
+          ? [x + w - i - t, y + i, t, h - 2 * i]
+          : side === 'top'
+            ? [x + i, y + i, w - 2 * i, t]
+            : [x + i, y + h - i - t, w - 2 * i, t]
+    out.push(
+      `<rect x="${tx}" y="${ty}" width="${tw}" height="${th}" ${paintAttr('fill', color)}/>`
+    )
+  }
   const box = (bx: number, by: number, s: number) =>
     `<rect x="${bx}" y="${by}" width="${s}" height="${s}" rx="6" ${paintAttr('fill', `color-mix(in oklab, ${color} 16%, transparent)`)}/>`
   const labelFont = (px: number) => `600 ${px}px ${f.sans}`
@@ -200,6 +229,17 @@ function blockSvg(n: LaidNode, f: ReturnType<typeof fonts>) {
   return out.join('\n')
 }
 
+/** Zone box and title, as zone-node.tsx draws it. */
+function zoneSvg(z: LaidZone, f: ReturnType<typeof fonts>) {
+  const { pad, head, radius, font } = draw.zone
+  return (
+    `<rect x="${z.x + 0.5}" y="${z.y + 0.5}" width="${z.w - 1}" height="${z.h - 1}" rx="${radius}" ` +
+    `${paintAttr('fill', 'color-mix(in oklab, var(--brand) 6%, transparent)')} ` +
+    `${paintAttr('stroke', 'color-mix(in oklab, var(--brand) 30%, var(--border))')}/>` +
+    `<text x="${z.x + pad}" y="${z.y + (head + pad / 2) / 2 + font * 0.35}" font-family="${esc(f.sans)}" font-size="${font}" font-weight="600" letter-spacing="0.6" ${paintAttr('fill', 'var(--muted-foreground)')}>${esc(z.zone.label.toUpperCase())}</text>`
+  )
+}
+
 export function diagramSvg(level: Level) {
   const f = fonts()
   const laid = placedLayout(
@@ -210,13 +250,14 @@ export function diagramSvg(level: Level) {
     lineAt
   )
   const node = new Map(laid.nodes.map((n) => [n.block.id, n]))
+  const zoneList = zoneBoxes(zones[level] ?? [], laid.nodes)
 
   const lines: string[] = []
   const dots: string[] = []
   const labels: string[] = []
   const xs: number[] = []
   const ys: number[] = []
-  for (const n of laid.nodes) {
+  for (const n of [...laid.nodes, ...zoneList]) {
     xs.push(n.x, n.x + n.w)
     ys.push(n.y, n.y + n.h)
   }
@@ -291,6 +332,7 @@ export function diagramSvg(level: Level) {
       `</linearGradient></defs>`,
     `<rect x="${minX}" y="${minY}" width="${W}" height="${H}" ${paintAttr('fill', 'var(--background)')}/>`,
     `<text x="${minX + PAD}" y="${minY + PAD / 2 + 18}" font-family="${esc(f.sans)}" font-size="20" font-weight="600" ${paintAttr('fill', 'var(--foreground)')}>${esc(`${title}`)}</text>`,
+    ...zoneList.map((z) => zoneSvg(z, f)),
     ...lines,
     ...laid.nodes.map((n) => blockSvg(n, f)),
     ...dots,

@@ -6,20 +6,27 @@ The team website: a Vite + React + TypeScript site (shadcn-admin template) that 
 
 The design records stay the source of truth. The site reads them at build time (`scripts/extract-docs.ts`) and shows what they say. A value the records do not give (sensor-side pins, connector pinouts, rails to sensors) shows as `TBD`. Every block and link in `src/data/topology.ts` names the spec IDs it comes from, and its text is copied from the spec. A design change goes into the spec first, through the engineer; the site follows.
 
+## View names
+
+The diagram views show names that differ from their ids (engineer, 2026-10-26): id `system` is shown as **Overview** (L0, the board and what it connects to), id `board` as **System** (L1, how the blocks inside the board connect), id `power` as **Power** (L1, power flow left to right). Keep the ids; change only labels. Power parts live on the Power view only, not on the System (L1) view.
+
 ## Diagram drawing rules
 
 The engineer set these after reviewing the mockup:
 
 - Every link is one **straight** line. Place a block beside the edge of the block it talks to, inside that edge's span. Grow a block (an MCU, a tall connector, a rail bar) to make room rather than bending a line. MCU blocks stay close to square.
 - Blocks keep **wide gaps**, and link ends on one side keep 28 px apart, so parallel lines stay distinct.
-- Blocks **spread out**: a block takes a free edge or a free spot before it queues in a tight column with other blocks (the F100 SWD pads sit under the F100, not under the servo headers).
+- Blocks **spread out**: a block takes a free edge or a free spot before it queues in a tight column with other blocks.
 - Each signal reads as its **own line**: the servo headers get one PWM line per spec row, labelled with its timer channel. A different signal between the same two blocks (rail sense) sits clearly apart from the group. Pin such lines with `lineAt`.
 - Names show in **full**: make a block taller instead of shortening its name. A small block at least `TALL` px high (`layout.ts`) draws as a centred column, with the name across the full width.
 - Lines never **cross**: swap block order along an edge to clear a crossing.
-- Power rails are wide bars that loads tap with a vertical line.
+- Link ends on one side of a block are **spaced equally and centred** on that side (engineer, 2026-10-26). A group in `bundles` (`places.ts`) counts as one end: the servo PWM lines with the rail-sense line set apart, and the Overview FC-to-servos pair. A block with one end on a side sits level with the other end, so the line meets it in the middle. Move blocks or set `lineAt` to meet it.
+- Power rails are wide bars that loads tap with a vertical line. A shared signal bus is drawn the same way (kind `bus`): one line out of the MCU to a bar, then one tap per device (I2C2, engineer, 2026-10-26).
+- **Zones** (engineer, 2026-10-26): on the System (L1) view, blocks sit in titled zones: Connectors (one column on the right), USB and debug (USB-C, H743 debug, F100 SWD pads; the engineer asked to keep them apart from the other connectors) and On-board I/O (top). `zones` in `places.ts` lists each zone's blocks; the box is sized to fit them, and no other block may sit inside it.
+- **Connectors** (kind `connector`, a cable plugs in) have small corners and a solid tab on the cable side, away from their links. Parts with no cable (microSD slot, LEDs, buzzer, spare and SWD pads) are kind `io` with the plain look.
 - Positions live in `src/data/places.ts`; `lineAt` there sets where a straight line runs along its overlap (absolute px).
 
-`npm run check` enforces the straight lines, gaps, line-end spacing and crossings, and names the link or block to move. It has no font widths: `npm run test:ui` checks label overlap in the browser, and spread and full names still need a screenshot.
+`npm run check` enforces the straight lines, gaps, line-end spacing, equal and centred ends, crossings and zone boxes, and names the link or block to move. It has no font widths: `npm run test:ui` checks label overlap in the browser, and spread and full names still need a screenshot.
 
 Line widths, the block border, corners, end dots, dashes and label box sizes live in `src/features/diagram/style.ts`; change them there, never as a literal in a component.
 
