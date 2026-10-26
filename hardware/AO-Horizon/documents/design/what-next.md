@@ -19,7 +19,7 @@ Does not depend on the pinout or sensor answers. See spec 4.3 "Schematic state".
 - [ ] Re-check the saved sheet first: the spec 4.3 table says 17 parts with the DNP DF2S6.2CT, the README says 19 parts and the CHANGELOG says the DF2S6.2CT was removed. Ask Claude for `sch-inspect` on `power_supplies.kicad_sch`, then fix the spec table.
 - [ ] Wire the TPS16412DRC eFuse between `+VIN` and `+5V` (DEC-024). Placed, only GND wired. Set the ILIM resistor for 1.5 A and the OVP, EN/UVLO, dV/dt and FLT parts from TI data; check reverse current with USB (P2-017, OPEN-012).
 - [ ] Change the PM02D connector from JST-GH to a 6-pin 2.00 mm CLIK-Mate (decided 2026-10-24, OPEN-023).
-- [ ] Decide the `+3V3A` rail and its LDO (OPEN-011). As drawn, the TPS73533DRBR NR capacitor is above TI's limit.
+- [ ] Pick the `+3V3A` LDO: it feeds only the 2 IMUs, VDD and VDDIO (DEC-025, OPEN-011). As drawn, the TPS73533DRBR NR capacitor is above TI's limit. Check the IMU SPI levels against the H743 on `+3V3`, and the power-up order.
 - [ ] Add the 0.1 µF AVIN capacitor TI recommends for the TPS62142.
 - [ ] Fix the LCSC field: C162430 is on both the 1 µF and the 10 µF capacitor.
 - [ ] Annotate all parts.

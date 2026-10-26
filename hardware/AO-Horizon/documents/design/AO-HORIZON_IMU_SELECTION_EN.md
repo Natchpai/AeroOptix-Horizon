@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: IMU Selection Summary
 
-**Revision:** 0.8
-**Updated:** 2026-10-24
+**Revision:** 0.9
+**Updated:** 2026-10-26
 **Status:** Part confirmed by the team (DEC-008). Datasheet values and implementation are not verified. Not a verification record.
-**Requirement refs:** SEN-001, CMP-003 (spec). Decisions: DEC-008, DEC-009. Checklist task: P0-008.
+**Requirement refs:** SEN-001, CMP-003 (spec). Decisions: DEC-008, DEC-009, DEC-025. Checklist task: P0-008.
 **Decision owner:** Team
 
 Single record for the IMU part, its key data, sourcing, and the candidates that were compared.
@@ -27,7 +27,7 @@ Source keys used below:
 | Gain | One footprint, one driver (PX4 `invensense/icm45686`), newer generation |
 | Cost | Same errata and failure modes on both IMUs. No vendor diversity. |
 
-Assumptions: `ASSUMED` the 3.3 V_IMU rail supplies both IMUs (candidate only in the spec). `ASSUMED` no temperature or vibration filter, because ENV-001 and ENV-003 are TBD.
+Supply: the `+3V3A` rail (3.3 V_IMU) feeds both IMUs on VDD and VDDIO, and nothing else (DEC-025, 2026-10-26). Assumptions: `ASSUMED` no temperature or vibration filter, because ENV-001 and ENV-003 are TBD.
 
 ## 2. ICM-45686 key data
 
@@ -92,7 +92,8 @@ DigiKey checked 2026-10-16; LCSC checked 2026-10-18 from a page fetch. USD. Not 
 - [ ] Decide how to tie reserved pins 2, 3, 7, 10, 11 and record the matching `pe_trim` setting for firmware.
 - [ ] Confirm errata for ICM-45686.
 - [ ] Secure a source for 2 × ICM-45686 per board, and check JLCPCB eligibility.
-- [ ] Check 3.3 V_IMU rail noise and current budget (P0-017).
+- [ ] Check 3.3 V_IMU (`+3V3A`) rail noise and current budget (P0-017).
+- [ ] Check the ICM-45686 VDDIO range and SPI input levels with VDDIO on `+3V3A` and the H743 on `+3V3`, and the power-up order of the two rails (OPEN-011).
 
 Closed:
 - [x] Team chose the part and recorded DEC-008 (2026-10-18).
