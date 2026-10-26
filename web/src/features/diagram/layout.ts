@@ -1,5 +1,6 @@
 import type { Block, Link } from '@/data'
-import type { Place, Side } from '@/data/places'
+import type { Place, Side, Zone } from '@/data/places'
+import { draw } from './style'
 
 const NODE_W = 200
 const NODE_H = 60
@@ -48,6 +49,44 @@ export function handlePoint(n: LaidNode, h: HandleSpec): Point {
     default:
       return { x: n.x + h.pos * n.w, y: n.y + n.h }
   }
+}
+
+export type LaidZone = {
+  zone: Zone
+  x: number
+  y: number
+  w: number
+  h: number
+}
+
+/** A zone's box: its blocks, plus padding and a title band on top. */
+export function zoneBoxes(zones: Zone[], nodes: LaidNode[]): LaidZone[] {
+  const { pad, head } = draw.zone
+  return zones.map((zone) => {
+    const ns = nodes.filter((n) => zone.blocks.includes(n.block.id))
+    const x = Math.min(...ns.map((n) => n.x)) - pad
+    const y = Math.min(...ns.map((n) => n.y)) - pad - head
+    const r = Math.max(...ns.map((n) => n.x + n.w)) + pad
+    const b = Math.max(...ns.map((n) => n.y + n.h)) + pad
+    return { zone, x, y, w: r - x, h: b - y }
+  })
+}
+
+/**
+ * Side of a connector where its cable plugs in. On the Overview its links
+ * are the cables, so the tab faces them; inside the board its links go to
+ * the MCU, so the tab faces away.
+ */
+export function cableSide(block: Block, handles: HandleSpec[]): Side {
+  const opposite: Record<Side, Side> = {
+    left: 'right',
+    right: 'left',
+    top: 'bottom',
+    bottom: 'top',
+  }
+  if (!handles.length) return 'right'
+  const side = handles[0].side
+  return block.level === 'system' ? side : opposite[side]
 }
 
 /** Height from which a small block is drawn as a centred column. */

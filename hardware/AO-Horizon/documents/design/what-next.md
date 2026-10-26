@@ -1,25 +1,25 @@
 # What Next
 
-**Updated:** 2026-10-24
+**Updated:** 2026-10-26
 **Status:** Personal reminder list. Not a requirement, decision or verification record.
 
 The specification and the execution checklist stay the source of truth. This list only points to their IDs.
 
 ## 1. Git
 
-- [x] Commit and push the pinmap 0.3 answers and the F100 change (`134ec91`, on `origin/dev`).
-- [x] Commit and push the integration answers, spec 0.13 (`98896c0`, on `origin/dev`).
-- [ ] Commit the hardware answers: spec 0.14, checklist 0.13, power budget 0.7, integration questions 0.4, design README, this file, root README and CHANGELOG.
-- [ ] Push `dev` to `origin`.
-- [ ] Open a PR from `dev` to `main` with `.github/pull_request_template.md`.
+- [x] Hardware answers, spec 0.14 (`2b89d07`), merged to `main` in PR #17.
+- [x] Team website merged to `main` in PRs #18 to #24; title image and logos on `dev`.
+- [ ] Commit the consistency pass: spec 0.15, checklist 0.14, root README, CHANGELOG, this file, the eFuse `CMP-008` link in `web/src/data/topology.ts` and `web/HANDOFF.md`.
+- [ ] Push `dev` and open a PR to `main` with `.github/pull_request_template.md`. The site updates on the merge.
 
 ## 2. Power sheet (P2-011)
 
 Does not depend on the pinout or sensor answers. See spec 4.3 "Schematic state".
 
+- [ ] Re-check the saved sheet first: the spec 4.3 table says 17 parts with the DNP DF2S6.2CT, the README says 19 parts and the CHANGELOG says the DF2S6.2CT was removed. Ask Claude for `sch-inspect` on `power_supplies.kicad_sch`, then fix the spec table.
 - [ ] Wire the TPS16412DRC eFuse between `+VIN` and `+5V` (DEC-024). Placed, only GND wired. Set the ILIM resistor for 1.5 A and the OVP, EN/UVLO, dV/dt and FLT parts from TI data; check reverse current with USB (P2-017, OPEN-012).
 - [ ] Change the PM02D connector from JST-GH to a 6-pin 2.00 mm CLIK-Mate (decided 2026-10-24, OPEN-023).
-- [ ] Decide the `+3V3A` rail and its LDO (OPEN-011). As drawn, the TPS73533DRBR NR capacitor is above TI's limit.
+- [ ] Pick the `+3V3A` LDO: it feeds only the 2 IMUs, VDD and VDDIO (DEC-025, OPEN-011). As drawn, the TPS73533DRBR NR capacitor is above TI's limit. Check the IMU SPI levels against the H743 on `+3V3`, and the power-up order.
 - [ ] Add the 0.1 µF AVIN capacitor TI recommends for the TPS62142.
 - [ ] Fix the LCSC field: C162430 is on both the 1 µF and the 10 µF capacitor.
 - [ ] Annotate all parts.
@@ -75,3 +75,13 @@ Hardware work that does not need the team's section 9 reply, unless noted.
 - [ ] Servo rail (DEC-019): check the board-mount XT30 rating against 10 A continuous and 15 A peak. Then the 6 V and servo GND copper, the servo GND to logic GND join, and bulk capacitors (OPEN-021, P2-016).
 - [ ] USB VBUS and PM02D 5 V OR-ing. USB feeds all external 5 V ports: check the VBUS budget (OPEN-006).
 - [ ] PCB: forward arrow on the silkscreen; USB-C and microSD on adjacent edges, reachable with the canopy open, with the H743 debug connector (MEC-003). M3, 3.2 mm holes, soft mount; pick the outline, cable entry sides and dampers at placement, then send them to the CAD team (MEC-002, MEC-004).
+
+## 7. Team website
+
+From `web/HANDOFF.md`. The site follows the records; a design change still goes into the spec first.
+
+- [ ] Review the rest of the live site: Overview, Interface view, detail panel, search. List changes.
+- [ ] Check the fuchsia +3.3V rail colour on screen (between GPIO pink and UART purple).
+- [ ] Check the light theme on the pinout page and the Board view.
+- [ ] Keep `web/src/data/topology.ts` in step with the spec: the build catches removed IDs, not new interfaces.
+- [ ] Showcase page: 3D viewer, renders and photos once there is a PCB.

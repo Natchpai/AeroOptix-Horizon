@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets\github_AO-Horizon-title.png" alt="AO-Horizon title" width="100%" >
+  <img src="assets\AO-Horizon-title-v2.png" alt="AO-Horizon title" width="100%" >
 </p>
 
 > **Status:** `DRAFT`
@@ -7,13 +7,15 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.7`
 
-> **Draft specification (rev 0.14, 2026-10-24): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.16, 2026-10-26): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
 AeroOptix-Horizon is a custom PX4 flight controller with two MCUs. The STM32H743VIT6 is the main flight-controller MCU and drives the 4 motor outputs. The STM32F100C8T6B is the IO MCU: it runs PX4 IO firmware (px4io) and drives the 8 servo outputs, the safety switch and the servo failsafe. A USART link connects the two MCUs.
 
 Pixhawk 6C and Pixhawk 6X are conceptual and functional references. Their schematics and PCBs are not copied. By team decision, the H743 pins mostly follow Pixhawk 6C (`px4/fmu-v6c`) and the F100 pins follow `px4/io-v2` (DEC-014).
+
+The team website, [natchpai.github.io/AeroOptix-Horizon](https://natchpai.github.io/AeroOptix-Horizon/), shows the block diagram, the MCU pinouts and the project status. It is built from the design records on each merge to `main` and adds no values of its own.
 
 ## Key Features
 
@@ -42,7 +44,7 @@ Pixhawk 6C and Pixhawk 6X are conceptual and functional references. Their schema
 | Magnetometer | 1× I2C, iSentek IST8310 (DEC-011, replaced BMM150) |
 | Board input | 5 V from power module, 4.5 to 5.5 V, 2 A source; TPS16412DRC eFuse, limit 1.5 A (DEC-024) |
 | 3.3 V rail | TPS62142RGTR buck from 5 V, 2 A part (load current `TBD`) |
-| 3.3 V analog rail (`+3V3A`) | Purpose and part `TBD` (TPS73533DRBR drawn, not decided) |
+| 3.3 V IMU rail (`+3V3A`) | Feeds only the 2 IMUs, VDD and VDDIO (DEC-025); LDO part `TBD` (TPS73533DRBR drawn, not decided) |
 | Servo supply | 6 V from a UBEC into a board-mount XT30 and the on-board servo rail, 10 A continuous, 15 A instantaneous (XT30 rating and protection `TBD`, OPEN-021) |
 | Board outline | Each dimension under 80 mm; exact outline `TBD`; part height about 10 to 15 mm |
 | Mounting | M3 screws, 3.2 mm holes, soft mount on a separate tray; hole pattern and dampers `TBD` (set by hardware at placement) |
@@ -98,7 +100,7 @@ State of the saved KiCad files on 2026-10-24. Details are in the specification (
 
 | Area | State |
 |---|---|
-| Schematic | Only `power_supplies.kicad_sch` has parts (19, all unannotated): power module connector, TPS16412DRC eFuse, TPS62142RGTR buck, TPS73533DRBR LDO and a 3.3 V LED. The eFuse is placed but only its GND pad is wired, so nothing drives `+5V` yet. The other sheets hold no parts. |
+| Schematic | Only `power_supplies.kicad_sch` has parts (19, all unannotated): power module connector, TPS16412DRC eFuse, TPS62142RGTR buck, TPS73533DRBR LDO and a 3.3 V LED. The eFuse is placed but only its GND pad is wired, so nothing drives `+5V` yet. The other sheets hold no parts. The spec 4.3 table still lists 17 parts and the DNP DF2S6.2CT; the sheet is to be re-checked (spec rev 0.15). |
 | PCB | Empty: no footprints and no board outline. |
 | Library | Project symbols, footprints and 3D models for the MCUs, regulators, ESD parts, connectors and passives. Sensor symbols and footprints are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked yet. A BMP581 symbol is a starting point for the second barometer, and the Bosch LGA-10 footprint pads now follow the BMP581 land pattern (not checked against the drawing). The IST8310 uses the stock KiCad symbol and `LGA-16_3x3mm_P0.5mm` footprint; its datasheet has no land pattern, so the fit is estimated. A read-only link audit found no broken links. |
 | ERC / DRC | Not run. |
@@ -149,7 +151,7 @@ Peripheral allocations agreed with the software team (DEC-014, DEC-018). Pins ar
 - Sourcing risk on the sensors (OPEN-004): ICP-20100 is EOL (TDK says its pressure products are not for new designs), BMP581 stock is short, and the IST8310 lifecycle is not confirmed.
 - The magnetometer changed from BMM150 to IST8310 (DEC-011). Its absolute maximum supply is 3.6 V, so the 3.3 V rail has only 0.3 V of margin.
 - BMP390 was removed because LCSC does not sell it. The team accepted BMP581 as the second barometer, with BMP384 as fallback; the fallback fit is not checked (OPEN-019).
-- The power sheet is in progress: the `+VIN` to `+5V` eFuse (TPS16412DRC, DEC-024) is placed but not wired, and its ILIM resistor is not drawn (OPEN-012), and the `+3V3A` LDO is not decided (OPEN-011). As drawn, the LDO's NR capacitor (100 nF) is above TI's 0.01 µF limit, and the TPS62142 lacks the 0.1 µF AVIN capacitor TI recommends.
+- The power sheet is in progress: the `+VIN` to `+5V` eFuse (TPS16412DRC, DEC-024) is placed but not wired, and its ILIM resistor is not drawn (OPEN-012), and the `+3V3A` LDO part is not decided (OPEN-011). `+3V3A` feeds only the 2 IMUs, on VDD and VDDIO (DEC-025); the SPI level match with the H743 on `+3V3` is not checked yet. As drawn, the LDO's NR capacitor (100 nF) is above TI's 0.01 µF limit, and the TPS62142 lacks the 0.1 µF AVIN capacitor TI recommends.
 - Power budgets, rail tolerances, sequencing, brownout/reset thresholds and protection (reverse polarity, overvoltage, ESD, short circuit) are `TBD`.
 - Crystal parts, load capacitors and reset topology are `TBD`.
 - Firmware is owned by the software team: PX4 v1.16.2, port based on `px4/fmu-v6c`. The PX4 Matek H743-Slim board port is kept in `documents/reference/` as a pin-map reference only.
@@ -174,7 +176,7 @@ The specification tracks OPEN-001 to OPEN-023. Closed: OPEN-002, OPEN-003, OPEN-
 - 5 V and 6 V budgets and protection (OPEN-006, OPEN-007)
 - Board outline, cable entry sides and dampers, set by hardware at placement (OPEN-009); environment set by DEC-020
 - Remaining non-MCU part numbers (OPEN-010)
-- `+3V3A` rail (OPEN-011) and the `+VIN` to `+5V` eFuse wiring and values (OPEN-012)
+- `+3V3A` LDO part and IMU SPI level match (OPEN-011) and the `+VIN` to `+5V` eFuse wiring and values (OPEN-012)
 - Sensor footprints to check against the datasheet drawings and app notes (OPEN-013)
 - Motor stop on an H743 hang with PWM-only ESCs (OPEN-017, team question D13)
 - PWM pull-down value with bidirectional DShot (OPEN-018)
@@ -217,8 +219,10 @@ AeroOptix-Horizon/
 │   │   ├── verification/              # Review reports and test evidence
 │   │   └── images/                    # Documentation images
 │   └── templates/                     # Worksheets, theme, fab/assembly notes
+├── web/                               # Team website (Vite + React), built from the records
+├── assets/                            # README title image
 ├── .claude/                           # Claude Code rules, skills and hooks
-├── .github/                           # Pull request template
+├── .github/                           # Pull request template, Pages deploy workflow
 ├── CLAUDE.md
 ├── CHANGELOG.md
 ├── LICENSE
@@ -240,6 +244,7 @@ AeroOptix-Horizon/
 | [Integration questions](hardware/AO-Horizon/documents/design/AO-HORIZON_INTEGRATION_QUESTIONS_EN.md) | Open questions for the team (rev 0.4): ESC (D13), parts and team tests. Earlier answers applied in spec rev 0.13 and 0.14 |
 | [H7 MCU sourcing](hardware/AO-Horizon/documents/design/AO-HORIZON_H7_MCU_SOURCING_EN.md) | STM32H743VI price and stock |
 | [KiCad project](hardware/AO-Horizon/README.md) | Project folder layout |
+| [Team website](https://natchpai.github.io/AeroOptix-Horizon/) | Block diagram, MCU pinouts and status, built from these records ([source](web/README.md)) |
 
 ## License
 

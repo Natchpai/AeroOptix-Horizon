@@ -24,10 +24,18 @@ export type Bus =
  */
 export type Status = 'decided' | 'open' | 'candidate'
 
-export type Level = 'system' | 'board'
+export type Level = 'system' | 'board' | 'power'
 
 export type BlockKind =
-  'board' | 'mcu' | 'sensor' | 'power' | 'rail' | 'connector' | 'external'
+  | 'board'
+  | 'mcu'
+  | 'sensor'
+  | 'power'
+  | 'rail'
+  | 'bus'
+  | 'connector'
+  | 'io'
+  | 'external'
 
 export type Mcu = 'h743' | 'f100'
 
@@ -48,7 +56,7 @@ export type Block = {
   drill?: Level
   /** For MCU blocks: the pin table to use. */
   mcu?: Mcu
-  /** Power rail the block carries or outputs; sets its colour. */
+  /** Power rail or signal bus the block carries or outputs; sets its colour. */
   rail?: Bus
 }
 

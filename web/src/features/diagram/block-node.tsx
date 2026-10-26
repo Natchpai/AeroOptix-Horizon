@@ -4,7 +4,7 @@ import { Handle, Position, type Node, type NodeProps } from '@xyflow/react'
 import { ChevronsRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { blockColor, kindInfo } from './kinds'
-import { type HandleSpec, type Side, TALL } from './layout'
+import { type HandleSpec, type Side, TALL, cableSide } from './layout'
 import { draw } from './style'
 
 export type BlockNodeType = Node<
@@ -37,13 +37,16 @@ function BlockNodeImpl({ data, selected }: NodeProps<BlockNodeType>) {
   // tall small blocks (servo headers, PDB) stack icon and text, centred, so
   // the name gets the full width
   const tall = !big && h >= TALL
+  // connectors: square corners and a solid tab where the cable plugs in
+  const port = block.kind === 'connector'
+  const tab = port ? cableSide(block, handles ?? []) : null
   return (
     <div
       style={{
         width: w,
         height: h,
         borderWidth: draw.border,
-        borderRadius: draw.radius,
+        borderRadius: port ? draw.port.radius : draw.radius,
         ['--k' as string]: color,
       }}
       className={cn(
@@ -62,6 +65,17 @@ function BlockNodeImpl({ data, selected }: NodeProps<BlockNodeType>) {
         dim && 'opacity-30'
       )}
     >
+      {tab && (
+        <span
+          aria-hidden
+          className='absolute bg-[var(--k)]'
+          style={
+            tab === 'left' || tab === 'right'
+              ? { [tab]: 0, top: 0, bottom: 0, width: draw.port.tab }
+              : { [tab]: 0, left: 0, right: 0, height: draw.port.tab }
+          }
+        />
+      )}
       {handles ? (
         handles.map((hd) => (
           <Handle

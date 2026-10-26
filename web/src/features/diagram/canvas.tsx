@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { type Level, blocksAt, linksAt, linksOf } from '@/data'
-import { lineAt, places, sideOverrides } from '@/data/places'
+import { lineAt, places, sideOverrides, zones } from '@/data/places'
 import {
   Background,
   BackgroundVariant,
@@ -14,10 +14,11 @@ import '@xyflow/react/dist/style.css'
 import { useTheme } from '@/context/theme-provider'
 import { BlockNode, type BlockNodeType } from './block-node'
 import { blockColor } from './kinds'
-import { placedLayout } from './layout'
+import { placedLayout, zoneBoxes } from './layout'
 import { LinkEdge, type LinkEdgeType } from './link-edge'
+import { ZoneNode, type ZoneNodeType } from './zone-node'
 
-const nodeTypes = { block: BlockNode }
+const nodeTypes = { block: BlockNode, zone: ZoneNode }
 const edgeTypes = { link: LinkEdge }
 
 type CanvasProps = {
@@ -78,9 +79,33 @@ function CanvasInner({
     }
   }, [selectedBlock])
 
-  const nodes: BlockNodeType[] = useMemo(
+  // zones sit under the lines (zIndex -1) and take no clicks
+  const zoneNodes: ZoneNodeType[] = useMemo(
     () =>
-      laid.nodes.map((n) => ({
+      zoneBoxes(zones[level] ?? [], laid.nodes).map((z) => ({
+        id: z.zone.id,
+        type: 'zone',
+        position: { x: z.x, y: z.y },
+        data: {
+          label: z.zone.label,
+          w: z.w,
+          h: z.h,
+          center: z.zone.title === 'center',
+        },
+        width: z.w,
+        height: z.h,
+        zIndex: -1,
+        draggable: false,
+        selectable: false,
+        focusable: false,
+      })),
+    [laid, level]
+  )
+
+  const nodes: (BlockNodeType | ZoneNodeType)[] = useMemo(
+    () => [
+      ...zoneNodes,
+      ...laid.nodes.map((n): BlockNodeType => ({
         id: n.block.id,
         type: 'block',
         position: { x: n.x, y: n.y },
@@ -96,7 +121,8 @@ function CanvasInner({
         selected: n.block.id === selectedBlock,
         draggable: false,
       })),
-    [laid, focus, selectedBlock]
+    ],
+    [zoneNodes, laid, focus, selectedBlock]
   )
 
   const edges: LinkEdgeType[] = useMemo(
@@ -128,7 +154,7 @@ function CanvasInner({
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       colorMode={resolvedTheme}
-      onNodeClick={(_, n) => onBlock(n.id)}
+      onNodeClick={(_, n) => n.type === 'block' && onBlock(n.id)}
       onEdgeClick={(_, e) => onLink(e.id)}
       onPaneClick={onPane}
       nodesConnectable={false}
@@ -152,7 +178,11 @@ function CanvasInner({
         style={{ width: 170, height: 110 }}
         className='!hidden !rounded-md !border !bg-card lg:!block'
         maskColor='color-mix(in oklab, var(--background) 70%, transparent)'
-        nodeColor={(n) => blockColor((n as BlockNodeType).data.block)}
+        nodeColor={(n) =>
+          n.type === 'block'
+            ? blockColor((n as BlockNodeType).data.block)
+            : 'transparent'
+        }
         nodeStrokeWidth={0}
       />
     </ReactFlow>

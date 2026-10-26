@@ -8,6 +8,10 @@ export const draw = {
   border: 2,
   /** Block corner radius (the same as Tailwind rounded-lg, --radius). */
   radius: 10,
+  /** Connector blocks: small corner radius, and a solid tab on the cable side. */
+  port: { radius: 3, tab: 5 },
+  /** Zone: space around its blocks, title band on top, corner radius. */
+  zone: { pad: 22, head: 26, radius: 14, font: 12 },
   /** Link end dot, diameter. */
   dot: 7,
   line: { signal: 2.75, power: 5 },

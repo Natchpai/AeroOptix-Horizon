@@ -129,7 +129,7 @@ async function clearLabels(page: Page, where: string) {
     const labels = q('.react-flow__edgelabel-renderer > div').map((e) =>
       box(e, `label "${e.textContent}"`)
     )
-    const nodes = q('.react-flow__node').map((e) =>
+    const nodes = q('.react-flow__node-block').map((e) =>
       box(e, `block ${(e as HTMLElement).dataset.id}`)
     )
     const lines = q('.react-flow__edge path[id]').map((e) =>
@@ -194,6 +194,7 @@ async function main() {
       'diagram?level=system',
       'diagram?level=board',
       'diagram?level=board&link=b-link',
+      'diagram?level=power',
       'pinout?mcu=h743',
       'pinout?mcu=f100',
     ]) {
@@ -208,9 +209,19 @@ async function main() {
       'diagram?level=board',
       'diagram?level=system&block=servos',
       'diagram?level=system&block=gps',
+      'diagram?level=system&block=pm02d',
+      'diagram?level=system&block=o-servo',
       'diagram?level=board&block=f100',
       'diagram?level=board&block=h743',
       'diagram?level=board&block=j-servo',
+      'diagram?level=power',
+      'diagram?level=power&block=pw-r5v',
+      'diagram?level=power&block=pw-pm02d',
+      'diagram?level=power&block=pw-r3v3',
+      'diagram?level=power&block=pw-imu',
+      'diagram?level=board&block=i2c2',
+      'diagram?level=board&block=p-f100dbg',
+      'diagram?level=board&block=j-gps',
     ]) {
       const v = await open(browser, route)
       await straightLines(v.page, `/${route}`)
@@ -223,6 +234,7 @@ async function main() {
       for (const [route, button] of [
         ['diagram?level=system', 'Export SVG'],
         ['diagram?level=board', 'Export SVG'],
+        ['diagram?level=power', 'Export SVG'],
         ['pinout?mcu=h743', 'SVG'],
         ['pinout?mcu=f100', 'SVG'],
       ]) {

@@ -46,8 +46,8 @@ export function BrandLogo({ className }: { className?: string }) {
 export function CoopLogo({ className }: { className?: string }) {
   return (
     <ThemedImage
-      light='logo-light.png'
-      dark='logo-dark.png'
+      light='np_light_theme.png'
+      dark='np_dark_theme.png'
       alt='nP'
       className={className}
     />
