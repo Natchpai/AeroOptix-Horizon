@@ -519,31 +519,38 @@
       {
         "name": "+3V3",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 2,
-        "schematic_color": "rgb(255, 113, 195)",
+        "priority": 3,
+        "schematic_color": "rgb(206, 107, 221)",
         "tuning_profile": "",
         "wire_width": 15
       },
       {
         "name": "+3V3A",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 0,
-        "schematic_color": "rgb(174, 100, 255)",
+        "priority": 1,
+        "schematic_color": "rgb(115, 125, 222)",
         "tuning_profile": "",
         "wire_width": 15
       },
       {
         "name": "+5V",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 3,
-        "schematic_color": "rgb(221, 133, 0)",
+        "priority": 4,
+        "schematic_color": "rgb(206, 163, 20)",
         "tuning_profile": "",
         "wire_width": 15
       },
       {
+        "name": "+6V",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 0,
+        "schematic_color": "rgb(229, 106, 20)",
+        "tuning_profile": ""
+      },
+      {
         "name": "GND",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 1,
+        "priority": 2,
         "schematic_color": "rgb(46, 46, 69)",
         "tuning_profile": "",
         "wire_width": 15
@@ -577,6 +584,10 @@
       {
         "netclass": "+3V3A",
         "pattern": "+3V3A"
+      },
+      {
+        "netclass": "+5V",
+        "pattern": "+VIN"
       }
     ]
   },
@@ -671,12 +682,6 @@
         },
         {
           "group_by": false,
-          "label": "MPN",
-          "name": "MPN",
-          "show": false
-        },
-        {
-          "group_by": false,
           "label": "Rate",
           "name": "Rate",
           "show": false
@@ -697,19 +702,25 @@
           "group_by": false,
           "label": "LCSC",
           "name": "LCSC",
-          "show": false
+          "show": true
         },
         {
           "group_by": false,
           "label": "Description",
           "name": "Description",
-          "show": false
+          "show": true
         },
         {
           "group_by": false,
           "label": "#",
           "name": "${ITEM_NUMBER}",
           "show": false
+        },
+        {
+          "group_by": false,
+          "label": "MFR.P/N",
+          "name": "MFR.P/N",
+          "show": true
         }
       ],
       "filter_string": "",
@@ -738,7 +749,7 @@
           "visible": false
         },
         {
-          "name": "MPN",
+          "name": "MFR.P/N",
           "url": false,
           "visible": false
         }
@@ -776,7 +787,7 @@
         "uuid": "76162bf1-0d95-48cb-b65a-4de551455d04"
       }
     ],
-    "used_designators": "#FLG1,#PWR1-10",
+    "used_designators": "#FLG1,#PWR1-19",
     "variants": []
   },
   "sheets": [
