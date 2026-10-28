@@ -449,9 +449,9 @@
       "endpoint_off_grid": "warning",
       "extra_units": "error",
       "field_name_whitespace": "warning",
-      "footprint_filter": "ignore",
+      "footprint_filter": "warning",
       "footprint_link_issues": "warning",
-      "four_way_junction": "ignore",
+      "four_way_junction": "warning",
       "ground_pin_not_ground": "warning",
       "hier_label_mismatch": "error",
       "isolated_pin_label": "warning",
@@ -477,7 +477,7 @@
       "similar_labels": "warning",
       "similar_power": "warning",
       "simulation_model_issue": "ignore",
-      "single_global_label": "ignore",
+      "single_global_label": "warning",
       "stacked_pin_name": "warning",
       "unannotated": "error",
       "unconnected_wire_endpoint": "warning",
@@ -592,7 +592,7 @@
       "svg": "",
       "vrml": ""
     },
-    "page_layout_descr_file": "kicad-embed://V2-0_MyCustomTemplate_A3_CGFont_Fabri.kicad_wks"
+    "page_layout_descr_file": "kicad-embed://V2-0_MyCustomTemplate_A4_CGFont_Fabri.kicad_wks"
   },
   "schematic": {
     "annotate_start_num": 0,
@@ -600,7 +600,7 @@
       "method": 0,
       "sort_order": 1
     },
-    "bom_export_filename": "${PROJECTNAME}.csv",
+    "bom_export_filename": "documents\\manufacturing\\Assembly\\BOM\\${PROJECTNAME}.csv",
     "bom_fmt_presets": [],
     "bom_fmt_settings": {
       "field_delimiter": ",",
@@ -764,7 +764,7 @@
     "meta": {
       "version": 1
     },
-    "page_layout_descr_file": "kicad-embed://V2-1_MyCustomTemplate_A3_CGFont_Sche.kicad_wks",
+    "page_layout_descr_file": "kicad-embed://V2-0_MyCustomTemplate_A3_CGFont_Sche.kicad_wks",
     "plot_directory": "",
     "reuse_designators": true,
     "subpart_first_id": 65,
@@ -803,14 +803,18 @@
   ],
   "text_variables": {
     "AUTHOR": "NATCHANON THUENTHAM",
-    "DRAWING_DATE": "",
-    "DRAWING_NAME": "",
     "EX_PAGE": "1",
-    "PROJECT_ID": "",
+    "PCB_DRAWING_DATE": "",
+    "PCB_DRAWING_NAME": "",
+    "PCB_REVIEW_DATE": "",
+    "PCB_REVIEW_NAME": "",
+    "PROJECT_ID": "NP-AO-2601-V1-0",
     "PROJECT_NAME": "AeroOptix - Horizon",
-    "RELEASE_DATE": "DD MM 202X",
-    "REVIEW_DATE": "",
-    "REVIEW_NAME": ""
+    "RELEASE_DATE": "",
+    "SCH_DRAWING_DATE": "",
+    "SCH_DRAWING_NAME": "",
+    "SCH_REVIEW_DATE": "",
+    "SCH_REVIEW_NAME": ""
   },
   "tuning_profiles": {
     "meta": {
