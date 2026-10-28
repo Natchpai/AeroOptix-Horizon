@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets\AO-Horizon-title-v2.png" alt="AO-Horizon title" width="100%" >
+  <img src="assets\AO-Horizon-v2.png" alt="AO-Horizon title" width="100%" >
 </p>
 
 > **Status:** `DRAFT`
@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.7`
 
-> **Draft specification (rev 0.16, 2026-10-26): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.17, 2026-10-28): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -96,11 +96,11 @@ The diagram is for reference only. It does not enforce gates or approve releases
 
 ### Design progress
 
-State of the saved KiCad files on 2026-10-24. Details are in the specification (4.3 "Schematic state", 4.6 "Library state").
+State of the saved KiCad files on 2026-10-28. Details are in the specification (4.3 "Schematic state", 4.6 "Library state").
 
 | Area | State |
 |---|---|
-| Schematic | Only `power_supplies.kicad_sch` has parts (19, all unannotated): power module connector, TPS16412DRC eFuse, TPS62142RGTR buck, TPS73533DRBR LDO and a 3.3 V LED. The eFuse is placed but only its GND pad is wired, so nothing drives `+5V` yet. The other sheets hold no parts. The spec 4.3 table still lists 17 parts and the DNP DF2S6.2CT; the sheet is to be re-checked (spec rev 0.15). |
+| Schematic | Only `power_supplies.kicad_sch` has parts (28, all unannotated): power module connector, TPS16412DRC eFuse with its fault LED, TPS62142RGTR buck behind a ferrite bead, TPS73533DRBR LDO and a 3.3 V LED. The eFuse is wired from `+VIN` to `+5V`, except its EN/~SHDN pin, and six of its part values are still `?`. The other sheets hold no parts. |
 | PCB | Empty: no footprints and no board outline. |
 | Library | Project symbols, footprints and 3D models for the MCUs, regulators, ESD parts, connectors and passives. Sensor symbols and footprints are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked yet. A BMP581 symbol is a starting point for the second barometer, and the Bosch LGA-10 footprint pads now follow the BMP581 land pattern (not checked against the drawing). The IST8310 uses the stock KiCad symbol and `LGA-16_3x3mm_P0.5mm` footprint; its datasheet has no land pattern, so the fit is estimated. A read-only link audit found no broken links. |
 | ERC / DRC | Not run. |
@@ -151,7 +151,7 @@ Peripheral allocations agreed with the software team (DEC-014, DEC-018). Pins ar
 - Sourcing risk on the sensors (OPEN-004): ICP-20100 is EOL (TDK says its pressure products are not for new designs), BMP581 stock is short, and the IST8310 lifecycle is not confirmed.
 - The magnetometer changed from BMM150 to IST8310 (DEC-011). Its absolute maximum supply is 3.6 V, so the 3.3 V rail has only 0.3 V of margin.
 - BMP390 was removed because LCSC does not sell it. The team accepted BMP581 as the second barometer, with BMP384 as fallback; the fallback fit is not checked (OPEN-019).
-- The power sheet is in progress: the `+VIN` to `+5V` eFuse (TPS16412DRC, DEC-024) is placed but not wired, and its ILIM resistor is not drawn (OPEN-012), and the `+3V3A` LDO part is not decided (OPEN-011). `+3V3A` feeds only the 2 IMUs, on VDD and VDDIO (DEC-025); the SPI level match with the H743 on `+3V3` is not checked yet. As drawn, the LDO's NR capacitor (100 nF) is above TI's 0.01 µF limit, and the TPS62142 lacks the 0.1 µF AVIN capacitor TI recommends.
+- The power sheet is in progress: the `+VIN` to `+5V` eFuse (TPS16412DRC, DEC-024) is wired, but its EN/~SHDN pin has no connection and its ILIM, OVP, IMON, IDLY and dV/dt part values are not set (OPEN-012), and the `+3V3A` LDO part is not decided (OPEN-011). `+3V3A` feeds only the 2 IMUs, on VDD and VDDIO (DEC-025); the SPI level match with the H743 on `+3V3` is not checked yet. As drawn, the LDO's NR capacitor (100 nF) is above TI's 0.01 µF limit, and the TPS62142 lacks the 0.1 µF AVIN capacitor TI recommends.
 - Power budgets, rail tolerances, sequencing, brownout/reset thresholds and protection (reverse polarity, overvoltage, ESD, short circuit) are `TBD`.
 - Crystal parts, load capacitors and reset topology are `TBD`.
 - Firmware is owned by the software team: PX4 v1.16.2, port based on `px4/fmu-v6c`. The PX4 Matek H743-Slim board port is kept in `documents/reference/` as a pin-map reference only.

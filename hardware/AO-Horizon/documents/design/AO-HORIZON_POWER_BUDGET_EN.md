@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.8
-**Updated:** 2026-10-26
+**Revision:** 0.9
+**Updated:** 2026-10-28
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012) and the 5 V input eFuse is TPS16412DRC (DEC-024). No other rail, regulator or protection part is approved. Not a verification record.
-**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012, OPEN-021 (spec rev 0.16). Decisions: DEC-010, DEC-012, DEC-016, DEC-018, DEC-019, DEC-024, DEC-025. Checklist task: P0-017.
+**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012, OPEN-021 (spec rev 0.17). Decisions: DEC-010, DEC-012, DEC-016, DEC-018, DEC-019, DEC-024, DEC-025. Checklist task: P0-017.
 **Decision owner:** Hardware
 
 Single record for rail loads, rail tolerances, brownout thresholds and power protection requirements.
@@ -44,7 +44,7 @@ USB VBUS (bench, no battery) -> OR-ing TBD -> 5 V board rail
 - `ASSUMED`: the 5 V input feeds the external connectors directly, and both 3.3 V rails come from the 5 V input.
 - 3.3 V_IMU is the `+3V3A` rail from its own LDO, and it feeds only the 2 IMUs, on VDD and VDDIO (DEC-025, human owner, 2026-10-26). The LDO part is not decided (OPEN-011).
 - USB VBUS powers the board and all external 5 V ports on the bench without the battery (team; all ports: human owner, 2026-10-24). `TBD`: how it is isolated from the PM02D 5 V, and whether the eFuse blocks reverse current (OPEN-006, OPEN-012).
-- The saved `power_supplies.kicad_sch` draws `+3V3` from the TPS62142RGTR buck (DEC-012) and `+3V3A` from a TPS73533DRBR LDO (drawn, not decided), both fed from `+5V`. The TPS16412DRC eFuse is placed but not wired (2026-10-24), so nothing drives `+5V` yet (OPEN-012). Details: spec 4.3 "Schematic state".
+- The saved `power_supplies.kicad_sch` draws `+3V3` from the TPS62142RGTR buck (DEC-012) and `+3V3A` from a TPS73533DRBR LDO (drawn, not decided), both fed from `+5V`; the buck through a ferrite bead (`+5V_BUCK`). The TPS16412DRC eFuse is wired from `+VIN` to `+5V` (2026-10-28), but its EN/~SHDN pin has no connection and its part values are `?` (OPEN-012). A red fault LED on the eFuse ~FLT pin draws from `+VIN` (drawn, not decided). Details: spec 4.3 "Schematic state".
 
 ## 3. Load table
 

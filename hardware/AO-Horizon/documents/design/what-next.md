@@ -1,6 +1,6 @@
 # What Next
 
-**Updated:** 2026-10-26
+**Updated:** 2026-10-28
 **Status:** Personal reminder list. Not a requirement, decision or verification record.
 
 The specification and the execution checklist stay the source of truth. This list only points to their IDs.
@@ -9,21 +9,24 @@ The specification and the execution checklist stay the source of truth. This lis
 
 - [x] Hardware answers, spec 0.14 (`2b89d07`), merged to `main` in PR #17.
 - [x] Team website merged to `main` in PRs #18 to #24; title image and logos on `dev`.
-- [ ] Commit the consistency pass: spec 0.15, checklist 0.14, root README, CHANGELOG, this file, the eFuse `CMP-008` link in `web/src/data/topology.ts` and `web/HANDOFF.md`.
-- [ ] Push `dev` and open a PR to `main` with `.github/pull_request_template.md`. The site updates on the merge.
+- [x] Consistency pass (spec 0.15) and DEC-025 (spec 0.16) merged to `main` in PR #27.
+- [ ] `block_diagram.kicad_sch`: the working copy holds only its title text; the drawing is gone (not committed). Keep it cleared on purpose, or restore it from Git.
+- [ ] Commit the power sheet and this docs pass: `power_supplies.kicad_sch`, spec 0.17, checklist 0.16, power budget 0.9, root README (spec rev, design progress, title image fix), CHANGELOG, this file. Decide whether to commit the plot `documents/schematic/AO-Horizon-Top-Power Supplies.pdf`.
+- [ ] Open a PR from `dev` to `main` with `.github/pull_request_template.md`. Five commits since PR #27 (library restyle, logo, PDF rules, hooks) are not on `main` yet. The site updates on the merge.
 
 ## 2. Power sheet (P2-011)
 
-Does not depend on the pinout or sensor answers. See spec 4.3 "Schematic state".
+Does not depend on the pinout or sensor answers. See spec 4.3 "Schematic state" (re-checked 2026-10-28: 28 parts, DF2S6.2CT gone, eFuse wired).
 
-- [ ] Re-check the saved sheet first: the spec 4.3 table says 17 parts with the DNP DF2S6.2CT, the README says 19 parts and the CHANGELOG says the DF2S6.2CT was removed. Ask Claude for `sch-inspect` on `power_supplies.kicad_sch`, then fix the spec table.
-- [ ] Wire the TPS16412DRC eFuse between `+VIN` and `+5V` (DEC-024). Placed, only GND wired. Set the ILIM resistor for 1.5 A and the OVP, EN/UVLO, dV/dt and FLT parts from TI data; check reverse current with USB (P2-017, OPEN-012).
+- [ ] Connect the TPS16412DRC EN/~SHDN pin (pin 5). It has no wire and no no-connect marker (OPEN-012).
+- [ ] Set the eFuse part values from TI data: ILIM resistor for 1.5 A, IOCP/IMON resistor, OVP divider, IDLY and dV/dt capacitors. All six are `?`, and the two capacitors have no footprint. Check reverse current with USB (P2-017, OPEN-012).
 - [ ] Change the PM02D connector from JST-GH to a 6-pin 2.00 mm CLIK-Mate (decided 2026-10-24, OPEN-023).
-- [ ] Pick the `+3V3A` LDO: it feeds only the 2 IMUs, VDD and VDDIO (DEC-025, OPEN-011). As drawn, the TPS73533DRBR NR capacitor is above TI's limit. Check the IMU SPI levels against the H743 on `+3V3`, and the power-up order.
+- [ ] Pick the `+3V3A` LDO: it feeds only the 2 IMUs, VDD and VDDIO (DEC-025, OPEN-011). As drawn, the TPS73533DRBR NR capacitor (100 nF) is above TI's limit. Check the IMU SPI levels against the H743 on `+3V3`, and the power-up order.
 - [ ] Add the 0.1 µF AVIN capacitor TI recommends for the TPS62142.
-- [ ] Fix the LCSC field: C162430 is on both the 1 µF and the 10 µF capacitor.
+- [ ] Give the ferrite bead before the buck (`+5V_BUCK`) a part number and footprint.
+- [ ] Fix copied fields: LCSC C22548 and MPN RC0603FR-071KL (1 kΩ) are also on the 2 kΩ and the four `?` resistors; the red LED's MFR field says LTSL-C191TGKT (the green LED); the green LED's MFR field holds a part number.
 - [ ] Annotate all parts.
-- [ ] Ask Claude for a `sch-review` of `power_supplies.kicad_sch` after saving.
+- [ ] Ask Claude for a `sch-review` of `power_supplies.kicad_sch` after saving. With annotated parts, `project-net` can trace the unlabeled nets.
 
 ## 3. Footprint checks (P2-012, OPEN-013)
 
