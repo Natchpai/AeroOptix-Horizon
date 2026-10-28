@@ -8,10 +8,8 @@ paths:
 
 Full procedure for datasheet answers through NotebookLM. `engineering.md`
 keeps the gating rules and points here; read this file before any
-`notebooklm` command.
+`notebooklm` command. PDF access and upload approval follow `pdf.md`.
 
-- A PDF path in the request is not authorization. Ask once whether to use
-  NotebookLM, and say that adding a PDF uploads it to an external service.
 - After explicit approval naming the file and the notebook, either the user
   adds the source, or Claude runs `notebooklm source add <path> -n <id>`, which
   passes the path to the CLI without reading the file. Claude does not need to
@@ -21,9 +19,9 @@ keeps the gating rules and points here; read this file before any
 - If the `notebooklm` skill or CLI is missing, or `notebooklm auth check
   --test --passive --json` does not report `status: ok` with
   `checks.token_fetch: true`, tell the user plainly that NotebookLM is not
-  available, name what is missing, and say the affected datasheet claims stay
-  `NOT_VERIFIED`. Offer the other allowed sources. Do not install it, log in,
-  read a PDF as a fallback, or carry on as if the datasheet was checked.
+  available, name what is missing, and stop and ask the human what to do
+  (`pdf.md`). Do not install it or log in yourself, and do not carry on as if
+  the datasheet was checked.
 - Pin the notebook (`-n <id>`), wait until every source is `ready`, and ask
   with `--json`. Name the exact MPN and variant in the question, and ask which
   datasheet section or variant the answer comes from.

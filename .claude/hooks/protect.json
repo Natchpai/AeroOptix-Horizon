@@ -7,10 +7,10 @@
   ],
   "ask": [
     "**/*.kicad_sch",
-    "**/*.kicad_pcb",
-    "**/*.kicad_pro"
+    "**/*.kicad_pcb"
   ],
   "allow": [
+    "**/*.kicad_pro",
     "**/*.step",
     "**/*.stp",
     "**/*.kicad_sym",

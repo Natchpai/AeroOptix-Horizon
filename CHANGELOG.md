@@ -33,7 +33,7 @@ Notable changes to this hardware project are documented here.
 - Team website in `web/` (Vite, React, shadcn-admin template): block diagram (system and board views), MCU pinouts, and an Overview with phase, gate progress, open items and recent spec changes. It reads the spec, checklist, pin allocation and root README at build time and adds no values of its own. Deployed to GitHub Pages by `.github/workflows/pages.yml` on merges to `main` (PRs #18 to #24).
 - Power view on the team website: power from source to load, left to right, with grouped loads. Feeds the records do not give are drawn as candidates. Built from the spec IDs, like the other views; no new design values.
 - DEC-025 (specification rev 0.16, human owner): `+3V3A` feeds only the 2 ICM-45686 IMUs, on VDD and VDDIO. OPEN-011 now covers the LDO part, the load, and the IMU SPI level match with the H743 on `+3V3` and power-up order. Checklist rev 0.15, power budget rev 0.8, IMU selection rev 0.9, root `README.md` and `what-next.md` updated to match. No KiCad file read or changed.
-- README title image (`assets/AO-Horizon-title-v2.png`) and the AeroOptix black-and-white logo (`documents/images/Logos/`); the two old nP logo files were replaced by `np_black.png`.
+- README title image (`assets/AO-Horizon-v2.png`) and the AeroOptix black-and-white logo (`documents/images/Logos/`); the two old nP logo files were replaced by `np_black.png`.
 
 ### Changed
 
@@ -96,8 +96,16 @@ Notable changes to this hardware project are documented here.
 - Specification rev 0.15, a consistency pass with no new decisions: CMP-008 added for the TPS16412DRC eFuse (DEC-024) and the eFuse named in OPEN-010 and the verdict. Older text now matches rev 0.14 (UBEC on a board-mount XT30 in DEC-019 and the power-input scenario, USB feeding all 5 V ports, Skywalker ESCs in the DEC-016 notes). The spec now records that its power-sheet table (17 parts, DNP DF2S6.2CT) disagrees with the README and this changelog; not re-checked.
 - Checklist rev 0.14 (P0-013 XT30 wording, P0-016 adds DEC-024, next action), root `README.md` (spec rev, website link, repository tree), `what-next.md` and `web/HANDOFF.md` updated to match. The website eFuse block names CMP-008. No KiCad file read or changed. ERC and DRC not run.
 - Team website: the diagram views are renamed (the outer view is now Overview, the inner view System; URL ids unchanged). The System view has no power parts any more, the Overview's power chain runs left to right, and the Power view shows the IMUs on `+3V3A`. Link ends on each block side are spaced equally and centred, checked at build time. The home page has a Power view card. On the System view, I2C2 is drawn as one bus from the H743 to the two barometers and the magnetometer, connectors sit in titled zones (Connectors; USB and debug; On-board I/O) and have a tab on the cable side, and the F100 SWD pads are left of the F100. The Overview shows the board ports: each device line starts at the port it plugs into, with one In board (PCB) zone for the FC and its ports, and out-board zones for the outside modules (power, devices, actuators).
+- Power sheet (`power_supplies.kicad_sch`, saved file, uncommitted at the time of the check), now 28 parts, all unannotated. All drawn, not decided, apart from the eFuse (DEC-024) and the buck (DEC-012):
+  - TPS16412DRC eFuse wired from `+VIN` to `+5V`, with an OVP divider, ILIM and IOCP/IMON resistors, IDLY and dV/dt capacitors (all values `?`) and a red fault LED on ~FLT. EN/~SHDN is not connected (OPEN-012).
+  - The TPS62142RGTR buck is fed from `+5V` through a ferrite bead (`+5V_BUCK`), with 2 × 10 µF at its input.
+  - TPS73533DRBR LDO: 10 µF input, 10 µF and 100 nF output. The NR capacitor is still 100 nF (OPEN-011).
+  - One `PWR_FLAG` on `+VIN`.
+- Specification rev 0.17 (no new decisions): the 4.3 schematic-state table rewritten from the saved sheet, OPEN-011 and OPEN-012 updated. Checklist rev 0.16 (P2-017 now `IN_PROGRESS`, P2-011, OI-013, OI-014, next action), power budget rev 0.9, root `README.md` and `what-next.md` updated to match.
 
 ### Fixed
+
+- Root `README.md` title image points to `assets/AO-Horizon-v2.png`; the old `AO-Horizon-title-v2.png` was renamed in `23c312d`.
 
 - Renamed the misspelled `.cluade/` configuration folder to `.claude/` so rules, skills, hook and permissions load.
 - The `Edit(**/Library/**)` deny rule did not match the lowercase `library/` directory; it now uses `library`.
@@ -119,3 +127,4 @@ Notable changes to this hardware project are documented here.
 - Read-only checks run by Claude on 2026-10-19 against the saved files at commit b34343e: a library link audit found no broken links, and a net trace of `power_supplies.kicad_sch` matched the spec's schematic-state table. The four sensor symbols' pin maps match their datasheet pin tables, and the TPS62142 and TPS73533 circuits were compared with TI SLVSAJ0F Rev F and SBVS087M (checked through NotebookLM, text confirmed in the source fulltext). These are not ERC, DRC or a human review.
 - Read-only checks run by Claude on 2026-10-24: `klc_verify` passes, the IST8310 symbol pins match the LGA-16 footprint pads, and the library link audit is clean. Not ERC, DRC or a human review.
 - Read-only checks run by Claude on 2026-10-24: STM32F100C(8-B)Tx and STM32F103C(8-B)Tx compared in ST open pin data, F100 datasheet values found in the NotebookLM source fulltext, and the `progress-update` preflight found no em dashes, undefined IDs, broken links or open items without a tracker row. Not ERC, DRC or a human review.
+- Read-only checks run by Claude on 2026-10-28 against the saved `power_supplies.kicad_sch` (uncommitted): `sch-inspect` pin, power-net and label queries, and the `progress-update` preflight. Which parts share an unlabeled net was traced from wire geometry, not a netlist, because the parts are unannotated (`NOT_VERIFIED`). No datasheet values were checked. Not ERC, DRC or a human review.

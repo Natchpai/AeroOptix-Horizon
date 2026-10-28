@@ -50,19 +50,14 @@ Verify:    how the human can check it (ERC/DRC, calculation, measurement)
   Identify issues that need human inspection, simulation or measurement.
 
 ### Datasheet evidence
-Claude never opens, reads or parses a PDF itself (see `hardware-workflow.md`).
-Allowed sources for datasheet claims, in order of preference:
-1. Text, tables or values the user supplies.
-2. Official manufacturer web pages and HTML application notes.
-3. Answers from NotebookLM through the `notebooklm` skill, when the user has
-   authorized it.
+Allowed sources for datasheet claims:
+1. Answers from NotebookLM through the `notebooklm` skill (the default).
+2. Text, tables or values the user supplies.
+3. Official manufacturer web pages and HTML application notes.
 
-NotebookLM rules (full procedure in `.claude/rules/notebooklm.md`; read it
-before running any `notebooklm` command):
-- A PDF path in the request is not authorization. Ask once whether to use
-  NotebookLM, and say that adding a PDF uploads it to an external service.
-- If NotebookLM is not available, say so, keep the affected claims
-  `NOT_VERIFIED`, and never read a PDF as a fallback.
+PDF access, uploads and what to do when NotebookLM has a problem follow
+`pdf.md`. The NotebookLM procedure is in `notebooklm.md`; read it before
+running any `notebooklm` command.
 - Label a NotebookLM value `VERIFIED` only when the `cited_text`
   contains it; an answer without a citation is `NOT_VERIFIED`.
 - If neither the user nor NotebookLM can supply the source, report
@@ -88,7 +83,7 @@ MAJOR | U3 / 3V3 | VERIFIED | Output current limit 500 mA is below the 620 mA lo
 
 ## Analysis (SHOULD)
 - Prefer native CAD data for structured inspection. Images or screenshots the
-  user supplies may support it; PDFs are excluded.
+  user supplies may support it; PDFs follow `pdf.md`.
 - Use deterministic tools for calculations and verification when appropriate.
 - Consider tolerances, operating limits, worst-case conditions and design
   margins where relevant.

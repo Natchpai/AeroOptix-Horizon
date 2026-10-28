@@ -19,8 +19,7 @@ and `engineering.md`.
 - Never infer a project phase (DRAFT, PRELIMINARY, CHECK, RELEASE) from Git
   status, files or history. Do not tag, release or open a release PR unless the
   human declares the phase and approves that Git action separately.
-- Do not open, read or assess PDF documents while inspecting changes; report
-  their paths and metadata only. Mark ERC/DRC or document checks that were not
-  run as `NOT_VERIFIED`.
+- Report PDFs in a change by path and metadata only (`pdf.md`). Mark ERC/DRC
+  or document checks that were not run as `NOT_VERIFIED`.
 - In commit and PR text, describe design changes, impact and risks factually.
   Do not claim a design is correct, safe or approved based on ERC/DRC results.

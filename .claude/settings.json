@@ -23,19 +23,22 @@
 
       "Edit(**/*.kicad_sym)",
       "Edit(**/*.kicad_mod)",
+      "Edit(**/*.kicad_pro)",
       "Edit(**/library/**)"
     ],
     "ask": [
       "Edit(**/*.kicad_sch)",
       "Edit(**/*.kicad_pcb)",
-      "Edit(**/*.kicad_pro)",
-      "Bash(git merge *)"
+      "Bash(git merge *)",
+
+      "Bash(pdftotext *)",
+      "Read(**/*.pdf)"
     ],
     "deny": [
-      "Read(**/*.pdf)",
-      "Read(~/.notebooklm/**)",
-      "Bash(pdftotext *)",
       "Edit(**/*.kicad_wks)",
+      "Read(~/.notebooklm/**)",
+      "Read(**/documents/schematic/**/*.pdf)",
+      "Read(**/documents/manufacturing/**/*.pdf)",
       "Edit(**/templates/**)",
       "Edit(**/*.wrl)",
       "Bash(git push origin main*)",
