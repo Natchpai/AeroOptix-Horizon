@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.9
-**Updated:** 2026-10-28
-**Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012) and the 5 V input eFuse is TPS16412DRC (DEC-024). No other rail, regulator or protection part is approved. Not a verification record.
-**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012, OPEN-021 (spec rev 0.17). Decisions: DEC-010, DEC-012, DEC-016, DEC-018, DEC-019, DEC-024, DEC-025. Checklist task: P0-017.
+**Revision:** 0.10
+**Updated:** 2026-10-29
+**Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012) and the 5 V input eFuse is TPS259251DRC (DEC-026). No other rail, regulator or protection part is approved. Not a verification record.
+**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012, OPEN-021 (spec rev 0.18). Decisions: DEC-010, DEC-012, DEC-016, DEC-018, DEC-019, DEC-025, DEC-026. Checklist task: P0-017.
 **Decision owner:** Hardware
 
 Single record for rail loads, rail tolerances, brownout thresholds and power protection requirements.
@@ -35,7 +35,7 @@ From the spec diagram. Candidate only, not approved (spec PWR-013).
                            |            |
                            |            +-> 6 V UBEC -> board XT30 -> on-board 6 V bus
                            |                             -> 8 servo headers (+ IF-050 sense)
-                           +-> TPS16412DRC eFuse, 1.5 A (DEC-024) -> 5 V bus -> 3.3 V (MCUs, baro, mag)
+                           +-> TPS259251DRC eFuse, 2 A (DEC-026)  -> 5 V bus -> 3.3 V (MCUs, baro, mag)
                                                                   +-> +3V3A LDO -> 3.3 V_IMU (2 × IMU only, DEC-025)
                                                                   +-> 5 V external connectors
 USB VBUS (bench, no battery) -> OR-ing TBD -> 5 V board rail
@@ -44,7 +44,7 @@ USB VBUS (bench, no battery) -> OR-ing TBD -> 5 V board rail
 - `ASSUMED`: the 5 V input feeds the external connectors directly, and both 3.3 V rails come from the 5 V input.
 - 3.3 V_IMU is the `+3V3A` rail from its own LDO, and it feeds only the 2 IMUs, on VDD and VDDIO (DEC-025, human owner, 2026-10-26). The LDO part is not decided (OPEN-011).
 - USB VBUS powers the board and all external 5 V ports on the bench without the battery (team; all ports: human owner, 2026-10-24). `TBD`: how it is isolated from the PM02D 5 V, and whether the eFuse blocks reverse current (OPEN-006, OPEN-012).
-- The saved `power_supplies.kicad_sch` draws `+3V3` from the TPS62142RGTR buck (DEC-012) and `+3V3A` from a TPS73533DRBR LDO (drawn, not decided), both fed from `+5V`; the buck through a ferrite bead (`+5V_BUCK`). The TPS16412DRC eFuse is wired from `+VIN` to `+5V` (2026-10-28), but its EN/~SHDN pin has no connection and its part values are `?` (OPEN-012). A red fault LED on the eFuse ~FLT pin draws from `+VIN` (drawn, not decided). Details: spec 4.3 "Schematic state".
+- The saved `power_supplies.kicad_sch` draws `+3V3` from the TPS62142RGTR buck (DEC-012) and `+3V3A` from a TPS73533DRBR LDO (drawn, not decided), both fed from `+5V`; the buck through a 0.33 µH inductor (`+5V_BUCK`). The TPS259251DRC eFuse is wired from `+VIN` to `+5V` (2026-10-29) with EN/UVLO through 1 MΩ to `+VIN`, ILIM 45.3 kΩ and dV/dT 1 nF; the values are not checked against TI data (OPEN-012). No fault LED. Details: spec 4.3 "Schematic state".
 
 ## 3. Load table
 
@@ -100,7 +100,7 @@ The 4 motor outputs (IF-040 to IF-043) carry only the signal to 4 separate Skywa
 | ---- | -------------- | ------- | ------ | ------ | ----- |
 | 3.3 V_IMU | 0.88 mA (2 × 0.44 mA) | IMU peak | TBD. The drawn `+3V3A` LDO TPS73533DRBR is rated 500 mA (TI SBVS087M 5.3) but is not decided (OPEN-011). | TBD | `ESTIMATED` from `NOT_VERIFIED` inputs |
 | 3.3 V | about 17 mA (IST8310 at 200 sps, F100 max 15.4 mA) | H743, ICP-20100, BMP581, pull-ups, LEDs | 2 A, TPS62142RGTR (DEC-012, TI SLVSAJ0F) | TBD | `ESTIMATED` from partial inputs |
-| 5 V | 70 mA average, 150 mA peak (TF-Luna only) | All other external loads, 3.3 V regulator input | 2 A source (PWR-010); eFuse limit 1.5 A (DEC-024) | TBD | `ESTIMATED` from partial inputs |
+| 5 V | 70 mA average, 150 mA peak (TF-Luna only) | All other external loads, 3.3 V regulator input | 2 A source (PWR-010); eFuse limit target 2 A (DEC-026) | TBD | `ESTIMATED` from partial inputs |
 | 6 V (on the board) | none | All servo loads | 10 A cont., 15 A inst. (PWR-011), UBEC and XT30 input | TBD | `TBD` |
 
 The subtotals are far from complete. Do not use them to size a regulator. The MCUs and the external 5 V devices are likely the largest loads (`ASSUMED`).
@@ -135,7 +135,7 @@ Known upper bounds for the 3.3 V rails:
 
 All `TBD`. Items to decide:
 
-- [ ] 5 V input: TPS16412DRC eFuse chosen, limit 1.5 A (DEC-024). Open: ILIM resistor, OVP and UVLO settings, inrush (dV/dt), reverse polarity, transient (TVS) rating, all from TI data (P2-017).
+- [ ] 5 V input: TPS259251DRC eFuse chosen, limit target 2 A (DEC-026, replaces DEC-024). Open, all from TI data: the 45.3 kΩ ILIM resistor for 2 A, the overvoltage clamp, the UVLO threshold with EN/UVLO tied high, inrush with 1 nF dV/dT, reverse polarity, transient (TVS) rating (P2-017).
 - [ ] USB VBUS and PM02D 5 V: OR-ing or isolation, so neither back-feeds the other. Check whether the eFuse blocks reverse current.
 - [ ] 6 V servo bus on the board (DEC-019): board-mount XT30 input, rating against 10 A continuous and 15 A peak `NOT_VERIFIED`; 6 V and servo GND copper; servo GND joined to logic GND at one point away from the sensors; no back-feed from the 6 V bus into the 5 V side (OPEN-021).
 - [ ] 6 V servo rail: overcurrent behavior, pulse duration of the 15 A rating, bulk capacitance.
@@ -151,7 +151,7 @@ All `TBD`. Items to decide:
 | MAJOR | PWR-012 | `NOT_VERIFIED` | Board current budget cannot be closed: MCU currents and all external 5 V device models are missing. | Section 4 |
 | MAJOR | IF-030 to IF-037 / UBEC | `NOT_VERIFIED` | All 8 servos can move at once and stall current is not known. The 10 A team target covers only the 4 tilt servos (OPEN-007). | Section 3 |
 | MAJOR | XT30 input / 6 V bus | `NOT_VERIFIED` | The XT30 input carries the total servo current, up to 10 A continuous and 15 A peak. Its rating is not checked. A header position (about 3 A per pin, `ESTIMATED`) was replaced by the XT30 on 2026-10-24 (OPEN-021). | DEC-019, PWR-011 |
-| MINOR | DEC-024 / 5 V | `NOT_VERIFIED` | The eFuse limit (1.5 A) is below the 2 A source (PWR-010), so the board plus all external 5 V loads must fit under 1.5 A, with the load currents still unknown. | Section 4 |
+| MINOR | DEC-026 / 5 V | `NOT_VERIFIED` | The eFuse limit target (2 A) equals the 2 A source (PWR-010), so there is no margin: an overload may pull the source down before the eFuse limits. The board plus all external 5 V loads must fit under 2 A, with the load currents still unknown. | Section 4 |
 | MINOR | IST8310 / 3.3 V | `VERIFIED` | IST8310 absolute maximum supply is 3.6 V, so the 3.3 V rail must never overshoot by more than 0.3 V (9 %), including start-up and load steps. | IST8310 DS V1.2, 4.1 |
 | INFO | IF-022 / 5 V | `VERIFIED` (team answer) | USB VBUS powers the board on the bench, so it needs OR-ing or isolation from the PM02D 5 V. | Section 2 |
 | MINOR | IF-022 / 5 V | `ESTIMATED` | USB feeds all external 5 V ports (human owner). GPS, ELRS, TF-Luna (150 mA peak alone) and airspeed together with the board may exceed a 500 mA USB port. | Section 3 |
@@ -162,7 +162,7 @@ All `TBD`. Items to decide:
 - [ ] Servo stall current (team bench test, P0-022). Servo power passes through the board (DEC-019), so it also sizes the board input and bus.
 - [x] 3.3 V_IMU rail structure: `+3V3A` from its own LDO, IMUs only (DEC-025, 2026-10-26). The LDO part is still open (OPEN-011).
 - [x] USB VBUS as a board power source: yes, on the bench (team). It feeds all external 5 V ports (human owner, 2026-10-24).
-- [ ] TPS16412DRC values from TI: ILIM for 1.5 A, the 1.8 A rating, reverse-current behavior (P2-017).
+- [ ] TPS259251DRC values from TI: ILIM for 2 A, the part rating, reverse-current behavior (P2-017). NotebookLM has no TPS2592x notebook yet.
 - [ ] XT30 current rating (OPEN-021).
 - [ ] STM32H743 VDD range, run current at the planned clock, BOR/PVD levels (user-supplied values or approved datasheet route). STM32F100: done (VDD 2 to 3.6 V, Table 8; sections 3.3 V and 6).
 - [ ] ICP-20100 supply range and current.

@@ -1,6 +1,6 @@
 # What Next
 
-**Updated:** 2026-10-28
+**Updated:** 2026-10-29
 **Status:** Personal reminder list. Not a requirement, decision or verification record.
 
 The specification and the execution checklist stay the source of truth. This list only points to their IDs.
@@ -11,20 +11,22 @@ The specification and the execution checklist stay the source of truth. This lis
 - [x] Team website merged to `main` in PRs #18 to #24; title image and logos on `dev`.
 - [x] Consistency pass (spec 0.15) and DEC-025 (spec 0.16) merged to `main` in PR #27.
 - [ ] `block_diagram.kicad_sch`: the working copy holds only its title text; the drawing is gone (not committed). Keep it cleared on purpose, or restore it from Git.
-- [ ] Commit the power sheet and this docs pass: `power_supplies.kicad_sch`, spec 0.17, checklist 0.16, power budget 0.9, root README (spec rev, design progress, title image fix), CHANGELOG, this file. Decide whether to commit the plot `documents/schematic/AO-Horizon-Top-Power Supplies.pdf`.
+- [x] Power sheet and spec 0.17 docs pass committed on `dev` (`6e61087`, `0cda54e`).
+- [ ] Commit the TPS259251DRC eFuse change and this docs pass: `power_supplies.kicad_sch`, the TPS25925x and TPS25926x symbols, the new `L_0603_1608Metric` footprint, the deleted capacitor, inductor and JST ZH library files, `AO-Horizon.kicad_pro`, spec 0.18, checklist 0.17, power budget 0.10, root README, CHANGELOG, this file.
 - [ ] Open a PR from `dev` to `main` with `.github/pull_request_template.md`. Five commits since PR #27 (library restyle, logo, PDF rules, hooks) are not on `main` yet. The site updates on the merge.
 
 ## 2. Power sheet (P2-011)
 
-Does not depend on the pinout or sensor answers. See spec 4.3 "Schematic state" (re-checked 2026-10-28: 28 parts, DF2S6.2CT gone, eFuse wired).
+Does not depend on the pinout or sensor answers. See spec 4.3 "Schematic state" (re-checked 2026-10-29: 29 parts, TPS259251DRC eFuse wired, DEC-026).
 
-- [ ] Connect the TPS16412DRC EN/~SHDN pin (pin 5). It has no wire and no no-connect marker (OPEN-012).
-- [ ] Set the eFuse part values from TI data: ILIM resistor for 1.5 A, IOCP/IMON resistor, OVP divider, IDLY and dV/dt capacitors. All six are `?`, and the two capacitors have no footprint. Check reverse current with USB (P2-017, OPEN-012).
+- [x] Replace the TPS16412DRC with the TPS259251DRC, 2 A target (DEC-026), and wire EN/UVLO, ILIM and dV/dT (2026-10-29).
+- [ ] Check the eFuse values against TI data: 45.3 kΩ ILIM for 2 A, 1 nF dV/dT inrush, EN/UVLO through 1 MΩ, overvoltage clamp, fault response, reverse current with USB (P2-017, OPEN-012). Needs a TPS2592x source: add one to NotebookLM (your approval), or give me the values.
+- [ ] Give the 1 MΩ, 45.3 kΩ and 1 nF eFuse parts footprints.
 - [ ] Change the PM02D connector from JST-GH to a 6-pin 2.00 mm CLIK-Mate (decided 2026-10-24, OPEN-023).
-- [ ] Pick the `+3V3A` LDO: it feeds only the 2 IMUs, VDD and VDDIO (DEC-025, OPEN-011). As drawn, the TPS73533DRBR NR capacitor (100 nF) is above TI's limit. Check the IMU SPI levels against the H743 on `+3V3`, and the power-up order.
-- [ ] Add the 0.1 µF AVIN capacitor TI recommends for the TPS62142.
-- [ ] Give the ferrite bead before the buck (`+5V_BUCK`) a part number and footprint.
-- [ ] Fix copied fields: LCSC C22548 and MPN RC0603FR-071KL (1 kΩ) are also on the 2 kΩ and the four `?` resistors; the red LED's MFR field says LTSL-C191TGKT (the green LED); the green LED's MFR field holds a part number.
+- [ ] Pick the `+3V3A` LDO: it feeds only the 2 IMUs, VDD and VDDIO (DEC-025, OPEN-011). The TPS73533DRBR NR capacitor is now 10 nF; set its dielectric (TI: low leakage, C0G) and footprint, and add no-connect markers on pins 2, 6 and 7. Check the IMU SPI levels against the H743 on `+3V3`, and the power-up order.
+- [x] TPS62142 AVIN 100 nF on `+5V_BUCK`; 0.33 µH ASMPH-0603-R33M-T in place of the ferrite bead (2026-10-29).
+- [ ] Check the 3.3 µH PCR0420-3R3-M buck inductor (saturation current) and the 3 × 10 µF output against TI Table 9-2, and the damping of the 0.33 µH input filter.
+- [ ] Give the 510 Ω LED resistor a footprint and the green LED an LCSC code.
 - [ ] Annotate all parts.
 - [ ] Ask Claude for a `sch-review` of `power_supplies.kicad_sch` after saving. With annotated parts, `project-net` can trace the unlabeled nets.
 

@@ -34,6 +34,8 @@ Notable changes to this hardware project are documented here.
 - Power view on the team website: power from source to load, left to right, with grouped loads. Feeds the records do not give are drawn as candidates. Built from the spec IDs, like the other views; no new design values.
 - DEC-025 (specification rev 0.16, human owner): `+3V3A` feeds only the 2 ICM-45686 IMUs, on VDD and VDDIO. OPEN-011 now covers the LDO part, the load, and the IMU SPI level match with the H743 on `+3V3` and power-up order. Checklist rev 0.15, power budget rev 0.8, IMU selection rev 0.9, root `README.md` and `what-next.md` updated to match. No KiCad file read or changed.
 - README title image (`assets/AO-Horizon-v2.png`) and the AeroOptix black-and-white logo (`documents/images/Logos/`); the two old nP logo files were replaced by `np_black.png`.
+- Library parts (`82f5669`): TPS25923x to TPS25926x eFuse symbols for the VSON-10 DRC package, the JIERR PCR0420 inductor footprint and 3D model, and the STM32F100C8Tx symbol (renamed from STM32F103C8Tx). Uncommitted: the TPS25925x and TPS25926x symbols now go in the BOM and on the board, and a new `L_0603_1608Metric` inductor footprint.
+- DEC-026 (specification rev 0.18, human owner): TPS259251DRC eFuse between the PM02D `+VIN` and `+5V`, current-limit target 2 A. Replaces the TPS16412DRC and 1.5 A of DEC-024.
 
 ### Changed
 
@@ -102,6 +104,13 @@ Notable changes to this hardware project are documented here.
   - TPS73533DRBR LDO: 10 µF input, 10 µF and 100 nF output. The NR capacitor is still 100 nF (OPEN-011).
   - One `PWR_FLAG` on `+VIN`.
 - Specification rev 0.17 (no new decisions): the 4.3 schematic-state table rewritten from the saved sheet, OPEN-011 and OPEN-012 updated. Checklist rev 0.16 (P2-017 now `IN_PROGRESS`, P2-011, OI-013, OI-014, next action), power budget rev 0.9, root `README.md` and `what-next.md` updated to match.
+- Power sheet (`power_supplies.kicad_sch`, saved file, uncommitted at the time of the check), now 29 parts, all unannotated. All drawn, not decided, apart from the eFuse (DEC-026) and the buck (DEC-012):
+  - TPS259251DRC eFuse in place of the TPS16412DRC: EN/UVLO 1 MΩ to `+VIN`, ILIM 45.3 kΩ, dV/dT 1 nF, 2 × 100 nF on `+VIN` and 100 nF on `+5V`. Values not checked against TI data (OPEN-012). The TPS25924 stage committed in `0cda54e` is no longer on the sheet.
+  - Buck input: 0.33 µH ASMPH-0603-R33M-T from `+5V` to `+5V_BUCK` in place of the ferrite bead, and a 100 nF AVIN capacitor. Buck inductor: 3.3 µH JIERR PCR0420-3R3-M in place of the 2.2 µH Abracon part.
+  - TPS73533DRBR NR capacitor 10 nF (was 100 nF); output 2 × 10 µF and 100 nF.
+  - 3.3 V LED resistor 510 Ω.
+- KiCad project: migrated to project template Rev4 (`ccf29de`), `+6V` net class and LCSC column in the BOM (`55a9a50`), fonts embedded in the root sheet (`f71c0ca`).
+- Specification rev 0.18: DEC-026 added and DEC-024 marked superseded; the 4.3 schematic-state table rewritten; part-number boundary, CMP-008, OPEN-010 to OPEN-012 and the verdict updated. Checklist rev 0.17 (P0-016, P2-011, P2-017, OI-004, OI-012 to OI-014, next action), power budget rev 0.10, root `README.md` and `what-next.md` updated to match.
 
 ### Fixed
 
@@ -118,6 +127,8 @@ Notable changes to this hardware project are documented here.
 - `.claude/settings.local.json` is no longer tracked (local-only file, now git-ignored).
 - `AO-HORIZON_HANDOFF_EN.md`: its content was merged into the execution checklist.
 - DNP DF2S6.2CT ESD diode removed from `power_supplies.kicad_sch`.
+- From `power_supplies.kicad_sch` (uncommitted): the TPS16412DRC eFuse with its OVP, IOCP/IMON and IDLY parts, the red fault LED, a Zener diode and the ferrite bead.
+- Unused library items: JST EH and JST ZH 2-pin footprints (`82f5669`). Uncommitted: the Panasonic OS-CON and Wuerth WCAP-ASLI capacitor footprints, the Abracon AOTA-B252010S inductor footprint, their 3D models and the JST ZH 3D model.
 - ESC current sense and ESC telemetry (IF-052, IF-053) removed from the specification: the separate Skywalker ESCs have neither wire (human owner). OPEN-022 closed.
 - Stale rows in the design records: GPS2 and FlySky loads and the "barometer 2 not chosen" row in the power budget, the BMP390 and BMM150 columns in the barometer sourcing table (kept as one history line), and done items in `what-next.md` and the barometer record.
 
@@ -128,3 +139,4 @@ Notable changes to this hardware project are documented here.
 - Read-only checks run by Claude on 2026-10-24: `klc_verify` passes, the IST8310 symbol pins match the LGA-16 footprint pads, and the library link audit is clean. Not ERC, DRC or a human review.
 - Read-only checks run by Claude on 2026-10-24: STM32F100C(8-B)Tx and STM32F103C(8-B)Tx compared in ST open pin data, F100 datasheet values found in the NotebookLM source fulltext, and the `progress-update` preflight found no em dashes, undefined IDs, broken links or open items without a tracker row. Not ERC, DRC or a human review.
 - Read-only checks run by Claude on 2026-10-28 against the saved `power_supplies.kicad_sch` (uncommitted): `sch-inspect` pin, power-net and label queries, and the `progress-update` preflight. Which parts share an unlabeled net was traced from wire geometry, not a netlist, because the parts are unannotated (`NOT_VERIFIED`). No datasheet values were checked. Not ERC, DRC or a human review.
+- Read-only checks run by Claude on 2026-10-29 against the saved `power_supplies.kicad_sch` (uncommitted): `sch-inspect` pins and connected-pins, the `progress-update` preflight, and TI SLVSAJ0F Rev F Table 9-2 through NotebookLM (3.3 µH listed as a proven inductor value, cited). The parts are unannotated, so nets come from the sheet-local wire graph (`NOT_VERIFIED`). The TPS259251DRC values are not checked: no TPS2592x source in NotebookLM. Not ERC, DRC or a human review.
