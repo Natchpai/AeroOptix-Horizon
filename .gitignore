@@ -57,4 +57,6 @@ fp-info-cache
 # /hardware/AO-Horizon/documents/datesheets
 /hardware/AO-Horizon/documents/datesheets
 /hardware/AO-Horizon/libDump
+/hardware/AO-Horizon/documents/schematic/*
+!/hardware/AO-Horizon/documents/schematic/README.md
 git-cheatsheet.md

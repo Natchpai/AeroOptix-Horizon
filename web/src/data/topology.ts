@@ -289,7 +289,7 @@ export const systemLinks: Link[] = [
     to: 'o-pm',
     bus: 'v5',
     label: '5 V in',
-    refs: ['PWR-001', 'PWR-010', 'DEC-024'],
+    refs: ['PWR-001', 'PWR-010', 'DEC-026'],
     open: ['OPEN-012', 'OPEN-023'],
   },
   {
@@ -965,9 +965,9 @@ export const powerBlocks: Block[] = [
     level: 'power',
     kind: 'power',
     rail: 'v5',
-    label: 'eFuse, 1.5 A',
-    sub: 'TPS16412DRC',
-    refs: ['DEC-024', 'CMP-008', 'PWR-010'],
+    label: 'eFuse, 2 A',
+    sub: 'TPS259251DRC',
+    refs: ['DEC-026', 'CMP-008', 'PWR-010'],
     open: ['OPEN-012'],
   },
   {
@@ -1135,12 +1135,12 @@ export const powerLinks: Link[] = [
     'pw-efuse',
     'v5',
     '+VIN',
-    ['PWR-010', 'DEC-024'],
+    ['PWR-010', 'DEC-026'],
     {
       open: ['OPEN-012'],
     }
   ),
-  pw('pw-efuse-5v', 'pw-efuse', 'pw-r5v', 'v5', '+5V', ['DEC-024'], {
+  pw('pw-efuse-5v', 'pw-efuse', 'pw-r5v', 'v5', '+5V', ['DEC-026'], {
     open: ['OPEN-012'],
   }),
   pw('pw-usb-5v', 'pw-usb', 'pw-r5v', 'v5', 'VBUS, OR-ing TBD', ['IF-022'], {

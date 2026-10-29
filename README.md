@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.7`
 
-> **Draft specification (rev 0.17, 2026-10-28): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.18, 2026-10-29): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -25,7 +25,7 @@ The team website, [natchpai.github.io/AeroOptix-Horizon](https://natchpai.github
 - H743 to F100 link over USART, px4io protocol at 1.5 Mb/s
 - 4 motor outputs on the H743 (TIM5, DShot with RPM feedback), 3 spare outputs
 - 2× SPI IMU (ICM-45686), 2× I2C barometer (ICP-20100 + BMP581), 1× I2C magnetometer (IST8310)
-- 5 V board input through a TPS16412DRC eFuse (1.5 A limit)
+- 5 V board input through a TPS259251DRC eFuse (2 A limit target)
 - 3.3 V rail from a TPS62142RGTR buck on the 5 V board input
 - USB FS, microSD (SDMMC1), H743 debug on a Pixhawk Debug Mini connector, F100 SWD pads, selectable BOOT0 on the H743
 - If the H743 stops, the F100 holds the servos at failsafe values after 0.5 s and the motors stop when their DShot signal stops (no landing)
@@ -42,7 +42,7 @@ The team website, [natchpai.github.io/AeroOptix-Horizon](https://natchpai.github
 | IMU | 2× SPI, ICM-45686 |
 | Barometer | 2× I2C, ICP-20100 + BMP581 (BMP384 fallback) |
 | Magnetometer | 1× I2C, iSentek IST8310 (DEC-011, replaced BMM150) |
-| Board input | 5 V from power module, 4.5 to 5.5 V, 2 A source; TPS16412DRC eFuse, limit 1.5 A (DEC-024) |
+| Board input | 5 V from power module, 4.5 to 5.5 V, 2 A source; TPS259251DRC eFuse, limit target 2 A (DEC-026) |
 | 3.3 V rail | TPS62142RGTR buck from 5 V, 2 A part (load current `TBD`) |
 | 3.3 V IMU rail (`+3V3A`) | Feeds only the 2 IMUs, VDD and VDDIO (DEC-025); LDO part `TBD` (TPS73533DRBR drawn, not decided) |
 | Servo supply | 6 V from a UBEC into a board-mount XT30 and the on-board servo rail, 10 A continuous, 15 A instantaneous (XT30 rating and protection `TBD`, OPEN-021) |
@@ -96,13 +96,13 @@ The diagram is for reference only. It does not enforce gates or approve releases
 
 ### Design progress
 
-State of the saved KiCad files on 2026-10-28. Details are in the specification (4.3 "Schematic state", 4.6 "Library state").
+State of the saved KiCad files on 2026-10-29. Details are in the specification (4.3 "Schematic state", 4.6 "Library state").
 
 | Area | State |
 |---|---|
-| Schematic | Only `power_supplies.kicad_sch` has parts (28, all unannotated): power module connector, TPS16412DRC eFuse with its fault LED, TPS62142RGTR buck behind a ferrite bead, TPS73533DRBR LDO and a 3.3 V LED. The eFuse is wired from `+VIN` to `+5V`, except its EN/~SHDN pin, and six of its part values are still `?`. The other sheets hold no parts. |
+| Schematic | Only `power_supplies.kicad_sch` has parts (29, all unannotated): power module connector, TPS259251DRC eFuse, TPS62142RGTR buck behind a 0.33 µH input inductor, TPS73533DRBR LDO and a 3.3 V LED. The eFuse is wired from `+VIN` to `+5V` with its EN/UVLO, ILIM and dV/dT parts; the values are not checked against TI data yet. Five small parts have no footprint. The other sheets hold no parts. |
 | PCB | Empty: no footprints and no board outline. |
-| Library | Project symbols, footprints and 3D models for the MCUs, regulators, ESD parts, connectors and passives. Sensor symbols and footprints are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked yet. A BMP581 symbol is a starting point for the second barometer, and the Bosch LGA-10 footprint pads now follow the BMP581 land pattern (not checked against the drawing). The IST8310 uses the stock KiCad symbol and `LGA-16_3x3mm_P0.5mm` footprint; its datasheet has no land pattern, so the fit is estimated. A read-only link audit found no broken links. |
+| Library | Project symbols, footprints and 3D models for the MCUs, regulators, ESD parts, connectors and passives. Sensor symbols and footprints are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked yet. A BMP581 symbol is a starting point for the second barometer, and the Bosch LGA-10 footprint pads now follow the BMP581 land pattern (not checked against the drawing). The IST8310 uses the stock KiCad symbol and `LGA-16_3x3mm_P0.5mm` footprint; its datasheet has no land pattern, so the fit is estimated. A read-only link audit found no broken links. Added since: TPS2592x eFuse symbols, the PCR0420 and 0603 inductor footprints and the STM32F100C8Tx symbol; their pin and pad counts match and their 3D models resolve (preflight check, not a link audit). |
 | ERC / DRC | Not run. |
 
 ## Hardware Design
@@ -151,11 +151,11 @@ Peripheral allocations agreed with the software team (DEC-014, DEC-018). Pins ar
 - Sourcing risk on the sensors (OPEN-004): ICP-20100 is EOL (TDK says its pressure products are not for new designs), BMP581 stock is short, and the IST8310 lifecycle is not confirmed.
 - The magnetometer changed from BMM150 to IST8310 (DEC-011). Its absolute maximum supply is 3.6 V, so the 3.3 V rail has only 0.3 V of margin.
 - BMP390 was removed because LCSC does not sell it. The team accepted BMP581 as the second barometer, with BMP384 as fallback; the fallback fit is not checked (OPEN-019).
-- The power sheet is in progress: the `+VIN` to `+5V` eFuse (TPS16412DRC, DEC-024) is wired, but its EN/~SHDN pin has no connection and its ILIM, OVP, IMON, IDLY and dV/dt part values are not set (OPEN-012), and the `+3V3A` LDO part is not decided (OPEN-011). `+3V3A` feeds only the 2 IMUs, on VDD and VDDIO (DEC-025); the SPI level match with the H743 on `+3V3` is not checked yet. As drawn, the LDO's NR capacitor (100 nF) is above TI's 0.01 µF limit, and the TPS62142 lacks the 0.1 µF AVIN capacitor TI recommends.
+- The power sheet is in progress: the `+VIN` to `+5V` eFuse is now a TPS259251DRC with a 2 A limit target (DEC-026, replaces the TPS16412DRC of DEC-024). It is wired, but its ILIM (45.3 kΩ), dV/dT (1 nF) and EN/UVLO (1 MΩ to `+VIN`) values are not checked against TI data, and 2 A equals the 2 A source, with no margin (OPEN-012). Also the `+3V3A` LDO part is not decided (OPEN-011). `+3V3A` feeds only the 2 IMUs, on VDD and VDDIO (DEC-025); the SPI level match with the H743 on `+3V3` is not checked yet. As drawn, the LDO's NR capacitor is 10 nF, within TI's 0.01 µF limit, and the TPS62142 has a 100 nF AVIN capacitor. The buck inductor is now 3.3 µH, a value TI lists as proven (Table 9-2).
 - Power budgets, rail tolerances, sequencing, brownout/reset thresholds and protection (reverse polarity, overvoltage, ESD, short circuit) are `TBD`.
 - Crystal parts, load capacitors and reset topology are `TBD`.
 - Firmware is owned by the software team: PX4 v1.16.2, port based on `px4/fmu-v6c`. The PX4 Matek H743-Slim board port is kept in `documents/reference/` as a pin-map reference only.
-- Confirmed part numbers: STM32H743VIT6, STM32F100C8T6B, ICM-45686, ICP-20100, BMP581, IST8310, TPS62142RGTR and TPS16412DRC. All other parts are `TBD`.
+- Confirmed part numbers: STM32H743VIT6, STM32F100C8T6B, ICM-45686, ICP-20100, BMP581, IST8310, TPS62142RGTR and TPS259251DRC. All other parts are `TBD`.
 
 ## Verification
 
@@ -176,7 +176,7 @@ The specification tracks OPEN-001 to OPEN-023. Closed: OPEN-002, OPEN-003, OPEN-
 - 5 V and 6 V budgets and protection (OPEN-006, OPEN-007)
 - Board outline, cable entry sides and dampers, set by hardware at placement (OPEN-009); environment set by DEC-020
 - Remaining non-MCU part numbers (OPEN-010)
-- `+3V3A` LDO part and IMU SPI level match (OPEN-011) and the `+VIN` to `+5V` eFuse wiring and values (OPEN-012)
+- `+3V3A` LDO part and IMU SPI level match (OPEN-011) and the `+VIN` to `+5V` eFuse values (OPEN-012)
 - Sensor footprints to check against the datasheet drawings and app notes (OPEN-013)
 - Motor stop on an H743 hang with PWM-only ESCs (OPEN-017, team question D13)
 - PWM pull-down value with bidirectional DShot (OPEN-018)
