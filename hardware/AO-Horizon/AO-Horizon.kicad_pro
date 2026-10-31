@@ -567,7 +567,10 @@
       "/Top/Power Supplies/3V3_SW": [
         "+3V3"
       ],
-      "Net-(CN101-Pin_1)": [
+      "/Top/Power Supplies/PM02_5V": [
+        "+5V"
+      ],
+      "VBUS": [
         "+5V"
       ]
     },
@@ -790,7 +793,7 @@
         "uuid": "76162bf1-0d95-48cb-b65a-4de551455d04"
       }
     ],
-    "used_designators": "#FLG1,#FLG101,#PWR1-20,#PWR101-113,C101-120,CN101,D101,L101-102,R101-104,U101-103",
+    "used_designators": "#FLG1,#FLG101-102,#PWR1-20,#PWR101-120,C101-121,CN101,D101-106,L101-102,R101-108,U101-103",
     "variants": []
   },
   "sheets": [
@@ -826,8 +829,8 @@
     "PROJECT_ID": "NP-AO-2601-V1-0",
     "PROJECT_NAME": "AeroOptix - Horizon",
     "RELEASE_DATE": "",
-    "SCH_DRAWING_DATE": "",
-    "SCH_DRAWING_NAME": "",
+    "SCH_DRAWING_DATE": "01-Nov-2026",
+    "SCH_DRAWING_NAME": "NATCHANON T.",
     "SCH_REVIEW_DATE": "",
     "SCH_REVIEW_NAME": ""
   },
