@@ -5,9 +5,9 @@
 > **Status:** `DRAFT`
 > **Board revision:** `v1.0`
 > **Baseline:** `NOT_ESTABLISHED`
-> **KiCad:** `10.0.7`
+> **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.19, 2026-10-31): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.20, 2026-10-31): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -100,7 +100,7 @@ State of the saved KiCad files on 2026-10-31. Details are in the specification (
 
 | Area | State |
 |---|---|
-| Schematic | Only `power_supplies.kicad_sch` has parts (31, annotated): power module connector, TPS259251DRC eFuse, TPS62142RGTR buck behind a 0.33 µH input inductor, TPS73533DRBR LDO and a 3.3 V LED. The human owner declared the sheet's capture complete on 2026-10-31. Every part has a footprint. The eFuse values match TI data. Open findings: the soft-start capacitor's part number still names 3.3 nF (10 nF chosen, DEC-028), a PG label with no sheet pin, the lost `+VIN` net name, missing part fields (P2-019). The other sheets hold no parts. |
+| Schematic | Only `power_supplies.kicad_sch` has parts (31, annotated): power module connector, TPS259251DRC eFuse, TPS62142RGTR buck behind a 0.33 µH input inductor, TPS73533DRBR LDO and a 3.3 V LED. The human owner declared the sheet's capture complete on 2026-10-31. Every part has a footprint. The eFuse values match TI data. Open findings: the buck PG hierarchical label `3V3_DONE` has no sheet pin, the lost `+VIN` net name, missing part fields (P2-019). The other sheets hold no parts. |
 | PCB | No footprints. One 27 × 29 mm rectangle on `Edge.Cuts` (drawn, not decided; outline open, OPEN-009). |
 | Library | Project symbols, footprints and 3D models for the MCUs, regulators, ESD parts, connectors and passives. Sensor symbols and footprints are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked yet. A BMP581 symbol is a starting point for the second barometer, and the Bosch LGA-10 footprint pads now follow the BMP581 land pattern (not checked against the drawing). The IST8310 uses the stock KiCad symbol and `LGA-16_3x3mm_P0.5mm` footprint; its datasheet has no land pattern, so the fit is estimated. A read-only link audit found no broken links. Added since: TPS2592x eFuse symbols, the PCR0420 and 0603 inductor footprints and the STM32F100C8Tx symbol; their pin and pad counts match and their 3D models resolve (preflight check, not a link audit). |
 | ERC / DRC | Not run. |

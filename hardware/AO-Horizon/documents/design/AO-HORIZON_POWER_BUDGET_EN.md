@@ -132,7 +132,7 @@ Known upper bounds for the 3.3 V rails:
 | 5 V input undervoltage detect | TBD (does the board monitor 5 V?) | Not defined | `TBD` |
 | 5 V eFuse UVLO (U101, EN/UVLO tied to `+VIN` through 1 MΩ) | Rising 4.15 / 4.3 / 4.45 V, hysteresis 5 % | TI eFuse, Electrical Characteristics | `VERIFIED` |
 | 3.3 V buck soft-start (U102) | 10 nF SS/TR (DEC-028): about 5 ms | TI SLVSAJ0F equation 10 (spec 4.7) | `ESTIMATED` |
-| 3.3 V buck PG (U102) | Open drain, pulled up by R103 100 kΩ to `+3V3`, net `5V_PG` (used on no other sheet yet) | Saved schematic, 2026-10-31 | `VERIFIED` (as drawn) |
+| 3.3 V buck PG (U102) | Open drain, pulled up by R103 100 kΩ to `+3V3`, local label `3V3_PG`, hierarchical label `3V3_DONE` (no sheet pin on the parent yet) | Saved schematic, 2026-10-31 | `VERIFIED` (as drawn) |
 | 6 V servo rail monitor | Read by the F100 through the 3:1 divider (IF-050); threshold TBD | px4io-v2 | `TBD` |
 
 ## 7. Protection requirements (OPEN-006, OPEN-007, SAF-012 to SAF-014)

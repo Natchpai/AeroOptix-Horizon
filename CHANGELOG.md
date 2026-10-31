@@ -123,6 +123,8 @@ Notable changes to this hardware project are documented here.
   - The `+VIN` net label is gone; the input net is now `Net-(CN101-Pin_1)` in the `+5V` net class (`AO-Horizon.kicad_pro`).
 - TPS62142 project symbol: PG, FB and VOS pin positions moved; pin numbers, names and types unchanged (uncommitted).
 - Specification rev 0.19 (DEC-027, DEC-028): 4.3 schematic-state table rewritten; CMP-008 holds the TPS259251DRC data from TI; two 4.7 rows added (eFuse settings, buck soft-start); OPEN-012 closed, with reverse current and the 5 V budget moved to OPEN-006; OPEN-011, OPEN-023 and the verdict updated. Checklist rev 0.18 (P0-016, P2-011 and P2-017 `DONE` on the human owner's statement, P2-019 added, OI-004, OI-012, OI-013, OI-014 closed, next action), power budget rev 0.11, root `README.md` and `what-next.md` updated to match.
+- Specification rev 0.20 (no new decisions): corrects rev 0.19, which was written before the human owner's last save of `power_supplies.kicad_sch`. As committed in `895c26a`, the TPS62142 PG net has local label `3V3_PG` and hierarchical label `3V3_DONE` (not `5V_PG`), and C111 is 0402 with empty MFR.P/N and LCSC (no 3.3 nF part number). Checklist rev 0.19 (P2-019, next action), power budget, root `README.md` and `what-next.md` updated to match.
+- KiCad updated to 10.0.8 by the human owner; the root `README.md` header now says `10.0.8`. The saved project and PCB carry `KICAD_VERSION` "KiCad E.D.A 10.0.8"; the file format stays `generator_version` 10.0.
 
 ### Fixed
 
