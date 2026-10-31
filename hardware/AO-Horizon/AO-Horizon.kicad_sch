@@ -10,8 +10,8 @@
 	)
 	(lib_symbols)
 	(rectangle
-		(start 151.13 83.82)
-		(end 250.19 182.88)
+		(start 147.32 83.82)
+		(end 247.32 183.82)
 		(stroke
 			(width 0)
 			(type default)
@@ -22,8 +22,8 @@
 		(uuid "85834733-797b-4167-b71c-4a26f8551d9b")
 	)
 	(rectangle
-		(start 273.05 83.82)
-		(end 372.11 182.88)
+		(start 257.81 83.82)
+		(end 357.81 183.82)
 		(stroke
 			(width 0)
 			(type default)
@@ -31,7 +31,7 @@
 		(fill
 			(type none)
 		)
-		(uuid "f4a3296d-6a3b-4d95-93ff-07e6d4d29d01")
+		(uuid "b70eccb4-abe9-45f6-b3fc-ad18c5304dd0")
 	)
 	(text "C"
 		(exclude_from_sim no)
@@ -106,6 +106,19 @@
 			(justify right)
 		)
 		(uuid "1c7e433d-06da-4f04-bf71-114bda6d307d")
+	)
+	(text "DESIGN CONVENTIONS\n───────────────────────────────────────────────\nNET NAMING\n  Power     +5V  +3V3  +1V8  (suffix _A for analog)\n  Ground    GND  AGND  PGND  (join at one point only)\n  Signal    <FUNC>_<SIGNAL>   SPI1_SCK  I2C2_SDA\n  Active-low  suffix _N       RESET_N  CS_N\n  Diff pair   suffix _P / _N  USB_DP  USB_DN\n  Format    UPPERCASE, A-Z 0-9 _ only, no spaces\n\nSCHEMATIC STYLE\n  Flow      Inputs left, outputs right, VCC top, GND bottom\n  Grid      50 mil, wires orthogonal, junction dot at 3+ ways\n  Unused    X no-connect marker on every unused pin\n\nREFERENCE DESIGNATORS\n  R C L  passive   D diode/LED   Q transistor   U IC\n  FB ferrite   CN connector  SW switch   TP test point   H mounting hole\n\nUNITS\n  Ω kΩ MΩ  |  pF nF µF  |  nH µH  |  V A mA  |  Hz kHz MHz\n  4k7 = 4.7 kΩ   100n = 100 nF   0R = 0 Ω link\n\nCOMPONENTS\n  Every part: Value, Footprint, MFR, MPR.P/N, LCSC\n───────────────────────────────────────────────"
+		(exclude_from_sim no)
+		(at 82.55 303.53 0)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 1.524 1.524)
+				(bold yes)
+			)
+			(justify left top)
+		)
+		(uuid "2666f3bf-456d-42c7-8c0a-9e3c48a1d45a")
 	)
 	(text "......"
 		(exclude_from_sim no)
@@ -210,18 +223,6 @@
 		)
 		(uuid "4d9a40c2-f220-48a9-bfe7-51bd71caa0f2")
 	)
-	(text "General Note"
-		(exclude_from_sim no)
-		(at 188.595 267.335 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(color 0 0 194 1)
-			)
-			(justify left)
-		)
-		(uuid "646bc863-dcd3-442d-9f78-f0eb322bc6a6")
-	)
 	(text "Project Overview"
 		(exclude_from_sim no)
 		(at 49.53 91.44 0)
@@ -271,18 +272,6 @@
 		)
 		(uuid "7e708aca-e35f-4704-ad1e-1267f484d78b")
 	)
-	(text "Text to be added to silkscreen."
-		(exclude_from_sim no)
-		(at 188.595 274.955 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(color 0 132 132 1)
-			)
-			(justify left)
-		)
-		(uuid "7f30828b-4509-4259-a4de-9e92c7138223")
-	)
 	(text "6"
 		(exclude_from_sim no)
 		(at 55.88 152.4 0)
@@ -294,18 +283,6 @@
 			(justify right)
 		)
 		(uuid "7fdd36fe-2376-4277-99fa-5c7cb19b581e")
-	)
-	(text "Warning Note"
-		(exclude_from_sim no)
-		(at 188.595 271.145 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(color 194 0 0 1)
-			)
-			(justify left)
-		)
-		(uuid "86ad97eb-f1ed-460a-a1ec-2cd25c91cb84")
 	)
 	(text "Table of Contents"
 		(exclude_from_sim no)
@@ -373,7 +350,7 @@
 	)
 	(text "Bottom View"
 		(exclude_from_sim no)
-		(at 323.85 81.28 0)
+		(at 306.07 81.28 0)
 		(effects
 			(font
 				(face "Century Gothic")
@@ -436,7 +413,7 @@
 	)
 	(text "Top View"
 		(exclude_from_sim no)
-		(at 199.39 81.28 0)
+		(at 198.12 81.28 0)
 		(effects
 			(font
 				(face "Century Gothic")
@@ -546,32 +523,6 @@
 		)
 		(uuid "1d28a708-298a-4794-bc74-14dbe697e1a4")
 	)
-	(text_box "LAYOUT NOTE:\n\nText for layout guideline\n\n"
-		(exclude_from_sim no)
-		(at 133.985 265.43 0)
-		(size 24.13 11.43)
-		(margins 0.9525 0.9525 0.9525 0.9525)
-		(stroke
-			(width 0.5)
-			(type solid)
-			(color 0 0 194 1)
-		)
-		(fill
-			(type color)
-			(color 255 255 194 1)
-		)
-		(effects
-			(font
-				(face "Century Gothic")
-				(size 1.27 1.27)
-				(thickness 0.1588)
-				(bold yes)
-				(color 0 0 194 1)
-			)
-			(justify left top)
-		)
-		(uuid "636dcebd-d3a0-4fc9-a2c7-46bcda34d1a3")
-	)
 	(text_box "DEBUG NOTE:\n\nText for Debug notes.\n"
 		(exclude_from_sim no)
 		(at 52.705 265.43 0)
@@ -622,32 +573,6 @@
 		)
 		(uuid "96a74d42-7b4a-48e1-89cd-bef1d90d8a75")
 	)
-	(text_box "LAYOUT NOTE:\n\nText for Critical layout"
-		(exclude_from_sim no)
-		(at 159.385 265.43 0)
-		(size 24.13 11.43)
-		(margins 0.9525 0.9525 0.9525 0.9525)
-		(stroke
-			(width 0.5)
-			(type solid)
-			(color 255 0 0 1)
-		)
-		(fill
-			(type color)
-			(color 255 255 194 1)
-		)
-		(effects
-			(font
-				(face "Century Gothic")
-				(size 1.27 1.27)
-				(thickness 0.1588)
-				(bold yes)
-				(color 194 0 0 1)
-			)
-			(justify left top)
-		)
-		(uuid "c08f6f42-4ccf-4c96-b396-eb3459b86e86")
-	)
 	(text_box "DESIGN NOTE:\n\nText for design guideline\n\n"
 		(exclude_from_sim no)
 		(at 80.645 265.43 0)
@@ -685,7 +610,7 @@
 	)
 	(polyline
 		(pts
-			(xy 26.67 261.62) (xy 210.82 261.62)
+			(xy 26.67 261.62) (xy 132.08 261.62)
 		)
 		(stroke
 			(width 0.508)
