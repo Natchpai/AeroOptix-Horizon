@@ -1,6 +1,6 @@
 # What Next
 
-**Updated:** 2026-10-31
+**Updated:** 2026-11-01
 **Status:** Personal reminder list. Not a requirement, decision or verification record.
 
 The specification and the execution checklist stay the source of truth. This list only points to their IDs.
@@ -11,7 +11,7 @@ The board is split into design zones. Each zone below has its own to-do list.
 
 | Zone | Sheet | State | Main open items |
 | ---- | ----- | ----- | --------------- |
-| Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, 2026-10-31); ERC and review open | P2-019, OPEN-006, OPEN-011, OPEN-023 |
+| Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, 2026-10-31); eFuse replaced by the TPS2121 power mux (2026-11-01); ERC and review open | P2-019, P2-020, OPEN-024, OPEN-006, OPEN-011, OPEN-023 |
 | Z2 Servo power rail (6 V bus, XT30) | Not drawn | Not started | OPEN-007, OPEN-021, P2-016 |
 | Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | Not drawn | Pins allocated (P1-001), not drawn | P1-001, P1-006 to P1-008, P1-014 |
 | Z4 F100 IO MCU (px4io) | Not drawn | Pins allocated (P1-002), not drawn | P1-002, P1-014, P2-014 |
@@ -27,31 +27,36 @@ The board is split into design zones. Each zone below has its own to-do list.
 - [ ] `block_diagram.kicad_sch`: the working copy holds only its title text; the drawing is gone. Keep it cleared on purpose, or restore it from Git.
 - [x] TPS259251DRC eFuse change and the spec 0.18 docs pass merged to `main` in PR #30 (`cce0b2b`).
 - [x] Power sheet close-out, spec 0.19 and the generated outputs merged to `main` in PR #31 (`2d90af3`); `main` merged back into `dev` (`6ff99b7`, not pushed yet).
-- [ ] Commit the spec 0.20 docs pass (PG labels, C111), the README KiCad 10.0.8 header and this file, then push `dev`.
+- [x] Spec 0.20 docs pass committed and pushed (`34fe1e0`).
+- [ ] Commit and push the power mux change (2 commits: schematic and library, then docs) after approval (2026-11-01).
 - [ ] `documents/export_jobset.log` stays untracked: ignore it or delete it.
 
 ## 2. Zone Z1: Power supply (`power_supplies.kicad_sch`)
 
-Capture declared complete on 2026-10-31. See spec 4.3 "Schematic state" (31 parts, annotated, as committed in `895c26a`) and P2-019 for the findings.
+Capture declared complete on 2026-10-31; 5 V input changed to the TPS2121 power mux on 2026-11-01. See spec 4.3 "Schematic state" (41 parts, rev 0.21) and P2-019, P2-020 for the findings.
 
 Done:
-- [x] TPS259251DRC eFuse, 2 A target (DEC-026), with EN/UVLO, ILIM and dV/dT wired (2026-10-29).
-- [x] eFuse values checked against TI SLVSCQ3B (NotebookLM `TPS25925x eFuse`, 2026-10-31): 1.75 / 2.1 / 2.45 A, about 5 ms ramp, UVLO 4.3 V, 6.1 V clamp, auto-retry (P2-017 done, OPEN-012 closed).
+- [x] TPS2121 power mux replaces the eFuse (DEC-029, 2026-11-01): PM02D on IN1, USB VBUS on IN2, reverse blocking on both. Limit 1.5 A (DEC-030, R109 80.6 kΩ: 1.0 / 1.5 / 2.0 A). OV trip 6.08 V. Checked against TI SLVSEA3F (2026-11-01).
+- [x] TPS2121 library part: symbol `0_Power_Management:TPS2121RUX`, stock footprint with thermal vias, your STEP.
+- [x] `3V3_DONE` sheet pin and `PM02_5V` input label (2026-11-01).
 - [x] `+3V3A` LDO: TPS73533DRBR (DEC-027, 2026-10-31).
-- [x] C111 soft-start: 10 nF, about 5 ms (DEC-028); 3.3 nF part number removed, 0402 (2026-10-31).
+- [x] Buck soft-start: 10 nF, about 5 ms (DEC-028); now C112 after renumbering.
 - [x] PG renamed: local label `3V3_PG`, hierarchical label `3V3_DONE` (2026-10-31).
 - [x] TPS62142 AVIN 100 nF; 0.33 µH ASMPH-0603-R33M-T input inductor (2026-10-29).
-- [x] Footprints on every part, all parts annotated (2026-10-31).
+- [x] Footprints on every part (2026-10-31).
 
 Open:
-- [ ] Add a `3V3_DONE` sheet pin on the power sheet symbol in `top_hierarchical`, and expect an ERC warning for two names on one net (P2-019).
-- [ ] Put the `+VIN` label back on the input net (now `Net-(CN101-Pin_1)`) (P2-019).
-- [ ] Fill MFR, MFR.P/N and LCSC on R101 to R104, C103, C111, C118, CN101 and D101 (P2-019). Passive part numbers: your choice, later. C118 (LDO NR) needs a low-leakage dielectric (TI: C0G).
+- [x] PM02D priority and XCOMP fast switchover (DEC-031, DEC-032, 2026-11-01): PR1 12.4 kΩ / 5 kΩ, CP2 R105 16.5 kΩ / R106 5 kΩ from `VBUS`.
+- [ ] R105 (CP2 16.5 kΩ) is marked DNP, so the default build runs the 100 µs VREF mode. Clear DNP if XCOMP should be the default (OPEN-024).
+- [ ] Read `AO-HORIZON_POWER_MUX_NOTES_EN.md`: the four mux modes and how each resistor is calculated, step by step.
+- [ ] Annotate or remove the two DNP `D?` diodes (not connected) (P2-019).
+- [ ] Add a `PWR_FLAG` or the USB connector for `VBUS`, or expect an ERC error (P2-019).
+- [ ] Fill MFR, MFR.P/N and LCSC on D104, R101 to R111, C105, C112, C119 (P2-019); check U101 LCSC C485916 against TPS2121RUXR. Passive part numbers: your choice, later. C119 (LDO NR) needs a low-leakage dielectric (TI: C0G).
+- [ ] Input capacitance on `PM02_5V` for the cable (TI suggests more than 2 × 100 nF for long cables).
 - [ ] Change the PM02D connector from JST-GH to a 6-pin 2.00 mm CLIK-Mate (decided 2026-10-24, OPEN-023, P2-015).
-- [ ] Plan the USB OR-ing so USB cannot drive the eFuse OUT above its VIN: the eFuse has no reverse blocking (OPEN-006). Check the VBUS budget: USB feeds all external 5 V ports.
+- [ ] Check the 5 V load against the 1.5 A limit (1.0 A minimum) and the USB port: USB feeds all external 5 V ports (OPEN-006).
 - [ ] `+3V3A` follow-ups (OPEN-011): check the IMU SPI levels against the H743 on `+3V3`, and the power-up order.
 - [ ] Check the 3.3 µH PCR0420-3R3-M saturation current and the 3 × 10 µF output against TI Table 9-2, and the damping of the 0.33 µH input filter.
-- [ ] Optional style: no-connect markers on LDO pins 2, 6 and 7 (pins are no_connect type).
 - [ ] Run ERC, then ask Claude for a `sch-review` of `power_supplies.kicad_sch`.
 
 ## 3. Zone Z2: Servo power rail
@@ -72,7 +77,7 @@ Not drawn. Pins in pin allocation rev 0.6 (P1-001).
 - [ ] 16 MHz crystal part and load capacitors (P1-014).
 - [ ] Reset topology, NRST pad, BOOT0 (P1-007, P1-014).
 - [ ] Debug: Pixhawk Debug Mini 6-pin JST-SH (1 VREF, 2 TX, 3 RX, 4 SWDIO, 5 SWCLK, 6 GND) plus an NRST pad. Check the pin order against DS-009 if you can get it (P1-008).
-- [ ] USB FS: connector, VBUS sensing, ESD (P1-006); OR-ing with the PM02D 5 V is in Z1.
+- [ ] USB FS: connector, VBUS sensing, ESD (P1-006); OR-ing with the PM02D 5 V is the TPS2121 in Z1; `VBUS` already enters the power sheet from a power symbol.
 - [ ] SDMMC1 microSD: pull-ups and ESD protection.
 - [ ] Buzzer (TIM3_CH3) and the 3 board LEDs: pick the drive parts and resistors.
 

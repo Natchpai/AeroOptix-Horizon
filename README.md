@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.20, 2026-10-31): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.21, 2026-11-01): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -25,7 +25,7 @@ The team website, [natchpai.github.io/AeroOptix-Horizon](https://natchpai.github
 - H743 to F100 link over USART, px4io protocol at 1.5 Mb/s
 - 4 motor outputs on the H743 (TIM5, DShot with RPM feedback), 3 spare outputs
 - 2× SPI IMU (ICM-45686), 2× I2C barometer (ICP-20100 + BMP581), 1× I2C magnetometer (IST8310)
-- 5 V board input through a TPS259251DRC eFuse (2 A limit target)
+- 5 V board input through a TPS2121 power mux that joins the power module and USB (1.5 A limit)
 - 3.3 V rail from a TPS62142RGTR buck on the 5 V board input
 - USB FS, microSD (SDMMC1), H743 debug on a Pixhawk Debug Mini connector, F100 SWD pads, selectable BOOT0 on the H743
 - If the H743 stops, the F100 holds the servos at failsafe values after 0.5 s and the motors stop when their DShot signal stops (no landing)
@@ -42,7 +42,7 @@ The team website, [natchpai.github.io/AeroOptix-Horizon](https://natchpai.github
 | IMU | 2× SPI, ICM-45686 |
 | Barometer | 2× I2C, ICP-20100 + BMP581 (BMP384 fallback) |
 | Magnetometer | 1× I2C, iSentek IST8310 (DEC-011, replaced BMM150) |
-| Board input | 5 V from power module, 4.5 to 5.5 V, 2 A source; TPS259251DRC eFuse, limit target 2 A (DEC-026) |
+| Board input | 5 V from power module, 4.5 to 5.5 V, 2 A source; TPS2121 power mux with USB VBUS as the second input, current limit 1.5 A (DEC-029, DEC-030) |
 | 3.3 V rail | TPS62142RGTR buck from 5 V, 2 A part (load current `TBD`) |
 | 3.3 V IMU rail (`+3V3A`) | Feeds only the 2 IMUs, VDD and VDDIO (DEC-025); TPS73533DRBR LDO (DEC-027) |
 | Servo supply | 6 V from a UBEC into a board-mount XT30 and the on-board servo rail, 10 A continuous, 15 A instantaneous (XT30 rating and protection `TBD`, OPEN-021) |
@@ -100,7 +100,7 @@ State of the saved KiCad files on 2026-10-31. Details are in the specification (
 
 | Area | State |
 |---|---|
-| Schematic | Only `power_supplies.kicad_sch` has parts (31, annotated): power module connector, TPS259251DRC eFuse, TPS62142RGTR buck behind a 0.33 µH input inductor, TPS73533DRBR LDO and a 3.3 V LED. The human owner declared the sheet's capture complete on 2026-10-31. Every part has a footprint. The eFuse values match TI data. Open findings: the buck PG hierarchical label `3V3_DONE` has no sheet pin, the lost `+VIN` net name, missing part fields (P2-019). The other sheets hold no parts. |
+| Schematic | Only `power_supplies.kicad_sch` has parts (41; 2 DNP diodes not annotated): power module connector with TVS and I2C ESD, TPS2121 power mux (power module and USB VBUS in), TPS62142RGTR buck behind a 0.33 µH input inductor, TPS73533DRBR LDO, and a 3.3 V LED. The human owner declared the sheet's capture complete on 2026-10-31 and replaced the eFuse with the power mux on 2026-11-01. The power mux values match TI data; the PM02D has priority through a PR1 divider, with a CP2 divider from VBUS for the 5 µs fast switchover (DEC-031, DEC-032). Open findings: unannotated diodes, `VBUS` with no source until the USB sheet is drawn, missing part fields (P2-019). The other sheets hold no parts. |
 | PCB | No footprints. One 27 × 29 mm rectangle on `Edge.Cuts` (drawn, not decided; outline open, OPEN-009). |
 | Library | Project symbols, footprints and 3D models for the MCUs, regulators, ESD parts, connectors and passives. Sensor symbols and footprints are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked yet. A BMP581 symbol is a starting point for the second barometer, and the Bosch LGA-10 footprint pads now follow the BMP581 land pattern (not checked against the drawing). The IST8310 uses the stock KiCad symbol and `LGA-16_3x3mm_P0.5mm` footprint; its datasheet has no land pattern, so the fit is estimated. A read-only link audit found no broken links. Added since: TPS2592x eFuse symbols, the PCR0420 and 0603 inductor footprints and the STM32F100C8Tx symbol; their pin and pad counts match and their 3D models resolve (preflight check, not a link audit). |
 | ERC / DRC | Not run. |
@@ -146,16 +146,16 @@ Peripheral allocations agreed with the software team (DEC-014, DEC-018). Pins ar
 - The software team answered the integration questions on 2026-10-24 (spec rev 0.13, DEC-019 to DEC-022). The human owner changed their servo answer: the servos plug into 3-pin headers on an on-board 6 V rail, and the UBEC plugs into a board-mount XT30 (DEC-019). The XT30 carries up to 10 A continuous and 15 A peak; its rating is not checked (OPEN-021).
 - GPS1 is a 10-pin full GPS port (DEC-021). PC1 stays reserved for an analog power module (DEC-023). No ESC current sense or telemetry (IF-052, IF-053 removed). The connector pinouts are not checked against the Pixhawk standard yet. The PM02D connector will be a CLIK-Mate to match its cable; the power sheet still draws JST-GH (OPEN-023).
 - The team's ESCs are 4 × Skywalker 80A V2. No source says they support DShot. With PWM, the motors may keep running after an H743 hang, which conflicts with FUN-002 and SAF-015. Asked the team in D13 (OPEN-017).
-- USB powers the board and all external 5 V ports on the bench. The VBUS budget and back-feed into the eFuse are open (OPEN-006).
+- USB powers the board and all external 5 V ports on the bench, through the TPS2121 power mux, which blocks reverse current (DEC-029). The VBUS budget is open (OPEN-006), and the PM02D gets priority through a PR1 divider: USB takes over below about 3.9 V on the PM02D (DEC-031).
 - PWM lines get weak pull-downs; the value must still let bidirectional DShot work (OPEN-018).
 - Sourcing risk on the sensors (OPEN-004): ICP-20100 is EOL (TDK says its pressure products are not for new designs), BMP581 stock is short, and the IST8310 lifecycle is not confirmed.
 - The magnetometer changed from BMM150 to IST8310 (DEC-011). Its absolute maximum supply is 3.6 V, so the 3.3 V rail has only 0.3 V of margin.
 - BMP390 was removed because LCSC does not sell it. The team accepted BMP581 as the second barometer, with BMP384 as fallback; the fallback fit is not checked (OPEN-019).
-- The power sheet capture is complete (human owner, 2026-10-31); it is not reviewed and ERC has not run. The `+VIN` to `+5V` eFuse is a TPS259251DRC (DEC-026). Its values were checked against TI data: 45.3 kΩ sets 1.75 to 2.1 to 2.45 A, 1 nF gives about 5 ms ramp, and it clamps at 6.1 V and retries after a thermal fault (OPEN-012 closed). The limit can sit above the 2 A source, and the eFuse does not block reverse current, so the USB power path must not back-feed it (OPEN-006). The `+3V3A` LDO is a TPS73533DRBR (DEC-027). `+3V3A` feeds only the 2 IMUs, on VDD and VDDIO (DEC-025); the SPI level match with the H743 on `+3V3` is not checked yet. The buck inductor is 3.3 µH, a value TI lists as proven (Table 9-2).
+- The power sheet capture is complete (human owner, 2026-10-31); it is not reviewed and ERC has not run. On 2026-11-01 the human owner replaced the eFuse with a TPS2121 power mux (DEC-029): power module on IN1, USB VBUS on IN2, current limit 1.5 A (DEC-030). Its values were checked against TI data: 80.6 kΩ gives 1.0 to 1.5 to 2.0 A, both inputs turn off above about 6.1 V, and it blocks reverse current on both inputs. The 1.0 A minimum limit must cover the board and all external 5 V loads (OPEN-006). The `+3V3A` LDO is a TPS73533DRBR (DEC-027). `+3V3A` feeds only the 2 IMUs, on VDD and VDDIO (DEC-025); the SPI level match with the H743 on `+3V3` is not checked yet. The buck inductor is 3.3 µH, a value TI lists as proven (Table 9-2).
 - Power budgets, rail tolerances, sequencing, brownout/reset thresholds and protection (reverse polarity, overvoltage, ESD, short circuit) are `TBD`.
 - Crystal parts, load capacitors and reset topology are `TBD`.
 - Firmware is owned by the software team: PX4 v1.16.2, port based on `px4/fmu-v6c`. The PX4 Matek H743-Slim board port is kept in `documents/reference/` as a pin-map reference only.
-- Confirmed part numbers: STM32H743VIT6, STM32F100C8T6B, ICM-45686, ICP-20100, BMP581, IST8310, TPS62142RGTR, TPS259251DRC and TPS73533DRBR. All other parts are `TBD`; the passive MFR and MFR.P/N come later.
+- Confirmed part numbers: STM32H743VIT6, STM32F100C8T6B, ICM-45686, ICP-20100, BMP581, IST8310, TPS62142RGTR, TPS2121 (RUX package) and TPS73533DRBR. All other parts are `TBD`; the passive MFR and MFR.P/N come later.
 
 ## Verification
 
@@ -169,11 +169,11 @@ Peripheral allocations agreed with the software team (DEC-014, DEC-018). Pins ar
 
 ## Open Items
 
-The specification tracks OPEN-001 to OPEN-023. Closed: OPEN-002, OPEN-003, OPEN-005, OPEN-008, OPEN-012, OPEN-014, OPEN-015, OPEN-016, OPEN-020, OPEN-022. Open:
+The specification tracks OPEN-001 to OPEN-024. Closed: OPEN-002, OPEN-003, OPEN-005, OPEN-008, OPEN-012, OPEN-014, OPEN-015, OPEN-016, OPEN-020, OPEN-022. Open:
 
 - MCU pins: pinmap review 0.3 answered by the team, not in the schematic yet (OPEN-001)
 - Sensor electrical data and sourcing (OPEN-004)
-- 5 V and 6 V budgets and protection, and USB back-feed into the eFuse (OPEN-006, OPEN-007)
+- 5 V and 6 V budgets and protection, including the 5 V load under the 1.5 A power mux limit (OPEN-006, OPEN-007)
 - Board outline, cable entry sides and dampers, set by hardware at placement (OPEN-009); environment set by DEC-020
 - Remaining non-MCU part numbers (OPEN-010)
 - `+3V3A` load and IMU SPI level match (OPEN-011)
@@ -183,6 +183,7 @@ The specification tracks OPEN-001 to OPEN-023. Closed: OPEN-002, OPEN-003, OPEN-
 - BMP384 fallback fit (OPEN-019)
 - On-board servo rail: XT30 rating, copper and GND (OPEN-021)
 - External connector pinouts and the PM02D connector (OPEN-023)
+- Power mux fast switchover: drawn (DEC-032), but its CP2 resistor R105 is marked DNP, so the default build uses the slow 100 µs mode (OPEN-024)
 
 ## How we work
 
