@@ -1,0 +1,80 @@
+{
+  "jobs": [
+    {
+      "description": "",
+      "id": "114666ba-1e63-4ad8-aa05-7629bcf23c77",
+      "settings": {
+        "black_and_white": false,
+        "color_theme": "my_Theme",
+        "description": "",
+        "drawing_sheet": "",
+        "format": "pdf",
+        "min_pen_width": 847,
+        "output_filename": "AO-Horizon_${CURRENT_DATE}_V${REVISION}.pdf",
+        "page_size": "auto",
+        "pdf_hierarchical_links": true,
+        "pdf_metadata": true,
+        "pdf_property_popups": true,
+        "plot_all": true,
+        "plot_drawing_sheet": true,
+        "show_hop_over": false,
+        "use_background_color": true,
+        "variant_name": "",
+        "variant_names": []
+      },
+      "type": "sch_export_plot_pdf"
+    },
+    {
+      "description": "exc: Board2pdf",
+      "id": "95bc3a75-b21b-4dd3-b8e2-558958f0f208",
+      "settings": {
+        "command": "\"C:\\Program Files\\KiCad\\10.0\\bin\\python.exe\" \"${KICAD10_3RD_PARTY}plugins\\com_gitlab_dennevi_Board2Pdf\\board2pdf-cli.py\" ${PROJECTNAME}.kicad_pcb",
+        "description": "",
+        "ignore_exit_code": false,
+        "output_filename": "export_jobset.log",
+        "record_output": true
+      },
+      "type": "special_execute"
+    },
+    {
+      "description": "exc: iBOM",
+      "id": "add7351a-189d-4fbc-9442-12442139c4a7",
+      "settings": {
+        "command": "\"C:\\Program Files\\KiCad\\10.0\\bin\\python.exe\" \"${KICAD10_3RD_PARTY}\\plugins\\org_openscopeproject_InteractiveHtmlBom\\generate_interactive_bom.py\" --no-browser --use-ini --dest-dir \"${KIPRJMOD}\\documents\\manufacturing\\Assembly\\BOM\" \"${PROJECTNAME}.kicad_pcb\"\n",
+        "description": "",
+        "ignore_exit_code": false,
+        "output_filename": "export_jobset.log",
+        "record_output": true
+      },
+      "type": "special_execute"
+    }
+  ],
+  "meta": {
+    "version": 1
+  },
+  "outputs": [
+    {
+      "description": "schematic",
+      "id": "f3863d03-a80f-4a75-a211-15f567beadcb",
+      "only": [
+        "114666ba-1e63-4ad8-aa05-7629bcf23c77"
+      ],
+      "settings": {
+        "output_path": "documents/"
+      },
+      "type": "folder"
+    },
+    {
+      "description": "manufacturing",
+      "id": "8a7edc15-bb6d-46fa-a64d-36f5b8fdd798",
+      "only": [
+        "95bc3a75-b21b-4dd3-b8e2-558958f0f208",
+        "add7351a-189d-4fbc-9442-12442139c4a7"
+      ],
+      "settings": {
+        "output_path": "documents/manufacturing/"
+      },
+      "type": "folder"
+    }
+  ]
+}

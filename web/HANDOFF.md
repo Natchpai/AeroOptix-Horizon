@@ -15,7 +15,7 @@
   - `extract-docs` throws when one of these is missing, so a changed record layout fails the build and the old site stays up.
 - Still hand-written: blocks and links (`topology.ts`) and their positions (`places.ts`).
 - Pages is enabled with source "GitHub Actions". The first run failed because Pages was not enabled yet; the re-run passed.
-- Branches: `dev` contains all of `main` (the engineer merged `main` into `dev` after PR #20, `4947719`). PRs #18, #19 and #20 were squash-merged, which leaves `dev` behind `main` each time. Merge with "Create a merge commit", or turn off squash merging in the repo settings, to avoid that.
+- Branches: the `main` ruleset requires linear history, so PRs from `dev` are squash-merged (or rebased); a merge commit is not allowed. Each squash leaves `dev` without `main`'s new commit, and the next PR can show conflicts on files the squash touched (PR #30). After each PR, merge `main` into `dev`; last done after PR #30 (`ff2130e`, 2026-10-29).
 
 ## What the site does
 

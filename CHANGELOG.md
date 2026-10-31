@@ -36,6 +36,11 @@ Notable changes to this hardware project are documented here.
 - README title image (`assets/AO-Horizon-v2.png`) and the AeroOptix black-and-white logo (`documents/images/Logos/`); the two old nP logo files were replaced by `np_black.png`.
 - Library parts (`82f5669`): TPS25923x to TPS25926x eFuse symbols for the VSON-10 DRC package, the JIERR PCR0420 inductor footprint and 3D model, and the STM32F100C8Tx symbol (renamed from STM32F103C8Tx). Uncommitted: the TPS25925x and TPS25926x symbols now go in the BOM and on the board, and a new `L_0603_1608Metric` inductor footprint.
 - DEC-026 (specification rev 0.18, human owner): TPS259251DRC eFuse between the PM02D `+VIN` and `+5V`, current-limit target 2 A. Replaces the TPS16412DRC and 1.5 A of DEC-024.
+- DEC-027 (specification rev 0.19, human owner): TPS73533DRBR as the `+3V3A` LDO, with CMP-009. DEC-028: C111 SS/TR 10 nF for about 5 ms soft-start; its part number fields still name 3.3 nF (P2-019). Passive MFR and MFR.P/N are left for the human owner to choose later.
+- TPS259251DRC data from TI SLVSCQ3B, read through NotebookLM (the human owner's notebook `TPS25925x eFuse`; Claude's duplicate `TPS2592x eFuse` holds the same revision). Recorded in spec CMP-008 and 4.7.
+- Root sheet `AO-Horizon.kicad_sch`: a "DESIGN CONVENTIONS" text note (net names, style, reference letters, units, part fields) replaces the general-note placeholders (uncommitted).
+- PCB: one 27 × 29 mm rectangle on `Edge.Cuts`, and title fields `PROJECT_ID` NP-AO-2601-V1-0 and `KICAD_VERSION` (uncommitted). Drawn, not decided; the outline stays open (OPEN-009).
+- Checklist task P2-019: the power-sheet findings of 2026-10-31.
 
 ### Changed
 
@@ -111,6 +116,13 @@ Notable changes to this hardware project are documented here.
   - 3.3 V LED resistor 510 Ω.
 - KiCad project: migrated to project template Rev4 (`ccf29de`), `+6V` net class and LCSC column in the BOM (`55a9a50`), fonts embedded in the root sheet (`f71c0ca`).
 - Specification rev 0.18: DEC-026 added and DEC-024 marked superseded; the 4.3 schematic-state table rewritten; part-number boundary, CMP-008, OPEN-010 to OPEN-012 and the verdict updated. Checklist rev 0.17 (P0-016, P2-011, P2-017, OI-004, OI-012 to OI-014, next action), power budget rev 0.10, root `README.md` and `what-next.md` updated to match.
+- Power sheet (`power_supplies.kicad_sch`, saved file, uncommitted), declared complete by the human owner on 2026-10-31. Now 31 parts, annotated (U101 to U103, C101 to C120, R101 to R104, L101, L102, D101, CN101), every part with a footprint. All drawn, not decided, apart from the eFuse (DEC-026) and the buck (DEC-012):
+  - TPS62142 PG pulled up by R103 100 kΩ to `+3V3`, on a `5V_PG` label and hierarchical label (no sheet pin on the parent yet).
+  - SS/TR capacitor C111 value 10 nF; its MPN and LCSC still name the 3.3 nF part.
+  - 10 µF count: 3 on `+5V`, 3 on `+5V_BUCK`, 3 on `+3V3`, 1 on `+3V3A` (was 2, 2, 3, 2).
+  - The `+VIN` net label is gone; the input net is now `Net-(CN101-Pin_1)` in the `+5V` net class (`AO-Horizon.kicad_pro`).
+- TPS62142 project symbol: PG, FB and VOS pin positions moved; pin numbers, names and types unchanged (uncommitted).
+- Specification rev 0.19 (DEC-027, DEC-028): 4.3 schematic-state table rewritten; CMP-008 holds the TPS259251DRC data from TI; two 4.7 rows added (eFuse settings, buck soft-start); OPEN-012 closed, with reverse current and the 5 V budget moved to OPEN-006; OPEN-011, OPEN-023 and the verdict updated. Checklist rev 0.18 (P0-016, P2-011 and P2-017 `DONE` on the human owner's statement, P2-019 added, OI-004, OI-012, OI-013, OI-014 closed, next action), power budget rev 0.11, root `README.md` and `what-next.md` updated to match.
 
 ### Fixed
 
@@ -140,3 +152,4 @@ Notable changes to this hardware project are documented here.
 - Read-only checks run by Claude on 2026-10-24: STM32F100C(8-B)Tx and STM32F103C(8-B)Tx compared in ST open pin data, F100 datasheet values found in the NotebookLM source fulltext, and the `progress-update` preflight found no em dashes, undefined IDs, broken links or open items without a tracker row. Not ERC, DRC or a human review.
 - Read-only checks run by Claude on 2026-10-28 against the saved `power_supplies.kicad_sch` (uncommitted): `sch-inspect` pin, power-net and label queries, and the `progress-update` preflight. Which parts share an unlabeled net was traced from wire geometry, not a netlist, because the parts are unannotated (`NOT_VERIFIED`). No datasheet values were checked. Not ERC, DRC or a human review.
 - Read-only checks run by Claude on 2026-10-29 against the saved `power_supplies.kicad_sch` (uncommitted): `sch-inspect` pins and connected-pins, the `progress-update` preflight, and TI SLVSAJ0F Rev F Table 9-2 through NotebookLM (3.3 µH listed as a proven inductor value, cited). The parts are unannotated, so nets come from the sheet-local wire graph (`NOT_VERIFIED`). The TPS259251DRC values are not checked: no TPS2592x source in NotebookLM. Not ERC, DRC or a human review.
+- Read-only checks run by Claude on 2026-10-31 against the saved `power_supplies.kicad_sch` (uncommitted, KiCad open): `sch-inspect` connected-pins on every part, the `progress-update` preflight, and TI data through NotebookLM source fulltext: TPS2592x SLVSCQ3B (current limit, clamp, UVLO, ramp, fault response, OUT absolute maximum; reverse blocking asked with a cited answer), TPS6214x SLVSAJ0F Rev F (pin functions, PG, soft-start), TPS735 SBVS087M (NC pins, NR and output capacitors). Nets come from the sheet-local wire graph, not a netlist (`NOT_VERIFIED`). ERC not run. Not ERC, DRC or a human review.

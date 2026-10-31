@@ -1,6 +1,6 @@
 # What Next
 
-**Updated:** 2026-10-29
+**Updated:** 2026-10-31
 **Status:** Personal reminder list. Not a requirement, decision or verification record.
 
 The specification and the execution checklist stay the source of truth. This list only points to their IDs.
@@ -12,23 +12,30 @@ The specification and the execution checklist stay the source of truth. This lis
 - [x] Consistency pass (spec 0.15) and DEC-025 (spec 0.16) merged to `main` in PR #27.
 - [ ] `block_diagram.kicad_sch`: the working copy holds only its title text; the drawing is gone (not committed). Keep it cleared on purpose, or restore it from Git.
 - [x] Power sheet and spec 0.17 docs pass committed on `dev` (`6e61087`, `0cda54e`).
-- [ ] Commit the TPS259251DRC eFuse change and this docs pass: `power_supplies.kicad_sch`, the TPS25925x and TPS25926x symbols, the new `L_0603_1608Metric` footprint, the deleted capacitor, inductor and JST ZH library files, `AO-Horizon.kicad_pro`, spec 0.18, checklist 0.17, power budget 0.10, root README, CHANGELOG, this file.
-- [ ] Open a PR from `dev` to `main` with `.github/pull_request_template.md`. Five commits since PR #27 (library restyle, logo, PDF rules, hooks) are not on `main` yet. The site updates on the merge.
+- [x] TPS259251DRC eFuse change and the spec 0.18 docs pass merged to `main` in PR #30 (`cce0b2b`).
+- [ ] Commit the 2026-10-31 power sheet and this docs pass: `power_supplies.kicad_sch`, `AO-Horizon.kicad_sch` (design conventions note), `AO-Horizon.kicad_pcb` (outline rectangle, title fields), `AO-Horizon.kicad_pro`, the TPS62142 symbol (pin positions), spec 0.19, checklist 0.18, power budget 0.11, root README, CHANGELOG, this file. Decide what to do with the untracked outputs (`documents/AO-Horizon_2026-10-31_V1.0.pdf`, the assembly PDF, `ibom.html`, `exports.kicad_jobset`, `ibom.config.ini`, `export_jobset.log`).
 
 ## 2. Power sheet (P2-011)
 
-Does not depend on the pinout or sensor answers. See spec 4.3 "Schematic state" (re-checked 2026-10-29: 29 parts, TPS259251DRC eFuse wired, DEC-026).
+Does not depend on the pinout or sensor answers. Capture declared complete on 2026-10-31. See spec 4.3 "Schematic state" (re-checked 2026-10-31: 31 parts, annotated) and P2-019 for the findings.
 
 - [x] Replace the TPS16412DRC with the TPS259251DRC, 2 A target (DEC-026), and wire EN/UVLO, ILIM and dV/dT (2026-10-29).
-- [ ] Check the eFuse values against TI data: 45.3 kΩ ILIM for 2 A, 1 nF dV/dT inrush, EN/UVLO through 1 MΩ, overvoltage clamp, fault response, reverse current with USB (P2-017, OPEN-012). Needs a TPS2592x source: add one to NotebookLM (your approval), or give me the values.
-- [ ] Give the 1 MΩ, 45.3 kΩ and 1 nF eFuse parts footprints.
+- [x] eFuse values checked against TI SLVSCQ3B (NotebookLM `TPS25925x eFuse`, 2026-10-31): 1.75 / 2.1 / 2.45 A, about 5 ms ramp, UVLO 4.3 V, 6.1 V clamp, auto-retry (P2-017 done, OPEN-012 closed).
+- [ ] Plan the USB OR-ing so USB cannot drive the eFuse OUT above its VIN: the eFuse has no reverse blocking (OPEN-006).
+- [x] Footprints on every part (2026-10-31).
+- [x] C111 soft-start: 10 nF, about 5 ms (DEC-028, 2026-10-31).
+- [ ] Change the C111 MFR.P/N and LCSC from the 3.3 nF part (GRM1885C1H332JA01D, C77036) to a 10 nF part (P2-019).
+- [ ] `5V_PG` is the 3.3 V buck PG; rename it, and add a sheet pin on `top_hierarchical` or drop the hierarchical label (P2-019).
+- [ ] Put the `+VIN` label back on the input net (now `Net-(CN101-Pin_1)`) (P2-019).
+- [ ] Fill MFR, MFR.P/N and LCSC on R101 to R104, C103, C118, CN101 and D101 (P2-019). Passive MFR and MFR.P/N: your choice, later.
 - [ ] Change the PM02D connector from JST-GH to a 6-pin 2.00 mm CLIK-Mate (decided 2026-10-24, OPEN-023).
-- [ ] Pick the `+3V3A` LDO: it feeds only the 2 IMUs, VDD and VDDIO (DEC-025, OPEN-011). The TPS73533DRBR NR capacitor is now 10 nF; set its dielectric (TI: low leakage, C0G) and footprint, and add no-connect markers on pins 2, 6 and 7. Check the IMU SPI levels against the H743 on `+3V3`, and the power-up order.
+- [x] `+3V3A` LDO: TPS73533DRBR (DEC-027, 2026-10-31).
+- [ ] `+3V3A` follow-ups (OPEN-011): The TPS73533DRBR NR capacitor is 10 nF with a footprint; set its dielectric (TI: low leakage, C0G). No-connect markers on pins 2, 6 and 7 are style only (pins are no_connect type). Check the IMU SPI levels against the H743 on `+3V3`, and the power-up order.
 - [x] TPS62142 AVIN 100 nF on `+5V_BUCK`; 0.33 µH ASMPH-0603-R33M-T in place of the ferrite bead (2026-10-29).
 - [ ] Check the 3.3 µH PCR0420-3R3-M buck inductor (saturation current) and the 3 × 10 µF output against TI Table 9-2, and the damping of the 0.33 µH input filter.
-- [ ] Give the 510 Ω LED resistor a footprint and the green LED an LCSC code.
-- [ ] Annotate all parts.
-- [ ] Ask Claude for a `sch-review` of `power_supplies.kicad_sch` after saving. With annotated parts, `project-net` can trace the unlabeled nets.
+- [x] 510 Ω LED resistor footprint (2026-10-31). Green LED LCSC code: in the P2-019 field item.
+- [x] Annotate all parts (2026-10-31).
+- [ ] Run ERC, then ask Claude for a `sch-review` of `power_supplies.kicad_sch` after saving. With annotated parts, `project-net` can trace the unlabeled nets.
 
 ## 3. Footprint checks (P2-012, OPEN-013)
 
