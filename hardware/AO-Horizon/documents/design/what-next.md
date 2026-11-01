@@ -1,6 +1,6 @@
 # What Next
 
-**Updated:** 2026-11-01
+**Updated:** 2026-11-02
 **Status:** Personal reminder list. Not a requirement, decision or verification record.
 
 The specification and the execution checklist stay the source of truth. This list only points to their IDs.
@@ -33,7 +33,7 @@ The board is split into design zones. Each zone below has its own to-do list.
 
 ## 2. Zone Z1: Power supply (`power_supplies.kicad_sch`)
 
-Capture declared complete on 2026-10-31; 5 V input changed to the TPS2121 power mux on 2026-11-01. See spec 4.3 "Schematic state" (41 parts, rev 0.21) and P2-019, P2-020 for the findings.
+Capture declared complete on 2026-10-31; 5 V input changed to the TPS2121 power mux on 2026-11-01. See spec 4.3 "Schematic state" (41 parts, rev 0.22) and P2-019, P2-020 for the findings.
 
 Done:
 - [x] TPS2121 power mux replaces the eFuse (DEC-029, 2026-11-01): PM02D on IN1, USB VBUS on IN2, reverse blocking on both. Limit 1.5 A (DEC-030, R109 80.6 kΩ: 1.0 / 1.5 / 2.0 A). OV trip 6.08 V. Checked against TI SLVSEA3F (2026-11-01).
@@ -47,9 +47,9 @@ Done:
 
 Open:
 - [x] PM02D priority and XCOMP fast switchover (DEC-031, DEC-032, 2026-11-01): PR1 12.4 kΩ / 5 kΩ, CP2 R105 16.5 kΩ / R106 5 kΩ from `VBUS`.
-- [ ] R105 (CP2 16.5 kΩ) is marked DNP, so the default build runs the 100 µs VREF mode. Clear DNP if XCOMP should be the default (OPEN-024).
+- [x] R105 (CP2 16.5 kΩ) fitted, XCOMP is the default (DEC-033, 2026-11-01).
+- [ ] Pick the PR1/CP2 resistor tolerance: keep 1 % (4.52 V worst case), 0.5 % (4.45 V) or R101 12.1 kΩ (4.44 V) (OPEN-024).
 - [ ] Read `AO-HORIZON_POWER_MUX_NOTES_EN.md`: the four mux modes and how each resistor is calculated, step by step.
-- [ ] Annotate or remove the two DNP `D?` diodes (not connected) (P2-019).
 - [ ] Add a `PWR_FLAG` or the USB connector for `VBUS`, or expect an ERC error (P2-019).
 - [ ] Fill MFR, MFR.P/N and LCSC on D104, R101 to R111, C105, C112, C119 (P2-019); check U101 LCSC C485916 against TPS2121RUXR. Passive part numbers: your choice, later. C119 (LDO NR) needs a low-leakage dielectric (TI: C0G).
 - [ ] Input capacitance on `PM02_5V` for the cable (TI suggests more than 2 × 100 nF for long cables).

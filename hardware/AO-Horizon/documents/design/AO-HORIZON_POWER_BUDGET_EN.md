@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.12
-**Updated:** 2026-11-01
+**Revision:** 0.13
+**Updated:** 2026-11-02
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012), the 5 V input is a TPS2121 power mux with a 1.5 A limit (DEC-029, DEC-030) and the `+3V3A` LDO is TPS73533DRBR (DEC-027). No other rail, regulator or protection part is approved. Not a verification record.
-**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012 (closed), OPEN-021, OPEN-024 (spec rev 0.21). Decisions: DEC-010, DEC-012, DEC-016, DEC-018, DEC-019, DEC-025, DEC-026 (superseded), DEC-027, DEC-028, DEC-029, DEC-030. Checklist task: P0-017.
+**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012 (closed), OPEN-021, OPEN-024 (spec rev 0.22). Decisions: DEC-010, DEC-012, DEC-016, DEC-018, DEC-019, DEC-025, DEC-026 (superseded), DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033. Checklist task: P0-017.
 **Decision owner:** Hardware
 
 Single record for rail loads, rail tolerances, brownout thresholds and power protection requirements.
@@ -132,7 +132,7 @@ Known upper bounds for the 3.3 V rails:
 | F100 PVD level | 8 levels, falling-edge typ 2.08 to 2.78 V, 100 mV hysteresis; enabled by software | F1 value-line DS Table 10 (NotebookLM) | `VERIFIED` |
 | 5 V input undervoltage detect | TBD (does the board monitor 5 V?) | Not defined | `TBD` |
 | 5 V power mux input UV (U101) | Rising 2.5 / 2.65 / 2.8 V, falling 2.4 / 2.55 / 2.7 V. The 4.3 V eFuse UVLO is gone with the eFuse (DEC-029) | TI mux, Electrical Characteristics | `VERIFIED` |
-| 5 V source priority (U101 PR1, CP2; DEC-031, DEC-032) | XCOMP (R105 fitted): to USB at 3.84 / 4.05 / 4.25 V for `VBUS` 4.75 / 5.0 / 5.25 V, ±0.14 V comparator offset. VREF mode (R105 not fitted, as saved): to USB at 3.45 / 3.62 / 3.79 V, back at 3.51 / 3.69 / 3.83 V. PR1 12.4 kΩ / 5 kΩ, CP2 16.5 kΩ / 5 kΩ | TI mux equations 5 and 12 form, VREF (spec 4.7) | `ESTIMATED` |
+| 5 V source priority (U101 PR1, CP2; DEC-031 to DEC-033) | XCOMP (R105 fitted, as saved, DEC-033): to USB at 3.84 / 4.05 / 4.25 V for `VBUS` 4.75 / 5.0 / 5.25 V; worst case 4.52 V at `VBUS` 5.25 V with 1 % resistors and the 40 mV comparator offset (OPEN-024). VREF mode (R105 removed): to USB at 3.45 / 3.62 / 3.79 V, back at 3.51 / 3.69 / 3.83 V. PR1 12.4 kΩ / 5 kΩ, CP2 16.5 kΩ / 5 kΩ | TI mux equations 5 and 12 form, VREF (spec 4.7) | `ESTIMATED` |
 | 5 V input overvoltage (U101 OV1, OV2) | 6.08 V typ, 5.80 to 6.31 V over the VREF range before resistor tolerance; the channel turns off | TI mux 10.2.4.2, equation 6 (spec 4.7) | `VERIFIED` (typ), `ESTIMATED` (range) |
 | 3.3 V buck soft-start (U102) | 10 nF SS/TR (DEC-028): about 5 ms | TI SLVSAJ0F equation 10 (spec 4.7) | `ESTIMATED` |
 | 3.3 V buck PG (U102) | Open drain, pulled up by R110 100 kΩ to `+3V3`, local label `3V3_PG`, hierarchical label `3V3_DONE` (sheet pin on `top_hierarchical`, not wired further) | Saved schematic, 2026-11-01 | `VERIFIED` (as drawn) |
@@ -177,7 +177,8 @@ All `TBD`. Items to decide:
 - [x] TPS2121 values from TI: done 2026-11-01 (section 7, TI mux).
 - [x] Power mux priority: PM02D first, PR1 divider, drawn (DEC-031, 2026-11-01).
 - [x] Fast switchover: XCOMP with a 16.5 kΩ / 5 kΩ CP2 divider from `VBUS`, PR1 12.4 kΩ / 5 kΩ, drawn (DEC-032, 2026-11-01).
-- [ ] R105 default population: marked DNP in the saved file (OPEN-024).
+- [x] R105 default population: fitted, XCOMP is the default (DEC-033, 2026-11-01).
+- [ ] XCOMP switch-point tolerance: 4.52 V worst case with 1 % resistors, 0.02 V above the 4.5 V minimum (OPEN-024).
 - [ ] XT30 current rating (OPEN-021).
 - [ ] STM32H743 VDD range, run current at the planned clock, BOR/PVD levels (user-supplied values or approved datasheet route). STM32F100: done (VDD 2 to 3.6 V, Table 8; sections 3.3 V and 6).
 - [ ] ICP-20100 supply range and current.

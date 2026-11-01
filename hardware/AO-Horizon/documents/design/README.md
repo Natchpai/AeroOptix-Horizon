@@ -14,5 +14,5 @@ The specification is the requirements source of truth. The other records point t
 | `AO-HORIZON_PINMAP_REVIEW_EN.md` | H743 and IO MCU pinmap review 0.3, answered by the software team on 2026-10-24 (0.2 answers kept). Applied in spec rev 0.12, with the IO MCU changed to the F100. Not approved. |
 | `AO-HORIZON_PINMAP_DECISIONS_EN.md` | Spec changes, team decisions and software answers after pinmap review 0.2. Answered 2026-10-24; applied in spec rev 0.11, S7 update in 0.12. |
 | `AO-HORIZON_INTEGRATION_QUESTIONS_EN.md` | Integration questions rev 0.4: open questions only (P0-022): ESC (D13), parts and team tests. Earlier answers are in spec rev 0.13 and 0.14 and in Git history. |
-| `AO-HORIZON_POWER_MUX_NOTES_EN.md` | TPS2121 power mux: the four modes and how to calculate the PR1, CP2, OV, ILIM and SS parts, with the values as drawn (DEC-029 to DEC-032, OPEN-024). Design note, not a record. |
+| `AO-HORIZON_POWER_MUX_NOTES_EN.md` | TPS2121 power mux: the four modes and how to calculate the PR1, CP2, OV, ILIM and SS parts, with the values as drawn (DEC-029 to DEC-033, OPEN-024). Design note, not a record. |
 | `what-next.md` | Personal reminder list of next steps. Points to spec and checklist IDs; not a record. |

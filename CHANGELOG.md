@@ -47,6 +47,7 @@ Notable changes to this hardware project are documented here.
 - TPS2121 data from TI SLVSEA3F, read through NotebookLM (the human owner's notebook `TPS212x ...`). Recorded in spec CMP-008 and a new 4.7 row (power mux settings).
 - Project library part for the TPS2121 (uncommitted): symbol `0_Power_Management:TPS2121RUX` in a new `0_Power_Management` family (with its `sym-lib-table` line), stock footprint copy `Texas_VQFN-HR-12_2x2.5mm_P0.5mm_ThermalVias` with the human owner's `TPS2121RUXR` STEP model, and an unused stock copy without thermal vias.
 - OPEN-024 (power mux source priority), checklist task P2-020 (power mux values) and tracker row OI-026.
+- DEC-033 (specification rev 0.22): R105 (CP2 16.5 kΩ) is fitted by default, so the power mux runs in the 5 µs XCOMP mode. Decided by the human owner on 2026-11-01 ("i update TPS2121RUX config in XCOMP mode about resistor div.").
 
 ### Changed
 
@@ -138,6 +139,8 @@ Notable changes to this hardware project are documented here.
   - `top_hierarchical`: the power sheet symbol now has sheet pins `3V3_DONE`, `PM02_SCL` and `PM02_SDA`.
 - ESD symbol library (uncommitted, edited by the human owner): 8 symbols in `0_Protection_ESD` changed and 3 added (`D_ESD_DUAL`, `D_TVS-ESD_uni`, `PESD2USB3UV-T`); `TPS73533DRB` symbol changed. Not reviewed by Claude.
 - Specification rev 0.21 (DEC-029, DEC-030): part-number boundary, 4.3 power architecture and schematic-state table, CMP-008 (now the TPS2121), the 4.7 power mux row, OPEN-006 (eFuse back-feed concern gone), OPEN-010, OPEN-011 and the verdict. Checklist rev 0.20 and power budget rev 0.12 follow it.
+- Power sheet `power_supplies.kicad_sch` on 2026-11-02 (uncommitted, saved by the human owner): R105 is no longer DNP; R106 and its `GND` symbol moved with no net change; the XCOMP text notes now show the CP2, PR1 and switch-point calculation for `VBUS` 4.75 / 5.0 / 5.25 V, and the OV note uses 23.7 kΩ (6.08 V rising, 5.97 V falling).
+- Specification rev 0.22 (DEC-033): 4.3 schematic state, the 4.7 power mux row and OPEN-024. OPEN-024 now covers only the switch-point tolerance: with 1 % resistors and the 40 mV comparator offset, the worst case is 4.52 V at `VBUS` 5.25 V, 0.02 V above the 4.5 V input minimum (`ESTIMATED`). Checklist rev 0.21, power budget rev 0.13 and power mux notes rev 0.2 follow it.
 
 ### Fixed
 
