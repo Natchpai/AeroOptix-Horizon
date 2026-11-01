@@ -3810,7 +3810,7 @@
 		)
 		(uuid "942d8fc6-178e-447c-ae65-8e7dad6960d9")
 	)
-	(text "It switches when PR1 falls to CP2, \nso set PR1 = 1.16 V\nIN1 = 1.16 × 17.4 / 5 = 4.05 V"
+	(text "It switches when PR1 falls to CP2, \nso set PR1 = 1.16 V\nIN1 = 1.16 × 17.1 / 5 = 3.97 V"
 		(exclude_from_sim no)
 		(at 278.13 113.03 0)
 		(effects
@@ -3912,7 +3912,7 @@
 		)
 		(uuid "cebc0e67-dd5c-4c17-a777-21f395d45b38")
 	)
-	(text "VBUS 4.75V CP2 1.10V V_{SW} 3.84V\nVBUS 5.00V CP2 1.16V V_{SW} 4.05V\nVBUS 5.25V CP2 1.22V V_{SW} 4.25V"
+	(text "VBUS 4.75V CP2 1.10V V_{SW} 3.78V\nVBUS 5.00V CP2 1.16V V_{SW} 3.97V\nVBUS 5.25V CP2 1.22V V_{SW} 4.18V"
 		(exclude_from_sim no)
 		(at 278.13 124.46 0)
 		(effects
@@ -3948,7 +3948,7 @@
 		)
 		(uuid "db294ad8-49aa-4080-864f-19e3f92255c6")
 	)
-	(text "PR1 = IN1 × 5 / (12.4 + 5)\nPR1 = 5.0 × 5 / 17.4 = 1.44 V"
+	(text "PR1 = IN1 × 5 / (12.1 + 5)\nPR1 = 5.0 × 5 / 17.1 = 1.46 V"
 		(exclude_from_sim no)
 		(at 251.46 127 0)
 		(effects
@@ -9724,7 +9724,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "12k4"
+		(property "Value" "12k1"
 			(at 201.93 74.93 0)
 			(show_name no)
 			(do_not_autoplace no)
