@@ -1,0 +1,65 @@
+  5%: Started plotting...
+  6%: Plotting User.1 for template CoverPage
+  8%: Merging all layers of template CoverPage
+  9%: Plotting F.Cu for template Dimension Top
+ 11%: Plotting F.Silkscreen for template Dimension Top
+ 12%: Plotting F.Fab for template Dimension Top
+ 14%: Plotting Edge.Cuts for template Dimension Top
+ 15%: Plotting User.8 for template Dimension Top
+ 17%: Coloring F.Cu for template Dimension Top
+ 18%: Coloring F.Silkscreen for template Dimension Top
+ 20%: Coloring F.Fab for template Dimension Top
+ 21%: Merging all layers of template Dimension Top
+ 23%: Plotting User.10 for template Stackup
+ 24%: Merging all layers of template Stackup
+ 26%: Plotting F.Cu for template Assembly Top Side
+ 27%: Plotting F.Silkscreen for template Assembly Top Side
+ 29%: Plotting F.Mask for template Assembly Top Side
+ 30%: Plotting F.Paste for template Assembly Top Side
+ 32%: Plotting Edge.Cuts for template Assembly Top Side
+ 33%: Plotting F.Fab for template Assembly Top Side
+ 35%: Plotting User.Eco1 for template Assembly Top Side
+ 36%: Plotting User.6 for template Assembly Top Side
+ 38%: Coloring F.Cu for template Assembly Top Side
+ 39%: Coloring F.Silkscreen for template Assembly Top Side
+ 41%: Coloring F.Mask for template Assembly Top Side
+ 42%: Coloring F.Paste for template Assembly Top Side
+ 44%: Coloring User.Eco1 for template Assembly Top Side
+ 45%: Merging all layers of template Assembly Top Side
+ 47%: Plotting B.Cu for template Assembly Bottom Side
+ 48%: Plotting B.Silkscreen for template Assembly Bottom Side
+ 50%: Plotting B.Mask for template Assembly Bottom Side
+ 51%: Plotting B.Paste for template Assembly Bottom Side
+ 53%: Plotting Edge.Cuts for template Assembly Bottom Side
+ 54%: Plotting B.Fab for template Assembly Bottom Side
+ 56%: Plotting User.Eco2 for template Assembly Bottom Side
+ 57%: Plotting User.7 for template Assembly Bottom Side
+ 59%: Coloring B.Cu for template Assembly Bottom Side
+ 60%: Coloring B.Silkscreen for template Assembly Bottom Side
+ 62%: Coloring B.Mask for template Assembly Bottom Side
+ 63%: Coloring B.Paste for template Assembly Bottom Side
+ 65%: Coloring User.Eco2 for template Assembly Bottom Side
+ 66%: Merging all layers of template Assembly Bottom Side
+ 68%: Plotting F.Cu for template Testpoint Top Side
+ 69%: Plotting F.Mask for template Testpoint Top Side
+ 71%: Plotting F.Silkscreen for template Testpoint Top Side
+ 72%: Plotting Edge.Cuts for template Testpoint Top Side
+ 74%: Plotting User.2 for template Testpoint Top Side
+ 75%: Plotting User.4 for template Testpoint Top Side
+ 77%: Coloring F.Cu for template Testpoint Top Side
+ 78%: Coloring F.Mask for template Testpoint Top Side
+ 80%: Coloring F.Silkscreen for template Testpoint Top Side
+ 81%: Merging all layers of template Testpoint Top Side
+ 83%: Plotting B.Cu for template Testpoint Bottom Side
+ 84%: Plotting B.Mask for template Testpoint Bottom Side
+ 86%: Plotting B.Silkscreen for template Testpoint Bottom Side
+ 87%: Plotting Edge.Cuts for template Testpoint Bottom Side
+ 89%: Plotting User.3 for template Testpoint Bottom Side
+ 90%: Plotting User.5 for template Testpoint Bottom Side
+ 92%: Coloring B.Cu for template Testpoint Bottom Side
+ 93%: Coloring B.Mask for template Testpoint Bottom Side
+ 95%: Coloring B.Silkscreen for template Testpoint Bottom Side
+ 96%: Merging all layers of template Testpoint Bottom Side
+ 98%: Adding all templates to a single file
+100%: All done!
+All done!: Assembly pdf created: D:\KiCAD\KiCAD Project\AeroOptix-Horizon\hardware\AO-Horizon\documents\manufacturing\Assembly\AO-Horizon__Assembly.pdf

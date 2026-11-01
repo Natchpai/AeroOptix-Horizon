@@ -117,11 +117,13 @@ export const places: Record<Level, Record<string, Place>> = {
   // upright and are wide enough for their name. The +5V bar is centred on
   // the LDO line (560), the +3V3 bar on the buck line (300).
   power: {
-    'pw-batt': { x: 0, y: 670 },
-    'pw-pm02d': { x: 380, y: 400, h: 600 },
+    'pw-batt': { x: 0, y: 730 },
+    'pw-pm02d': { x: 380, y: 460, h: 600 },
 
-    'pw-efuse': { x: 760, y: 410 },
-    'pw-usb': { x: 760, y: 650 },
+    // USB-C feeds the power mux IN2 from above; the mux line sits on the
+    // +5V bar centre (560)
+    'pw-usb': { x: 760, y: 350 },
+    'pw-pmux': { x: 760, y: 530 },
     'pw-pdb': { x: 760, y: 860, h: 200 },
 
     'pw-r5v': { x: 1140, y: 280, w: 120, h: 560 },

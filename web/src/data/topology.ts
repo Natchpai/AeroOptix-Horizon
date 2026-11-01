@@ -958,17 +958,27 @@ export const powerBlocks: Block[] = [
     sub: 'Holybro PM02D',
     refs: ['IF-048', 'PWR-001'],
     open: ['OPEN-023'],
-    note: 'Passes the battery on to the PDB and gives the board 5 V (+VIN).',
+    note: 'Passes the battery on to the PDB and gives the board 5 V (PM02_5V).',
   },
   {
-    id: 'pw-efuse',
+    id: 'pw-pmux',
     level: 'power',
     kind: 'power',
     rail: 'v5',
-    label: 'eFuse, 2 A',
-    sub: 'TPS259251DRC',
-    refs: ['DEC-026', 'CMP-008', 'PWR-010'],
-    open: ['OPEN-012'],
+    label: 'Power mux, 1.5 A',
+    sub: 'TPS2121RUX',
+    refs: [
+      'DEC-029',
+      'DEC-030',
+      'DEC-031',
+      'DEC-032',
+      'DEC-033',
+      'DEC-034',
+      'CMP-008',
+      'PWR-010',
+    ],
+    open: ['OPEN-006'],
+    note: 'PM02D on IN1 has priority. USB VBUS on IN2 takes over when the PM02D falls below about 3.98 V at VBUS 5.0 V, with the 5 µs XCOMP switchover. Blocks reverse current on both inputs.',
   },
   {
     id: 'pw-usb',
@@ -1004,11 +1014,10 @@ export const powerBlocks: Block[] = [
     kind: 'power',
     rail: 'v3v3a',
     label: '+3V3A LDO',
-    sub: 'TPS73533DRBR (drawn)',
-    refs: ['PWR-013', 'DEC-025'],
+    sub: 'TPS73533DRBR',
+    refs: ['PWR-013', 'DEC-025', 'DEC-027', 'CMP-009'],
     open: ['OPEN-011'],
-    status: 'candidate',
-    note: 'The +3V3A use is decided: the 2 IMUs only (DEC-025). The LDO part is not decided (OPEN-011).',
+    note: 'Part decided: TPS73533DRBR (DEC-027). +3V3A feeds only the 2 IMUs (DEC-025). The load, the IMU SPI level match with the H743 on +3V3 and the power-up order are open (OPEN-011).',
   },
   {
     id: 'pw-r3v3',
@@ -1129,25 +1138,25 @@ export const powerLinks: Link[] = [
   pw('pw-batt-pm', 'pw-batt', 'pw-pm02d', 'batt', 'Battery', ['PWR-013'], {
     status: 'candidate',
   }),
+  pw('pw-pm-pmux', 'pw-pm02d', 'pw-pmux', 'v5', 'PM02_5V, IN1', [
+    'PWR-010',
+    'DEC-029',
+    'DEC-031',
+  ]),
+  pw('pw-pmux-5v', 'pw-pmux', 'pw-r5v', 'v5', '+5V', ['DEC-029', 'DEC-030']),
   pw(
-    'pw-pm-efuse',
-    'pw-pm02d',
-    'pw-efuse',
+    'pw-usb-pmux',
+    'pw-usb',
+    'pw-pmux',
     'v5',
-    '+VIN',
-    ['PWR-010', 'DEC-026'],
+    'VBUS, IN2',
+    ['IF-022', 'DEC-029'],
     {
-      open: ['OPEN-012'],
+      open: ['OPEN-006'],
     }
   ),
-  pw('pw-efuse-5v', 'pw-efuse', 'pw-r5v', 'v5', '+5V', ['DEC-026'], {
-    open: ['OPEN-012'],
-  }),
-  pw('pw-usb-5v', 'pw-usb', 'pw-r5v', 'v5', 'VBUS, OR-ing TBD', ['IF-022'], {
-    open: ['OPEN-006'],
-  }),
   pw('pw-5v-buck', 'pw-r5v', 'pw-buck', 'v5', '5 V', ['DEC-012']),
-  pw('pw-5v-ldo', 'pw-r5v', 'pw-ldo', 'v5', '5 V', ['DEC-025'], {
+  pw('pw-5v-ldo', 'pw-r5v', 'pw-ldo', 'v5', '5 V', ['DEC-025', 'DEC-027'], {
     open: ['OPEN-011'],
   }),
   pw('pw-5v-ports', 'pw-r5v', 'pw-ports', 'v5', '5 V', ['IF-010', 'IF-022'], {
