@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.13
+**Revision:** 0.14
 **Updated:** 2026-11-02
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012), the 5 V input is a TPS2121 power mux with a 1.5 A limit (DEC-029, DEC-030) and the `+3V3A` LDO is TPS73533DRBR (DEC-027). No other rail, regulator or protection part is approved. Not a verification record.
-**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012 (closed), OPEN-021, OPEN-024 (spec rev 0.22). Decisions: DEC-010, DEC-012, DEC-016, DEC-018, DEC-019, DEC-025, DEC-026 (superseded), DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033. Checklist task: P0-017.
+**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012 (closed), OPEN-021, OPEN-024 (closed) (spec rev 0.23). Decisions: DEC-010, DEC-012, DEC-016, DEC-018, DEC-019, DEC-025, DEC-026 (superseded), DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034. Checklist task: P0-017.
 **Decision owner:** Hardware
 
 Single record for rail loads, rail tolerances, brownout thresholds and power protection requirements.
@@ -45,8 +45,8 @@ USB VBUS (bench) -> TPS2121 mux IN2 ----------------------------^
 
 - `ASSUMED`: the 5 V input feeds the external connectors directly, and both 3.3 V rails come from the 5 V input.
 - 3.3 V_IMU is the `+3V3A` rail from its own LDO, and it feeds only the 2 IMUs, on VDD and VDDIO (DEC-025, human owner, 2026-10-26). The LDO is TPS73533DRBR (DEC-027, 2026-10-31).
-- USB VBUS powers the board and all external 5 V ports on the bench without the battery (team; all ports: human owner, 2026-10-24). Since 2026-11-01 the TPS2121 power mux joins USB (IN2) and the PM02D (IN1) and blocks reverse current on both channels (TI mux 9.3.6, `VERIFIED`). PR1 has a 12.4 kΩ / 5 kΩ divider from the PM02D and CP2 a 16.5 kΩ / 5 kΩ divider from `VBUS` (DEC-031, DEC-032, 2026-11-01), so the PM02D has priority; USB takes over below about 4.05 V typ (XCOMP) or 3.62 V typ (VREF mode, 16.5 kΩ not fitted).
-- The saved `power_supplies.kicad_sch` draws `+3V3` from the TPS62142RGTR buck (DEC-012) and `+3V3A` from the TPS73533DRBR LDO (DEC-027), both fed from `+5V`; the buck through a 0.33 µH inductor (`+5V_BUCK`). The TPS2121 power mux (U101) is wired from `PM02_5V` (IN1) and `VBUS` (IN2) to `+5V`, with ILIM 80.6 kΩ, a PR1 priority divider 12.4 kΩ / 5 kΩ, a CP2 divider 16.5 kΩ (population option) / 5 kΩ from `VBUS`, OV dividers 23.7 kΩ / 5 kΩ on both inputs and SS 10 nF (no status LED); checked against TI mux on 2026-11-01 (sections 6 and 7). The human owner declared the sheet complete on 2026-10-31 and changed the 5 V input to the power mux on 2026-11-01. Details: spec 4.3 "Schematic state".
+- USB VBUS powers the board and all external 5 V ports on the bench without the battery (team; all ports: human owner, 2026-10-24). Since 2026-11-01 the TPS2121 power mux joins USB (IN2) and the PM02D (IN1) and blocks reverse current on both channels (TI mux 9.3.6, `VERIFIED`). PR1 has a 12.1 kΩ / 5 kΩ divider from the PM02D and CP2 a 16.5 kΩ / 5 kΩ divider from `VBUS` (DEC-031 to DEC-034), so the PM02D has priority; USB takes over below about 3.98 V typ at `VBUS` 5.0 V (XCOMP) or 3.56 V typ (VREF mode, 16.5 kΩ not fitted).
+- The saved `power_supplies.kicad_sch` draws `+3V3` from the TPS62142RGTR buck (DEC-012) and `+3V3A` from the TPS73533DRBR LDO (DEC-027), both fed from `+5V`; the buck through a 0.33 µH inductor (`+5V_BUCK`). The TPS2121 power mux (U101) is wired from `PM02_5V` (IN1) and `VBUS` (IN2) to `+5V`, with ILIM 80.6 kΩ, a PR1 priority divider 12.1 kΩ / 5 kΩ, a CP2 divider 16.5 kΩ (fitted) / 5 kΩ from `VBUS`, OV dividers 23.7 kΩ / 5 kΩ on both inputs and SS 10 nF (no status LED); checked against TI mux on 2026-11-01 (sections 6 and 7). The human owner declared the sheet complete on 2026-10-31 and changed the 5 V input to the power mux on 2026-11-01. Details: spec 4.3 "Schematic state".
 
 ## 3. Load table
 
@@ -132,7 +132,7 @@ Known upper bounds for the 3.3 V rails:
 | F100 PVD level | 8 levels, falling-edge typ 2.08 to 2.78 V, 100 mV hysteresis; enabled by software | F1 value-line DS Table 10 (NotebookLM) | `VERIFIED` |
 | 5 V input undervoltage detect | TBD (does the board monitor 5 V?) | Not defined | `TBD` |
 | 5 V power mux input UV (U101) | Rising 2.5 / 2.65 / 2.8 V, falling 2.4 / 2.55 / 2.7 V. The 4.3 V eFuse UVLO is gone with the eFuse (DEC-029) | TI mux, Electrical Characteristics | `VERIFIED` |
-| 5 V source priority (U101 PR1, CP2; DEC-031 to DEC-033) | XCOMP (R105 fitted, as saved, DEC-033): to USB at 3.84 / 4.05 / 4.25 V for `VBUS` 4.75 / 5.0 / 5.25 V; worst case 4.52 V at `VBUS` 5.25 V with 1 % resistors and the 40 mV comparator offset (OPEN-024). VREF mode (R105 removed): to USB at 3.45 / 3.62 / 3.79 V, back at 3.51 / 3.69 / 3.83 V. PR1 12.4 kΩ / 5 kΩ, CP2 16.5 kΩ / 5 kΩ | TI mux equations 5 and 12 form, VREF (spec 4.7) | `ESTIMATED` |
+| 5 V source priority (U101 PR1, CP2; DEC-031 to DEC-034) | XCOMP (R105 fitted, as saved, DEC-033): to USB at 3.78 / 3.98 / 4.18 V for `VBUS` 4.75 / 5.0 / 5.25 V; worst case 4.44 V at `VBUS` 5.25 V with 1 % resistors and the 40 mV comparator offset, below the 4.5 V minimum (DEC-034). VREF mode (R105 removed): to USB at 3.39 / 3.56 / 3.73 V, back at 3.45 / 3.63 / 3.76 V. PR1 12.1 kΩ / 5 kΩ, CP2 16.5 kΩ / 5 kΩ | TI mux equations 5 and 12 form, VREF (spec 4.7) | `ESTIMATED` |
 | 5 V input overvoltage (U101 OV1, OV2) | 6.08 V typ, 5.80 to 6.31 V over the VREF range before resistor tolerance; the channel turns off | TI mux 10.2.4.2, equation 6 (spec 4.7) | `VERIFIED` (typ), `ESTIMATED` (range) |
 | 3.3 V buck soft-start (U102) | 10 nF SS/TR (DEC-028): about 5 ms | TI SLVSAJ0F equation 10 (spec 4.7) | `ESTIMATED` |
 | 3.3 V buck PG (U102) | Open drain, pulled up by R110 100 kΩ to `+3V3`, local label `3V3_PG`, hierarchical label `3V3_DONE` (sheet pin on `top_hierarchical`, not wired further) | Saved schematic, 2026-11-01 | `VERIFIED` (as drawn) |
@@ -142,10 +142,10 @@ Known upper bounds for the 3.3 V rails:
 
 All `TBD`. Items to decide:
 
-- [x] 5 V power mux values (P2-020, checked 2026-11-01), TI mux, `VERIFIED` unless marked: TPS2121, 80.6 kΩ ILIM gives 1.0 / 1.5 / 2.0 A (DEC-030); OV trip 6.08 V typ on both inputs; IN and OUT 24 V absolute maximum; input UV 2.65 V typ; 10 nF SS gives about 0.65 ms ramp and about 0.47 A inrush into about 60 µF (`ESTIMATED`, outside TI Table 9-1); fast-trip at about 2.4 × ILM, then off for about 25 ms; thermal shutdown auto-recovers. PM02D priority with a 12.4 kΩ / 5 kΩ PR1 divider (DEC-031) and the XCOMP fast switchover with a 16.5 kΩ / 5 kΩ CP2 divider from `VBUS` (DEC-032); R105 default population open (OPEN-024).
+- [x] 5 V power mux values (P2-020, checked 2026-11-01), TI mux, `VERIFIED` unless marked: TPS2121, 80.6 kΩ ILIM gives 1.0 / 1.5 / 2.0 A (DEC-030); OV trip 6.08 V typ on both inputs; IN and OUT 24 V absolute maximum; input UV 2.65 V typ; 10 nF SS gives about 0.65 ms ramp and about 0.47 A inrush into about 60 µF (`ESTIMATED`, outside TI Table 9-1); fast-trip at about 2.4 × ILM, then off for about 25 ms; thermal shutdown auto-recovers. PM02D priority with a 12.1 kΩ / 5 kΩ PR1 divider (DEC-031, DEC-034) and the XCOMP fast switchover with a 16.5 kΩ / 5 kΩ CP2 divider from `VBUS` (DEC-032), R105 fitted (DEC-033).
 - [x] Removed 2026-11-01 (DEC-029). 5 V input eFuse values (P2-017, closed 2026-10-31), TI eFuse, `VERIFIED` unless marked: TPS259251DRC, 45.3 kΩ ILIM gives 1.75 / 2.1 / 2.45 A; overvoltage clamp 6.1 V typ (5.5 to 6.75 V); VIN 20 V absolute maximum; turn-on at the internal UVLO (4.3 V typ); 1 nF dV/dT gives about 5 ms ramp and about 56 mA inrush into about 60 µF (`ESTIMATED`); thermal fault auto-retry after 110 ms.
 - [ ] 5 V input, still open: reverse polarity; D101 SZSMF5.0A TVS rating against the PM02D input (datasheet not checked); input capacitance for the PM02D cable (TI mux section 11 suggests a large capacitance near the input for long cables; IN1 has 2 × 100 nF).
-- [x] USB VBUS and PM02D 5 V OR-ing: TPS2121 power mux (DEC-029), reverse current blocking on both channels (TI mux 9.3.6, `VERIFIED`). Source priority open (OPEN-024).
+- [x] USB VBUS and PM02D 5 V OR-ing: TPS2121 power mux (DEC-029), reverse current blocking on both channels (TI mux 9.3.6, `VERIFIED`). Source priority: PM02D first, XCOMP switchover (DEC-031 to DEC-034).
 - [ ] 6 V servo bus on the board (DEC-019): board-mount XT30 input, rating against 10 A continuous and 15 A peak `NOT_VERIFIED`; 6 V and servo GND copper; servo GND joined to logic GND at one point away from the sensors; no back-feed from the 6 V bus into the 5 V side (OPEN-021).
 - [ ] 6 V servo rail: overcurrent behavior, pulse duration of the 15 A rating, bulk capacitance.
 - [ ] USB-only power: VBUS current limit. USB feeds all external 5 V ports (human owner, 2026-10-24) (OPEN-006).
@@ -160,7 +160,7 @@ All `TBD`. Items to decide:
 | MAJOR | PWR-012 | `NOT_VERIFIED` | Board current budget cannot be closed: MCU currents and all external 5 V device models are missing. | Section 4 |
 | MAJOR | IF-030 to IF-037 / UBEC | `NOT_VERIFIED` | All 8 servos can move at once and stall current is not known. The 10 A team target covers only the 4 tilt servos (OPEN-007). | Section 3 |
 | MAJOR | XT30 input / 6 V bus | `NOT_VERIFIED` | The XT30 input carries the total servo current, up to 10 A continuous and 15 A peak. Its rating is not checked. A header position (about 3 A per pin, `ESTIMATED`) was replaced by the XT30 on 2026-10-24 (OPEN-021). | DEC-019, PWR-011 |
-| INFO | U101 PR1 / `+5V` | `ESTIMATED` | Closed 2026-11-01: the drawn VCOMP mode let USB carry the board when both sources were present. PR1 now has a divider from IN1 (DEC-031, 12.4 kΩ / 5 kΩ since DEC-032), so the PM02D has priority down to about 4.05 V typ in XCOMP or 3.62 V typ in the VREF mode. | TI mux Table 9-3; spec 4.7 |
+| INFO | U101 PR1 / `+5V` | `ESTIMATED` | Closed 2026-11-01: the drawn VCOMP mode let USB carry the board when both sources were present. PR1 now has a divider from IN1 (DEC-031, 12.1 kΩ / 5 kΩ since DEC-034), so the PM02D has priority down to about 3.98 V typ in XCOMP or 3.56 V typ in the VREF mode. | TI mux Table 9-3; spec 4.7 |
 | MINOR | DEC-030 / 5 V | `VERIFIED` | The power mux limit with 80.6 kΩ is 1.0 to 2.0 A (1.5 A typ). The board plus all external 5 V loads must fit under 1.0 A for a worst-case part, with the load currents still unknown. | Section 4; TI mux |
 | MINOR | U101 / `+5V` | `ESTIMATED` | With CP2 at `GND` there is no fast switchover: up to 100 µs, so `+5V` may dip about 1.7 V at 1 A into about 60 µF when the active source drops with the other present. | Spec 4.7; TI mux 9.3.7 |
 | MINOR | IST8310 / 3.3 V | `VERIFIED` | IST8310 absolute maximum supply is 3.6 V, so the 3.3 V rail must never overshoot by more than 0.3 V (9 %), including start-up and load steps. | IST8310 DS V1.2, 4.1 |
@@ -176,9 +176,9 @@ All `TBD`. Items to decide:
 - [x] TPS259251DRC values from TI: done 2026-10-31 (section 7, notebook `TPS25925x eFuse`). Part removed 2026-11-01.
 - [x] TPS2121 values from TI: done 2026-11-01 (section 7, TI mux).
 - [x] Power mux priority: PM02D first, PR1 divider, drawn (DEC-031, 2026-11-01).
-- [x] Fast switchover: XCOMP with a 16.5 kΩ / 5 kΩ CP2 divider from `VBUS`, PR1 12.4 kΩ / 5 kΩ, drawn (DEC-032, 2026-11-01).
+- [x] Fast switchover: XCOMP with a 16.5 kΩ / 5 kΩ CP2 divider from `VBUS`, PR1 12.4 kΩ / 5 kΩ, drawn (DEC-032, 2026-11-01); R101 later 12.1 kΩ (DEC-034).
 - [x] R105 default population: fitted, XCOMP is the default (DEC-033, 2026-11-01).
-- [ ] XCOMP switch-point tolerance: 4.52 V worst case with 1 % resistors, 0.02 V above the 4.5 V minimum (OPEN-024).
+- [x] XCOMP switch-point tolerance: R101 12.1 kΩ gives 4.44 V worst case with 1 % resistors, below the 4.5 V minimum (DEC-034, 2026-11-02; OPEN-024 closed).
 - [ ] XT30 current rating (OPEN-021).
 - [ ] STM32H743 VDD range, run current at the planned clock, BOR/PVD levels (user-supplied values or approved datasheet route). STM32F100: done (VDD 2 to 3.6 V, Table 8; sections 3.3 V and 6).
 - [ ] ICP-20100 supply range and current.

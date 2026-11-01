@@ -48,6 +48,7 @@ Notable changes to this hardware project are documented here.
 - Project library part for the TPS2121 (uncommitted): symbol `0_Power_Management:TPS2121RUX` in a new `0_Power_Management` family (with its `sym-lib-table` line), stock footprint copy `Texas_VQFN-HR-12_2x2.5mm_P0.5mm_ThermalVias` with the human owner's `TPS2121RUXR` STEP model, and an unused stock copy without thermal vias.
 - OPEN-024 (power mux source priority), checklist task P2-020 (power mux values) and tracker row OI-026.
 - DEC-033 (specification rev 0.22): R105 (CP2 16.5 kΩ) is fitted by default, so the power mux runs in the 5 µs XCOMP mode. Decided by the human owner on 2026-11-01 ("i update TPS2121RUX config in XCOMP mode about resistor div.").
+- DEC-034 (specification rev 0.23): R101 is 12.1 kΩ (was 12.4 kΩ), so the worst-case power mux switch point is 4.44 V with 1 % resistors, below the 4.5 V input minimum. Decided by the human owner on 2026-11-02 ("use R101 12k1, i updated sch"). Closes OPEN-024.
 
 ### Changed
 
@@ -141,6 +142,9 @@ Notable changes to this hardware project are documented here.
 - Specification rev 0.21 (DEC-029, DEC-030): part-number boundary, 4.3 power architecture and schematic-state table, CMP-008 (now the TPS2121), the 4.7 power mux row, OPEN-006 (eFuse back-feed concern gone), OPEN-010, OPEN-011 and the verdict. Checklist rev 0.20 and power budget rev 0.12 follow it.
 - Power sheet `power_supplies.kicad_sch` on 2026-11-02 (uncommitted, saved by the human owner): R105 is no longer DNP; R106 and its `GND` symbol moved with no net change; the XCOMP text notes now show the CP2, PR1 and switch-point calculation for `VBUS` 4.75 / 5.0 / 5.25 V, and the OV note uses 23.7 kΩ (6.08 V rising, 5.97 V falling).
 - Specification rev 0.22 (DEC-033): 4.3 schematic state, the 4.7 power mux row and OPEN-024. OPEN-024 now covers only the switch-point tolerance: with 1 % resistors and the 40 mV comparator offset, the worst case is 4.52 V at `VBUS` 5.25 V, 0.02 V above the 4.5 V input minimum (`ESTIMATED`). Checklist rev 0.21, power budget rev 0.13 and power mux notes rev 0.2 follow it.
+- Power sheet `power_supplies.kicad_sch`, 00:32 save on 2026-11-02 (uncommitted, saved by the human owner): R101 value 12k4 to 12k1; the PR1 and switch-point notes now read 3.78 / 3.97 / 4.18 V. No net change.
+- Specification rev 0.23 (DEC-034): 4.3 schematic state, the 4.7 power mux row (XCOMP 3.78 / 3.98 / 4.18 V, VREF mode 3.39 to 3.76 V, `ESTIMATED`), OPEN-024 closed. Checklist rev 0.22 (P2-020, OI-026 closed), power budget rev 0.14 and power mux notes rev 0.3 follow it. The root README drops OPEN-024 from the open list.
+- Team website Power view (`web/src/data/topology.ts`, `places.ts`): the eFuse block is now the TPS2121 power mux (`pw-pmux`, DEC-029 to DEC-034), with USB-C feeding it on IN2 instead of the `+5V` bar directly, and the PM02D link named `PM02_5V`. The `+3V3A` LDO block is no longer drawn as a candidate: TPS73533DRBR is decided (DEC-027). `npm run build` and `npm run test:ui` pass; the live site updates after a merge to `main`.
 
 ### Fixed
 

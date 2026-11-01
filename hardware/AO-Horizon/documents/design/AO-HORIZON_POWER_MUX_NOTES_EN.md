@@ -1,8 +1,8 @@
 # AeroOptix-Horizon: TPS2121 Power Mux Notes
 
-**Revision:** 0.2
+**Revision:** 0.3
 **Updated:** 2026-11-02
-**Status:** Design note for reading and re-calculation. Not a requirement or verification record. Decisions live in the spec (DEC-029 to DEC-033, OPEN-024).
+**Status:** Design note for reading and re-calculation. Not a requirement or verification record. Decisions live in the spec (DEC-029 to DEC-034; OPEN-024 closed).
 **Source:** TI TPS212x datasheet SLVSEA3F (August 2020), NotebookLM notebook `TPS212x 2.8-V to 22-V Priority Power MUX with Seamless Switchover`, read as source fulltext. TI values are `VERIFIED`; calculated values are `ESTIMATED`, before resistor tolerance.
 
 ## 1. What the mux does on this board
@@ -74,6 +74,7 @@ Examples:
 | --------------- | -- | --------------------------- | ---------------- |
 | 13.7 kΩ / 5 kΩ | 3.74 | 3.70 / 3.89 / 4.08 V | 3.78 / 3.96 / 4.11 V |
 | 12.4 kΩ / 5 kΩ | 3.48 | 3.45 / 3.62 / 3.79 V | 3.51 / 3.69 / 3.83 V |
+| 12.1 kΩ / 5 kΩ (as drawn) | 3.42 | 3.39 / 3.56 / 3.73 V | 3.45 / 3.63 / 3.76 V |
 
 ### 5.3 XCOMP (PR1 divider from IN1, CP2 divider from IN2)
 
@@ -83,22 +84,23 @@ Here PR1 is compared with CP2, not with VREF. So the CP2 voltage sets the switch
    `k2 ≤ VBUS_min / 1.10 V = 4.75 / 1.10 = 4.32`. With 5 kΩ: `Rtop ≤ 16.6 kΩ`, so 16.5 kΩ (k2 = 4.3).
 2. **Highest CP2.** `VCP2_max = VBUS_max / k2 = 5.25 / 4.3 = 1.221 V`.
 3. **PR1.** At the lowest valid PM02D (4.5 V), PR1 must stay above the highest CP2 plus the offset:
-   `4.5 V / k1 > 1.221 V + 0.040 V`, so `k1 < 3.57`. With 5 kΩ: `Rtop < 12.85 kΩ`. 12.7 kΩ leaves only 40 mV; 12.4 kΩ (k1 = 3.48) leaves 110 mV for resistor error.
-4. **Check.** Switch point `= VCP2 × k1`: 3.84 / 4.05 / 4.25 V for `VBUS` 4.75 / 5.0 / 5.25 V, ±0.14 V offset, so 4.39 V before resistor tolerance.
+   `4.5 V / k1 > 1.221 V + 0.040 V`, so `k1 < 3.57`. With 5 kΩ: `Rtop < 12.85 kΩ`. 12.7 kΩ leaves only 40 mV. 12.4 kΩ (k1 = 3.48) looked fine before resistor tolerance but fails step 5, so the board uses 12.1 kΩ (k1 = 3.42, DEC-034).
+4. **Check.** Switch point `= VCP2 × k1`: 3.78 / 3.98 / 4.18 V for `VBUS` 4.75 / 5.0 / 5.25 V, plus up to 0.14 V offset, so 4.31 V before resistor tolerance.
 5. **Resistor tolerance.** Worst case at `VBUS` 5.25 V, each 1 % resistor in the bad direction:
    - CP2 high: R105 16.335 kΩ, R106 5.05 kΩ, so `VCP2 = 5.25 × 5.05 / 21.385 = 1.24 V`.
-   - PR1 ratio low: R101 12.524 kΩ, R102 4.95 kΩ, so `4.95 / 17.474 = 0.2833`.
-   - Switch point `= 1.24 / 0.2833 = 4.38 V`, plus the offset `0.040 / 0.2833 = 0.14 V`, so **4.52 V**: 0.02 V above the 4.5 V minimum.
-   - With 0.5 % resistors: 4.45 V. With R101 12.1 kΩ and 1 % resistors: 4.44 V (3.98 V nominal at `VBUS` 5.0 V). Not chosen yet (OPEN-024).
+   - PR1 ratio low: R101 12.221 kΩ, R102 4.95 kΩ, so `4.95 / 17.171 = 0.2883`.
+   - Switch point `= 1.24 / 0.2883 = 4.30 V`, plus the offset `0.040 / 0.2883 = 0.14 V`, so **4.44 V**: 0.06 V below the 4.5 V minimum.
+   - With the old 12.4 kΩ the same case gave 4.52 V, 0.02 V above the minimum. 0.5 % resistors would also have fixed it (4.45 V); R101 12.1 kΩ with 1 % parts was chosen (DEC-034).
    - It only matters on the bench: in flight there is no `VBUS`, so CP2 is 0 V.
-6. **Check the fallback.** If CP2 is not fitted, the same PR1 works in VREF mode (5.2): 3.45 to 3.79 V.
+6. **Check the fallback.** If CP2 is not fitted, the same PR1 works in VREF mode (5.2): 3.39 to 3.76 V.
 
 Why not other values:
 
 | Change | Result |
 | ------ | ------ |
 | Keep PR1 at 13.7 kΩ in XCOMP | Worst case 4.72 V: a PM02D at 4.5 V would hand over to USB |
-| CP2 top 15.8 kΩ | More fast-mode margin, but worst-case switch point about 4.53 V |
+| Keep PR1 at 12.4 kΩ in XCOMP | Worst case 4.52 V with 1 % resistors (5.3 step 5): just above 4.5 V |
+| CP2 top 15.8 kΩ (with PR1 12.4 kΩ) | More fast-mode margin, but worst-case switch point about 4.53 V before resistor tolerance |
 | CP2 top 10.2 kΩ (TI 5 V example, 1.64 V) | Switch point about 6 V: USB always wins |
 
 Weak point: at `VBUS` 4.75 V, CP2 is about 1.10 V, the same as VREF max. A part may then stay in VREF mode. That is safe: the PM02D still has priority, only the switchover is slow.
@@ -131,11 +133,11 @@ The channel turns off when its OV pin reaches VREF.
 - Inrush current `= C_load × slew`. With about 60 µF on `+5V` and `+5V_BUCK`: about 0.47 A.
 - Output dip during a switchover: `VDIP = IOUT × tSW / COUT`. At 1 A, 100 µs, 60 µF: about 1.7 V. At 5 µs: about 0.08 V.
 
-## 6. As drawn (saved file, 2026-11-02 00:11)
+## 6. As drawn (saved file, 2026-11-02 00:32)
 
 | Pin | Parts | Value | Decision |
 | --- | ----- | ----- | -------- |
-| PR1 | R101 from `PM02_5V`, R102 to `GND` | 12.4 kΩ / 5 kΩ | DEC-031, DEC-032 |
+| PR1 | R101 from `PM02_5V`, R102 to `GND` | 12.1 kΩ / 5 kΩ | DEC-031, DEC-034 |
 | CP2 | R105 from `VBUS`, R106 to `GND` | 16.5 kΩ / 5 kΩ (R105 fitted) | DEC-032, DEC-033 |
 | OV1 | R103 from `PM02_5V`, R104 to `GND` | 23.7 kΩ / 5 kΩ | Drawn |
 | OV2 | R107 from `VBUS`, R108 to `GND` | 23.7 kΩ / 5 kΩ | Drawn |
@@ -150,6 +152,6 @@ The channel turns off when its OV pin reaches VREF.
 - [ ] CP2 at or above 1.10 V at the lowest USB voltage (XCOMP).
 - [ ] Worst-case switch point below 4.5 V (PWR-010), with resistor tolerance and the 40 mV offset × k1 (5.3 step 5).
 - [ ] Use 1 % resistors in the PR1 and CP2 dividers.
-- [ ] Every pin below 5.5 V at the highest input (OV trip 6.31 V max: PR1 1.81 V, CP2 1.47 V, OV 1.10 V).
+- [ ] Every pin below 5.5 V at the highest input (OV trip 6.31 V max: PR1 1.85 V, CP2 1.47 V, OV 1.10 V).
 - [ ] RILM between 18 and 100 kΩ.
-- [ ] Update DEC-031 / DEC-032 and spec 4.7 if a value changes.
+- [ ] Update DEC-031 to DEC-034 and spec 4.7 if a value changes.

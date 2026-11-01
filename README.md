@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.22, 2026-11-02): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.23, 2026-11-02): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -146,7 +146,7 @@ Peripheral allocations agreed with the software team (DEC-014, DEC-018). Pins ar
 - The software team answered the integration questions on 2026-10-24 (spec rev 0.13, DEC-019 to DEC-022). The human owner changed their servo answer: the servos plug into 3-pin headers on an on-board 6 V rail, and the UBEC plugs into a board-mount XT30 (DEC-019). The XT30 carries up to 10 A continuous and 15 A peak; its rating is not checked (OPEN-021).
 - GPS1 is a 10-pin full GPS port (DEC-021). PC1 stays reserved for an analog power module (DEC-023). No ESC current sense or telemetry (IF-052, IF-053 removed). The connector pinouts are not checked against the Pixhawk standard yet. The PM02D connector will be a CLIK-Mate to match its cable; the power sheet still draws JST-GH (OPEN-023).
 - The team's ESCs are 4 × Skywalker 80A V2. No source says they support DShot. With PWM, the motors may keep running after an H743 hang, which conflicts with FUN-002 and SAF-015. Asked the team in D13 (OPEN-017).
-- USB powers the board and all external 5 V ports on the bench, through the TPS2121 power mux, which blocks reverse current (DEC-029). The VBUS budget is open (OPEN-006), and the PM02D gets priority through a PR1 divider. With the CP2 divider from VBUS (XCOMP, 5 µs switchover), USB takes over when the PM02D falls below about 4.05 V at VBUS 5.0 V (DEC-031 to DEC-033).
+- USB powers the board and all external 5 V ports on the bench, through the TPS2121 power mux, which blocks reverse current (DEC-029). The VBUS budget is open (OPEN-006), and the PM02D gets priority through a PR1 divider. With the CP2 divider from VBUS (XCOMP, 5 µs switchover), USB takes over when the PM02D falls below about 3.98 V at VBUS 5.0 V, and below 4.5 V in the worst case with 1 % resistors (DEC-031 to DEC-034).
 - PWM lines get weak pull-downs; the value must still let bidirectional DShot work (OPEN-018).
 - Sourcing risk on the sensors (OPEN-004): ICP-20100 is EOL (TDK says its pressure products are not for new designs), BMP581 stock is short, and the IST8310 lifecycle is not confirmed.
 - The magnetometer changed from BMM150 to IST8310 (DEC-011). Its absolute maximum supply is 3.6 V, so the 3.3 V rail has only 0.3 V of margin.
@@ -169,7 +169,7 @@ Peripheral allocations agreed with the software team (DEC-014, DEC-018). Pins ar
 
 ## Open Items
 
-The specification tracks OPEN-001 to OPEN-024. Closed: OPEN-002, OPEN-003, OPEN-005, OPEN-008, OPEN-012, OPEN-014, OPEN-015, OPEN-016, OPEN-020, OPEN-022. Open:
+The specification tracks OPEN-001 to OPEN-024. Closed: OPEN-002, OPEN-003, OPEN-005, OPEN-008, OPEN-012, OPEN-014, OPEN-015, OPEN-016, OPEN-020, OPEN-022, OPEN-024. Open:
 
 - MCU pins: pinmap review 0.3 answered by the team, not in the schematic yet (OPEN-001)
 - Sensor electrical data and sourcing (OPEN-004)
@@ -183,7 +183,6 @@ The specification tracks OPEN-001 to OPEN-024. Closed: OPEN-002, OPEN-003, OPEN-
 - BMP384 fallback fit (OPEN-019)
 - On-board servo rail: XT30 rating, copper and GND (OPEN-021)
 - External connector pinouts and the PM02D connector (OPEN-023)
-- Power mux switch point: with 1 % resistors the worst case is about 4.52 V, just above the 4.5 V input minimum; resistor tolerance or R101 value to choose (OPEN-024)
 
 ## How we work
 

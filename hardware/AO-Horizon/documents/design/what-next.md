@@ -11,7 +11,7 @@ The board is split into design zones. Each zone below has its own to-do list.
 
 | Zone | Sheet | State | Main open items |
 | ---- | ----- | ----- | --------------- |
-| Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, 2026-10-31); eFuse replaced by the TPS2121 power mux (2026-11-01); ERC and review open | P2-019, P2-020, OPEN-024, OPEN-006, OPEN-011, OPEN-023 |
+| Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, 2026-10-31); eFuse replaced by the TPS2121 power mux (2026-11-01); ERC and review open | P2-019, P2-020, OPEN-006, OPEN-011, OPEN-023 |
 | Z2 Servo power rail (6 V bus, XT30) | Not drawn | Not started | OPEN-007, OPEN-021, P2-016 |
 | Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | Not drawn | Pins allocated (P1-001), not drawn | P1-001, P1-006 to P1-008, P1-014 |
 | Z4 F100 IO MCU (px4io) | Not drawn | Pins allocated (P1-002), not drawn | P1-002, P1-014, P2-014 |
@@ -28,12 +28,12 @@ The board is split into design zones. Each zone below has its own to-do list.
 - [x] TPS259251DRC eFuse change and the spec 0.18 docs pass merged to `main` in PR #30 (`cce0b2b`).
 - [x] Power sheet close-out, spec 0.19 and the generated outputs merged to `main` in PR #31 (`2d90af3`); `main` merged back into `dev` (`6ff99b7`, not pushed yet).
 - [x] Spec 0.20 docs pass committed and pushed (`34fe1e0`).
-- [ ] Commit and push the power mux change (2 commits: schematic and library, then docs) after approval (2026-11-01).
-- [ ] `documents/export_jobset.log` stays untracked: ignore it or delete it.
+- [x] Power mux change committed and pushed to `dev` (`c96f688`, `787a6bc`); DEC-033 and spec 0.22 pushed (`375164c`, `d2ac274`, `69c0fda`).
+- [x] `export_jobset.log` is committed (`f682a10`).
 
 ## 2. Zone Z1: Power supply (`power_supplies.kicad_sch`)
 
-Capture declared complete on 2026-10-31; 5 V input changed to the TPS2121 power mux on 2026-11-01. See spec 4.3 "Schematic state" (41 parts, rev 0.22) and P2-019, P2-020 for the findings.
+Capture declared complete on 2026-10-31; 5 V input changed to the TPS2121 power mux on 2026-11-01. See spec 4.3 "Schematic state" (41 parts, rev 0.23) and P2-019, P2-020 for the findings.
 
 Done:
 - [x] TPS2121 power mux replaces the eFuse (DEC-029, 2026-11-01): PM02D on IN1, USB VBUS on IN2, reverse blocking on both. Limit 1.5 A (DEC-030, R109 80.6 kΩ: 1.0 / 1.5 / 2.0 A). OV trip 6.08 V. Checked against TI SLVSEA3F (2026-11-01).
@@ -46,9 +46,9 @@ Done:
 - [x] Footprints on every part (2026-10-31).
 
 Open:
-- [x] PM02D priority and XCOMP fast switchover (DEC-031, DEC-032, 2026-11-01): PR1 12.4 kΩ / 5 kΩ, CP2 R105 16.5 kΩ / R106 5 kΩ from `VBUS`.
+- [x] PM02D priority and XCOMP fast switchover (DEC-031, DEC-032, 2026-11-01): CP2 R105 16.5 kΩ / R106 5 kΩ from `VBUS`.
 - [x] R105 (CP2 16.5 kΩ) fitted, XCOMP is the default (DEC-033, 2026-11-01).
-- [ ] Pick the PR1/CP2 resistor tolerance: keep 1 % (4.52 V worst case), 0.5 % (4.45 V) or R101 12.1 kΩ (4.44 V) (OPEN-024).
+- [x] R101 12.1 kΩ: worst-case XCOMP switch point 4.44 V with 1 % resistors (DEC-034, 2026-11-02; OPEN-024 closed).
 - [ ] Read `AO-HORIZON_POWER_MUX_NOTES_EN.md`: the four mux modes and how each resistor is calculated, step by step.
 - [ ] Add a `PWR_FLAG` or the USB connector for `VBUS`, or expect an ERC error (P2-019).
 - [ ] Fill MFR, MFR.P/N and LCSC on D104, R101 to R111, C105, C112, C119 (P2-019); check U101 LCSC C485916 against TPS2121RUXR. Passive part numbers: your choice, later. C119 (LDO NR) needs a low-leakage dielectric (TI: C0G).
