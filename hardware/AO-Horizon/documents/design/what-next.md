@@ -11,7 +11,7 @@ The board is split into design zones. Each zone below has its own to-do list.
 
 | Zone | Sheet | State | Main open items |
 | ---- | ----- | ----- | --------------- |
-| Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, 2026-10-31); eFuse replaced by the TPS2121 power mux (2026-11-01); mux status LED, OV and ST dividers, input capacitors and LDO enable from PG set (2026-11-03); ERC run and `sch-review` done, P2-019 closed (2026-11-03) | P2-021, OPEN-006, OPEN-023, OPEN-025, P4-012 to P4-015 |
+| Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, 2026-10-31); eFuse replaced by the TPS2121 power mux (2026-11-01); mux status LED, OV and ST dividers, input capacitors and LDO enable from PG set (2026-11-03); ERC run and `sch-review` done, P2-019 closed, 5 V budget closed (2026-11-03); CN101 to CLIK-Mate | DEC-042, OPEN-023, OPEN-025 |
 | Z2 Servo power rail (6 V bus, XT30) | Not drawn | Not started | OPEN-007, OPEN-021, P2-016 |
 | Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | Not drawn | Pins allocated (P1-001), not drawn | P1-001, P1-006 to P1-008, P1-014 |
 | Z4 F100 IO MCU (px4io) | Not drawn | Pins allocated (P1-002), not drawn | P1-002, P1-014, P2-014 |
@@ -24,24 +24,14 @@ The board is split into design zones. Each zone below has its own to-do list.
 Done items live in Git history and the changelog.
 
 - [ ] `block_diagram.kicad_sch`: the working copy holds only its title text; the drawing is gone. Keep it cleared on purpose, or restore it from Git.
-- [ ] Review and squash-merge draft PR #34 (spec 0.25 to 0.31), then merge `main` back into `dev`.
+- [ ] Review and squash-merge draft PR #34 (spec 0.25 to 0.32), then merge `main` back into `dev`.
 
 ## 2. Zone Z1: Power supply (`power_supplies.kicad_sch`)
 
-Schematic done for now: ERC run, `sch-review` done, P2-019 closed (2026-11-03). State and decisions: spec 4.3 (53 parts, rev 0.31), DEC-029 to DEC-041.
+Schematic done for now: ERC run, `sch-review` done, P2-019 closed (2026-11-03). State and decisions: spec 4.3 (53 parts, rev 0.32), DEC-029 to DEC-042.
 
 Open:
-- [ ] PM02D connector, JST-GH as drawn or CLIK-Mate (reopened 2026-11-03, OPEN-023, P2-015). Decide before PCB placement: ask the team which cable they have, and check the contact rating against about 0.75 A per pin.
-- [ ] GPS, ELRS and MS4525DO 5 V currents from the team, to close the 5 V budget (OPEN-006).
-- [ ] Resistor MFR, MFR.P/N and LCSC (P2-021): your choice, later. Use 1 % parts in the PR1, CP2, OV and ST dividers.
-- [ ] Read `AO-HORIZON_POWER_MUX_NOTES_EN.md`: the four mux modes and how each resistor is calculated, step by step.
-- [ ] In later reviews, look for two outputs on one net by hand: the ERC pin map no longer flags it (DEC-041).
-
-Bench, after the board is built:
-- [ ] On USB, measure ST and check D103 is fully off, cold and warm (P4-012, OPEN-025).
-- [ ] Hot-plug the PM02D and scope `PM02_5V` and `+5V`; check the tantalum after repeated plugs (P4-013, DEC-037).
-- [ ] On a USB-C port above 1 A with all external devices, check `+5V` (P4-014, DEC-038).
-- [ ] Scope `+3V3` and `+3V3A` at power-up; IMUs answer after every cold start (P4-015, DEC-039).
+- [ ] Change CN101 to the 6-pin 2.00 mm CLIK-Mate (DEC-042); save and tell Claude to check it.
 
 ## 3. Zone Z2: Servo power rail
 
@@ -114,7 +104,18 @@ Pinmap review 0.3 and the integration answers are applied (spec rev 0.12 to 0.14
 - [ ] After the reply: ask Claude to apply it to the spec, power budget and checklist.
 - [ ] Team bench tests, not hardware work: RC-loss failsafe over ELRS MAVLink (S5); ESC on signal loss (OPEN-017, P4-011); servo current and stall current (OPEN-007).
 
-## 10. Team website
+## 10. Before the BOM
+
+- [ ] Resistor MFR, MFR.P/N and LCSC on the power sheet (P2-021). Use 1 % parts in the PR1, CP2, OV and ST dividers.
+
+## 11. Bench, after the board is built
+
+- [ ] On USB, measure ST and check D103 is fully off, cold and warm (P4-012, OPEN-025).
+- [ ] Hot-plug the PM02D and scope `PM02_5V` and `+5V`; check the tantalum after repeated plugs (P4-013, DEC-037).
+- [ ] On a USB-C port above 1 A with all external devices, check `+5V` (P4-014, DEC-038).
+- [ ] Scope `+3V3` and `+3V3A` at power-up; IMUs answer after every cold start (P4-015, DEC-039).
+
+## 12. Team website
 
 From `web/HANDOFF.md`. The site follows the records; a design change still goes into the spec first.
 
