@@ -14580,7 +14580,7 @@
 		(dnp no)
 		(uuid "b24b3d06-2b93-4066-b810-bad4c4886a9c")
 		(property "Reference" "CN101"
-			(at 46.99 69.85 0)
+			(at 39.37 74.93 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -14589,8 +14589,8 @@
 				)
 			)
 		)
-		(property "Value" "SM06B-GHS-TB"
-			(at 43.18 72.39 0)
+		(property "Value" "MOLEX 5024940670"
+			(at 44.45 72.39 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -14599,7 +14599,7 @@
 				)
 			)
 		)
-		(property "Footprint" "0_Conn_JST:JST_GH_SM06B-GHS-TB_1x06-1MP_P1.25mm_Horizontal"
+		(property "Footprint" "0_Conn_Molex:Molex_CLIK-Mate_502494-0670_1x06-1MP_P2.00mm_Horizontal"
 			(at 46.99 81.28 0)
 			(hide yes)
 			(show_name no)
@@ -14610,7 +14610,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.molex.com/content/dam/molex/molex-dot-com/products/automated/en-us/salesdrawingpdf/502/502494/5024940670_sd.pdf?inline\\"
 			(at 46.99 81.28 0)
 			(hide yes)
 			(show_name no)
@@ -14621,7 +14621,7 @@
 				)
 			)
 		)
-		(property "Description" "CONN HEADER SMD R/A 6POS 1.25mm"
+		(property "Description" "CONN HEADER SMD R/A 2mm"
 			(at 46.99 81.28 0)
 			(hide yes)
 			(show_name no)
@@ -14632,7 +14632,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C133065"
+		(property "LCSC" "C587930"
 			(at 46.99 81.28 0)
 			(hide yes)
 			(show_name no)
@@ -14643,7 +14643,7 @@
 				)
 			)
 		)
-		(property "MFR" "JST"
+		(property "MFR" "MOLEX"
 			(at 46.99 81.28 0)
 			(hide yes)
 			(show_name no)
@@ -14654,7 +14654,7 @@
 				)
 			)
 		)
-		(property "MFR.P/N" "SM06B-GHS-TB(LF)(SN)"
+		(property "MFR.P/N" "5024940670"
 			(at 46.99 81.28 0)
 			(hide yes)
 			(show_name no)
