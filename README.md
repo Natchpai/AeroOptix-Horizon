@@ -29,7 +29,8 @@ The team website, [natchpai.github.io/AeroOptix-Horizon](https://natchpai.github
 
 | Parameter | Specification |
 |---|---|
-| Main / IO MCU | STM32H743VIT6 / STM32F100C8T6B (px4io) |
+| Main MCU | STM32H743VIT6 |
+| IO MCU | STM32F100C8T6B (px4io) |
 | Clocks | H743 16 MHz, F100 24 MHz crystal |
 | Outputs | 4 motors (H743), 8 servos (F100, 50 Hz PWM), 3 spare (H743) |
 | Sensors | 2× ICM-45686, ICP-20100 + BMP581 (BMP384 fallback), IST8310 |
