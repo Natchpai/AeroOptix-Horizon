@@ -1,8 +1,8 @@
 # AeroOptix-Horizon: TPS2121 Power Mux Notes
 
-**Revision:** 0.4
+**Revision:** 0.6
 **Updated:** 2026-11-03
-**Status:** Design note for reading and re-calculation. Not a requirement or verification record. Decisions live in the spec (DEC-029 to DEC-034; OPEN-024 closed; OPEN-025 open).
+**Status:** Design note for reading and re-calculation. Not a requirement or verification record. Decisions live in the spec (DEC-029 to DEC-037, PWR-015; references as in the 17:11 save, 2026-11-03; OPEN-024 closed; OPEN-025 open).
 **Source:** TI TPS212x datasheet SLVSEA3F (August 2020), NotebookLM notebook `TPS212x 2.8-V to 22-V Priority Power MUX with Seamless Switchover`, read as source fulltext. TI values are `VERIFIED`; calculated values are `ESTIMATED`, before resistor tolerance.
 
 ## 1. What the mux does on this board
@@ -120,7 +120,9 @@ Not used on this board: it needs a reference part. Not checked further.
 
 The channel turns off when its OV pin reaches VREF.
 
-- `Vov = 1.06 V × k`. With 23.7 kΩ / 5 kΩ (k = 5.74): 6.08 V typ, 5.80 to 6.31 V over the VREF range. Same values as TI equation 6.
+- `Vov = 1.06 V × k`. With 23.2 kΩ / 5 kΩ (k = 5.64, DEC-036): 5.98 V typ, 5.70 to 6.20 V over the VREF range, 5.60 to 6.31 V with 1 % resistors. The channel turns back on below `1.04 V × k` = 5.87 V typ (VREF falling 0.99 / 1.04 / 1.09 V).
+- Window: the lowest trip must stay above the 5.5 V input maximum (PWR-010). `+5V` stays below 5.5 V in normal operation (PWR-015); the OV trip is a fault guard. 23.2 kΩ is the lowest E96 value that meets 5.5 V in the worst case (22.6 kΩ gives 5.48 V).
+- Was 23.7 kΩ (6.08 V typ) until 2026-11-02, then 21.5 kΩ, which could trip at 5.27 V.
 
 ### 5.6 Current limit (ILIM)
 
@@ -139,11 +141,11 @@ The channel turns off when its OV pin reaches VREF.
 | --- | ----- | ----- | -------- |
 | PR1 | R101 from `PM02_5V`, R102 to `GND` | 12.1 kΩ / 5 kΩ | DEC-031, DEC-034 |
 | CP2 | R105 from `VBUS`, R106 to `GND` | 16.5 kΩ / 5 kΩ (R105 fitted) | DEC-032, DEC-033 |
-| OV1 | R103 from `PM02_5V`, R104 to `GND` | 23.7 kΩ / 5 kΩ | Drawn |
-| OV2 | R107 from `VBUS`, R108 to `GND` | 23.7 kΩ / 5 kΩ | Drawn |
-| ILIM | R109 to `GND` | 80.6 kΩ (1.5 A) | DEC-030 |
-| SS | C105 to `GND` | 10 nF | Drawn |
-| ST | pull-up to `+5V`; drives the Q101 gate, which switches the D103 status LED (lit for IN1, off for IN2) | pull-up value left to the human owner (TI recommends 6 to 20 kΩ) | Drawn 2026-11-03, OPEN-025 |
+| OV1 | R103 from `PM02_5V`, R104 to `GND` | 23.2 kΩ / 5 kΩ | DEC-036 |
+| OV2 | R107 from `VBUS`, R108 to `GND` | 23.2 kΩ / 5 kΩ | DEC-036 |
+| ILIM | R112 to `GND` | 80.6 kΩ (1.5 A) | DEC-030 |
+| SS | C108 to `GND` | 10 nF | Drawn |
+| ST | R109 from `+5V`, R110 to `GND`; drives the Q101 gate (2SK3018W), which switches the D103 status LED (lit for IN1, off for IN2) | 10 kΩ / 10 kΩ: ST 2.23 to 3.19 V when high; R109 is the 6 to 20 kΩ pull-up TI asks for | DEC-035, DEC-036 |
 
 **Switching between modes on the board:** fit R105 for XCOMP (5 µs). Leave R105 off for VREF mode (100 µs): R106 then pulls CP2 to `GND`. No other part changes. R105 is fitted in the saved file, so the default build is XCOMP (DEC-033).
 

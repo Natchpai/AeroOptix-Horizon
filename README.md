@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.24, 2026-11-03): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.30, 2026-11-03): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -42,7 +42,7 @@ The team website, [natchpai.github.io/AeroOptix-Horizon](https://natchpai.github
 | IMU | 2× SPI, ICM-45686 |
 | Barometer | 2× I2C, ICP-20100 + BMP581 (BMP384 fallback) |
 | Magnetometer | 1× I2C, iSentek IST8310 (DEC-011, replaced BMM150) |
-| Board input | 5 V from power module, 4.5 to 5.5 V, 2 A source; TPS2121 power mux with USB VBUS as the second input, current limit 1.5 A (DEC-029, DEC-030) |
+| Board input | 5 V from power module, 4.5 to 5.5 V, 2 A source; TPS2121 power mux with USB VBUS as the second input, current limit 1.5 A (DEC-029, DEC-030); `+5V` stays below 5.5 V in normal operation, overvoltage cut-off 5.6 to 6.3 V (PWR-015, DEC-036) |
 | 3.3 V rail | TPS62142RGTR buck from 5 V, 2 A part (load current `TBD`) |
 | 3.3 V IMU rail (`+3V3A`) | Feeds only the 2 IMUs, VDD and VDDIO (DEC-025); TPS73533DRBR LDO (DEC-027) |
 | Servo supply | 6 V from a UBEC into a board-mount XT30 and the on-board servo rail, 10 A continuous, 15 A instantaneous (XT30 rating and protection `TBD`, OPEN-021) |
@@ -100,7 +100,7 @@ State of the saved KiCad files on 2026-11-03. Details are in the specification (
 
 | Area | State |
 |---|---|
-| Schematic | Only `power_supplies.kicad_sch` has parts (47; 2 DNP diodes not annotated): power module connector with TVS and I2C ESD, TPS2121 power mux (power module and USB VBUS in), TPS62142RGTR buck behind a 0.33 µH input inductor, TPS73533DRBR LDO, a 3.3 V LED, and a power mux status LED switched by a small MOSFET from the mux ST pin (drawn, not decided, OPEN-025). The human owner declared the sheet's capture complete on 2026-10-31 and replaced the eFuse with the power mux on 2026-11-01. The power mux values match TI data; the PM02D has priority through a PR1 divider, with a CP2 divider from VBUS for the 5 µs fast switchover (DEC-031, DEC-032). Open findings: `VBUS` with no source until the USB sheet is drawn, missing or swapped part fields (P2-019). Resistor fields are left for the human owner to decide. The other sheets hold no parts. |
+| Schematic | Only `power_supplies.kicad_sch` has parts (53, all annotated): power module connector with TVS, bulk input capacitors (DEC-037) and I2C ESD, TPS2121 power mux (power module and USB VBUS in), TPS62142RGTR buck behind a 0.33 µH input inductor, TPS73533DRBR LDO enabled by the buck power-good so it starts after 3.3 V (DEC-039), a 3.3 V LED, and a power mux status LED switched by a small MOSFET from the mux ST pin (DEC-035). The human owner declared the sheet's capture complete on 2026-10-31 and replaced the eFuse with the power mux on 2026-11-01. The power mux values match TI data; the PM02D has priority through a PR1 divider, with a CP2 divider from VBUS for the 5 µs fast switchover (DEC-031, DEC-032). ERC was run (only the sheet pins to the other sheets are left) and a `sch-review` found no defect (2026-11-03). Power sheet findings closed (P2-019). Open: resistor part numbers (P2-021). `VBUS` has a temporary `PWR_FLAG` until the USB connector is drawn. Resistor part numbers are left for the human owner to decide. The other sheets hold no parts. |
 | PCB | No footprints. One 27 × 29 mm rectangle on `Edge.Cuts` (drawn, not decided; outline open, OPEN-009). |
 | Library | Project symbols, footprints and 3D models for the MCUs, regulators, ESD parts, connectors and passives. Sensor symbols and footprints are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked yet. A BMP581 symbol is a starting point for the second barometer, and the Bosch LGA-10 footprint pads now follow the BMP581 land pattern (not checked against the drawing). The IST8310 uses the stock KiCad symbol and `LGA-16_3x3mm_P0.5mm` footprint; its datasheet has no land pattern, so the fit is estimated. A read-only link audit found no broken links. Added since: TPS2592x eFuse symbols, the PCR0420 and 0603 inductor footprints and the STM32F100C8Tx symbol; their pin and pad counts match and their 3D models resolve (preflight check, not a link audit). |
 | ERC / DRC | Not run. |
@@ -146,12 +146,12 @@ Peripheral allocations agreed with the software team (DEC-014, DEC-018). Pins ar
 - The software team answered the integration questions on 2026-10-24 (spec rev 0.13, DEC-019 to DEC-022). The human owner changed their servo answer: the servos plug into 3-pin headers on an on-board 6 V rail, and the UBEC plugs into a board-mount XT30 (DEC-019). The XT30 carries up to 10 A continuous and 15 A peak; its rating is not checked (OPEN-021).
 - GPS1 is a 10-pin full GPS port (DEC-021). PC1 stays reserved for an analog power module (DEC-023). No ESC current sense or telemetry (IF-052, IF-053 removed). The connector pinouts are not checked against the Pixhawk standard yet. The PM02D connector will be a CLIK-Mate to match its cable; the power sheet still draws JST-GH (OPEN-023).
 - The team's ESCs are 4 × Skywalker 80A V2. No source says they support DShot. With PWM, the motors may keep running after an H743 hang, which conflicts with FUN-002 and SAF-015. Asked the team in D13 (OPEN-017).
-- USB powers the board and all external 5 V ports on the bench, through the TPS2121 power mux, which blocks reverse current (DEC-029). The VBUS budget is open (OPEN-006), and the PM02D gets priority through a PR1 divider. With the CP2 divider from VBUS (XCOMP, 5 µs switchover), USB takes over when the PM02D falls below about 3.98 V at VBUS 5.0 V, and below 4.5 V in the worst case with 1 % resistors (DEC-031 to DEC-034).
+- USB powers the board and all external 5 V ports on the bench, through the TPS2121 power mux, which blocks reverse current (DEC-029). USB is a bench supply: the bench USB-C port must supply more than 1 A, and on a weaker port the external devices may brown out (DEC-038). The PM02D gets priority through a PR1 divider. With the CP2 divider from VBUS (XCOMP, 5 µs switchover), USB takes over when the PM02D falls below about 3.98 V at VBUS 5.0 V, and below 4.5 V in the worst case with 1 % resistors (DEC-031 to DEC-034).
 - PWM lines get weak pull-downs; the value must still let bidirectional DShot work (OPEN-018).
 - Sourcing risk on the sensors (OPEN-004): ICP-20100 is EOL (TDK says its pressure products are not for new designs), BMP581 stock is short, and the IST8310 lifecycle is not confirmed.
 - The magnetometer changed from BMM150 to IST8310 (DEC-011). Its absolute maximum supply is 3.6 V, so the 3.3 V rail has only 0.3 V of margin.
 - BMP390 was removed because LCSC does not sell it. The team accepted BMP581 as the second barometer, with BMP384 as fallback; the fallback fit is not checked (OPEN-019).
-- The power sheet capture is complete (human owner, 2026-10-31); it is not reviewed and ERC has not run. On 2026-11-01 the human owner replaced the eFuse with a TPS2121 power mux (DEC-029): power module on IN1, USB VBUS on IN2, current limit 1.5 A (DEC-030). Its values were checked against TI data: 80.6 kΩ gives 1.0 to 1.5 to 2.0 A, both inputs turn off above about 6.1 V, and it blocks reverse current on both inputs. The 1.0 A minimum limit must cover the board and all external 5 V loads (OPEN-006). The `+3V3A` LDO is a TPS73533DRBR (DEC-027). `+3V3A` feeds only the 2 IMUs, on VDD and VDDIO (DEC-025); the SPI level match with the H743 on `+3V3` is not checked yet. The buck inductor is 3.3 µH, a value TI lists as proven (Table 9-2).
+- The power sheet capture is complete (human owner, 2026-10-31); ERC was run and a `sch-review` found no defect on 2026-11-03; this is not an approval. On 2026-11-01 the human owner replaced the eFuse with a TPS2121 power mux (DEC-029): power module on IN1, USB VBUS on IN2, current limit 1.5 A (DEC-030). Its values were checked against TI data: 80.6 kΩ gives 1.0 to 1.5 to 2.0 A, both inputs turn off above about 6.1 V, and it blocks reverse current on both inputs. The 1.0 A minimum limit must cover the board and all external 5 V loads (OPEN-006). The `+3V3A` LDO is a TPS73533DRBR (DEC-027). `+3V3A` feeds only the 2 IMUs, on VDD and VDDIO (DEC-025); the SPI level match with the H743 on `+3V3` is not checked yet. The buck inductor is 3.3 µH, a value TI lists as proven (Table 9-2).
 - Power budgets, rail tolerances, sequencing, brownout/reset thresholds and protection (reverse polarity, overvoltage, ESD, short circuit) are `TBD`.
 - Crystal parts, load capacitors and reset topology are `TBD`.
 - Firmware is owned by the software team: PX4 v1.16.2, port based on `px4/fmu-v6c`. The PX4 Matek H743-Slim board port is kept in `documents/reference/` as a pin-map reference only.
@@ -183,7 +183,7 @@ The specification tracks OPEN-001 to OPEN-025. Closed: OPEN-002, OPEN-003, OPEN-
 - BMP384 fallback fit (OPEN-019)
 - On-board servo rail: XT30 rating, copper and GND (OPEN-021)
 - External connector pinouts and the PM02D connector (OPEN-023)
-- Power mux status LED: keep or not, MOSFET rating against 5 V (OPEN-025)
+- Power mux status LED: ST low level against the MOSFET threshold, bench check (OPEN-025)
 
 ## How we work
 
