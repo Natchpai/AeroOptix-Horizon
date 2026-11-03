@@ -11,7 +11,7 @@ The board is split into design zones. Each zone below has its own to-do list.
 
 | Zone | Sheet | State | Main open items |
 | ---- | ----- | ----- | --------------- |
-| Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, 2026-10-31); eFuse replaced by the TPS2121 power mux (2026-11-01); mux status LED, OV and ST dividers, input capacitors and LDO enable from PG set (2026-11-03); ERC run and `sch-review` done, P2-019 closed, 5 V budget closed (2026-11-03); CN101 to CLIK-Mate | DEC-042, OPEN-023, OPEN-025 |
+| Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, 2026-10-31); eFuse replaced by the TPS2121 power mux (2026-11-01); mux status LED, OV and ST dividers, input capacitors and LDO enable from PG set (2026-11-03); ERC run and `sch-review` done, P2-019 closed, 5 V budget closed, CN101 is CLIK-Mate (2026-11-03) | OPEN-023, OPEN-025 |
 | Z2 Servo power rail (6 V bus, XT30) | Not drawn | Not started | OPEN-007, OPEN-021, P2-016 |
 | Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | Not drawn | Pins allocated (P1-001), not drawn | P1-001, P1-006 to P1-008, P1-014 |
 | Z4 F100 IO MCU (px4io) | Not drawn | Pins allocated (P1-002), not drawn | P1-002, P1-014, P2-014 |
@@ -24,14 +24,11 @@ The board is split into design zones. Each zone below has its own to-do list.
 Done items live in Git history and the changelog.
 
 - [ ] `block_diagram.kicad_sch`: the working copy holds only its title text; the drawing is gone. Keep it cleared on purpose, or restore it from Git.
-- [ ] Review and squash-merge draft PR #34 (spec 0.25 to 0.32), then merge `main` back into `dev`.
+- [ ] Review and squash-merge draft PR #34 (spec 0.25 to 0.33), then merge `main` back into `dev`.
 
-## 2. Zone Z1: Power supply (`power_supplies.kicad_sch`)
+## 2. Zone Z1: Power supply
 
-Schematic done for now: ERC run, `sch-review` done, P2-019 closed (2026-11-03). State and decisions: spec 4.3 (53 parts, rev 0.32), DEC-029 to DEC-042.
-
-Open:
-- [ ] Change CN101 to the 6-pin 2.00 mm CLIK-Mate (DEC-042); save and tell Claude to check it.
+Done (2026-11-03). See spec 4.3 and DEC-029 to DEC-042. Resistor fields: section "Before the BOM"; bench checks: section "Bench".
 
 ## 3. Zone Z2: Servo power rail
 
@@ -90,6 +87,7 @@ Not drawn.
 - [ ] PWM pull-downs: pick the value so bidirectional DShot still works on the motor lines (P2-013, OPEN-018).
 - [ ] Spare outputs PD14, PD15, PE9: pads only.
 - [ ] PM02D label (INA228 at 0x45, or INA226 at 0x41): asked in the integration questions parts table.
+- [ ] CN101 CLIK-Mate pin order (1-2 5 V, 3 SCL, 4 SDA, 5-6 GND) against the PM02D cable and DS-009 (OPEN-023).
 
 ## 8. Zone Z7: PCB and mechanical
 

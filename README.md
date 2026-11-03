@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.32, 2026-11-03): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.33, 2026-11-03): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -89,7 +89,7 @@ State of the saved KiCad files on 2026-11-03. Details: specification 4.3 and 4.6
 
 | Area | State |
 |---|---|
-| Power sheet | Drawn, 53 parts. ERC run by the human owner (only sheet pins to other sheets left) and a `sch-review` found no defect (2026-11-03; not an approval). Open: CN101 to CLIK-Mate (DEC-042), resistor part numbers (P2-021). |
+| Power sheet | Drawn, 53 parts. ERC run by the human owner (only sheet pins to other sheets left) and a `sch-review` found no defect (2026-11-03; not an approval). Open: resistor part numbers (P2-021). |
 | Other sheets | No parts yet. |
 | PCB | No footprints; 27 × 29 mm placeholder outline (OPEN-009). |
 | Library | Project symbols, footprints and 3D models for the parts in use. Sensor footprints are starting points, not checked against the drawings (OPEN-013). |
@@ -155,7 +155,7 @@ The specification tracks OPEN-001 to OPEN-025. Still open:
 - Board outline (OPEN-009) and remaining part numbers (OPEN-010)
 - `+3V3A` start-up on the bench (OPEN-011)
 - Motor stop with PWM-only ESCs (OPEN-017) and PWM pull-downs (OPEN-018)
-- Connector pinouts; PM02D CLIK-Mate not drawn yet (OPEN-023, DEC-042)
+- Connector pinouts, including the PM02D CLIK-Mate pin order (OPEN-023)
 - Status LED ST level on the bench (OPEN-025)
 
 ## How we work
