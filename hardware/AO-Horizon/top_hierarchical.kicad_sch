@@ -5,7 +5,7 @@
 	(uuid "25bf9015-2d31-436d-bf0f-5dbf0bf9c72d")
 	(paper "A3")
 	(title_block
-		(rev "1.0")
+		(rev "A")
 		(comment 1 "Top Hierarchical")
 	)
 	(lib_symbols)
