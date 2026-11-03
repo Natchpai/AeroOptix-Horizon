@@ -4132,7 +4132,7 @@
 		)
 		(uuid "ea773c65-f18e-4fd1-b705-7cba2e43c430")
 	)
-	(text "Margin below |Z_{IN}(0)|\n= 20log(2.2/0.189) = 21.3dB"
+	(text "Margin below |Z_{IN}(0)|\n= 20log(2.2/0.22) = 20dB"
 		(exclude_from_sim no)
 		(at 86.36 214.63 0)
 		(effects
@@ -4143,16 +4143,6 @@
 			(justify left top)
 		)
 		(uuid "108e605f-a057-4bff-9ac5-69540fe02d68")
-	)
-	(text "330nH 150mR"
-		(exclude_from_sim no)
-		(at 73.66 171.45 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "16182457-fc33-48ea-9f91-b0e4b2b23f27")
 	)
 	(text "Soft-Start of the V_{OUT}"
 		(exclude_from_sim no)
@@ -4205,7 +4195,7 @@
 		)
 		(uuid "1f46549c-f5d8-4665-b0b1-2354ea572626")
 	)
-	(text "Assume the wire has L: 1 uH/m.\nR = ~sqrt(L/C)\nR = sqrt(1/18) = ~0.24Ω\nChoose 0.25R ESR"
+	(text "Assume the wire has L: 1 uH/m.\nR = ~sqrt(L/C)\nR = sqrt(1/12) = ~0.28Ω\nChoose 0.25R ESR"
 		(exclude_from_sim no)
 		(at 137.16 81.28 0)
 		(effects
@@ -4216,16 +4206,6 @@
 			(justify left top)
 		)
 		(uuid "2969cadd-530e-4d84-bf7b-49b52369609a")
-	)
-	(text "3.3nH 85mR"
-		(exclude_from_sim no)
-		(at 181.61 171.45 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "2ed1fdd4-f751-4c6a-bb38-f1709bcf96ab")
 	)
 	(text "Conv. Input Impedance"
 		(exclude_from_sim no)
@@ -4560,7 +4540,7 @@
 		)
 		(uuid "d5a012a2-9b79-4501-8d14-3b3820cf1db3")
 	)
-	(text "Z_{MAX} ~ R(1 + Q^{2}/2 - Q^{4}/8) = ~0.198Ω"
+	(text "Z_{MAX} ~ R(1 + Q^{2}/2 - Q^{4}/8) = ~0.22Ω"
 		(exclude_from_sim no)
 		(at 54.61 220.98 0)
 		(effects
@@ -4583,17 +4563,6 @@
 			)
 		)
 		(uuid "db294ad8-49aa-4080-864f-19e3f92255c6")
-	)
-	(text "Tantalum"
-		(exclude_from_sim no)
-		(at 152.4 68.58 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "dcd9c285-f7b4-43d3-9583-a75e741f5c72")
 	)
 	(text "PR1 = IN1 × 5 / (12.1 + 5)\nPR1 = 5.0 × 5 / 17.1 = 1.46 V"
 		(exclude_from_sim no)
@@ -4642,7 +4611,7 @@
 		)
 		(uuid "f25e3665-9831-486f-9e7a-9e1a6ba66f20")
 	)
-	(text "R = 1/Q x sqrt(L/C)\nR = 1/1 x sqrt(0.33/18) = ~0.14Ω\nChoose 0.15Ω DCR\nQ = 1/0.15 x sqrt(0.33/18) = 0.9"
+	(text "R = 1/Q x sqrt(L/C)\nR = 1/1 x sqrt(0.33/18) = ~0.14Ω\nChoose 0.17Ω DCR\nQ = 1/0.17 x sqrt(0.33/18) = 0.8"
 		(exclude_from_sim no)
 		(at 54.61 208.28 0)
 		(effects
@@ -15217,6 +15186,16 @@
 				)
 			)
 		)
+		(property "Note" "330nH 170mR"
+			(at 73.66 171.45 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "4bc75ad3-1a13-4d03-bd0e-afd17d2852f7")
 		)
@@ -16532,6 +16511,16 @@
 				)
 			)
 		)
+		(property "Type" "Tantalum"
+			(at 153.67 68.58 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "e939e0ba-17f8-49b3-b201-2be5471a0193")
 		)
@@ -16872,6 +16861,16 @@
 		(property "MFR.P/N" "PCR0420-3R3-M"
 			(at 181.61 168.91 90)
 			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Note" "3.3uH 85mR"
+			(at 180.34 171.45 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
