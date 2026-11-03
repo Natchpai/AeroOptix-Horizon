@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.14
-**Updated:** 2026-11-02
+**Revision:** 0.15
+**Updated:** 2026-11-03
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012), the 5 V input is a TPS2121 power mux with a 1.5 A limit (DEC-029, DEC-030) and the `+3V3A` LDO is TPS73533DRBR (DEC-027). No other rail, regulator or protection part is approved. Not a verification record.
-**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012 (closed), OPEN-021, OPEN-024 (closed) (spec rev 0.23). Decisions: DEC-010, DEC-012, DEC-016, DEC-018, DEC-019, DEC-025, DEC-026 (superseded), DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034. Checklist task: P0-017.
+**Requirement refs:** PWR-010 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012 (closed), OPEN-021, OPEN-024 (closed), OPEN-025 (spec rev 0.24). Decisions: DEC-010, DEC-012, DEC-016, DEC-018, DEC-019, DEC-025, DEC-026 (superseded), DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034. Checklist task: P0-017.
 **Decision owner:** Hardware
 
 Single record for rail loads, rail tolerances, brownout thresholds and power protection requirements.
@@ -46,7 +46,7 @@ USB VBUS (bench) -> TPS2121 mux IN2 ----------------------------^
 - `ASSUMED`: the 5 V input feeds the external connectors directly, and both 3.3 V rails come from the 5 V input.
 - 3.3 V_IMU is the `+3V3A` rail from its own LDO, and it feeds only the 2 IMUs, on VDD and VDDIO (DEC-025, human owner, 2026-10-26). The LDO is TPS73533DRBR (DEC-027, 2026-10-31).
 - USB VBUS powers the board and all external 5 V ports on the bench without the battery (team; all ports: human owner, 2026-10-24). Since 2026-11-01 the TPS2121 power mux joins USB (IN2) and the PM02D (IN1) and blocks reverse current on both channels (TI mux 9.3.6, `VERIFIED`). PR1 has a 12.1 kΩ / 5 kΩ divider from the PM02D and CP2 a 16.5 kΩ / 5 kΩ divider from `VBUS` (DEC-031 to DEC-034), so the PM02D has priority; USB takes over below about 3.98 V typ at `VBUS` 5.0 V (XCOMP) or 3.56 V typ (VREF mode, 16.5 kΩ not fitted).
-- The saved `power_supplies.kicad_sch` draws `+3V3` from the TPS62142RGTR buck (DEC-012) and `+3V3A` from the TPS73533DRBR LDO (DEC-027), both fed from `+5V`; the buck through a 0.33 µH inductor (`+5V_BUCK`). The TPS2121 power mux (U101) is wired from `PM02_5V` (IN1) and `VBUS` (IN2) to `+5V`, with ILIM 80.6 kΩ, a PR1 priority divider 12.1 kΩ / 5 kΩ, a CP2 divider 16.5 kΩ (fitted) / 5 kΩ from `VBUS`, OV dividers 23.7 kΩ / 5 kΩ on both inputs and SS 10 nF (no status LED); checked against TI mux on 2026-11-01 (sections 6 and 7). The human owner declared the sheet complete on 2026-10-31 and changed the 5 V input to the power mux on 2026-11-01. Details: spec 4.3 "Schematic state".
+- The saved `power_supplies.kicad_sch` draws `+3V3` from the TPS62142RGTR buck (DEC-012) and `+3V3A` from the TPS73533DRBR LDO (DEC-027), both fed from `+5V`; the buck through a 0.33 µH inductor (`+5V_BUCK`). The TPS2121 power mux (U101) is wired from `PM02_5V` (IN1) and `VBUS` (IN2) to `+5V`, with ILIM 80.6 kΩ, a PR1 priority divider 12.1 kΩ / 5 kΩ, a CP2 divider 16.5 kΩ (fitted) / 5 kΩ from `VBUS`, OV dividers 23.7 kΩ / 5 kΩ on both inputs and SS 10 nF; checked against TI mux on 2026-11-01 (sections 6 and 7). The human owner declared the sheet complete on 2026-10-31 and changed the 5 V input to the power mux on 2026-11-01. Since 2026-11-03 a status LED on the mux ST pin is drawn again: Q101 switches D103 from `+5V` (OPEN-025, drawn, not decided; its current is `TBD` until the resistor values are set). Details: spec 4.3 "Schematic state".
 
 ## 3. Load table
 

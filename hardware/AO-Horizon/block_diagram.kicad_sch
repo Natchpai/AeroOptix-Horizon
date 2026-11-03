@@ -5,7 +5,7 @@
 	(uuid "38746f69-69fd-48d3-b9a2-bb1ed0642194")
 	(paper "A3")
 	(title_block
-		(rev "1.0")
+		(rev "A")
 		(comment 1 "Block Diagram")
 	)
 	(lib_symbols)

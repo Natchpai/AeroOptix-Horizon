@@ -243,7 +243,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": "1.0"
+      "sch_revision": "A"
     },
     "layer_pairs": [],
     "layer_presets": [],
@@ -666,7 +666,7 @@
           "group_by": true,
           "label": "Exclude from Board",
           "name": "${EXCLUDE_FROM_BOARD}",
-          "show": true
+          "show": false
         },
         {
           "group_by": true,
@@ -678,12 +678,6 @@
           "group_by": false,
           "label": "Datasheet",
           "name": "Datasheet",
-          "show": true
-        },
-        {
-          "group_by": false,
-          "label": "MFR",
-          "name": "MFR",
           "show": false
         },
         {
@@ -706,14 +700,20 @@
         },
         {
           "group_by": false,
+          "label": "Description",
+          "name": "Description",
+          "show": true
+        },
+        {
+          "group_by": false,
           "label": "LCSC",
           "name": "LCSC",
           "show": true
         },
         {
           "group_by": false,
-          "label": "Description",
-          "name": "Description",
+          "label": "MFR",
+          "name": "MFR",
           "show": true
         },
         {
@@ -826,13 +826,14 @@
     "PCB_DRAWING_NAME": "",
     "PCB_REVIEW_DATE": "",
     "PCB_REVIEW_NAME": "",
-    "PROJECT_ID": "NP-AO-2601-V1-0",
+    "PROJECT_ID": "NP-AO-2601",
     "PROJECT_NAME": "AeroOptix - Horizon",
-    "RELEASE_DATE": "",
+    "RELEASE_DATE": "02-Nov-2026",
     "SCH_DRAWING_DATE": "01-Nov-2026",
     "SCH_DRAWING_NAME": "NATCHANON T.",
     "SCH_REVIEW_DATE": "",
-    "SCH_REVIEW_NAME": ""
+    "SCH_REVIEW_NAME": "",
+    "STATUS": "DRAFT"
   },
   "tuning_profiles": {
     "meta": {

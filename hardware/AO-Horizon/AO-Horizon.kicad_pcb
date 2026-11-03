@@ -8,7 +8,7 @@
 	)
 	(paper "A4")
 	(title_block
-		(rev "1.0")
+		(rev "A")
 		(comment 1 "PCB LAYOUT")
 	)
 	(layers
@@ -143,13 +143,14 @@
 	(property "PCB_DRAWING_NAME" "")
 	(property "PCB_REVIEW_DATE" "")
 	(property "PCB_REVIEW_NAME" "")
-	(property "PROJECT_ID" "NP-AO-2601-V1-0")
+	(property "PROJECT_ID" "NP-AO-2601")
 	(property "PROJECT_NAME" "AeroOptix - Horizon")
-	(property "RELEASE_DATE" "")
-	(property "SCH_DRAWING_DATE" "")
-	(property "SCH_DRAWING_NAME" "")
+	(property "RELEASE_DATE" "02-Nov-2026")
+	(property "SCH_DRAWING_DATE" "01-Nov-2026")
+	(property "SCH_DRAWING_NAME" "NATCHANON T.")
 	(property "SCH_REVIEW_DATE" "")
 	(property "SCH_REVIEW_NAME" "")
+	(property "STATUS" "DRAFT")
 	(gr_rect
 		(start 144 81)
 		(end 171 110)
