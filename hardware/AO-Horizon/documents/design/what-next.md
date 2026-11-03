@@ -11,7 +11,7 @@ The board is split into design zones. Each zone below has its own to-do list.
 
 | Zone | Sheet | State | Main open items |
 | ---- | ----- | ----- | --------------- |
-| Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, 2026-10-31); eFuse replaced by the TPS2121 power mux (2026-11-01); mux status LED drawn again (2026-11-03); ERC and review open | P2-019, P2-020, OPEN-006, OPEN-011, OPEN-023, OPEN-025 |
+| Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, 2026-10-31); eFuse replaced by the TPS2121 power mux (2026-11-01); mux status LED, OV and ST dividers and input capacitors set (2026-11-03); ERC and review open | P2-019, P2-020, OPEN-006, OPEN-011, OPEN-023, OPEN-025 |
 | Z2 Servo power rail (6 V bus, XT30) | Not drawn | Not started | OPEN-007, OPEN-021, P2-016 |
 | Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | Not drawn | Pins allocated (P1-001), not drawn | P1-001, P1-006 to P1-008, P1-014 |
 | Z4 F100 IO MCU (px4io) | Not drawn | Pins allocated (P1-002), not drawn | P1-002, P1-014, P2-014 |
@@ -32,45 +32,50 @@ The board is split into design zones. Each zone below has its own to-do list.
 - [x] `export_jobset.log` is committed (`f682a10`).
 - [x] Power mux and spec 0.20 to 0.23 merged to `main` in PR #32 (`989fd25`).
 - [x] Status LED, part fields, rev A title blocks and spec 0.24 merged to `main` in PR #33 (`cc35983`); `main` merged back into `dev` (`6f8f20a`).
-- [x] Q101 VGS ratings (spec 0.25, `ddde444`) and README sync (`030e151`) pushed to `dev`; not in a PR yet.
+- [x] Q101 VGS ratings (spec 0.25, `ddde444`), README sync (`030e151`), what-next (`5e82918`), OV/ST dividers and 2SK3018W (`9b493bb`) and spec 0.26 (`b625b73`) pushed to `dev`; not in a PR yet.
+- [ ] Input capacitors and `VBUS` `PWR_FLAG` (`4d55a7e`) and spec 0.27 (`f0ea22e`): committed on `dev`, not pushed.
+- [ ] Open a PR from `dev` to `main` when you want these in `main` (spec 0.25 to 0.27).
 
 ## 2. Zone Z1: Power supply (`power_supplies.kicad_sch`)
 
-Capture declared complete on 2026-10-31; 5 V input changed to the TPS2121 power mux on 2026-11-01. See spec 4.3 "Schematic state" (48 parts, rev 0.26) and P2-019, P2-020, OPEN-025 for the findings.
+Capture declared complete on 2026-10-31; 5 V input changed to the TPS2121 power mux on 2026-11-01. See spec 4.3 "Schematic state" (51 parts, rev 0.27) and P2-019, P2-020, OPEN-025 for the findings.
 
 Done:
-- [x] TPS2121 power mux replaces the eFuse (DEC-029, 2026-11-01): PM02D on IN1, USB VBUS on IN2, reverse blocking on both. Limit 1.5 A (DEC-030, R109 80.6 kΩ: 1.0 / 1.5 / 2.0 A). OV trip 6.08 V. Checked against TI SLVSEA3F (2026-11-01).
+- [x] TPS2121 power mux replaces the eFuse (DEC-029, 2026-11-01): PM02D on IN1, USB VBUS on IN2, reverse blocking on both. Limit 1.5 A (DEC-030, R112 80.6 kΩ: 1.0 / 1.5 / 2.0 A). Checked against TI SLVSEA3F (2026-11-01).
 - [x] TPS2121 library part: symbol `0_Power_Management:TPS2121RUX`, stock footprint with thermal vias, your STEP.
+- [x] PM02D priority and XCOMP fast switchover (DEC-031, DEC-032, 2026-11-01): CP2 R105 16.5 kΩ / R106 5 kΩ from `VBUS`.
+- [x] R105 (CP2 16.5 kΩ) fitted, XCOMP is the default (DEC-033, 2026-11-01).
+- [x] R101 12.1 kΩ: worst-case XCOMP switch point 4.44 V with 1 % resistors (DEC-034, 2026-11-02; OPEN-024 closed).
+- [x] `+5V` below 5.5 V in normal operation (PWR-015); OV top resistors 23.2 kΩ, trip 5.60 to 6.31 V; ST divider 10 kΩ / 10 kΩ keeps ST and the Q101 gate at 3.19 V or less (DEC-036, 2026-11-03).
+- [x] Keep the mux status LED (DEC-035, 2026-11-03).
+- [x] Q101 changed to 2SK3018W (LCSC C20069149): VGS(th) 0.8 to 1.5 V, VGS ±20 V; pin map checked (2026-11-03).
+- [x] Input capacitance on `PM02_5V`: 2 × 10 µF and a 47 µF 10 V tantalum, 0.25 Ω ESR; 10 V rating accepted (DEC-037, 2026-11-03).
+- [x] `PWR_FLAG` on `VBUS` until the USB connector is drawn (2026-11-03, P2-019).
 - [x] `3V3_DONE` sheet pin and `PM02_5V` input label (2026-11-01).
 - [x] `+3V3A` LDO: TPS73533DRBR (DEC-027, 2026-10-31).
 - [x] Buck soft-start: 10 nF, about 5 ms (DEC-028); now C112 after renumbering.
 - [x] PG renamed: local label `3V3_PG`, hierarchical label `3V3_DONE` (2026-10-31).
 - [x] TPS62142 AVIN 100 nF; 0.33 µH ASMPH-0603-R33M-T input inductor (2026-10-29).
 - [x] Footprints on every part (2026-10-31).
-- [x] D104 is LTST-C191GKT; part fields on Q101, D103, D104, C105, C112 and C119 (2026-11-03).
-- [x] Q101 changed to 2SK3018W (LCSC C20069149): VGS(th) 0.8 to 1.5 V, VGS ±20 V; pin map checked (2026-11-03).
-
-Open:
-- [x] PM02D priority and XCOMP fast switchover (DEC-031, DEC-032, 2026-11-01): CP2 R105 16.5 kΩ / R106 5 kΩ from `VBUS`.
-- [x] R105 (CP2 16.5 kΩ) fitted, XCOMP is the default (DEC-033, 2026-11-01).
-- [x] R101 12.1 kΩ: worst-case XCOMP switch point 4.44 V with 1 % resistors (DEC-034, 2026-11-02; OPEN-024 closed).
-- [ ] Read `AO-HORIZON_POWER_MUX_NOTES_EN.md`: the four mux modes and how each resistor is calculated, step by step.
-- [x] `PWR_FLAG` on `VBUS` until the USB connector is drawn (2026-11-03, P2-019).
-- [x] Keep the mux status LED (DEC-035, 2026-11-03).
-- [x] `+5V` below 5.5 V in normal operation (PWR-015); OV top resistors 23.2 kΩ, trip 5.60 to 6.31 V; ST divider 10 kΩ / 10 kΩ keeps ST and the Q101 gate at 3.19 V or less (DEC-036, 2026-11-03).
-- [x] MFR and MFR.P/N on D103 and D104 put the right way round (13:54 save).
-- [ ] Resistor MFR, MFR.P/N and LCSC: your choice, later. Use 1 % parts in the PR1, CP2, OV and ST dividers.
-- [ ] Bench: on USB, measure ST and check D103 is fully off, cold and warm (P4-012, OPEN-025).
+- [x] D104 is LTST-C191GKT; part fields on Q101, D103, D104, C105, C112 and C119; MFR and MFR.P/N on D103 and D104 the right way round (2026-11-03).
 - [x] LCSC codes on all fitted parts match their MPN on the LCSC pages (2026-11-03); C22400107 is C0G, so C119 (LDO NR) gets a low-leakage dielectric.
+
+Open, in the order we are working through them:
+- [ ] Step 7: change the PM02D connector from JST-GH to a 6-pin 2.00 mm CLIK-Mate (decided 2026-10-24, OPEN-023, P2-015). Next.
+- [ ] Step 8: check the 5 V load against the 1.5 A limit (1.0 A minimum) and the USB port: USB feeds all external 5 V ports (OPEN-006).
+- [ ] Step 9: `+3V3A` follow-ups (OPEN-011): check the IMU SPI levels against the H743 on `+3V3`, and the power-up order.
+- [ ] Step 10: check the 3.3 µH PCR0420-3R3-M saturation current and the 3 × 10 µF output against TI Table 9-2, and the damping of the 0.33 µH input filter.
+- [ ] Step 11: run ERC, then ask Claude for a `sch-review` of `power_supplies.kicad_sch`.
+
+Open, any time:
+- [ ] Annotate the three new `C?` input capacitors (before ERC).
+- [ ] Resistor MFR, MFR.P/N and LCSC: your choice, later. Use 1 % parts in the PR1, CP2, OV and ST dividers.
 - [ ] Unused `DMG1012UW` symbol in the library: keep or remove.
-- [x] Input capacitance on `PM02_5V`: 2 × 10 µF and a 47 µF 10 V tantalum, 0.25 Ω ESR (DEC-037, 2026-11-03).
-- [ ] Annotate the three new `C?` input capacitors.
-- [ ] Bench: hot-plug the PM02D and scope `PM02_5V` (P4-013).
-- [ ] Change the PM02D connector from JST-GH to a 6-pin 2.00 mm CLIK-Mate (decided 2026-10-24, OPEN-023, P2-015).
-- [ ] Check the 5 V load against the 1.5 A limit (1.0 A minimum) and the USB port: USB feeds all external 5 V ports (OPEN-006).
-- [ ] `+3V3A` follow-ups (OPEN-011): check the IMU SPI levels against the H743 on `+3V3`, and the power-up order.
-- [ ] Check the 3.3 µH PCR0420-3R3-M saturation current and the 3 × 10 µF output against TI Table 9-2, and the damping of the 0.33 µH input filter.
-- [ ] Run ERC, then ask Claude for a `sch-review` of `power_supplies.kicad_sch`.
+- [ ] Read `AO-HORIZON_POWER_MUX_NOTES_EN.md`: the four mux modes and how each resistor is calculated, step by step.
+
+Bench, after the board is built:
+- [ ] On USB, measure ST and check D103 is fully off, cold and warm (P4-012, OPEN-025).
+- [ ] Hot-plug the PM02D and scope `PM02_5V` and `+5V`; check the tantalum after repeated plugs (P4-013, DEC-037).
 
 ## 3. Zone Z2: Servo power rail
 
