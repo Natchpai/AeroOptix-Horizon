@@ -1,8 +1,8 @@
 # AeroOptix-Horizon: TPS2121 Power Mux Notes
 
-**Revision:** 0.3
-**Updated:** 2026-11-02
-**Status:** Design note for reading and re-calculation. Not a requirement or verification record. Decisions live in the spec (DEC-029 to DEC-034; OPEN-024 closed).
+**Revision:** 0.4
+**Updated:** 2026-11-03
+**Status:** Design note for reading and re-calculation. Not a requirement or verification record. Decisions live in the spec (DEC-029 to DEC-034; OPEN-024 closed; OPEN-025 open).
 **Source:** TI TPS212x datasheet SLVSEA3F (August 2020), NotebookLM notebook `TPS212x 2.8-V to 22-V Priority Power MUX with Seamless Switchover`, read as source fulltext. TI values are `VERIFIED`; calculated values are `ESTIMATED`, before resistor tolerance.
 
 ## 1. What the mux does on this board
@@ -143,7 +143,7 @@ The channel turns off when its OV pin reaches VREF.
 | OV2 | R107 from `VBUS`, R108 to `GND` | 23.7 kΩ / 5 kΩ | Drawn |
 | ILIM | R109 to `GND` | 80.6 kΩ (1.5 A) | DEC-030 |
 | SS | C105 to `GND` | 10 nF | Drawn |
-| ST | to `GND` | not used | Drawn |
+| ST | pull-up to `+5V`; drives the Q101 gate, which switches the D103 status LED (lit for IN1, off for IN2) | pull-up value left to the human owner (TI recommends 6 to 20 kΩ) | Drawn 2026-11-03, OPEN-025 |
 
 **Switching between modes on the board:** fit R105 for XCOMP (5 µs). Leave R105 off for VREF mode (100 µs): R106 then pulls CP2 to `GND`. No other part changes. R105 is fitted in the saved file, so the default build is XCOMP (DEC-033).
 

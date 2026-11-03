@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.23, 2026-11-02): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.24, 2026-11-03): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -96,11 +96,11 @@ The diagram is for reference only. It does not enforce gates or approve releases
 
 ### Design progress
 
-State of the saved KiCad files on 2026-10-31. Details are in the specification (4.3 "Schematic state", 4.6 "Library state").
+State of the saved KiCad files on 2026-11-03. Details are in the specification (4.3 "Schematic state", 4.6 "Library state").
 
 | Area | State |
 |---|---|
-| Schematic | Only `power_supplies.kicad_sch` has parts (41; 2 DNP diodes not annotated): power module connector with TVS and I2C ESD, TPS2121 power mux (power module and USB VBUS in), TPS62142RGTR buck behind a 0.33 µH input inductor, TPS73533DRBR LDO, and a 3.3 V LED. The human owner declared the sheet's capture complete on 2026-10-31 and replaced the eFuse with the power mux on 2026-11-01. The power mux values match TI data; the PM02D has priority through a PR1 divider, with a CP2 divider from VBUS for the 5 µs fast switchover (DEC-031, DEC-032). Open findings: unannotated diodes, `VBUS` with no source until the USB sheet is drawn, missing part fields (P2-019). The other sheets hold no parts. |
+| Schematic | Only `power_supplies.kicad_sch` has parts (47; 2 DNP diodes not annotated): power module connector with TVS and I2C ESD, TPS2121 power mux (power module and USB VBUS in), TPS62142RGTR buck behind a 0.33 µH input inductor, TPS73533DRBR LDO, a 3.3 V LED, and a power mux status LED switched by a small MOSFET from the mux ST pin (drawn, not decided, OPEN-025). The human owner declared the sheet's capture complete on 2026-10-31 and replaced the eFuse with the power mux on 2026-11-01. The power mux values match TI data; the PM02D has priority through a PR1 divider, with a CP2 divider from VBUS for the 5 µs fast switchover (DEC-031, DEC-032). Open findings: `VBUS` with no source until the USB sheet is drawn, missing or swapped part fields (P2-019). Resistor fields are left for the human owner to decide. The other sheets hold no parts. |
 | PCB | No footprints. One 27 × 29 mm rectangle on `Edge.Cuts` (drawn, not decided; outline open, OPEN-009). |
 | Library | Project symbols, footprints and 3D models for the MCUs, regulators, ESD parts, connectors and passives. Sensor symbols and footprints are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked yet. A BMP581 symbol is a starting point for the second barometer, and the Bosch LGA-10 footprint pads now follow the BMP581 land pattern (not checked against the drawing). The IST8310 uses the stock KiCad symbol and `LGA-16_3x3mm_P0.5mm` footprint; its datasheet has no land pattern, so the fit is estimated. A read-only link audit found no broken links. Added since: TPS2592x eFuse symbols, the PCR0420 and 0603 inductor footprints and the STM32F100C8Tx symbol; their pin and pad counts match and their 3D models resolve (preflight check, not a link audit). |
 | ERC / DRC | Not run. |
@@ -169,7 +169,7 @@ Peripheral allocations agreed with the software team (DEC-014, DEC-018). Pins ar
 
 ## Open Items
 
-The specification tracks OPEN-001 to OPEN-024. Closed: OPEN-002, OPEN-003, OPEN-005, OPEN-008, OPEN-012, OPEN-014, OPEN-015, OPEN-016, OPEN-020, OPEN-022, OPEN-024. Open:
+The specification tracks OPEN-001 to OPEN-025. Closed: OPEN-002, OPEN-003, OPEN-005, OPEN-008, OPEN-012, OPEN-014, OPEN-015, OPEN-016, OPEN-020, OPEN-022, OPEN-024. Open:
 
 - MCU pins: pinmap review 0.3 answered by the team, not in the schematic yet (OPEN-001)
 - Sensor electrical data and sourcing (OPEN-004)
@@ -183,6 +183,7 @@ The specification tracks OPEN-001 to OPEN-024. Closed: OPEN-002, OPEN-003, OPEN-
 - BMP384 fallback fit (OPEN-019)
 - On-board servo rail: XT30 rating, copper and GND (OPEN-021)
 - External connector pinouts and the PM02D connector (OPEN-023)
+- Power mux status LED: keep or not, MOSFET rating against 5 V (OPEN-025)
 
 ## How we work
 
