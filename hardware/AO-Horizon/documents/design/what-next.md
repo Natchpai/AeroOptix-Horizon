@@ -77,7 +77,6 @@ Open, any time:
 - [x] Sheet annotated (53 parts); capacitors renumbered C101 to C125, parked diodes D105 and D106 (2026-11-03).
 - [x] C120 (LDO EN, 10 nF): GRM1555C1H103JE01D, LCSC C22400107 (16:59 save).
 - [ ] Resistor MFR, MFR.P/N and LCSC (P2-021): your choice, later. Use 1 % parts in the PR1, CP2, OV and ST dividers.
-- [ ] Unused `DMG1012UW` symbol in the library: keep or remove.
 - [ ] Read `AO-HORIZON_POWER_MUX_NOTES_EN.md`: the four mux modes and how each resistor is calculated, step by step.
 
 Bench, after the board is built:
