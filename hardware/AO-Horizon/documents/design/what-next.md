@@ -34,8 +34,8 @@ The board is split into design zones. Each zone below has its own to-do list.
 - [x] Status LED, part fields, rev A title blocks and spec 0.24 merged to `main` in PR #33 (`cc35983`); `main` merged back into `dev` (`6f8f20a`).
 - [x] Q101 VGS ratings (spec 0.25, `ddde444`), README sync (`030e151`), what-next (`5e82918`), OV/ST dividers and 2SK3018W (`9b493bb`) and spec 0.26 (`b625b73`) pushed to `dev`; not in a PR yet.
 - [x] Input capacitors and `VBUS` `PWR_FLAG` (`4d55a7e`), spec 0.27 (`f0ea22e`), what-next (`9a4571c`) and spec 0.28 with DEC-038 (`a731a83`) pushed to `dev`.
-- [ ] LDO enable from PG, ERC housekeeping (17:11 save) and spec 0.29 (DEC-039, buck check, `sch-review`): committed on `dev`, not pushed.
-- [ ] Open a PR from `dev` to `main` when you want these in `main` (spec 0.25 to 0.29).
+- [x] LDO enable from PG, ERC housekeeping (`304de41`), spec 0.29 (`dfb9f63`) and spec 0.30 (DEC-040, DEC-041, P2-019 closed) on `dev`; draft PR to `main` opened 2026-11-03.
+- [ ] Review and squash-merge the draft PR (spec 0.25 to 0.30), then merge `main` back into `dev`.
 
 ## 2. Zone Z1: Power supply (`power_supplies.kicad_sch`)
 
@@ -67,16 +67,16 @@ Open, in the order we are working through them:
 - [x] Step 8: 5 V budget (power budget rev 0.17): the PM02D path leaves about 360 to 640 mA for GPS, ELRS and airspeed (`ESTIMATED`). USB is a bench supply; the bench USB-C port shall supply more than 1 A (DEC-038, 2026-11-03). Still open: GPS, ELRS and MS4525DO currents from the team (OPEN-006).
 - [x] Step 9: `+3V3A` (OPEN-011): SPI levels match; LDO EN from `3V3_PG` (R115 0 Ω, C120 10 nF), so `+3V3A` starts after `+3V3` (DEC-039, 2026-11-03).
 - [x] Step 10: L102 PCR0420-3R3-M saturation 3.5 A covers the full 2 A rating; 3 × 10 µF output fits TI Table 9-2; 0.33 µH input filter is damped (2026-11-03, spec 4.3).
-- [ ] Decide the `+3V3` design current: L101 ASMPH-0603-R33M-T is rated 1.2 A (distributor, not checked), fine for the expected about 0.5 A buck input, too small for the full 2 A output (about 1.7 A input). Check its datasheet, or pick a bigger L101.
+- [x] `+3V3` design current about 0.6 A; L101 stays (DEC-040, 2026-11-03).
 - [ ] Get the L102 DCR from the JIERR datasheet.
 - [x] Step 11: ERC run (only hierarchical sheet pins to other sheets left, set aside); `sch-review` found no defect (2026-11-03, spec 4.3). D101 breakdown 6.4 V checked.
-- [ ] Confirm whether P2-019 can be closed (ERC and review done; L101 rating still open).
-- [ ] ERC pin map: Output to Output and Power output to Power output set to no error project-wide (17:11 save). Keep it, or fix the stacked pins in the U101 and U102 symbols and restore the errors before the MCU sheets.
+- [x] P2-019 closed (2026-11-03); resistor fields moved to P2-021.
+- [x] ERC pin map: Output to Output and Power output to Power output kept as no error project-wide (DEC-041); look for two outputs on one net in later reviews.
 
 Open, any time:
 - [x] Sheet annotated (53 parts); capacitors renumbered C101 to C125, parked diodes D105 and D106 (2026-11-03).
 - [x] C120 (LDO EN, 10 nF): GRM1555C1H103JE01D, LCSC C22400107 (16:59 save).
-- [ ] Resistor MFR, MFR.P/N and LCSC: your choice, later. Use 1 % parts in the PR1, CP2, OV and ST dividers.
+- [ ] Resistor MFR, MFR.P/N and LCSC (P2-021): your choice, later. Use 1 % parts in the PR1, CP2, OV and ST dividers.
 - [ ] Unused `DMG1012UW` symbol in the library: keep or remove.
 - [ ] Read `AO-HORIZON_POWER_MUX_NOTES_EN.md`: the four mux modes and how each resistor is calculated, step by step.
 
