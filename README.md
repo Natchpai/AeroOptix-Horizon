@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.26, 2026-11-03): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.27, 2026-11-03): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -100,7 +100,7 @@ State of the saved KiCad files on 2026-11-03. Details are in the specification (
 
 | Area | State |
 |---|---|
-| Schematic | Only `power_supplies.kicad_sch` has parts (48; 2 DNP diodes not annotated): power module connector with TVS and I2C ESD, TPS2121 power mux (power module and USB VBUS in), TPS62142RGTR buck behind a 0.33 µH input inductor, TPS73533DRBR LDO, a 3.3 V LED, and a power mux status LED switched by a small MOSFET from the mux ST pin (DEC-035). The human owner declared the sheet's capture complete on 2026-10-31 and replaced the eFuse with the power mux on 2026-11-01. The power mux values match TI data; the PM02D has priority through a PR1 divider, with a CP2 divider from VBUS for the 5 µs fast switchover (DEC-031, DEC-032). Open findings: `VBUS` with no source until the USB sheet is drawn, missing or swapped part fields (P2-019). Resistor part numbers are left for the human owner to decide. The other sheets hold no parts. |
+| Schematic | Only `power_supplies.kicad_sch` has parts (51; 2 DNP diodes and 3 new input capacitors not annotated): power module connector with TVS, bulk input capacitors (DEC-037) and I2C ESD, TPS2121 power mux (power module and USB VBUS in), TPS62142RGTR buck behind a 0.33 µH input inductor, TPS73533DRBR LDO, a 3.3 V LED, and a power mux status LED switched by a small MOSFET from the mux ST pin (DEC-035). The human owner declared the sheet's capture complete on 2026-10-31 and replaced the eFuse with the power mux on 2026-11-01. The power mux values match TI data; the PM02D has priority through a PR1 divider, with a CP2 divider from VBUS for the 5 µs fast switchover (DEC-031, DEC-032). Open findings: missing resistor part numbers (P2-019). `VBUS` has a temporary `PWR_FLAG` until the USB connector is drawn. Resistor part numbers are left for the human owner to decide. The other sheets hold no parts. |
 | PCB | No footprints. One 27 × 29 mm rectangle on `Edge.Cuts` (drawn, not decided; outline open, OPEN-009). |
 | Library | Project symbols, footprints and 3D models for the MCUs, regulators, ESD parts, connectors and passives. Sensor symbols and footprints are starting points: their pin maps match the datasheet tables, but land patterns and pin 1 orientation are not checked yet. A BMP581 symbol is a starting point for the second barometer, and the Bosch LGA-10 footprint pads now follow the BMP581 land pattern (not checked against the drawing). The IST8310 uses the stock KiCad symbol and `LGA-16_3x3mm_P0.5mm` footprint; its datasheet has no land pattern, so the fit is estimated. A read-only link audit found no broken links. Added since: TPS2592x eFuse symbols, the PCR0420 and 0603 inductor footprints and the STM32F100C8Tx symbol; their pin and pad counts match and their 3D models resolve (preflight check, not a link audit). |
 | ERC / DRC | Not run. |

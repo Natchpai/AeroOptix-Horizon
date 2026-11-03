@@ -55,7 +55,7 @@ Open:
 - [x] R105 (CP2 16.5 kΩ) fitted, XCOMP is the default (DEC-033, 2026-11-01).
 - [x] R101 12.1 kΩ: worst-case XCOMP switch point 4.44 V with 1 % resistors (DEC-034, 2026-11-02; OPEN-024 closed).
 - [ ] Read `AO-HORIZON_POWER_MUX_NOTES_EN.md`: the four mux modes and how each resistor is calculated, step by step.
-- [ ] Add a `PWR_FLAG` or the USB connector for `VBUS`, or expect an ERC error (P2-019).
+- [x] `PWR_FLAG` on `VBUS` until the USB connector is drawn (2026-11-03, P2-019).
 - [x] Keep the mux status LED (DEC-035, 2026-11-03).
 - [x] `+5V` below 5.5 V in normal operation (PWR-015); OV top resistors 23.2 kΩ, trip 5.60 to 6.31 V; ST divider 10 kΩ / 10 kΩ keeps ST and the Q101 gate at 3.19 V or less (DEC-036, 2026-11-03).
 - [x] MFR and MFR.P/N on D103 and D104 put the right way round (13:54 save).
@@ -63,7 +63,9 @@ Open:
 - [ ] Bench: on USB, measure ST and check D103 is fully off, cold and warm (P4-012, OPEN-025).
 - [x] LCSC codes on all fitted parts match their MPN on the LCSC pages (2026-11-03); C22400107 is C0G, so C119 (LDO NR) gets a low-leakage dielectric.
 - [ ] Unused `DMG1012UW` symbol in the library: keep or remove.
-- [ ] Input capacitance on `PM02_5V` for the cable (TI suggests more than 2 × 100 nF for long cables).
+- [x] Input capacitance on `PM02_5V`: 2 × 10 µF and a 47 µF 10 V tantalum, 0.25 Ω ESR (DEC-037, 2026-11-03).
+- [ ] Annotate the three new `C?` input capacitors.
+- [ ] Bench: hot-plug the PM02D and scope `PM02_5V` (P4-013).
 - [ ] Change the PM02D connector from JST-GH to a 6-pin 2.00 mm CLIK-Mate (decided 2026-10-24, OPEN-023, P2-015).
 - [ ] Check the 5 V load against the 1.5 A limit (1.0 A minimum) and the USB port: USB feeds all external 5 V ports (OPEN-006).
 - [ ] `+3V3A` follow-ups (OPEN-011): check the IMU SPI levels against the H743 on `+3V3`, and the power-up order.
@@ -88,7 +90,7 @@ Not drawn. Pins in pin allocation rev 0.6 (P1-001).
 - [ ] 16 MHz crystal part and load capacitors (P1-014).
 - [ ] Reset topology, NRST pad, BOOT0 (P1-007, P1-014).
 - [ ] Debug: Pixhawk Debug Mini 6-pin JST-SH (1 VREF, 2 TX, 3 RX, 4 SWDIO, 5 SWCLK, 6 GND) plus an NRST pad. Check the pin order against DS-009 if you can get it (P1-008).
-- [ ] USB FS: connector, VBUS sensing, ESD (P1-006); OR-ing with the PM02D 5 V is the TPS2121 in Z1; `VBUS` already enters the power sheet from a power symbol.
+- [ ] USB FS: connector, VBUS sensing, ESD (P1-006); then remove the temporary `PWR_FLAG` on `VBUS` from the power sheet; OR-ing with the PM02D 5 V is the TPS2121 in Z1; `VBUS` already enters the power sheet from a power symbol.
 - [ ] SDMMC1 microSD: pull-ups and ESD protection.
 - [ ] Buzzer (TIM3_CH3) and the 3 board LEDs: pick the drive parts and resistors.
 
