@@ -68,7 +68,7 @@ Open, in the order we are working through them:
 - [x] Step 9: `+3V3A` (OPEN-011): SPI levels match; LDO EN from `3V3_PG` (R115 0 Ω, C120 10 nF), so `+3V3A` starts after `+3V3` (DEC-039, 2026-11-03).
 - [x] Step 10: L102 PCR0420-3R3-M saturation 3.5 A covers the full 2 A rating; 3 × 10 µF output fits TI Table 9-2; 0.33 µH input filter is damped (2026-11-03, spec 4.3).
 - [x] `+3V3` design current about 0.6 A; L101 stays (DEC-040, 2026-11-03).
-- [ ] Get the L102 DCR from the JIERR datasheet.
+- [x] L102 DCR 85 mΩ, L101 170 mΩ in the Note fields (18:15 save, 2026-11-03).
 - [x] Step 11: ERC run (only hierarchical sheet pins to other sheets left, set aside); `sch-review` found no defect (2026-11-03, spec 4.3). D101 breakdown 6.4 V checked.
 - [x] P2-019 closed (2026-11-03); resistor fields moved to P2-021.
 - [x] ERC pin map: Output to Output and Power output to Power output kept as no error project-wide (DEC-041); look for two outputs on one net in later reviews.
