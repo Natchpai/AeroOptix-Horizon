@@ -36,7 +36,7 @@ The board is split into design zones. Each zone below has its own to-do list.
 
 ## 2. Zone Z1: Power supply (`power_supplies.kicad_sch`)
 
-Capture declared complete on 2026-10-31; 5 V input changed to the TPS2121 power mux on 2026-11-01. See spec 4.3 "Schematic state" (47 parts, rev 0.25) and P2-019, P2-020, OPEN-025 for the findings. Resistor references and values in the records are still from the 2026-11-02 save; they catch up after you decide the resistor fields.
+Capture declared complete on 2026-10-31; 5 V input changed to the TPS2121 power mux on 2026-11-01. See spec 4.3 "Schematic state" (48 parts, rev 0.26) and P2-019, P2-020, OPEN-025 for the findings.
 
 Done:
 - [x] TPS2121 power mux replaces the eFuse (DEC-029, 2026-11-01): PM02D on IN1, USB VBUS on IN2, reverse blocking on both. Limit 1.5 A (DEC-030, R109 80.6 kΩ: 1.0 / 1.5 / 2.0 A). OV trip 6.08 V. Checked against TI SLVSEA3F (2026-11-01).
@@ -48,7 +48,7 @@ Done:
 - [x] TPS62142 AVIN 100 nF; 0.33 µH ASMPH-0603-R33M-T input inductor (2026-10-29).
 - [x] Footprints on every part (2026-10-31).
 - [x] D104 is LTST-C191GKT; part fields on Q101, D103, D104, C105, C112 and C119 (2026-11-03).
-- [x] Q101 DMG1012UW: VGS(th) max about 1 V, VGS absolute max ±6 V, so the 5 V gate drive is fine (spec 0.25, OPEN-025).
+- [x] Q101 changed to 2SK3018W (LCSC C20069149): VGS(th) 0.8 to 1.5 V, VGS ±20 V; pin map checked (2026-11-03).
 
 Open:
 - [x] PM02D priority and XCOMP fast switchover (DEC-031, DEC-032, 2026-11-01): CP2 R105 16.5 kΩ / R106 5 kΩ from `VBUS`.
@@ -56,10 +56,13 @@ Open:
 - [x] R101 12.1 kΩ: worst-case XCOMP switch point 4.44 V with 1 % resistors (DEC-034, 2026-11-02; OPEN-024 closed).
 - [ ] Read `AO-HORIZON_POWER_MUX_NOTES_EN.md`: the four mux modes and how each resistor is calculated, step by step.
 - [ ] Add a `PWR_FLAG` or the USB connector for `VBUS`, or expect an ERC error (P2-019).
-- [ ] Resistor fields (values, MFR, MFR.P/N, LCSC), your choice, later. Pick the OV top resistor so the OV trip max stays below 6 V: 21.5 kΩ gives 5.83 V, 23.7 kΩ gives 6.31 V (Q101 gate and U101 ST are both 6 V max; OPEN-025). Then run `/progress-update` so the records follow the renumbered references.
-- [ ] Swap MFR and MFR.P/N on D103 and D104 (MFR holds LTST-C191GKT, MFR.P/N holds LITEON).
-- [ ] Decide whether to keep the mux status LED (Q101, D103); then OPEN-025 can close or become a decision.
-- [ ] Check the LCSC codes against the parts: U101 C485916, Q101 C48935695, D103 and D104 C99289, C105, C112 and C119 C22400107. C119 (LDO NR) needs a low-leakage dielectric (TI: C0G).
+- [x] Keep the mux status LED (DEC-035, 2026-11-03).
+- [x] `+5V` below 5.5 V in normal operation (PWR-015); OV top resistors 23.2 kΩ, trip 5.60 to 6.31 V; ST divider 10 kΩ / 10 kΩ keeps ST and the Q101 gate at 3.19 V or less (DEC-036, 2026-11-03).
+- [x] MFR and MFR.P/N on D103 and D104 put the right way round (13:54 save).
+- [ ] Resistor MFR, MFR.P/N and LCSC: your choice, later. Use 1 % parts in the PR1, CP2, OV and ST dividers.
+- [ ] Bench: on USB, measure ST and check D103 is fully off, cold and warm (P4-012, OPEN-025).
+- [x] LCSC codes on all fitted parts match their MPN on the LCSC pages (2026-11-03); C22400107 is C0G, so C119 (LDO NR) gets a low-leakage dielectric.
+- [ ] Unused `DMG1012UW` symbol in the library: keep or remove.
 - [ ] Input capacitance on `PM02_5V` for the cable (TI suggests more than 2 × 100 nF for long cables).
 - [ ] Change the PM02D connector from JST-GH to a 6-pin 2.00 mm CLIK-Mate (decided 2026-10-24, OPEN-023, P2-015).
 - [ ] Check the 5 V load against the 1.5 A limit (1.0 A minimum) and the USB port: USB feeds all external 5 V ports (OPEN-006).
