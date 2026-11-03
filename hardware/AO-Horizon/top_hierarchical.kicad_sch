@@ -61,7 +61,7 @@
 				(justify left top)
 			)
 		)
-		(pin "3V3_DONE" output
+		(pin "3V3_PG" output
 			(at 158.75 105.41 0)
 			(uuid "15201899-f11b-4a89-88ab-e2fbd08c9beb")
 			(effects
