@@ -11,7 +11,7 @@ The board is split into design zones. Each zone below has its own to-do list.
 
 | Zone | Sheet | State | Main open items |
 | ---- | ----- | ----- | --------------- |
-| Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, 2026-10-31); eFuse replaced by the TPS2121 power mux (2026-11-01); mux status LED, OV and ST dividers, input capacitors and LDO enable from PG set (2026-11-03); ERC run and `sch-review` done (2026-11-03), L101 rating open | P2-019, P2-020, OPEN-006, OPEN-011, OPEN-023, OPEN-025 |
+| Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, 2026-10-31); eFuse replaced by the TPS2121 power mux (2026-11-01); mux status LED, OV and ST dividers, input capacitors and LDO enable from PG set (2026-11-03); ERC run and `sch-review` done, P2-019 closed (2026-11-03) | P2-021, OPEN-006, OPEN-023, OPEN-025, P4-012 to P4-015 |
 | Z2 Servo power rail (6 V bus, XT30) | Not drawn | Not started | OPEN-007, OPEN-021, P2-016 |
 | Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | Not drawn | Pins allocated (P1-001), not drawn | P1-001, P1-006 to P1-008, P1-014 |
 | Z4 F100 IO MCU (px4io) | Not drawn | Pins allocated (P1-002), not drawn | P1-002, P1-014, P2-014 |
@@ -21,63 +21,21 @@ The board is split into design zones. Each zone below has its own to-do list.
 
 ## 1. Git
 
-- [x] Hardware answers, spec 0.14 (`2b89d07`), merged to `main` in PR #17.
-- [x] Team website merged to `main` in PRs #18 to #24; title image and logos on `dev`.
-- [x] Consistency pass (spec 0.15) and DEC-025 (spec 0.16) merged to `main` in PR #27.
+Done items live in Git history and the changelog.
+
 - [ ] `block_diagram.kicad_sch`: the working copy holds only its title text; the drawing is gone. Keep it cleared on purpose, or restore it from Git.
-- [x] TPS259251DRC eFuse change and the spec 0.18 docs pass merged to `main` in PR #30 (`cce0b2b`).
-- [x] Power sheet close-out, spec 0.19 and the generated outputs merged to `main` in PR #31 (`2d90af3`); `main` merged back into `dev` (`6ff99b7`, not pushed yet).
-- [x] Spec 0.20 docs pass committed and pushed (`34fe1e0`).
-- [x] Power mux change committed and pushed to `dev` (`c96f688`, `787a6bc`); DEC-033 and spec 0.22 pushed (`375164c`, `d2ac274`, `69c0fda`).
-- [x] `export_jobset.log` is committed (`f682a10`).
-- [x] Power mux and spec 0.20 to 0.23 merged to `main` in PR #32 (`989fd25`).
-- [x] Status LED, part fields, rev A title blocks and spec 0.24 merged to `main` in PR #33 (`cc35983`); `main` merged back into `dev` (`6f8f20a`).
-- [x] Q101 VGS ratings (spec 0.25, `ddde444`), README sync (`030e151`), what-next (`5e82918`), OV/ST dividers and 2SK3018W (`9b493bb`) and spec 0.26 (`b625b73`) pushed to `dev`; not in a PR yet.
-- [x] Input capacitors and `VBUS` `PWR_FLAG` (`4d55a7e`), spec 0.27 (`f0ea22e`), what-next (`9a4571c`) and spec 0.28 with DEC-038 (`a731a83`) pushed to `dev`.
-- [x] LDO enable from PG, ERC housekeeping (`304de41`), spec 0.29 (`dfb9f63`) and spec 0.30 (DEC-040, DEC-041, P2-019 closed) on `dev`; draft PR to `main` opened 2026-11-03.
-- [ ] Review and squash-merge the draft PR (spec 0.25 to 0.30), then merge `main` back into `dev`.
+- [ ] Review and squash-merge draft PR #34 (spec 0.25 to 0.31), then merge `main` back into `dev`.
 
 ## 2. Zone Z1: Power supply (`power_supplies.kicad_sch`)
 
-Capture declared complete on 2026-10-31; 5 V input changed to the TPS2121 power mux on 2026-11-01. See spec 4.3 "Schematic state" (53 parts, rev 0.29) and P2-019, P2-020, OPEN-025 for the findings.
+Schematic done for now: ERC run, `sch-review` done, P2-019 closed (2026-11-03). State and decisions: spec 4.3 (53 parts, rev 0.31), DEC-029 to DEC-041.
 
-Done:
-- [x] TPS2121 power mux replaces the eFuse (DEC-029, 2026-11-01): PM02D on IN1, USB VBUS on IN2, reverse blocking on both. Limit 1.5 A (DEC-030, R112 80.6 kΩ: 1.0 / 1.5 / 2.0 A). Checked against TI SLVSEA3F (2026-11-01).
-- [x] TPS2121 library part: symbol `0_Power_Management:TPS2121RUX`, stock footprint with thermal vias, your STEP.
-- [x] PM02D priority and XCOMP fast switchover (DEC-031, DEC-032, 2026-11-01): CP2 R105 16.5 kΩ / R106 5 kΩ from `VBUS`.
-- [x] R105 (CP2 16.5 kΩ) fitted, XCOMP is the default (DEC-033, 2026-11-01).
-- [x] R101 12.1 kΩ: worst-case XCOMP switch point 4.44 V with 1 % resistors (DEC-034, 2026-11-02; OPEN-024 closed).
-- [x] `+5V` below 5.5 V in normal operation (PWR-015); OV top resistors 23.2 kΩ, trip 5.60 to 6.31 V; ST divider 10 kΩ / 10 kΩ keeps ST and the Q101 gate at 3.19 V or less (DEC-036, 2026-11-03).
-- [x] Keep the mux status LED (DEC-035, 2026-11-03).
-- [x] Q101 changed to 2SK3018W (LCSC C20069149): VGS(th) 0.8 to 1.5 V, VGS ±20 V; pin map checked (2026-11-03).
-- [x] Input capacitance on `PM02_5V`: 2 × 10 µF and a 47 µF 10 V tantalum, 0.25 Ω ESR; 10 V rating accepted (DEC-037, 2026-11-03).
-- [x] `PWR_FLAG` on `VBUS` until the USB connector is drawn (2026-11-03, P2-019).
-- [x] `3V3_DONE` sheet pin and `PM02_5V` input label (2026-11-01).
-- [x] `+3V3A` LDO: TPS73533DRBR (DEC-027, 2026-10-31).
-- [x] Buck soft-start: 10 nF, about 5 ms (DEC-028); now C115 after renumbering.
-- [x] PG renamed: local label `3V3_PG`, hierarchical label `3V3_DONE` (2026-10-31).
-- [x] TPS62142 AVIN 100 nF; 0.33 µH ASMPH-0603-R33M-T input inductor (2026-10-29).
-- [x] Footprints on every part (2026-10-31).
-- [x] D104 is LTST-C191GKT; part fields on Q101, D103, D104, C108, C115 and C123; MFR and MFR.P/N on D103 and D104 the right way round (2026-11-03).
-- [x] LCSC codes on all fitted parts match their MPN on the LCSC pages (2026-11-03); C22400107 is C0G, so C123 (LDO NR) gets a low-leakage dielectric.
-
-Open, in the order we are working through them:
-- [ ] Step 7, parked: PM02D connector, JST-GH as drawn or CLIK-Mate (reopened 2026-11-03, OPEN-023, P2-015). Decide before PCB placement: ask the team which cable they have, and check the contact rating against about 0.75 A per pin.
-- [ ] All Z1 steps done; the open items below are your choices or bench work.
-- [x] Step 8: 5 V budget (power budget rev 0.17): the PM02D path leaves about 360 to 640 mA for GPS, ELRS and airspeed (`ESTIMATED`). USB is a bench supply; the bench USB-C port shall supply more than 1 A (DEC-038, 2026-11-03). Still open: GPS, ELRS and MS4525DO currents from the team (OPEN-006).
-- [x] Step 9: `+3V3A` (OPEN-011): SPI levels match; LDO EN from `3V3_PG` (R115 0 Ω, C120 10 nF), so `+3V3A` starts after `+3V3` (DEC-039, 2026-11-03).
-- [x] Step 10: L102 PCR0420-3R3-M saturation 3.5 A covers the full 2 A rating; 3 × 10 µF output fits TI Table 9-2; 0.33 µH input filter is damped (2026-11-03, spec 4.3).
-- [x] `+3V3` design current about 0.6 A; L101 stays (DEC-040, 2026-11-03).
-- [x] L102 DCR 85 mΩ, L101 170 mΩ in the Note fields (18:15 save, 2026-11-03).
-- [x] Step 11: ERC run (only hierarchical sheet pins to other sheets left, set aside); `sch-review` found no defect (2026-11-03, spec 4.3). D101 breakdown 6.4 V checked.
-- [x] P2-019 closed (2026-11-03); resistor fields moved to P2-021.
-- [x] ERC pin map: Output to Output and Power output to Power output kept as no error project-wide (DEC-041); look for two outputs on one net in later reviews.
-
-Open, any time:
-- [x] Sheet annotated (53 parts); capacitors renumbered C101 to C125, parked diodes D105 and D106 (2026-11-03).
-- [x] C120 (LDO EN, 10 nF): GRM1555C1H103JE01D, LCSC C22400107 (16:59 save).
+Open:
+- [ ] PM02D connector, JST-GH as drawn or CLIK-Mate (reopened 2026-11-03, OPEN-023, P2-015). Decide before PCB placement: ask the team which cable they have, and check the contact rating against about 0.75 A per pin.
+- [ ] GPS, ELRS and MS4525DO 5 V currents from the team, to close the 5 V budget (OPEN-006).
 - [ ] Resistor MFR, MFR.P/N and LCSC (P2-021): your choice, later. Use 1 % parts in the PR1, CP2, OV and ST dividers.
 - [ ] Read `AO-HORIZON_POWER_MUX_NOTES_EN.md`: the four mux modes and how each resistor is calculated, step by step.
+- [ ] In later reviews, look for two outputs on one net by hand: the ERC pin map no longer flags it (DEC-041).
 
 Bench, after the board is built:
 - [ ] On USB, measure ST and check D103 is fully off, cold and warm (P4-012, OPEN-025).
@@ -152,7 +110,6 @@ Not drawn.
 
 Pinmap review 0.3 and the integration answers are applied (spec rev 0.12 to 0.14).
 
-- [x] Send integration questions rev 0.1 (P0-021). Answered and applied 2026-10-24.
 - [ ] Send `AO-HORIZON_INTEGRATION_QUESTIONS_EN.md` rev 0.4 to the team (P0-022). It asks only D13 (Skywalker ESCs look PWM-only: how do the motors stop on an H743 hang?), the parts table and test results.
 - [ ] After the reply: ask Claude to apply it to the spec, power budget and checklist.
 - [ ] Team bench tests, not hardware work: RC-loss failsafe over ELRS MAVLink (S5); ESC on signal loss (OPEN-017, P4-011); servo current and stall current (OPEN-007).
