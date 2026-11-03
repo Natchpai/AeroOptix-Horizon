@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.16
+**Revision:** 0.17
 **Updated:** 2026-11-03
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012), the 5 V input is a TPS2121 power mux with a 1.5 A limit (DEC-029, DEC-030) and the `+3V3A` LDO is TPS73533DRBR (DEC-027). No other rail, regulator or protection part is approved. Not a verification record.
-**Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012 (closed), OPEN-021, OPEN-024 (closed), OPEN-025 (spec rev 0.26). Decisions: DEC-010, DEC-012, DEC-016, DEC-018, DEC-019, DEC-025, DEC-026 (superseded), DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036. Checklist task: P0-017.
+**Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012 (closed), OPEN-021, OPEN-024 (closed), OPEN-025 (spec rev 0.28). Decisions: DEC-010, DEC-012, DEC-016, DEC-018, DEC-019, DEC-025, DEC-026 (superseded), DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038. Checklist task: P0-017.
 **Decision owner:** Hardware
 
 Single record for rail loads, rail tolerances, brownout thresholds and power protection requirements.
@@ -62,7 +62,7 @@ Typical or average current per load. Peak current listed where known. "TBD" mean
 
 | Load | Qty | Current each | Peak | Source | Label |
 | ---- | --- | ------------ | ---- | ------ | ----- |
-| STM32H743VIT6 | 1 | TBD | TBD | Not read yet (NotebookLM notebook `STM32H743VI`) | `NOT_VERIFIED` |
+| STM32H743VIT6 | 1 | 220 mA typ at Tj 25 °C; 436 mA max at Tj 85 °C, 546 mA max at Tj 105 °C (Run mode, 480 MHz VOS0, code from flash, cache on, all peripherals enabled, LDO on) | Same | ST DS12110 Rev 11 Table 120 (NotebookLM notebook `STM32H743VI`, cited_text, 2026-11-03) | `VERIFIED` for the table condition; the firmware clock and peripheral use are `ASSUMED` |
 | STM32F100C8T6B | 1 | 15.4 mA max at 24 MHz, all peripherals on, code from Flash, TA 85 °C | Not stated | F1 value-line DS Table 12 (NotebookLM) | `VERIFIED` for the table condition (8 MHz external clock with PLL); at a 24 MHz HSE without PLL `ESTIMATED` as no higher |
 | ICP-20100 | 1 | TBD | TBD | invensense.tdk.com unreachable | `NOT_VERIFIED` |
 | BMP581 (barometer 2, DEC-010) | 1 | TBD | TBD | Not read yet (NotebookLM notebook `BMP581`) | `NOT_VERIFIED` |
@@ -101,11 +101,20 @@ The 4 motor outputs (IF-040 to IF-043) carry only the signal to 4 separate Skywa
 | Rail | Known subtotal | Missing | Budget | Margin | Label |
 | ---- | -------------- | ------- | ------ | ------ | ----- |
 | 3.3 V_IMU | 0.88 mA (2 × 0.44 mA) | IMU peak | TBD. 500 mA, TPS73533DRBR (DEC-027, TI SBVS087M 5.3). | TBD | `ESTIMATED` from `NOT_VERIFIED` inputs |
-| 3.3 V | about 17 mA (IST8310 at 200 sps, F100 max 15.4 mA) | H743, ICP-20100, BMP581, pull-ups, LEDs | 2 A, TPS62142RGTR (DEC-012, TI SLVSAJ0F) | TBD | `ESTIMATED` from partial inputs |
-| 5 V | 70 mA average, 150 mA peak (TF-Luna only) | All other external loads, 3.3 V regulator input | 2 A source (PWR-010); power mux limit 1.0 / 1.5 / 2.0 A with 80.6 kΩ (DEC-030, TI mux, `VERIFIED`) | TBD | `ESTIMATED` from partial inputs |
+| 3.3 V | about 244 mA typ; about 460 mA with the H743 at its Tj 85 °C maximum, about 570 mA at Tj 105 °C (H743, F100 max 15.4 mA, IST8310, D104 about 2.5 mA, and an assumed 5 mA for the barometers and pull-ups) | ICP-20100, BMP581, pull-ups and px4io LEDs not read | 2 A, TPS62142RGTR (DEC-012, TI SLVSAJ0F) | TBD | `ESTIMATED` from partial inputs |
+| 5 V | Board: about 190 to 215 mA typ, 360 to 400 mA with the H743 at its Tj 85 °C maximum, 445 to 495 mA at Tj 105 °C (3.3 V load through the buck at an assumed 85 % efficiency, 5.0 and 4.5 V in, plus D103 and the LDO). External: TF-Luna 70 mA average, 150 mA peak | GPS, ELRS, MS4525DO | 2 A source (PWR-010); power mux limit 1.0 / 1.5 / 2.0 A with 80.6 kΩ (DEC-030, TI mux, `VERIFIED`) | TBD | `ESTIMATED` from partial inputs |
 | 6 V (on the board) | none | All servo loads | 10 A cont., 15 A inst. (PWR-011), UBEC and XT30 input | TBD | `TBD` |
 
 The subtotals are far from complete. Do not use them to size a regulator. The MCUs and the external 5 V devices are likely the largest loads (`ASSUMED`).
+
+**5 V headroom (2026-11-03, `ESTIMATED` from the rows above).** Room left for GPS, ELRS and the MS4525DO after the board and the TF-Luna 150 mA peak:
+
+| 5 V source | Typical | Hot worst case (H743 at Tj 105 °C) |
+| ---------- | ------- | ---------------------------------- |
+| PM02D, power mux 1.0 A minimum limit (DEC-030) | about 640 mA | about 360 mA |
+| USB 500 mA port | about 140 mA | below zero |
+| USB 900 mA port | about 540 mA | about 260 mA |
+| Bench USB-C port above 1 A (DEC-038) | as the PM02D row: the 1.0 A minimum mux limit sets the room | as the PM02D row |
 
 ## 5. Rail tolerances (PWR-013)
 
@@ -144,11 +153,11 @@ All `TBD`. Items to decide:
 
 - [x] 5 V power mux values (P2-020, checked 2026-11-01), TI mux, `VERIFIED` unless marked: TPS2121, 80.6 kΩ ILIM gives 1.0 / 1.5 / 2.0 A (DEC-030); OV trip 6.08 V typ on both inputs (5.98 V typ with 23.2 kΩ since 2026-11-03, DEC-036); IN and OUT 24 V absolute maximum; input UV 2.65 V typ; 10 nF SS gives about 0.65 ms ramp and about 0.47 A inrush into about 60 µF (`ESTIMATED`, outside TI Table 9-1); fast-trip at about 2.4 × ILM, then off for about 25 ms; thermal shutdown auto-recovers. PM02D priority with a 12.1 kΩ / 5 kΩ PR1 divider (DEC-031, DEC-034) and the XCOMP fast switchover with a 16.5 kΩ / 5 kΩ CP2 divider from `VBUS` (DEC-032), R105 fitted (DEC-033).
 - [x] Removed 2026-11-01 (DEC-029). 5 V input eFuse values (P2-017, closed 2026-10-31), TI eFuse, `VERIFIED` unless marked: TPS259251DRC, 45.3 kΩ ILIM gives 1.75 / 2.1 / 2.45 A; overvoltage clamp 6.1 V typ (5.5 to 6.75 V); VIN 20 V absolute maximum; turn-on at the internal UVLO (4.3 V typ); 1 nF dV/dT gives about 5 ms ramp and about 56 mA inrush into about 60 µF (`ESTIMATED`); thermal fault auto-retry after 110 ms.
-- [ ] 5 V input, still open: reverse polarity; D101 SZSMF5.0A TVS rating against the PM02D input (datasheet not checked); input capacitance for the PM02D cable (TI mux section 11 suggests a large capacitance near the input for long cables; IN1 has 2 × 100 nF).
+- [ ] 5 V input, still open: reverse polarity; D101 SZSMF5.0A TVS rating against the PM02D input (datasheet not checked); hot-plug peak on the PM02D cable (TI mux section 11 suggests a large capacitance near the input for long cables; since 2026-11-03 IN1 has 2 × 10 µF and a 47 µF 10 V tantalum with 0.25 Ω ESR, DEC-037; bench check P4-013).
 - [x] USB VBUS and PM02D 5 V OR-ing: TPS2121 power mux (DEC-029), reverse current blocking on both channels (TI mux 9.3.6, `VERIFIED`). Source priority: PM02D first, XCOMP switchover (DEC-031 to DEC-034).
 - [ ] 6 V servo bus on the board (DEC-019): board-mount XT30 input, rating against 10 A continuous and 15 A peak `NOT_VERIFIED`; 6 V and servo GND copper; servo GND joined to logic GND at one point away from the sensors; no back-feed from the 6 V bus into the 5 V side (OPEN-021).
 - [ ] 6 V servo rail: overcurrent behavior, pulse duration of the 15 A rating, bulk capacitance.
-- [ ] USB-only power: VBUS current limit. USB feeds all external 5 V ports (human owner, 2026-10-24) (OPEN-006).
+- [x] USB-only power: the bench USB-C port shall supply more than 1 A; brown-out of the external devices on a weaker port is accepted (DEC-038, 2026-11-03). The power mux 1.0 A minimum limit also applies on USB. USB-C CC resistors and the current advertisement are open in P1-006.
 - [ ] External 5 V connectors: short-circuit protection per connector or per group.
 - [ ] ESD on external connectors and USB (SAF-014).
 - [ ] Safe output state on 5 V loss or 6 V fault (SAF-012, SAF-013).
@@ -157,7 +166,7 @@ All `TBD`. Items to decide:
 
 | Severity | Ref | Label | Finding | Source |
 | -------- | --- | ----- | ------- | ------ |
-| MAJOR | PWR-012 | `NOT_VERIFIED` | Board current budget cannot be closed: MCU currents and all external 5 V device models are missing. | Section 4 |
+| MAJOR | PWR-012 | `NOT_VERIFIED` | Board current budget cannot be closed: the H743 and F100 currents are read (section 3), but the barometer currents and all external 5 V device models are missing. | Section 4 |
 | MAJOR | IF-030 to IF-037 / UBEC | `NOT_VERIFIED` | All 8 servos can move at once and stall current is not known. The 10 A team target covers only the 4 tilt servos (OPEN-007). | Section 3 |
 | MAJOR | XT30 input / 6 V bus | `NOT_VERIFIED` | The XT30 input carries the total servo current, up to 10 A continuous and 15 A peak. Its rating is not checked. A header position (about 3 A per pin, `ESTIMATED`) was replaced by the XT30 on 2026-10-24 (OPEN-021). | DEC-019, PWR-011 |
 | INFO | U101 PR1 / `+5V` | `ESTIMATED` | Closed 2026-11-01: the drawn VCOMP mode let USB carry the board when both sources were present. PR1 now has a divider from IN1 (DEC-031, 12.1 kΩ / 5 kΩ since DEC-034), so the PM02D has priority down to about 3.98 V typ in XCOMP or 3.56 V typ in the VREF mode. | TI mux Table 9-3; spec 4.7 |
@@ -165,7 +174,7 @@ All `TBD`. Items to decide:
 | MINOR | U101 / `+5V` | `ESTIMATED` | With CP2 at `GND` there is no fast switchover: up to 100 µs, so `+5V` may dip about 1.7 V at 1 A into about 60 µF when the active source drops with the other present. | Spec 4.7; TI mux 9.3.7 |
 | MINOR | IST8310 / 3.3 V | `VERIFIED` | IST8310 absolute maximum supply is 3.6 V, so the 3.3 V rail must never overshoot by more than 0.3 V (9 %), including start-up and load steps. | IST8310 DS V1.2, 4.1 |
 | INFO | IF-022 / 5 V | `VERIFIED` (team answer) | USB VBUS powers the board on the bench. It joins the PM02D 5 V through the power mux IN2 (DEC-029). | Section 2 |
-| MINOR | IF-022 / 5 V | `ESTIMATED` | USB feeds all external 5 V ports (human owner). GPS, ELRS, TF-Luna (150 mA peak alone) and airspeed together with the board may exceed a 500 mA USB port. | Section 3 |
+| MINOR | IF-022 / 5 V | `ESTIMATED` | USB feeds all external 5 V ports (human owner). On a 500 mA port the board at its hot maximum plus the TF-Luna peak already uses the whole port. Accepted: USB is a bench supply, the bench USB-C port shall supply more than 1 A, and brown-out on a weaker port is accepted (DEC-038, 2026-11-03). | Section 4 |
 
 ## 9. Open inputs
 
@@ -194,5 +203,6 @@ All `TBD`. Items to decide:
 - TI TPS735 (TPS73533DRBR): https://www.ti.com/product/TPS735 and https://www.ti.com/document-viewer/TPS735/datasheet/electrical-characteristics-slvscd4719
 - TI TPS212x (TPS2121): SLVSEA3F, https://www.ti.com/product/TPS2121 (ACTIVE, fetched 2026-11-01), in NotebookLM notebook `TPS212x 2.8-V to 22-V Priority Power MUX with Seamless Switchover` (added by the human owner; not opened by Claude)
 - TI TPS2592x (TPS259251DRC, removed): SLVSCQ3B, https://www.ti.com/lit/ds/symlink/tps25925.pdf, in NotebookLM notebook `TPS25925x eFuse` (added by the human owner, 2026-10-31; not opened by Claude)
+- ST STM32H743VI: DS12110 Rev 11, NotebookLM notebook `STM32H743VI` (not opened by Claude)
 - ICM-45686: see `AO-HORIZON_IMU_SELECTION_EN.md`
 - Requirements: `AO-HORIZON_SPEC_EN.md` sections on power, safety and interfaces

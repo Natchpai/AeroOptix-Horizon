@@ -61,8 +61,9 @@ Done:
 - [x] LCSC codes on all fitted parts match their MPN on the LCSC pages (2026-11-03); C22400107 is C0G, so C119 (LDO NR) gets a low-leakage dielectric.
 
 Open, in the order we are working through them:
-- [ ] Step 7: change the PM02D connector from JST-GH to a 6-pin 2.00 mm CLIK-Mate (decided 2026-10-24, OPEN-023, P2-015). Next.
-- [ ] Step 8: check the 5 V load against the 1.5 A limit (1.0 A minimum) and the USB port: USB feeds all external 5 V ports (OPEN-006).
+- [ ] Step 7, parked: PM02D connector, JST-GH as drawn or CLIK-Mate (reopened 2026-11-03, OPEN-023, P2-015). Decide before PCB placement: ask the team which cable they have, and check the contact rating against about 0.75 A per pin.
+- [ ] Step 9 is next.
+- [x] Step 8: 5 V budget (power budget rev 0.17): the PM02D path leaves about 360 to 640 mA for GPS, ELRS and airspeed (`ESTIMATED`). USB is a bench supply; the bench USB-C port shall supply more than 1 A (DEC-038, 2026-11-03). Still open: GPS, ELRS and MS4525DO currents from the team (OPEN-006).
 - [ ] Step 9: `+3V3A` follow-ups (OPEN-011): check the IMU SPI levels against the H743 on `+3V3`, and the power-up order.
 - [ ] Step 10: check the 3.3 µH PCR0420-3R3-M saturation current and the 3 × 10 µF output against TI Table 9-2, and the damping of the 0.33 µH input filter.
 - [ ] Step 11: run ERC, then ask Claude for a `sch-review` of `power_supplies.kicad_sch`.
@@ -76,6 +77,7 @@ Open, any time:
 Bench, after the board is built:
 - [ ] On USB, measure ST and check D103 is fully off, cold and warm (P4-012, OPEN-025).
 - [ ] Hot-plug the PM02D and scope `PM02_5V` and `+5V`; check the tantalum after repeated plugs (P4-013, DEC-037).
+- [ ] On a USB-C port above 1 A with all external devices, check `+5V` (P4-014, DEC-038).
 
 ## 3. Zone Z2: Servo power rail
 
@@ -95,7 +97,7 @@ Not drawn. Pins in pin allocation rev 0.6 (P1-001).
 - [ ] 16 MHz crystal part and load capacitors (P1-014).
 - [ ] Reset topology, NRST pad, BOOT0 (P1-007, P1-014).
 - [ ] Debug: Pixhawk Debug Mini 6-pin JST-SH (1 VREF, 2 TX, 3 RX, 4 SWDIO, 5 SWCLK, 6 GND) plus an NRST pad. Check the pin order against DS-009 if you can get it (P1-008).
-- [ ] USB FS: connector, VBUS sensing, ESD (P1-006); then remove the temporary `PWR_FLAG` on `VBUS` from the power sheet; OR-ing with the PM02D 5 V is the TPS2121 in Z1; `VBUS` already enters the power sheet from a power symbol.
+- [ ] USB FS: connector, VBUS sensing, ESD (P1-006); USB-C CC resistors so a USB-C source turns on VBUS (DEC-038); then remove the temporary `PWR_FLAG` on `VBUS` from the power sheet; OR-ing with the PM02D 5 V is the TPS2121 in Z1; `VBUS` already enters the power sheet from a power symbol.
 - [ ] SDMMC1 microSD: pull-ups and ESD protection.
 - [ ] Buzzer (TIM3_CH3) and the 3 board LEDs: pick the drive parts and resistors.
 
