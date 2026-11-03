@@ -11,7 +11,7 @@ The board is split into design zones. Each zone below has its own to-do list.
 
 | Zone | Sheet | State | Main open items |
 | ---- | ----- | ----- | --------------- |
-| Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, 2026-10-31); eFuse replaced by the TPS2121 power mux (2026-11-01); mux status LED, OV and ST dividers and input capacitors set (2026-11-03); ERC and review open | P2-019, P2-020, OPEN-006, OPEN-011, OPEN-023, OPEN-025 |
+| Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, 2026-10-31); eFuse replaced by the TPS2121 power mux (2026-11-01); mux status LED, OV and ST dividers, input capacitors and LDO enable from PG set (2026-11-03); ERC run and `sch-review` done (2026-11-03), L101 rating open | P2-019, P2-020, OPEN-006, OPEN-011, OPEN-023, OPEN-025 |
 | Z2 Servo power rail (6 V bus, XT30) | Not drawn | Not started | OPEN-007, OPEN-021, P2-016 |
 | Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | Not drawn | Pins allocated (P1-001), not drawn | P1-001, P1-006 to P1-008, P1-014 |
 | Z4 F100 IO MCU (px4io) | Not drawn | Pins allocated (P1-002), not drawn | P1-002, P1-014, P2-014 |
@@ -33,12 +33,13 @@ The board is split into design zones. Each zone below has its own to-do list.
 - [x] Power mux and spec 0.20 to 0.23 merged to `main` in PR #32 (`989fd25`).
 - [x] Status LED, part fields, rev A title blocks and spec 0.24 merged to `main` in PR #33 (`cc35983`); `main` merged back into `dev` (`6f8f20a`).
 - [x] Q101 VGS ratings (spec 0.25, `ddde444`), README sync (`030e151`), what-next (`5e82918`), OV/ST dividers and 2SK3018W (`9b493bb`) and spec 0.26 (`b625b73`) pushed to `dev`; not in a PR yet.
-- [ ] Input capacitors and `VBUS` `PWR_FLAG` (`4d55a7e`) and spec 0.27 (`f0ea22e`): committed on `dev`, not pushed.
-- [ ] Open a PR from `dev` to `main` when you want these in `main` (spec 0.25 to 0.27).
+- [x] Input capacitors and `VBUS` `PWR_FLAG` (`4d55a7e`), spec 0.27 (`f0ea22e`), what-next (`9a4571c`) and spec 0.28 with DEC-038 (`a731a83`) pushed to `dev`.
+- [ ] LDO enable from PG, ERC housekeeping (17:11 save) and spec 0.29 (DEC-039, buck check, `sch-review`): committed on `dev`, not pushed.
+- [ ] Open a PR from `dev` to `main` when you want these in `main` (spec 0.25 to 0.29).
 
 ## 2. Zone Z1: Power supply (`power_supplies.kicad_sch`)
 
-Capture declared complete on 2026-10-31; 5 V input changed to the TPS2121 power mux on 2026-11-01. See spec 4.3 "Schematic state" (51 parts, rev 0.27) and P2-019, P2-020, OPEN-025 for the findings.
+Capture declared complete on 2026-10-31; 5 V input changed to the TPS2121 power mux on 2026-11-01. See spec 4.3 "Schematic state" (53 parts, rev 0.29) and P2-019, P2-020, OPEN-025 for the findings.
 
 Done:
 - [x] TPS2121 power mux replaces the eFuse (DEC-029, 2026-11-01): PM02D on IN1, USB VBUS on IN2, reverse blocking on both. Limit 1.5 A (DEC-030, R112 80.6 kΩ: 1.0 / 1.5 / 2.0 A). Checked against TI SLVSEA3F (2026-11-01).
@@ -53,23 +54,28 @@ Done:
 - [x] `PWR_FLAG` on `VBUS` until the USB connector is drawn (2026-11-03, P2-019).
 - [x] `3V3_DONE` sheet pin and `PM02_5V` input label (2026-11-01).
 - [x] `+3V3A` LDO: TPS73533DRBR (DEC-027, 2026-10-31).
-- [x] Buck soft-start: 10 nF, about 5 ms (DEC-028); now C112 after renumbering.
+- [x] Buck soft-start: 10 nF, about 5 ms (DEC-028); now C115 after renumbering.
 - [x] PG renamed: local label `3V3_PG`, hierarchical label `3V3_DONE` (2026-10-31).
 - [x] TPS62142 AVIN 100 nF; 0.33 µH ASMPH-0603-R33M-T input inductor (2026-10-29).
 - [x] Footprints on every part (2026-10-31).
-- [x] D104 is LTST-C191GKT; part fields on Q101, D103, D104, C105, C112 and C119; MFR and MFR.P/N on D103 and D104 the right way round (2026-11-03).
-- [x] LCSC codes on all fitted parts match their MPN on the LCSC pages (2026-11-03); C22400107 is C0G, so C119 (LDO NR) gets a low-leakage dielectric.
+- [x] D104 is LTST-C191GKT; part fields on Q101, D103, D104, C108, C115 and C123; MFR and MFR.P/N on D103 and D104 the right way round (2026-11-03).
+- [x] LCSC codes on all fitted parts match their MPN on the LCSC pages (2026-11-03); C22400107 is C0G, so C123 (LDO NR) gets a low-leakage dielectric.
 
 Open, in the order we are working through them:
 - [ ] Step 7, parked: PM02D connector, JST-GH as drawn or CLIK-Mate (reopened 2026-11-03, OPEN-023, P2-015). Decide before PCB placement: ask the team which cable they have, and check the contact rating against about 0.75 A per pin.
-- [ ] Step 9 is next.
+- [ ] All Z1 steps done; the open items below are your choices or bench work.
 - [x] Step 8: 5 V budget (power budget rev 0.17): the PM02D path leaves about 360 to 640 mA for GPS, ELRS and airspeed (`ESTIMATED`). USB is a bench supply; the bench USB-C port shall supply more than 1 A (DEC-038, 2026-11-03). Still open: GPS, ELRS and MS4525DO currents from the team (OPEN-006).
-- [ ] Step 9: `+3V3A` follow-ups (OPEN-011): check the IMU SPI levels against the H743 on `+3V3`, and the power-up order.
-- [ ] Step 10: check the 3.3 µH PCR0420-3R3-M saturation current and the 3 × 10 µF output against TI Table 9-2, and the damping of the 0.33 µH input filter.
-- [ ] Step 11: run ERC, then ask Claude for a `sch-review` of `power_supplies.kicad_sch`.
+- [x] Step 9: `+3V3A` (OPEN-011): SPI levels match; LDO EN from `3V3_PG` (R115 0 Ω, C120 10 nF), so `+3V3A` starts after `+3V3` (DEC-039, 2026-11-03).
+- [x] Step 10: L102 PCR0420-3R3-M saturation 3.5 A covers the full 2 A rating; 3 × 10 µF output fits TI Table 9-2; 0.33 µH input filter is damped (2026-11-03, spec 4.3).
+- [ ] Decide the `+3V3` design current: L101 ASMPH-0603-R33M-T is rated 1.2 A (distributor, not checked), fine for the expected about 0.5 A buck input, too small for the full 2 A output (about 1.7 A input). Check its datasheet, or pick a bigger L101.
+- [ ] Get the L102 DCR from the JIERR datasheet.
+- [x] Step 11: ERC run (only hierarchical sheet pins to other sheets left, set aside); `sch-review` found no defect (2026-11-03, spec 4.3). D101 breakdown 6.4 V checked.
+- [ ] Confirm whether P2-019 can be closed (ERC and review done; L101 rating still open).
+- [ ] ERC pin map: Output to Output and Power output to Power output set to no error project-wide (17:11 save). Keep it, or fix the stacked pins in the U101 and U102 symbols and restore the errors before the MCU sheets.
 
 Open, any time:
-- [ ] Annotate the three new `C?` input capacitors (before ERC).
+- [x] Sheet annotated (53 parts); capacitors renumbered C101 to C125, parked diodes D105 and D106 (2026-11-03).
+- [x] C120 (LDO EN, 10 nF): GRM1555C1H103JE01D, LCSC C22400107 (16:59 save).
 - [ ] Resistor MFR, MFR.P/N and LCSC: your choice, later. Use 1 % parts in the PR1, CP2, OV and ST dividers.
 - [ ] Unused `DMG1012UW` symbol in the library: keep or remove.
 - [ ] Read `AO-HORIZON_POWER_MUX_NOTES_EN.md`: the four mux modes and how each resistor is calculated, step by step.
@@ -78,6 +84,7 @@ Bench, after the board is built:
 - [ ] On USB, measure ST and check D103 is fully off, cold and warm (P4-012, OPEN-025).
 - [ ] Hot-plug the PM02D and scope `PM02_5V` and `+5V`; check the tantalum after repeated plugs (P4-013, DEC-037).
 - [ ] On a USB-C port above 1 A with all external devices, check `+5V` (P4-014, DEC-038).
+- [ ] Scope `+3V3` and `+3V3A` at power-up; IMUs answer after every cold start (P4-015, DEC-039).
 
 ## 3. Zone Z2: Servo power rail
 
@@ -97,6 +104,7 @@ Not drawn. Pins in pin allocation rev 0.6 (P1-001).
 - [ ] 16 MHz crystal part and load capacitors (P1-014).
 - [ ] Reset topology, NRST pad, BOOT0 (P1-007, P1-014).
 - [ ] Debug: Pixhawk Debug Mini 6-pin JST-SH (1 VREF, 2 TX, 3 RX, 4 SWDIO, 5 SWCLK, 6 GND) plus an NRST pad. Check the pin order against DS-009 if you can get it (P1-008).
+- [ ] Wire `3V3_PG` to the H743 as an input only (it also drives the `+3V3A` LDO EN, DEC-039).
 - [ ] USB FS: connector, VBUS sensing, ESD (P1-006); USB-C CC resistors so a USB-C source turns on VBUS (DEC-038); then remove the temporary `PWR_FLAG` on `VBUS` from the power sheet; OR-ing with the PM02D 5 V is the TPS2121 in Z1; `VBUS` already enters the power sheet from a power symbol.
 - [ ] SDMMC1 microSD: pull-ups and ESD protection.
 - [ ] Buzzer (TIM3_CH3) and the 3 board LEDs: pick the drive parts and resistors.

@@ -1,8 +1,8 @@
 # AeroOptix-Horizon: TPS2121 Power Mux Notes
 
-**Revision:** 0.5
+**Revision:** 0.6
 **Updated:** 2026-11-03
-**Status:** Design note for reading and re-calculation. Not a requirement or verification record. Decisions live in the spec (DEC-029 to DEC-036, PWR-015; OPEN-024 closed; OPEN-025 open).
+**Status:** Design note for reading and re-calculation. Not a requirement or verification record. Decisions live in the spec (DEC-029 to DEC-037, PWR-015; references as in the 17:11 save, 2026-11-03; OPEN-024 closed; OPEN-025 open).
 **Source:** TI TPS212x datasheet SLVSEA3F (August 2020), NotebookLM notebook `TPS212x 2.8-V to 22-V Priority Power MUX with Seamless Switchover`, read as source fulltext. TI values are `VERIFIED`; calculated values are `ESTIMATED`, before resistor tolerance.
 
 ## 1. What the mux does on this board
@@ -144,7 +144,7 @@ The channel turns off when its OV pin reaches VREF.
 | OV1 | R103 from `PM02_5V`, R104 to `GND` | 23.2 kΩ / 5 kΩ | DEC-036 |
 | OV2 | R107 from `VBUS`, R108 to `GND` | 23.2 kΩ / 5 kΩ | DEC-036 |
 | ILIM | R112 to `GND` | 80.6 kΩ (1.5 A) | DEC-030 |
-| SS | C105 to `GND` | 10 nF | Drawn |
+| SS | C108 to `GND` | 10 nF | Drawn |
 | ST | R109 from `+5V`, R110 to `GND`; drives the Q101 gate (2SK3018W), which switches the D103 status LED (lit for IN1, off for IN2) | 10 kΩ / 10 kΩ: ST 2.23 to 3.19 V when high; R109 is the 6 to 20 kΩ pull-up TI asks for | DEC-035, DEC-036 |
 
 **Switching between modes on the board:** fit R105 for XCOMP (5 µs). Leave R105 off for VREF mode (100 µs): R106 then pulls CP2 to `GND`. No other part changes. R105 is fitted in the saved file, so the default build is XCOMP (DEC-033).
