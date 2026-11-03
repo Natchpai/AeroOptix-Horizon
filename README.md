@@ -3,7 +3,7 @@
 </p>
 
 > **Status:** `DRAFT`
-> **Board revision:** `v1.0`
+> **Board revision:** `A`
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
