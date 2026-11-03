@@ -3,7 +3,7 @@
 **Revision:** 0.23
 **Updated:** 2026-11-03
 **Status:** Active execution tracker; not an approval or verification record
-**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.24
+**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.25
 
 Use the specification for confirmed requirements and decisions. This checklist records the sequence of work and the evidence needed to close each gate. Diagram content is reference material. User-confirmed requirements take precedence. All sensor parts are chosen (DEC-008, DEC-010, DEC-011); their lifecycle and sourcing risks are open.
 
@@ -181,7 +181,7 @@ Descriptions are in the specification (section 8.2). Status and owner below are 
 | OI-024 | OPEN-022 | ESC current sense and telemetry pins | Closed 2026-10-24: dropped (IF-052, IF-053 removed). PC1 stays reserved (DEC-023). | Closed |
 | OI-025 | OPEN-023 | External connector pinouts and the PM02D connector | DS-009 not read. GPS1 10-pin extra pins and I2C4 5 V tolerance open. PM02D: CLIK-Mate chosen, sheet still JST-GH. | Hardware / P2 (P2-015) |
 | OI-026 | OPEN-024 | Power mux source priority and switchover | VCOMP drawn (PR1 and CP2 at `GND`): USB wins when both sources are present; switchover up to 100 µs. TI's XCOMP or VREF modes give the PM02D priority. Added 2026-11-01. PM02D priority (DEC-031) and XCOMP with a DNP option (DEC-032) decided and drawn the same day: PR1 12.4 kΩ / 5 kΩ, CP2 16.5 kΩ / 5 kΩ. R105 fitted by default (DEC-033). R101 changed to 12.1 kΩ for a 4.44 V worst-case switch point (DEC-034). Closed 2026-11-02. | Closed |
-| OI-027 | OPEN-025 | Power mux status LED (Q101, D103) | Drawn again on 2026-11-03, not decided. Q101 VGS rating and threshold against `+5V` not checked; ST pull-up and LED current wait on the resistor values; D103 and D104 MFR and MFR.P/N swapped. Added 2026-11-03. | Human owner / P2 (P2-019) |
+| OI-027 | OPEN-025 | Power mux status LED (Q101, D103) | Drawn again on 2026-11-03, not decided. Q101 VGS(th) maximum about 1 V and VGS absolute maximum ±6 V (human owner, 2026-11-03): fine at 5 V; the OV trip must stay below 6 V; ST pull-up and LED current wait on the resistor values; D103 and D104 MFR and MFR.P/N swapped. Added 2026-11-03. | Human owner / P2 (P2-019) |
 
 ## Current next action
 
