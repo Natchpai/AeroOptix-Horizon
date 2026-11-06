@@ -21,6 +21,7 @@ AeroOptix-Horizon is a KiCad 10 hardware design for a dual-MCU flight controller
 - **Protected paths.** The `protect_kicad_v2.py` PreToolUse hook (rules in `.claude/hooks/protect.json`, order allow > deny > ask) and the permission lists in `.claude/settings.json` control edits to KiCad files, `library/` and `templates/`. The engineer edits both often, and they can disagree (one may allow what the other asks for), so read both before acting on a protected path. A permission `allow` is not design authorization: a KiCad or library change still needs the engineer's approval of that specific change.
 - **Git.** Every Git mutation needs explicit, action-specific approval in chat, even where `settings.json` lets the command run without a prompt. Never merge a PR, force-push or `reset --hard`. Work on `dev`, and open PRs to `main` with `.github/pull_request_template.md`.
 - **External-model providers** (`agent-coworker`: `agy` or `codex`): send them no PDFs, native KiCad files, `library/` contents, secrets or anything on the deny or ask lists. Hooks and `settings.json` do not apply inside a provider.
+- Do not add Co-Authored-By or Generated-with lines in commit messages.
 
 ## Workflow
 
