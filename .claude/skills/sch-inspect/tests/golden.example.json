@@ -1,0 +1,88 @@
+{
+  "description": "Example expectation file for the sch-inspect golden tests. These values belong to one real project (a 2-phase synchronous buck, root Top_hierarchical.kicad_sch). Copy the file, replace the cases with values checked in KiCad for your project, and point KICAD_GOLDEN_EXPECT at the copy.",
+  "cases": [
+    {
+      "name": "instances list the named sheets",
+      "command": ["instances"],
+      "has_sheet_names": ["Power State", "MCU IOs"]
+    },
+    {
+      "name": "U103 pin 8 reaches R506 pin 1 across sheets, not U103 pin 10",
+      "command": ["project-net", "U103", "--pin", "8"],
+      "status": "PROJECT_CONNECTIVITY_EVIDENCE",
+      "has_pins": [["U103", "8"], ["R506", "1"]],
+      "lacks_pins": [["U103", "10"]]
+    },
+    {
+      "name": "U103 pin 1 is on +9V, not GND",
+      "command": ["project-net", "U103", "--pin", "1"],
+      "status": "PROJECT_CONNECTIVITY_EVIDENCE",
+      "has_power": ["+9V"],
+      "lacks_power": ["GND"],
+      "lacks_pins": [["U103", "9"], ["U103", "11"]]
+    },
+    {
+      "name": "U103 pin 9 is on GND, not +9V",
+      "command": ["project-net", "U103", "--pin", "9"],
+      "status": "PROJECT_CONNECTIVITY_EVIDENCE",
+      "has_power": ["GND"],
+      "lacks_power": ["+9V"]
+    },
+    {
+      "name": "U103 pin 11 is on GND, not +9V",
+      "command": ["project-net", "U103", "--pin", "11"],
+      "status": "PROJECT_CONNECTIVITY_EVIDENCE",
+      "has_power": ["GND"],
+      "lacks_power": ["+9V"]
+    },
+    {
+      "name": "mirror x at 90 degrees: R903 pin 1 (KiCad 10.0.8 netlist)",
+      "command": ["project-net", "R903", "--pin", "1"],
+      "status": "PROJECT_CONNECTIVITY_EVIDENCE",
+      "has_pins": [["R901", "2"], ["D901", "1"]],
+      "lacks_pins": [["U401", "52"], ["C901", "1"]]
+    },
+    {
+      "name": "mirror x at 90 degrees: R903 pin 2 (KiCad 10.0.8 netlist)",
+      "command": ["project-net", "R903", "--pin", "2"],
+      "status": "PROJECT_CONNECTIVITY_EVIDENCE",
+      "has_pins": [["U401", "52"], ["C901", "1"]],
+      "lacks_pins": [["R901", "2"], ["D901", "1"]]
+    },
+    {
+      "name": "mirror x at 90 degrees: R905 pin 1 (KiCad 10.0.8 netlist)",
+      "command": ["project-net", "R905", "--pin", "1"],
+      "status": "PROJECT_CONNECTIVITY_EVIDENCE",
+      "has_pins": [["D903", "1"], ["SW901", "2"]],
+      "lacks_pins": [["U401", "51"], ["C903", "1"]]
+    },
+    {
+      "name": "mirror x at 270 degrees: R902 pin 1 (KiCad 10.0.8 netlist)",
+      "command": ["project-net", "R902", "--pin", "1"],
+      "status": "PROJECT_CONNECTIVITY_EVIDENCE",
+      "has_pins": [["C902", "1"], ["R707", "2"], ["U401", "7"]],
+      "lacks_pins": [["B902", "1"], ["D902", "1"]]
+    },
+    {
+      "name": "mirror x at 270 degrees: R902 pin 2 (KiCad 10.0.8 netlist)",
+      "command": ["project-net", "R902", "--pin", "2"],
+      "status": "PROJECT_CONNECTIVITY_EVIDENCE",
+      "has_pins": [["B902", "1"], ["B902", "2"], ["D902", "1"]],
+      "lacks_pins": [["U401", "7"], ["C902", "1"]]
+    },
+    {
+      "name": "net BT1_USER starts from a label name (KiCad 10.0.8 netlist)",
+      "command": ["net", "BT1_USER"],
+      "status": "PROJECT_CONNECTIVITY_EVIDENCE",
+      "has_pins": [["U401", "52"], ["R903", "2"], ["C901", "1"]],
+      "lacks_pins": [["R901", "2"]]
+    },
+    {
+      "name": "net +3V3 starts from a power symbol name",
+      "command": ["net", "+3V3"],
+      "status": "PROJECT_CONNECTIVITY_EVIDENCE",
+      "has_power": ["+3V3"],
+      "lacks_power": ["GND", "+9V"]
+    }
+  ]
+}

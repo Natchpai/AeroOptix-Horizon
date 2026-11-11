@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only KiCad schematic discovery and conservative local and parent-interface tracing (v1.0.1).
+"""Read-only KiCad schematic discovery and conservative local, hierarchical and project net evidence (v1.1.0).
 
 Python 3.10+ standard library only. Never modifies project files.
 """
@@ -14,6 +14,50 @@ from pathlib import Path
 
 class QueryError(Exception):
     pass
+
+
+_STRUCTURAL_LIMITS = [
+    'No electrical connectivity or pin-net verification',
+    'Shared sheet files are not expanded into unique hierarchical instances',
+    'Symbol reference properties can differ from instance references']
+_INTERFACE_LIMITS = [
+    'Parent sheet pins, other connected sheet pins, and wire/label paths are geometric/interface evidence only',
+    'Destination child pins and labels are sheet-local evidence only; global labels, cross-sheet power nets, reused instances, buses and inherited symbols are not fully resolved',
+    'Not a KiCad-equivalent full-project net resolver']
+PROJECT_NET_LIMITS = [
+    'Conservative geometry and declared labels only; not KiCad netlist parity',
+    'Complex symbol inheritance, buses, hidden connectivity, and ambiguous unit instances may be unresolved',
+    'Starting reference with pins on multiple separate nets needs a pin-specific query']
+
+# One entry per command: the top-level `verification` value and `limitations`
+# it prints. SKILL.md documents these values; a test keeps the two in sync.
+MODES = {
+    'summary': {'verification': 'STRUCTURAL_DISCOVERY_ONLY', 'limitations': _STRUCTURAL_LIMITS},
+    'component': {'verification': 'STRUCTURAL_DISCOVERY_ONLY', 'limitations': _STRUCTURAL_LIMITS},
+    'sheet': {'verification': 'STRUCTURAL_DISCOVERY_ONLY', 'limitations': _STRUCTURAL_LIMITS},
+    'pins': {'verification': 'LOCAL_GEOMETRY_EVIDENCE_ONLY', 'limitations': [
+        'Pin positions and direct wires are geometric evidence, not resolved electrical nets',
+        'Labels on connected multi-segment paths may not be reported',
+        'Hierarchical, global and power connectivity are not resolved']},
+    'local-net': {'verification': 'SHEET_LOCAL_ONLY', 'limitations': [
+        'Local wire paths and local-label names do not prove entire project connectivity',
+        'Cross-sheet/global power-net connectivity, buses, inherited symbols and reused sheet instances are not resolved',
+        'Geometric connectivity may differ from KiCad in complex edge cases']},
+    'hier-net': {'verification': 'HIERARCHICAL_INTERFACE_EVIDENCE_ONLY', 'limitations': _INTERFACE_LIMITS},
+    'connected-pins': {'verification': 'PARENT_CONNECTED_PINS_GEOMETRY_ONLY', 'limitations': _INTERFACE_LIMITS},
+    'project-net': {'verification': 'INSTANCE_AWARE_PROJECT_EVIDENCE_ONLY', 'limitations': PROJECT_NET_LIMITS},
+    'net': {'verification': 'INSTANCE_AWARE_PROJECT_EVIDENCE_ONLY', 'limitations': PROJECT_NET_LIMITS[:2] + [
+        'The name is matched exactly against label and power symbol text, not against KiCad full net paths',
+        'A local label repeated in several sheet instances gives one result per separate net']},
+    'components': {'verification': 'STRUCTURAL_DISCOVERY_ONLY', 'limitations': [
+        'Structural list only; no electrical connectivity or pin-net verification',
+        'A reference is resolved per sheet instance only when the symbol has exactly one matching instance path; otherwise the Reference property is shown',
+        'References that start with # (power symbols, flags) are left out unless --prefix starts with #']},
+    'instances': {'verification': 'HIERARCHICAL_INSTANCE_DISCOVERY_ONLY', 'limitations': [
+        'Hierarchical sheet instance discovery only; no electrical connectivity or pin-net verification',
+        'Lists sheet instances, not the components or references inside each instance',
+        'Sheets that are missing or outside the project directory are not expanded']},
+}
 
 
 def forms(source: str):
@@ -158,25 +202,52 @@ def sheet_info(expr, file):
             'pins': [pin[1] for pin in children(expr, 'pin') if len(pin)>1]}
 
 
-def read_sheet(path: Path):
+# One entry per schematic file for the whole run: the file is read and
+# scanned once. main() clears it, so a new query never sees old data.
+_FILES = {}
+_GEOMETRY_TAGS = ('lib_symbols', 'wire', 'bus', 'label', 'global_label',
+                  'hierarchical_label', 'junction', 'no_connect')
+
+
+def load_file(path: Path):
+    """Read and scan a schematic once; return its parsed top-level forms.
+
+    Symbols and sheets are parsed here. Geometry forms are kept as text and
+    parsed on the first local_geometry() call, so a structural query does not
+    parse the embedded library symbols.
+    """
+    key = str(path)
+    cached = _FILES.get(key)
+    if cached is not None:
+        return cached
     try:
         source = path.read_text(encoding='utf-8-sig')
     except (OSError, UnicodeError) as exc:
         raise QueryError(f'cannot read {path}: {exc}') from exc
     if not source.lstrip().startswith('(kicad_sch'):
         raise QueryError(f'not a KiCad schematic: {path}')
-    symbols, sheets = [], []
+    symbols, sheets, geometry = [], [], []
     file_uuid = None
     for tag, fragment in forms(source):
         if tag == 'symbol':
-            symbols.append(symbol_info(parse(fragment), path))
+            symbols.append(parse(fragment))
         elif tag == 'sheet':
-            sheets.append(sheet_info(parse(fragment), path))
+            sheets.append(parse(fragment))
         elif tag == 'uuid':
-            file_uuid = val(parse(fragment), 'uuid')  # root UUID form is (uuid VALUE)
-            if file_uuid is None:
-                file_uuid = parse(fragment)[1]
-    return {'file': str(path), 'uuid': file_uuid, 'symbols': symbols, 'sheets': sheets}
+            file_uuid = parse(fragment)[1]  # root UUID form is (uuid VALUE)
+        elif tag in _GEOMETRY_TAGS:
+            geometry.append((tag, fragment))
+    cached = {'uuid': file_uuid, 'symbols': symbols, 'sheets': sheets,
+              'geometry_forms': geometry, 'geometry': None}
+    _FILES[key] = cached
+    return cached
+
+
+def read_sheet(path: Path):
+    loaded = load_file(path)
+    return {'file': str(path), 'uuid': loaded['uuid'],
+            'symbols': [symbol_info(expr, path) for expr in loaded['symbols']],
+            'sheets': [sheet_info(expr, path) for expr in loaded['sheets']]}
 
 
 
@@ -207,10 +278,12 @@ def is_on_segment(point, a, b, tol=0.002):
 
 def local_geometry(path):
     """Load selected file geometry only. No netlist export or flattened connectivity."""
-    source = path.read_text(encoding='utf-8-sig')
+    loaded = load_file(path)
+    if loaded['geometry'] is not None:
+        return loaded['geometry']
     lib = {}
     wires, buses, labels, junctions, no_connects = [], [], [], [], []
-    for tag, fragment in forms(source):
+    for tag, fragment in loaded['geometry_forms']:
         if tag == 'lib_symbols':
             tree = parse(fragment)
             for sym in children(tree, 'symbol'):
@@ -243,7 +316,8 @@ def local_geometry(path):
     labels = [label for label in labels if not (
         label['point'] and any(is_on_segment(label['point'], a, b) for a, b in buses)
     )]
-    return lib, wires, labels, junctions, no_connects
+    loaded['geometry'] = (lib, wires, labels, junctions, no_connects)
+    return loaded['geometry']
 
 
 def pins_from_symbol(symbol, lib):
@@ -284,14 +358,18 @@ def pins_from_symbol(symbol, lib):
                 if not atpin:
                     continue
                 px,py = atpin
-                if mirrored == 'x':
-                    py=-py
-                elif mirrored == 'y':
-                    px=-px
                 angle = math.radians(rotation)
-                x = origins[0]+px*math.cos(angle)-py*math.sin(angle)
+                dx = px*math.cos(angle)-py*math.sin(angle)
                 # Local Y positive up; schematic canvas Y positive down.
-                y = origins[1]-(px*math.sin(angle)+py*math.cos(angle))
+                dy = -(px*math.sin(angle)+py*math.cos(angle))
+                # KiCad rotates first, then mirrors on the canvas axis. The
+                # two orders only agree at 0 and 180 degrees.
+                if mirrored == 'x':
+                    dy=-dy
+                elif mirrored == 'y':
+                    dx=-dx
+                x = origins[0]+dx
+                y = origins[1]+dy
                 num=first(pin, 'number')
                 name=first(pin, 'name')
                 pins.append({'number':num[1] if num and len(num)>1 else None,
@@ -308,11 +386,7 @@ def power_symbol_anchors(path, lib):
     does not implement global power-net propagation across sheets.
     """
     result, warnings = [], []
-    source = path.read_text(encoding='utf-8-sig')
-    for tag, fragment in forms(source):
-        if tag != 'symbol':
-            continue
-        expr = parse(fragment)
+    for expr in load_file(path)['symbols']:
         lib_id = val(expr, 'lib_id')
         definition = lib.get(lib_id)
         if definition is None or first(definition, 'power') is None:
@@ -398,15 +472,12 @@ def inspect_pins(root, data, reference, limit, resolved=False):
             geometry_cache[path]=local_geometry(path)
         lib,wires,labels,junctions,nc=geometry_cache[path]
         power_anchors, power_warnings = power_symbol_anchors(path, lib) if resolved else ([], [])
-        source=path.read_text(encoding='utf-8-sig')
         wanted={m['uuid'] for m in matches}
         placed={}
-        for tag,fragment in forms(source):
-            if tag=='symbol':
-                expr=parse(fragment)
-                uid=val(expr,'uuid')
-                if uid in wanted:
-                    placed[uid]=expr
+        for expr in load_file(path)['symbols']:
+            uid=val(expr,'uuid')
+            if uid in wanted:
+                placed[uid]=expr
         pins_by_uuid={}
         warnings_by_uuid={}
         all_positions=[]
@@ -481,11 +552,7 @@ def inspect_pins(root, data, reference, limit, resolved=False):
 
 def parent_sheet_interfaces(parent_file: Path, child_uuid: str):
     """Read only the named sheet object; its sheet pins are in parent coordinates."""
-    text = parent_file.read_text(encoding='utf-8-sig')
-    for tag, fragment in forms(text):
-        if tag != 'sheet':
-            continue
-        expr = parse(fragment)
+    for expr in load_file(parent_file)['sheets']:
         if val(expr, 'uuid') == child_uuid:
             result = []
             for pin in children(expr, 'pin'):
@@ -501,14 +568,10 @@ def connected_parent_pins(parent_file, wires, labels, junctions, origin, limit):
 
     Conservative sheet-local geometry only; never marks full electrical verification.
     """
-    source = parent_file.read_text(encoding='utf-8-sig')
     lib, _, _, _, _ = local_geometry(parent_file)
     candidates = []
     warnings = []
-    for tag, fragment in forms(source):
-        if tag != 'symbol':
-            continue
-        expr = parse(fragment)
+    for expr in load_file(parent_file)['symbols']:
         info = symbol_info(expr, parent_file)
         pins, pin_warnings = pins_from_symbol(expr, lib)
         for warning in pin_warnings:
@@ -551,11 +614,7 @@ def connected_parent_sheet_pins(parent_file, wires, labels, junctions, origin, s
     Source sheet/pin is excluded by UUID, not by label name.
     """
     candidates = []
-    source = parent_file.read_text(encoding='utf-8-sig')
-    for tag, fragment in forms(source):
-        if tag != 'sheet':
-            continue
-        sheet = parse(fragment)
+    for sheet in load_file(parent_file)['sheets']:
         sheet_uuid = val(sheet, 'uuid')
         meta = properties(sheet)
         for pin in children(sheet, 'pin'):
@@ -750,14 +809,17 @@ def build_instance_tree(root, data, max_instances=1000):
     return nodes
 
 
-def project_connections(root, data, reference, limit, max_instances, pin_filter=None):
-    """Conservative instance-aware traversal of schematic net evidence.
+def build_project_graph(root, data, max_instances):
+    """Build the instance-aware graph of schematic net evidence.
 
     Local paths are grouped by wire geometry/labels. An edge is added only
     for an explicitly matched hierarchical interface or equal global/power
     names. This is NOT a KiCad-equivalent ERC/netlist computation.
+
+    Returns (instances, cached, graph, details). A graph node is
+    (instance index, local group).
     """
-    from collections import defaultdict, deque
+    from collections import defaultdict
     instances = build_instance_tree(root, data, max_instances)
     cached = {}
     for node in instances:
@@ -765,25 +827,26 @@ def project_connections(root, data, reference, limit, max_instances, pin_filter=
         if file in cached:
             continue
         lib, wires, labels, junctions, no_conn = local_geometry(file)
-        source = file.read_text(encoding='utf-8-sig')
+        loaded = load_file(file)
         component_pins = []
         sheet_pins = []
-        for tag, frag in forms(source):
-            if tag == 'symbol':
-                expr = parse(frag)
-                info = symbol_info(expr, file)
-                pins, warnings = pins_from_symbol(expr, lib)
-                for pin in pins:
-                    component_pins.append({**pin, 'reference': info['reference_property'],
-                                           'instances': info['instances'], 'symbol_uuid': info['uuid'],
-                                           'lib_id': info['lib_id']})
-            elif tag == 'sheet':
-                expr = parse(frag)
-                for pin in children(expr, 'pin'):
-                    point = xy(pin)
-                    if point:
-                        sheet_pins.append({'name': pin[1], 'point': point,
-                                           'sheet_uuid': val(expr, 'uuid')})
+        for expr in loaded['symbols']:
+            info = symbol_info(expr, file)
+            pins, warnings = pins_from_symbol(expr, lib)
+            # Same test as power_symbol_anchors: the (power) flag of the
+            # embedded library symbol, not the library name.
+            definition = lib.get(info['lib_id'])
+            is_power = definition is not None and first(definition, 'power') is not None
+            for pin in pins:
+                component_pins.append({**pin, 'reference': info['reference_property'],
+                                       'instances': info['instances'], 'symbol_uuid': info['uuid'],
+                                       'lib_id': info['lib_id'], 'is_power': is_power})
+        for expr in loaded['sheets']:
+            for pin in children(expr, 'pin'):
+                point = xy(pin)
+                if point:
+                    sheet_pins.append({'name': pin[1], 'point': point,
+                                       'sheet_uuid': val(expr, 'uuid')})
         powers, warnings = power_symbol_anchors(file, lib)
         anchors = [tuple(p['position_mm']) for p in component_pins]
         anchors += [x['point'] for x in sheet_pins]
@@ -814,13 +877,15 @@ def project_connections(root, data, reference, limit, max_instances, pin_filter=
 
     graph = defaultdict(set)
     details = defaultdict(lambda: {'components': [], 'global': set(), 'power': set(), 'hier': [], 'labels': set()})
-    global_nodes, power_nodes = defaultdict(list), defaultdict(list)
+    # Group keys per global name. KiCad joins a global label and a power
+    # symbol that share a name, so both kinds go into one table.
+    named_nodes = defaultdict(list)
     for i, node in enumerate(instances):
         file = Path(node['file'])
         d = cached[file]
         def key(g): return (i, g)
         for p in d['components']:
-            if p['_group'] is not None and p['lib_id'] and not p['lib_id'].startswith('power:'):
+            if p['_group'] is not None and p['lib_id'] and not p['is_power']:
                 matches = [x for x in p['instances'] if x.get('path') == node['path']]
                 ref = matches[0]['reference'] if len(matches) == 1 else p['reference']
                 details[key(p['_group'])]['components'].append({
@@ -834,7 +899,7 @@ def project_connections(root, data, reference, limit, max_instances, pin_filter=
             item = details[key(group)]
             if l['kind'] == 'global_label':
                 item['global'].add(l['name'])
-                global_nodes[l['name']].append(key(group))
+                named_nodes[l['name']].append(key(group))
             elif l['kind'] == 'hierarchical_label':
                 item['hier'].append(l['name'])
             else: item['labels'].add(l['name'])
@@ -845,7 +910,7 @@ def project_connections(root, data, reference, limit, max_instances, pin_filter=
                 # net name. Unioning it globally bridges otherwise unrelated
                 # nets that merely contain a PWR_FLAG symbol.
                 if p['name'] != 'PWR_FLAG':
-                    power_nodes[p['name']].append(key(p['_group']))
+                    named_nodes[p['name']].append(key(p['_group']))
         if node['parent'] is None: continue
         parent_idx = node['parent']
         parent_file = Path(instances[parent_idx]['file'])
@@ -865,14 +930,47 @@ def project_connections(root, data, reference, limit, max_instances, pin_filter=
                     graph[origin].add(target)
                     graph[target].add(origin)
     # Global labels and power symbols are global *by KiCad semantics*.
-    for collection in (global_nodes, power_nodes):
-        for _, keys in collection.items():
-            if keys:
-                first_key = keys[0]
-                for other in keys[1:]:
-                    graph[first_key].add(other)
-                    graph[other].add(first_key)
+    for keys in named_nodes.values():
+        first_key = keys[0]
+        for other in keys[1:]:
+            graph[first_key].add(other)
+            graph[other].add(first_key)
 
+    return instances, cached, graph, details
+
+
+def reach(graph, start):
+    """All graph nodes connected to `start`."""
+    reached = {start}
+    queue = [start]
+    while queue:
+        current = queue.pop()
+        for other in graph[current]:
+            if other not in reached:
+                reached.add(other)
+                queue.append(other)
+    return reached
+
+
+def net_evidence(instances, details, reached, limit):
+    """Result fields shared by project-net and net for one set of groups."""
+    pins = sorted([p for group in reached for p in details[group]['components']],
+                  key=lambda p: (p['instance_path'], p['reference'] or '', p['pin_number'] or ''))
+    globals_found = sorted({x for group in reached for x in details[group]['global']})
+    power_found = sorted({x for group in reached for x in details[group]['power']})
+    return {'connected_component_pins': pins[:limit],
+            'total_connected_component_pins': len(pins),
+            'connected_pins_truncated': len(pins) > limit,
+            'global_labels': globals_found[:limit], 'power_net_names': power_found[:limit],
+            'names_truncated': len(globals_found)>limit or len(power_found)>limit,
+            'groups_visited': len(reached), 'instance_count': len(instances),
+            'project_net_verified': False,
+            'limitations': list(PROJECT_NET_LIMITS)}
+
+
+def project_connections(root, data, reference, limit, max_instances, pin_filter=None):
+    """Connectivity evidence for the net on one component pin."""
+    instances, cached, graph, details = build_project_graph(root, data, max_instances)
     starts = []
     for i, node in enumerate(instances):
         for p in cached[Path(node['file'])]['components']:
@@ -889,32 +987,94 @@ def project_connections(root, data, reference, limit, max_instances, pin_filter=
                 'starting_pins': [{'instance_path': instances[i]['path'], 'pin': n}
                                   for i,g,n in starts][:limit],
                 'project_net_verified': False, 'instance_count': len(instances)}
-    start = (starts[0][0], starts[0][1])
-    reached = {start}
-    q = deque([start])
-    while q:
-        current = q.popleft()
-        for other in graph[current]:
-            if other not in reached:
-                reached.add(other)
-                q.append(other)
-    pins = sorted([p for group in reached for p in details[group]['components']],
-                  key=lambda p: (p['instance_path'], p['reference'] or '', p['pin_number'] or ''))
-    globals_found = sorted({x for group in reached for x in details[group]['global']})
-    power_found = sorted({x for group in reached for x in details[group]['power']})
+    reached = reach(graph, (starts[0][0], starts[0][1]))
     return {'status': 'PROJECT_CONNECTIVITY_EVIDENCE', 'reference': reference,
             'source_instance_path': instances[starts[0][0]]['path'],
             'source_pin_number': starts[0][2],
-            'connected_component_pins': pins[:limit],
-            'total_connected_component_pins': len(pins),
-            'connected_pins_truncated': len(pins) > limit,
-            'global_labels': globals_found[:limit], 'power_net_names': power_found[:limit],
-            'names_truncated': len(globals_found)>limit or len(power_found)>limit,
-            'groups_visited': len(reached), 'instance_count': len(instances),
-            'project_net_verified': False,
-            'limitations': ['Conservative geometry and declared labels only; not KiCad netlist parity',
-                            'Complex symbol inheritance, buses, hidden connectivity, and ambiguous unit instances may be unresolved',
-                            'Starting reference with pins on multiple separate nets needs a pin-specific query']}
+            **net_evidence(instances, details, reached, limit)}
+
+
+def net_connections(root, data, name, limit, max_instances):
+    """Connectivity evidence for every net that carries `name`.
+
+    A start is any group holding a local label, global label, hierarchical
+    label or power symbol with that exact name. Starts that reach each other
+    are one result; a local label repeated in separate sheet instances gives
+    one result per instance.
+    """
+    instances, _, graph, details = build_project_graph(root, data, max_instances)
+    kinds = (('label', 'labels'), ('global_label', 'global'),
+             ('hierarchical_label', 'hier'), ('power_symbol', 'power'))
+    starts = {}
+    for key, item in details.items():
+        matched = [kind for kind, field in kinds if name in item[field]]
+        if matched:
+            starts[key] = matched
+    if not starts:
+        return [{'status': 'NET_NAME_NOT_FOUND', 'net_name': name,
+                 'project_net_verified': False, 'instance_count': len(instances)}]
+    results, seen = [], set()
+    for key in sorted(starts, key=lambda k: (instances[k[0]]['path'], k[1])):
+        if key in seen:
+            continue
+        reached = reach(graph, key)
+        seen |= reached
+        matched_by = sorted(
+            ({'kind': kind, 'instance_path': instances[k[0]]['path'], 'file': instances[k[0]]['file']}
+             for k in reached if k in starts for kind in starts[k]),
+            key=lambda m: (m['instance_path'], m['kind']))
+        unique = [m for n, m in enumerate(matched_by) if m not in matched_by[:n]]
+        results.append({'status': 'PROJECT_CONNECTIVITY_EVIDENCE', 'net_name': name,
+                        'matched_by': unique[:limit],
+                        'matched_by_truncated': len(unique) > limit,
+                        **net_evidence(instances, details, reached, limit)})
+    return results
+
+
+def reference_parts(reference):
+    """Split 'R506' into ('R', 506); the number is -1 when there is none."""
+    text = reference or ''
+    letters = text.rstrip('0123456789?')
+    digits = text[len(letters):].strip('?')
+    return letters, int(digits) if digits.isdigit() else -1
+
+
+def list_components(root, data, max_instances, sheet=None, prefix=None):
+    """List components per hierarchical sheet instance (structure only)."""
+    instances = build_instance_tree(root, data, max_instances)
+    indexed = {Path(d['file']).resolve(): d for d in data}
+    rows, sheet_found = {}, sheet is None
+    for node in instances:
+        file = Path(node['file'])
+        if sheet is not None:
+            names = ((root.name, root.stem) if node['parent'] is None
+                     else (node['parent_sheet_name'], file.name, file.stem))
+            if sheet not in names:
+                continue
+            sheet_found = True
+        for sym in indexed[file]['symbols']:
+            matches = [x for x in sym['instances'] if x.get('path') == node['path']]
+            one = matches[0] if len(matches) == 1 else None
+            reference = one['reference'] if one else sym['reference_property']
+            if not reference:
+                continue
+            hidden = reference.startswith('#')
+            if prefix is None:
+                if hidden:
+                    continue
+            elif reference_parts(reference)[0] != prefix:
+                continue
+            row = rows.setdefault((node['path'], reference), {
+                'reference': reference, 'value': sym['value'], 'lib_id': sym['lib_id'],
+                'sheet_name': node['parent_sheet_name'], 'instance_path': node['path'],
+                'file': str(file), 'units': []})
+            unit = (one['unit'] if one else None) or sym['unit']
+            if unit is not None and unit not in row['units']:
+                row['units'].append(unit)
+    ordered = sorted(rows.values(), key=lambda r: (r['instance_path'], *reference_parts(r['reference']), r['reference']))
+    for row in ordered:
+        row['units'].sort()
+    return ordered, sheet_found
 
 
 def root_file(raw: str):
@@ -968,24 +1128,45 @@ def discover(root: Path, max_files: int):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument('mode', choices=['summary', 'component', 'sheet', 'pins', 'local-net', 'hier-net', 'connected-pins', 'project-net', 'instances'])
-    ap.add_argument('target', nargs='?', help='reference (component/pins) or sheet filename/name (sheet)')
+    ap.add_argument('mode', choices=list(MODES))
+    ap.add_argument('target', nargs='?', help='reference, sheet filename/name (sheet) or net name (net)')
     ap.add_argument('--project', required=True, help='root .kicad_sch (preferred) or its directory')
     ap.add_argument('--limit', type=int, default=20)
     ap.add_argument('--max-files', type=int, default=100)
     ap.add_argument('--pin', help='pin number for project-net; necessary when a component has multiple nets')
+    ap.add_argument('--sheet', help='components only: keep one sheet (name, file name or file stem)')
+    ap.add_argument('--prefix', help='components only: keep references with this letter prefix, for example U')
     args = ap.parse_args(argv)
+    _FILES.clear()
+    # Print UTF-8 JSON whatever the console code page is. A legacy code page
+    # (common on Windows) cannot encode some paths and names.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding='utf-8')
+        except (AttributeError, ValueError):
+            pass  # not a text console stream (for example a test buffer)
     try:
         if not (1 <= args.limit <= 200 and 1 <= args.max_files <= 1000):
             raise QueryError('limit and max-files must be positive and within supported bounds')
         if args.pin and args.mode != 'project-net':
             raise QueryError('--pin is only supported with project-net')
-        if args.mode not in ('summary', 'instances') and not args.target:
+        if (args.sheet is not None or args.prefix is not None) and args.mode != 'components':
+            raise QueryError('--sheet and --prefix are only supported with components')
+        if args.mode == 'components' and args.target:
+            raise QueryError('components takes --sheet and --prefix, not a target')
+        if args.mode not in ('summary', 'instances', 'components') and not args.target:
             raise QueryError(f'{args.mode} requires a target')
         root = root_file(args.project)
         data, missing, outside = discover(root, args.max_files)
         records = []
-        if args.mode == 'project-net':
+        warnings = []
+        if args.mode == 'net':
+            records = net_connections(root, data, args.target, args.limit, args.max_files)
+        elif args.mode == 'components':
+            records, sheet_found = list_components(root, data, args.max_files, args.sheet, args.prefix)
+            if not sheet_found:
+                warnings.append(f'no sheet instance matches --sheet {args.sheet}')
+        elif args.mode == 'project-net':
             records = [project_connections(root, data, args.target, args.limit, args.max_files, args.pin)]
         elif args.mode == 'instances':
             records = build_instance_tree(root, data, args.max_files)
@@ -1013,17 +1194,9 @@ def main(argv=None):
                'results': records[:args.limit], 'total_matches': len(records),
                'truncated': len(records)>args.limit, 'missing_sheets': missing,
                'skipped_outside_project': outside,
-               'verification': 'INSTANCE_AWARE_PROJECT_EVIDENCE_ONLY' if args.mode == 'project-net' else 'HIERARCHICAL_INSTANCE_DISCOVERY_ONLY' if args.mode == 'instances' else 'PARENT_CONNECTED_PINS_GEOMETRY_ONLY' if args.mode == 'connected-pins' else 'HIERARCHICAL_INTERFACE_EVIDENCE_ONLY' if args.mode == 'hier-net' else 'SHEET_LOCAL_ONLY' if args.mode == 'local-net' else 'LOCAL_GEOMETRY_EVIDENCE_ONLY' if args.mode == 'pins' else 'STRUCTURAL_DISCOVERY_ONLY',
-               'limitations': (['Parent sheet pins, other connected sheet pins, and wire/label paths are geometric/interface evidence only',
-                               'Destination child pins and labels are sheet-local evidence only; global labels, cross-sheet power nets, reused instances, buses and inherited symbols are not fully resolved',
-                               'Not a KiCad-equivalent full-project net resolver'] if args.mode in ('hier-net', 'connected-pins') else ['Local wire paths and local-label names do not prove entire project connectivity',
-                               'Cross-sheet/global power-net connectivity, buses, inherited symbols and reused sheet instances are not resolved',
-                               'Geometric connectivity may differ from KiCad in complex edge cases'] if args.mode == 'local-net' else ['Pin positions and direct wires are geometric evidence, not resolved electrical nets',
-                               'Labels on connected multi-segment paths may not be reported',
-                               'Hierarchical, global and power connectivity are not resolved'] if args.mode == 'pins' else ['No electrical connectivity or pin-net verification',
-                               'Shared sheet files are not expanded into unique hierarchical instances',
-                               'Symbol reference properties can differ from instance references']),
-               'warnings': pin_issues if args.mode in ('pins','local-net','hier-net','connected-pins') else []}
+               'verification': MODES[args.mode]['verification'],
+               'limitations': list(MODES[args.mode]['limitations']),
+               'warnings': pin_issues if args.mode in ('pins','local-net','hier-net','connected-pins') else warnings}
         print(json.dumps(out, ensure_ascii=False, indent=2))
         return 0
     except (QueryError, OSError, UnicodeError, ValueError) as exc:

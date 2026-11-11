@@ -2,11 +2,11 @@
 name: pcb-inspect
 description: >-
   Inspects and explains KiCad 10 PCB layout data in read-only mode: footprints,
-  pads, nets, tracks, vias, placement, and distances in the saved .kicad_pcb.
-  Use when the user asks to inspect, locate, or measure a footprint, pad, net,
-  trace, via, or board area. Targeted queries only; it extracts evidence and
+  pads, nets, tracks, vias, zones, placement, and distances in the saved
+  .kicad_pcb. Use when the user asks to inspect, locate, or measure a footprint,
+  pad, net, trace, via, zone, or board area. Targeted queries only; it extracts evidence and
   does not judge the layout.
-argument-hint: "[summary | footprint <ref> | pads <ref> | net <name> | tracks <net> | vias <net> | nearby <ref> | pad-distance <ref.pin> <ref.pin>]"
+argument-hint: "[summary | footprint <ref> | pads <ref> | nets [--match <text>] | net <name> | tracks <net> | vias <net> | zones <net> | nearby <ref> [--layer <l>] [--radius <mm>] | pad-distance <ref.pin> <ref.pin>]"
 ---
 
 # PCB Inspection
@@ -20,27 +20,38 @@ argument-hint: "[summary | footprint <ref> | pads <ref> | net <name> | tracks <n
 - Do not assume a parser, IPC connection, or local DRC capability exists; verify
   tools before using them. Never present an unimplemented mode as available.
 
-## Commands (v1.0, Stable (Scoped))
+## Commands (v1.1, Stable (Scoped))
 Run `scripts/query_pcb.py` (Python 3.10+, standard library). Resolve the script
 and board paths first.
 
 `python <skill dir>/scripts/query_pcb.py <command> [targets] --board <file.kicad_pcb> [--limit 20]`
 
+Output is UTF-8 JSON on stdout. Errors are UTF-8 JSON on stderr with a nonzero
+exit code and `verification: NOT_VERIFIED`; infer nothing from them.
+
 | Command | Purpose |
 |---|---|
-| `summary` | Board metadata, layers, footprint counts, bounded samples. |
+| `summary` | Board metadata, layers, footprint, net, track, via and zone counts, `Edge.Cuts` bounding box. |
 | `footprint <ref>` | Saved placement, rotation, side, library ID, UUID. |
 | `pads <ref>` | Pad numbers, shapes, sizes, saved net, board-space centres. |
+| `nets [--match <text>]` | Net names with pad, track, via and zone counts. |
 | `net <name>` | Saved footprint/pad assignments of a net. |
-| `tracks <net>` | Saved segments and arcs on one net, with length. |
-| `vias <net>` | Saved via position, size, drill, layers, type. |
-| `nearby <ref>` | Other footprints by distance between saved origins. |
+| `tracks <net>` | Saved segments and arcs on one net, with length and per-net totals. |
+| `vias <net>` | Saved via position, size, drill, layers, type, and counts per kind. |
+| `zones <net>` | Saved zones on one net: layers, priority, outline box, pad connection settings. |
+| `nearby <ref> [--layer <l>] [--radius <mm>]` | Other footprints by distance between saved origins. |
 | `pad-distance <ref.pin> <ref.pin>` | Distance between two pad centres. |
 
-`--limit` is 1-1000. For `tracks` and `vias`, an empty quoted target (`""`)
-requests unconnected items. States such as `AMBIGUOUS_REFERENCE`, `AMBIGUOUS`,
+`--limit` is 1-1000. For `tracks`, `vias` and `zones`, an empty quoted target
+(`""`) requests items with no net. A net name is the full saved name,
+including any sheet path such as `/Top/Power Supplies/+5VUSB`; when the exact
+name is not known, find it with `nets --match <text>`. For a length, a count
+or a width question, read `totals` from `tracks` or `vias`: it covers every
+match, so there is no need to raise `--limit` and add up the list. States such as `AMBIGUOUS_REFERENCE`, `AMBIGUOUS`,
 `MISSING`, `UNCONNECTED`, `ASSIGNED_WITHOUT_DECLARATION`, `NOT_FOUND` and
-`NOT_VERIFIED` are distinct results, not passes. Read
+`NOT_VERIFIED` are distinct results, not passes. A KiCad 10 board has no net
+table, so its nets report `ASSIGNED`; `ASSIGNED_WITHOUT_DECLARATION` means a
+net table exists and lacks that name. Read
 [references/cli.md](references/cli.md) for exact semantics when interpreting
 output.
 
@@ -81,5 +92,4 @@ Not implemented (do not offer as commands): extended `component`, `area`, `check
 - Output: **Target / Scope**, **Findings**, **Evidence**, **Limitations / NOT_VERIFIED**,
   **Recommended next checks**.
 - Create no reports, temporary exports, caches, or other files unless authorized.
-- Test commands for maintainers are in [references/testing.md](references/testing.md);
-  golden evidence is in `references/2phase-synchbuck-golden-evidence.md`.
+- Test commands for maintainers are in [references/testing.md](references/testing.md).

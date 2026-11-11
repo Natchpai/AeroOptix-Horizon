@@ -1,0 +1,88 @@
+{
+  "description": "Example expectation file for the pcb-inspect golden tests. These values belong to one real project (a 2-phase synchronous buck, 2Phase_SynchBuck.kicad_pcb, saved by KiCad 10) and were read from the native PCB text, not from query_pcb.py; see golden.example-evidence.md. Copy the file, replace the cases with values checked in KiCad for your board, and point KICAD_PCB_GOLDEN_EXPECT at the copy.",
+  "cases": [
+    {
+      "name": "R313 front-side pad centres and sizes",
+      "command": ["pads", "R313"],
+      "status": "FOUND",
+      "fields": {
+        "pad_count": 2,
+        "pads_truncated": false,
+        "footprint.position": {"x_mm": 127.5, "y_mm": 117.25, "rotation_deg": 0.0},
+        "pads[number=1].position": {"x_mm": 126.675, "y_mm": 117.25},
+        "pads[number=1].size_mm": {"x_mm": 0.8, "y_mm": 1.0},
+        "pads[number=1].geometry_status": "STRUCTURAL_EVIDENCE",
+        "pads[number=2].position": {"x_mm": 128.325, "y_mm": 117.25},
+        "pads[number=2].size_mm": {"x_mm": 0.8, "y_mm": 1.0},
+        "pads[number=2].geometry_status": "STRUCTURAL_EVIDENCE"
+      }
+    },
+    {
+      "name": "R313 pad centre distance",
+      "command": ["pad-distance", "R313.1", "R313.2"],
+      "status": "FOUND",
+      "fields": {
+        "distance_mm": 1.65,
+        "distance_status": "STRUCTURAL_EVIDENCE"
+      }
+    },
+    {
+      "name": "U304 back-side pad 1 sits on the saved +5V track end (no extra B.Cu mirror)",
+      "command": ["pads", "U304"],
+      "status": "FOUND",
+      "fields": {
+        "footprint.layer": "B.Cu",
+        "pads[number=1].position": {"x_mm": 159.0625, "y_mm": 87.45},
+        "pads[number=1].net_name": "+5V",
+        "pads[number=1].net_status": "ASSIGNED"
+      }
+    },
+    {
+      "name": "+5VUSB tracks: count, first segment, and KiCad 10 net status",
+      "command": ["tracks", "/Top/Power Supplies/+5VUSB"],
+      "status": "FOUND",
+      "fields": {
+        "net_status": "ASSIGNED",
+        "net_declaration_status": "NOT_APPLICABLE",
+        "track_count": 18,
+        "tracks_truncated": false,
+        "totals.segment_count": 18,
+        "totals.arc_count": 0,
+        "tracks[0].geometry_type": "segment",
+        "tracks[0].start": {"x_mm": 111.1, "y_mm": 117.95},
+        "tracks[0].end": {"x_mm": 116.8, "y_mm": 117.95},
+        "tracks[0].layer": "F.Cu",
+        "tracks[0].width_mm": 0.3,
+        "tracks[0].length_mm": 5.7,
+        "tracks[0].length_status": "STRUCTURAL_EVIDENCE"
+      }
+    },
+    {
+      "name": "+5VUSB via geometry; an unsaved via type stays NOT_VERIFIED",
+      "command": ["vias", "/Top/Power Supplies/+5VUSB"],
+      "status": "FOUND",
+      "fields": {
+        "via_count": 1,
+        "vias_truncated": false,
+        "vias[0].position": {"x_mm": 111.1, "y_mm": 117.95},
+        "vias[0].size_mm": 0.8,
+        "vias[0].drill_mm": 0.4,
+        "vias[0].layer_span": ["F.Cu", "B.Cu"],
+        "vias[0].via_type": null,
+        "vias[0].via_type_status": "NOT_VERIFIED"
+      }
+    },
+    {
+      "name": "board totals match the count of top-level forms in the file",
+      "command": ["summary"],
+      "status": "BOARD_SUMMARY",
+      "fields": {
+        "footprint_count": 306,
+        "track_count": 1599,
+        "via_count": 797,
+        "zone_count": 133,
+        "has_net_table": false
+      }
+    }
+  ]
+}
