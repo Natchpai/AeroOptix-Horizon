@@ -22,6 +22,55 @@
 		(uuid "2ddff602-9dd2-4926-89da-45842ef0cd90")
 	)
 	(sheet
+		(at 120.65 130.81)
+		(size 38.1 13.97)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 255 255 194 1)
+		)
+		(uuid "398ca7b7-7738-4225-954b-67f201e2f059")
+		(property "Sheetname" "Main MCU"
+			(at 120.65 129.7174 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(face "Century Gothic")
+					(size 2.54 2.54)
+					(thickness 0.254)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "main_mcu.kicad_sch"
+			(at 120.65 145.3646 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
 		(at 120.65 101.6)
 		(size 38.1 16.51)
 		(exclude_from_sim no)
@@ -95,6 +144,54 @@
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a"
 					(page "1")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 120.65 158.75)
+		(size 38.1 12.7)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 255 255 194 1)
+		)
+		(uuid "92584a55-2e01-43a4-9009-7cca80536e22")
+		(property "Sheetname" "IO MCU"
+			(at 120.65 157.4034 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(face "Century Gothic")
+					(size 2.54 2.54)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "io_mcu.kicad_sch"
+			(at 120.65 172.0346 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a"
+					(page "3")
 				)
 			)
 		)

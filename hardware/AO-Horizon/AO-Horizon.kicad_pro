@@ -793,13 +793,21 @@
         "uuid": "76162bf1-0d95-48cb-b65a-4de551455d04"
       }
     ],
-    "used_designators": "#FLG1,#FLG101-106,#PWR1-20,#PWR101-120,C101-121,CN101,D101-106,L101-102,R101-108,R115,U101-103",
+    "used_designators": "#FLG1,#FLG101-106,#PWR1-20,#PWR101-120,#PWR201-209,#PWR301-307,C101-121,CN101,D101-106,L101-102,R101-108,R115,U101-103",
     "variants": []
   },
   "sheets": [
     [
       "5920cc04-6cd8-462c-b523-fb850d762b0c",
       "Power Supplies"
+    ],
+    [
+      "398ca7b7-7738-4225-954b-67f201e2f059",
+      "Main MCU"
+    ],
+    [
+      "92584a55-2e01-43a4-9009-7cca80536e22",
+      "IO MCU"
     ],
     [
       "76162bf1-0d95-48cb-b65a-4de551455d04",
@@ -828,8 +836,8 @@
     "PCB_REVIEW_NAME": "",
     "PROJECT_ID": "NP-AO-2601",
     "PROJECT_NAME": "AeroOptix - Horizon",
-    "RELEASE_DATE": "02-Nov-2026",
-    "SCH_DRAWING_DATE": "01-Nov-2026",
+    "RELEASE_DATE": "Dec-2026",
+    "SCH_DRAWING_DATE": "11-Nov-2026",
     "SCH_DRAWING_NAME": "NATCHANON T.",
     "SCH_REVIEW_DATE": "",
     "SCH_REVIEW_NAME": "",
