@@ -37,8 +37,10 @@ width with a count) and `length_not_verified_count` (primitives with no usable l
 left out of the sums). The total is the sum of saved primitives on that net. It is not a
 routed-path, signal-path or return-path length.
 `vias` reports saved net assignment, board-space position, size, drill, layer span, and
-the saved via type when present. An omitted via type is `null` with
-`via_type_status: NOT_VERIFIED`; it is not assumed to be through-hole.
+the via type. KiCad saves the type as a bare word after `via` (`blind`, `buried` or
+`micro`) and saves no word for a through via, which is reported as `through`.
+`via_type_status` is `STRUCTURAL_EVIDENCE`: the type is read from the file, not checked
+against the stackup or the layer span.
 `totals.groups` counts every matching via per size, drill, layer span and type.
 `zones` reports saved zones assigned to one exact net: `layers`, `name`, `priority`
 (`null` when the file saves none), `outline_bbox` and `outline_point_count` of the saved

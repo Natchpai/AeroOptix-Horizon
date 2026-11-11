@@ -58,7 +58,7 @@
       }
     },
     {
-      "name": "+5VUSB via geometry; an unsaved via type stays NOT_VERIFIED",
+      "name": "+5VUSB via geometry; a via saved with no type word is a through via",
       "command": ["vias", "/Top/Power Supplies/+5VUSB"],
       "status": "FOUND",
       "fields": {
@@ -68,8 +68,8 @@
         "vias[0].size_mm": 0.8,
         "vias[0].drill_mm": 0.4,
         "vias[0].layer_span": ["F.Cu", "B.Cu"],
-        "vias[0].via_type": null,
-        "vias[0].via_type_status": "NOT_VERIFIED"
+        "vias[0].via_type": "through",
+        "vias[0].via_type_status": "STRUCTURAL_EVIDENCE"
       }
     },
     {

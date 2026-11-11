@@ -421,8 +421,9 @@ class QuerySchRegression(unittest.TestCase):
     def test_26_mirror_is_applied_after_rotation(self):
         # KiCad rotates the symbol, then mirrors it on the canvas axis.
         # Checked against a KiCad 10.0.8 netlist of a real project for
-        # mirror x at 90 and 270 degrees. Mirror y at 90 and 270 uses the same
-        # rule but has no real-project evidence yet (NOT_VERIFIED).
+        # mirror x at 90 and 270 degrees. KiCad 10 never saves mirror y at 90
+        # or 270: it is the same placement as mirror x at 270 or 90 and is
+        # saved in that form. A file that holds it must give the same pins.
         lib = '''(lib_symbols
           (symbol "TEST:Tri"
             (symbol "Tri_1_1"
@@ -436,6 +437,8 @@ class QuerySchRegression(unittest.TestCase):
             ('y', 90): {'1': [102.54, 55.08], '2': [102.54, 44.92], '3': [94.92, 50.0]},
             ('y', 270): {'1': [97.46, 44.92], '2': [97.46, 55.08], '3': [105.08, 50.0]},
         }
+        self.assertEqual(expected[('y', 90)], expected[('x', 270)])
+        self.assertEqual(expected[('y', 270)], expected[('x', 90)])
         for (axis, angle), pins in expected.items():
             with self.subTest(mirror=axis, angle=angle):
                 root = self.dir / f'mirror {axis} {angle}.kicad_sch'
@@ -582,6 +585,96 @@ class QuerySchRegression(unittest.TestCase):
                     self.assertIn('ไทย', obj['root'])
                 else:
                     self.assertEqual(obj['verification'], 'NOT_VERIFIED')
+
+    def write_root(self, name, lib, *blocks):
+        root = self.dir / name
+        root.write_text('(kicad_sch (version 20250114) (generator "test") (uuid "' + ROOT_ID + '")\n'
+                        + lib + '\n' + '\n'.join(blocks) + '\n)', encoding='utf-8')
+        self.files.append(root)
+        self.before[root] = sha(root)
+        return root
+
+    def test_34_lib_name_selects_the_embedded_symbol_definition(self):
+        # KiCad writes (lib_name "X_1") when two placed symbols share a lib_id
+        # but differ, and stores that definition under the lib_name.
+        lib = '''(lib_symbols
+          (symbol "TEST:OnePin"
+            (symbol "OnePin_1_1" (pin input line (at 0 0 0) (length 2.54) (name "IN") (number "1"))))
+          (symbol "OnePin_1"
+            (symbol "OnePin_1_1_1" (pin input line (at 5.08 0 0) (length 2.54) (name "IN") (number "1"))))
+          (symbol "GND_1" (power)
+            (symbol "GND_1_1_1" (pin power_in line (at 0 0 0) (length 0) (name "GND") (number "1")))))'''
+        root = self.write_root('lib name.kicad_sch', lib,
+            component('U1', 100, 100, 'u1', f'/{ROOT_ID}').replace('(symbol ', '(symbol (lib_name "OnePin_1") ', 1),
+            component('U2', 120, 100, 'u2', f'/{ROOT_ID}'),
+            wire(105.08, 100, 120, 100),
+            component('#PWR01', 120, 100, 'gnd', f'/{ROOT_ID}', 'GND', 'power:GND').replace(
+                '(symbol ', '(symbol (lib_name "GND_1") ', 1))
+        pins = self.call('pins', 'U1', project=root)['results'][0]
+        self.assertEqual([p['position_mm'] for p in pins['pins']], [[105.08, 100.0]])
+        self.assertEqual(pins['limitations'], [])
+        net = self.call('project-net', 'U1', '--pin', '1', project=root)['results'][0]
+        self.assertEqual(self.net_pins(net), {('U1', '1'), ('U2', '1')})
+        self.assertEqual(net['power_net_names'], ['GND'])
+
+    def test_35_only_the_placed_body_style_gives_pins(self):
+        # Sub-symbols are NAME_<unit>_<style>; style 0 is shared by all styles.
+        lib = '''(lib_symbols
+          (symbol "TEST:Gate"
+            (symbol "Gate_0_0" (pin power_in line (at 0 5.08 270) (length 2.54) (name "VCC") (number "14")))
+            (symbol "Gate_1_1" (pin output line (at 7.62 0 180) (length 2.54) (name "Y") (number "3")))
+            (symbol "Gate_1_2" (pin output inverted (at 10.16 0 180) (length 2.54) (name "Y") (number "3")))))'''
+        base = component('U1', 50, 50, 'u1', f'/{ROOT_ID}', lib='TEST:Gate')
+        cases = (('', 57.62), ('(body_style 1)', 57.62), ('(body_style 2)', 60.16), ('(convert 2)', 60.16))
+        for index, (token, output_x) in enumerate(cases):
+            with self.subTest(token=token):
+                root = self.write_root(f'body style {index}.kicad_sch', lib,
+                                       base.replace('(unit 1)', '(unit 1) ' + token, 1))
+                pins = self.call('pins', 'U1', project=root)['results'][0]['pins']
+                self.assertEqual({p['number']: p['position_mm'] for p in pins},
+                                 {'14': [50.0, 44.92], '3': [output_x, 50.0]})
+                self.assertEqual(len(pins), 2)
+
+    def test_36_malformed_forms_return_json_not_traceback(self):
+        cases = (
+            ('empty uuid', '(kicad_sch (uuid))', ['summary']),
+            ('one coordinate', content(ROOT_ID, component('U1', 10, 10, 'u1', f'/{ROOT_ID}'),
+                                       '(wire (pts (xy 1) (xy 20 10)))'), ['local-net', 'U1']),
+        )
+        for name, text, args in cases:
+            with self.subTest(case=name):
+                bad = self.dir / f'{name}.kicad_sch'
+                bad.write_text(text, encoding='utf-8')
+                completed = self.call(*args, project=bad, ok=False)
+                self.assertEqual(completed.returncode, 2, completed.stderr)
+                self.assertEqual(completed.stdout, '')
+                error = json.loads(completed.stderr)
+                self.assertEqual(error['verification'], 'NOT_VERIFIED')
+                self.assertTrue(error['error'])
+
+    def test_37_component_units_are_sorted_as_numbers(self):
+        lib = '(lib_symbols (symbol "TEST:Big" ' + ' '.join(
+            f'(symbol "Big_{u}_1" (pin passive line (at 0 0 0) (length 1) (name "P{u}") (number "{u}")))'
+            for u in (1, 2, 10, 11)) + '))'
+        blocks = [component('U3', 10 * u, 20, f'u3-{u}', f'/{ROOT_ID}', lib='TEST:Big').replace('(unit 1)', f'(unit {u})')
+                  for u in (10, 2, 11, 1)]
+        root = self.write_root('units.kicad_sch', lib, *blocks)
+        r = self.call('components', project=root)
+        self.assertEqual([(x['reference'], x['units']) for x in r['results']], [('U3', ['1', '2', '10', '11'])])
+
+    def test_38_sheet_matches_the_file_name_of_a_sheet_in_a_subfolder(self):
+        sub = self.dir / 'sub'
+        sub.mkdir()
+        child = sub / 'child.kicad_sch'
+        child.write_text(content('ffffffff-ffff-ffff-ffff-ffffffffffff'), encoding='utf-8')
+        self.files.append(child)
+        self.before[child] = sha(child)
+        root = self.write_root('subfolder.kicad_sch', lib_symbols(),
+                               sheet('Child', 'sub/child.kicad_sch', 'child-sheet', 'X', 10, 10))
+        for target in ('Child', 'child', 'child.kicad_sch', 'sub/child.kicad_sch'):
+            with self.subTest(target=target):
+                self.assertEqual(self.call('sheet', target, project=root)['total_matches'], 1)
+        self.assertEqual(self.call('components', '--sheet', 'child.kicad_sch', project=root)['warnings'], [])
 
 
 if __name__ == '__main__':

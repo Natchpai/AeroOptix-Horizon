@@ -1,4 +1,4 @@
-"""Standalone PCB synthetic regression tests (v0.1 through v1.1)."""
+"""Standalone PCB synthetic regression tests (v0.1 through v1.1.1)."""
 import json
 import subprocess
 import sys
@@ -74,8 +74,9 @@ V03_BOARD = '''(kicad_pcb (version 20260206) (generator "pcbnew")
  (segment (start 11 0) (end 11 1) (width 0.3) (layer "F.Cu") (net "FLOATING"))
  (segment (start 12 0) (end 12 1) (width 0.3) (layer "F.Cu") (net 0 ""))
  (via (at 1 2) (size 0.8) (drill 0.4) (layers "F.Cu" "B.Cu") (net 1))
- (via (at 3 4) (size 0.6) (drill 0.3) (layers "F.Cu" "In1.Cu") (type blind) (net 2))
- (via (at 5 6) (size 0.7) (drill 0.35) (layers "In1.Cu" "B.Cu") (type buried) (net 2))
+ (via blind (at 3 4) (size 0.6) (drill 0.3) (layers "F.Cu" "In1.Cu") (net 2))
+ (via buried (at 5 6) (size 0.7) (drill 0.35) (layers "In1.Cu" "B.Cu") (net 2))
+ (via micro (at 6 6) (size 0.3) (drill 0.1) (layers "F.Cu" "In1.Cu") (net 2))
  (via (at 7 8) (size 0.6) (drill 0.3) (layers "F.Cu" "B.Cu") (net 0 "")))'''
 
 # KiCad 10 style board (no net table) with zones and a board outline.
@@ -194,10 +195,13 @@ class PCBTests(unittest.TestCase):
         self.before = self.board.read_bytes()
 
     def run_cli_raw(self, *args):
+        # The script always prints UTF-8. Without an explicit encoding the
+        # output is decoded with the console code page on Windows.
         return subprocess.run(
             [sys.executable, str(SCRIPT), *args, "--board", str(self.board)],
             capture_output=True,
             text=True,
+            encoding="utf-8",
         )
 
     def run_cli(self, *args):
@@ -444,12 +448,14 @@ class PCBTests(unittest.TestCase):
         self.assertEqual(via["size_mm"], 0.8)
         self.assertEqual(via["drill_mm"], 0.4)
         self.assertEqual(via["layer_span"], ["F.Cu", "B.Cu"])
-        self.assertIsNone(via["via_type"])
-        self.assertEqual(via["via_type_status"], "NOT_VERIFIED")
+        # KiCad saves no type word for a through via.
+        self.assertEqual(via["via_type"], "through")
+        self.assertEqual(via["via_type_status"], "STRUCTURAL_EVIDENCE")
         rc, iso = self.run_cli("vias", "ISO")
         self.assertEqual(rc, 0)
-        self.assertEqual(iso["via_count"], 2)
-        self.assertEqual([via["via_type"] for via in iso["vias"]], ["blind", "buried"])
+        self.assertEqual(iso["via_count"], 3)
+        self.assertEqual([via["via_type"] for via in iso["vias"]], ["blind", "buried", "micro"])
+        self.assertEqual({via["via_type_status"] for via in iso["vias"]}, {"STRUCTURAL_EVIDENCE"})
         rc, unconnected = self.run_cli("vias", "")
         self.assertEqual(rc, 0)
         self.assertEqual(unconnected["net_status"], "UNCONNECTED")
@@ -579,8 +585,8 @@ class PCBTests(unittest.TestCase):
         self.assertEqual(data["via_count"], 3)
         self.assertEqual(len(data["vias"]), 1)
         self.assertEqual(data["totals"]["groups"], [
-            {"size_mm": 0.6, "drill_mm": 0.3, "layer_span": ["F.Cu", "B.Cu"], "via_type": None, "count": 2},
-            {"size_mm": 0.8, "drill_mm": 0.4, "layer_span": ["F.Cu", "B.Cu"], "via_type": None, "count": 1},
+            {"size_mm": 0.6, "drill_mm": 0.3, "layer_span": ["F.Cu", "B.Cu"], "via_type": "through", "count": 2},
+            {"size_mm": 0.8, "drill_mm": 0.4, "layer_span": ["F.Cu", "B.Cu"], "via_type": "through", "count": 1},
         ])
 
     def test_zones_report_settings_outline_and_unverified_fill(self):
@@ -727,9 +733,9 @@ class PCBTests(unittest.TestCase):
     def test_version_is_the_same_in_script_and_skill(self):
         source = SCRIPT.read_text(encoding="utf-8")
         skill = (SCRIPT.parents[1] / "SKILL.md").read_text(encoding="utf-8")
-        self.assertIn('VERSION = "1.1"', source)
-        self.assertIn("(v1.1)", source.split("\n", 2)[1])
-        self.assertIn("## Commands (v1.1", skill)
+        self.assertIn('VERSION = "1.1.1"', source)
+        self.assertIn("(v1.1.1)", source.split("\n", 2)[1])
+        self.assertIn("## Commands (v1.1.1,", skill)
         self.assertNotIn("v0.4", source)
         self.assertNotIn("v1.0", skill)
 
@@ -776,7 +782,7 @@ class PCBTests(unittest.TestCase):
         self.write_v03_board()
         rc, vias = self.run_cli("vias", "ISO", "--limit", "1")
         self.assertEqual(rc, 0)
-        self.assertEqual(vias["via_count"], 2)
+        self.assertEqual(vias["via_count"], 3)
         self.assertTrue(vias["vias_truncated"])
 
     def test_malformed_via_geometry_is_not_verified_not_invented(self):
@@ -789,6 +795,63 @@ class PCBTests(unittest.TestCase):
         self.assertEqual(data["status"], "FOUND")
         self.assertIsNone(data["vias"][0]["drill_mm"])
         self.assertEqual(data["vias"][0]["geometry_status"], "NOT_VERIFIED")
+
+    def test_net_named_zero_is_a_net_on_a_board_without_a_net_table(self):
+        # KiCad 10 writes (net "0") for a net named 0 and (net "") for no net.
+        self.board.write_text('''(kicad_pcb (version 20260206) (generator "pcbnew")
+ (layers (0 "F.Cu" signal))
+ (footprint "Test:One" (layer "F.Cu") (at 1 2)
+  (property "Reference" "J1") (property "Value" "test")
+  (pad "1" smd rect (at 0 0) (size 1 1) (layers "F.Cu") (net "0")))
+ (segment (start 0 0) (end 1 0) (width 0.2) (layer "F.Cu") (net "0"))
+ (segment (start 0 1) (end 1 1) (width 0.2) (layer "F.Cu") (net "")))''', encoding="utf-8")
+        rc, nets = self.run_cli("nets")
+        self.assertEqual(rc, 0)
+        self.assertEqual(nets["nets"], [{"name": "0", "pad_count": 1, "track_count": 1, "via_count": 0, "zone_count": 0}])
+        rc, tracks = self.run_cli("tracks", "0")
+        self.assertEqual((tracks["status"], tracks["net_status"], tracks["track_count"]), ("FOUND", "ASSIGNED", 1))
+        rc, unconnected = self.run_cli("tracks", "")
+        self.assertEqual(unconnected["track_count"], 1)
+        self.assertEqual(unconnected["tracks"][0]["start"], {"x_mm": 0.0, "y_mm": 1.0})
+        rc, net = self.run_cli("net", "0")
+        self.assertEqual((net["status"], net["pad_count"]), ("FOUND", 1))
+        # With a net table, code 0 is still "no net".
+        self.write_v03_board()
+        rc, legacy = self.run_cli("tracks", "")
+        self.assertEqual((legacy["net_status"], legacy["track_count"]), ("UNCONNECTED", 1))
+
+    def test_net_counts_each_footprint_when_references_repeat_or_are_missing(self):
+        self.board.write_text('''(kicad_pcb (version 20260206) (generator "pcbnew")
+ (layers (0 "F.Cu" signal) (2 "B.Cu" signal))
+ (footprint "Test:Hole" (layer "F.Cu") (at 1 1)
+  (property "Reference" "REF**") (property "Value" "first")
+  (pad "1" thru_hole circle (at 0 0) (size 2 2) (drill 1) (layers "*.Cu") (net "GND")))
+ (footprint "Test:Hole" (layer "B.Cu") (at 9 1)
+  (property "Reference" "REF**") (property "Value" "second")
+  (pad "1" thru_hole circle (at 0 0) (size 2 2) (drill 1) (layers "*.Cu") (net "GND")))
+ (footprint "Test:NoRef" (layer "F.Cu") (at 5 5)
+  (pad "1" smd rect (at 0 0) (size 1 1) (layers "F.Cu") (net "GND"))))''', encoding="utf-8")
+        rc, net = self.run_cli("net", "GND")
+        self.assertEqual(rc, 0, net)
+        self.assertEqual((net["footprint_count"], net["pad_count"]), (3, 3))
+        self.assertEqual(net["footprints"], [
+            {"reference": None, "value": None, "layer": "F.Cu"},
+            {"reference": "REF**", "value": "first", "layer": "F.Cu"},
+            {"reference": "REF**", "value": "second", "layer": "B.Cu"},
+        ])
+
+    def test_reference_with_a_superscript_digit_does_not_fail_the_query(self):
+        self.board.write_text(NAME_ONLY_NET_BOARD.replace('"J1"', '"R1²2"') + "\n", encoding="utf-8")
+        rc, net = self.run_cli("net", "NAME_ONLY")
+        self.assertEqual(rc, 0, net)
+        self.assertEqual([row["reference"] for row in net["footprints"]], ["R1²2"])
+
+    def test_a_file_that_is_not_a_board_is_rejected(self):
+        self.board.write_text('(kicad_sch (version 20250114) (uuid "x"))', encoding="utf-8")
+        rc, data = self.run_cli("summary")
+        self.assertEqual(rc, 2)
+        self.assertEqual(data["status"], "NOT_VERIFIED")
+        self.assertIn("not a KiCad PCB", data["error"])
 
 
 if __name__ == "__main__":

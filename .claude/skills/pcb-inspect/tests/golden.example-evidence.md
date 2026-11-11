@@ -55,5 +55,6 @@ The direct saved routing sequence begins near line 100884. It contains 17
 - geometric length `5.7` mm
 
 The following matching via is at `(111.1, 117.95)` mm with size `0.8` mm,
-drill `0.4` mm, and span `F.Cu` to `B.Cu`. No explicit `(type ...)` field is
-saved for this via; its type remains `NOT_VERIFIED`.
+drill `0.4` mm, and span `F.Cu` to `B.Cu`. The form starts with `(via (at`:
+no `blind`, `buried` or `micro` word follows `via`, which is how KiCad saves a
+through via, so its type is `through`.

@@ -20,7 +20,7 @@ argument-hint: "[summary | footprint <ref> | pads <ref> | nets [--match <text>] 
 - Do not assume a parser, IPC connection, or local DRC capability exists; verify
   tools before using them. Never present an unimplemented mode as available.
 
-## Commands (v1.1, Stable (Scoped))
+## Commands (v1.1.1, Stable (Scoped))
 Run `scripts/query_pcb.py` (Python 3.10+, standard library). Resolve the script
 and board paths first.
 

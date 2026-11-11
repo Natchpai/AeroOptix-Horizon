@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only KiCad schematic discovery and conservative local, hierarchical and project net evidence (v1.1.0).
+"""Read-only KiCad schematic discovery and conservative local, hierarchical and project net evidence (v1.1.1).
 
 Python 3.10+ standard library only. Never modifies project files.
 """
@@ -320,16 +320,27 @@ def local_geometry(path):
     return loaded['geometry']
 
 
+def lib_definition(symbol, lib):
+    """Return the embedded library symbol of a placed symbol, or None.
+
+    KiCad writes (lib_name NAME) when placed symbols share a lib_id but
+    differ, and stores that definition under the lib_name.
+    """
+    name = val(symbol, 'lib_name')
+    if name is not None and name in lib:
+        return lib[name]
+    return lib.get(val(symbol, 'lib_id'))
+
+
 def pins_from_symbol(symbol, lib):
     """Return placed pin positions for common native KiCad symbols.
 
     Complex inheritance, unsupported pin transforms, or missing libraries are
     explicitly surfaced as limitations rather than silently marked connected.
     """
-    libid = val(symbol, 'lib_id')
-    libsym = lib.get(libid)
+    libsym = lib_definition(symbol, lib)
     if not libsym:
-        return [], [f'embedded lib symbol unavailable: {libid}']
+        return [], [f"embedded lib symbol unavailable: {val(symbol, 'lib_name') or val(symbol, 'lib_id')}"]
     origins = xy(symbol)
     if not origins:
         return [], ['symbol placement missing']
@@ -339,6 +350,8 @@ def pins_from_symbol(symbol, lib):
     except (ValueError, TypeError):
         return [], ['symbol rotation invalid']
     unit = str(val(symbol, 'unit', '1'))
+    # (convert N) is the legacy name of (body_style N).
+    style = str(val(symbol, 'body_style', val(symbol, 'convert', '1')))
     mirror = first(symbol, 'mirror')
     mirrored = mirror[1] if mirror and len(mirror)>1 else None
     if mirrored not in (None, 'x', 'y'):
@@ -348,9 +361,10 @@ def pins_from_symbol(symbol, lib):
     pins=[]
     for subsym in children(libsym, 'symbol'):
         subname = subsym[1] if len(subsym)>1 else ''
-        # KiCad sub-symbol naming convention: NAME_<unit>_<convert>
+        # KiCad sub-symbol naming convention: NAME_<unit>_<body style>.
+        # 0 means shared by all units, or by all body styles.
         bits = subname.rsplit('_', 2)
-        if len(bits) != 3 or bits[1] not in ('0', unit):
+        if len(bits) != 3 or bits[1] not in ('0', unit) or bits[2] not in ('0', style):
             continue
         for kind in ('pin',):
             for pin in children(subsym, kind):
@@ -388,7 +402,7 @@ def power_symbol_anchors(path, lib):
     result, warnings = [], []
     for expr in load_file(path)['symbols']:
         lib_id = val(expr, 'lib_id')
-        definition = lib.get(lib_id)
+        definition = lib_definition(expr, lib)
         if definition is None or first(definition, 'power') is None:
             continue
         info = symbol_info(expr, path)
@@ -835,7 +849,7 @@ def build_project_graph(root, data, max_instances):
             pins, warnings = pins_from_symbol(expr, lib)
             # Same test as power_symbol_anchors: the (power) flag of the
             # embedded library symbol, not the library name.
-            definition = lib.get(info['lib_id'])
+            definition = lib_definition(expr, lib)
             is_power = definition is not None and first(definition, 'power') is not None
             for pin in pins:
                 component_pins.append({**pin, 'reference': info['reference_property'],
@@ -1073,7 +1087,7 @@ def list_components(root, data, max_instances, sheet=None, prefix=None):
                 row['units'].append(unit)
     ordered = sorted(rows.values(), key=lambda r: (r['instance_path'], *reference_parts(r['reference']), r['reference']))
     for row in ordered:
-        row['units'].sort()
+        row['units'].sort(key=lambda u: (0, int(u)) if str(u).isdecimal() else (1, str(u)))
     return ordered, sheet_found
 
 
@@ -1185,7 +1199,8 @@ def main(argv=None):
                 if item['file'] == str(root) and args.target in (root.name, root.stem):
                     records.append({'file': item['file'], 'uuid': item['uuid'], 'root': True})
                 for sh in item['sheets']:
-                    if args.target in (sh['name'], sh['file'], Path(sh['file'] or '').stem):
+                    saved = Path(sh['file'] or '')
+                    if args.target in (sh['name'], sh['file'], saved.name, saved.stem):
                         records.append(sh)
         else:
             records = [{'file': d['file'], 'symbol_count': len(d['symbols']),
@@ -1199,7 +1214,8 @@ def main(argv=None):
                'warnings': pin_issues if args.mode in ('pins','local-net','hier-net','connected-pins') else warnings}
         print(json.dumps(out, ensure_ascii=False, indent=2))
         return 0
-    except (QueryError, OSError, UnicodeError, ValueError) as exc:
+    except (QueryError, OSError, UnicodeError, RecursionError, IndexError, KeyError, TypeError, ValueError) as exc:
+        # Malformed saved data must give JSON on stderr, not a traceback.
         print(json.dumps({'error': str(exc), 'verification': 'NOT_VERIFIED'}, ensure_ascii=False), file=sys.stderr)
         return 2
 

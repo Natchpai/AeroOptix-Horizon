@@ -22,7 +22,9 @@ checked against the file itself. Rules, commands and the JSON contract are in
 | --- | --- |
 | `symbol`, `lib_id`, properties, `unit`, `instances` | Part identity, reference, unit, per-instance assignment |
 | `symbol` `at` (x, y, angle), `mirror` | Placement. KiCad rotates first, then mirrors on the canvas axis |
-| `lib_symbols`, symbol pins | Pin numbers, names, electrical types, pin positions in symbol coordinates (Y up) |
+| `symbol` `lib_name` | Present when placed symbols share a `lib_id` but differ. The `lib_symbols` entry is then stored under this name, not the `lib_id` |
+| `symbol` `body_style` (legacy `convert`) | Which body style is placed. Only pins of that style, or of style 0, belong to the symbol |
+| `lib_symbols`, symbol pins | Pin numbers, names, electrical types, pin positions in symbol coordinates (Y up). Sub-symbols are named `NAME_<unit>_<body style>`; 0 means shared by all |
 | `lib_symbols` symbol `(power)` flag | Marks a power symbol; its `Value` is the net name |
 | `wire`, `junction`, `no_connect` | Local connections and deliberate unconnected pins. Crossing wires join only at an endpoint or a junction |
 | `label` | Named connection local to one sheet instance |

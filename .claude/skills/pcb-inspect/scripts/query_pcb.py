@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Targeted, read-only KiCad PCB inspection (v1.1). Python 3.10+ stdlib."""
+"""Targeted, read-only KiCad PCB inspection (v1.1.1). Python 3.10+ stdlib."""
 from __future__ import annotations
 
 import argparse
@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 
-VERSION = "1.1"  # keep the docstring above and SKILL.md in step
+VERSION = "1.1.1"  # keep the docstring above and SKILL.md in step
 
 
 class QueryError(Exception):
@@ -176,7 +176,9 @@ def net_value(expr, declared_nets):
     code = str(node[1])
     declared_name = declared_nets.get(code)
     if len(node) == 2 and declared_name is None:
-        if code == "0":
+        # With a net table, code 0 is "no net". Without one (KiCad 10) the
+        # token is a name, and a net can be named "0".
+        if code == "0" and declared_nets:
             return {"net_code": code, "net_name": None, "net_status": "UNCONNECTED"}
         if code == "":
             return {"net_code": None, "net_name": None, "net_status": "UNCONNECTED"}
@@ -299,15 +301,20 @@ def track_data(expr, declared_nets, source_index):
     return result
 
 
+VIA_TYPES = ("blind", "buried", "micro")
+
+
 def via_data(expr, declared_nets, source_index):
-    via_type = value(expr, "type")
+    # KiCad saves the type as a bare word, (via blind ...), and saves no word
+    # for a through via.
+    via_type = next((part for part in expr[1:] if isinstance(part, str) and part in VIA_TYPES), "through")
     result = {
         "position": point_value(expr, "at"),
         "size_mm": scalar_value(expr, "size"),
         "drill_mm": scalar_value(expr, "drill"),
         "layer_span": layer_values(expr),
         "via_type": via_type,
-        "via_type_status": "STRUCTURAL_EVIDENCE" if via_type is not None else "NOT_VERIFIED",
+        "via_type_status": "STRUCTURAL_EVIDENCE",
         "verification": "STRUCTURAL_EVIDENCE",
         "_source_index": source_index,
     }
@@ -392,7 +399,9 @@ def pad_data(expr, footprint, declared_nets, source_index):
 
 
 def natural_key(value):
-    return [int(part) if part.isdigit() else part.casefold() for part in re.split(r"(\d+)", value)]
+    # re.split with one group alternates text and digit runs, so the index
+    # tells them apart. str.isdigit() is also true for "²", which int() rejects.
+    return [int(part) if index % 2 else part.casefold() for index, part in enumerate(re.split(r"(\d+)", value))]
 
 
 def pad_sort_key(pad):
@@ -625,6 +634,8 @@ def net_usage(declared_nets, footprints, raw_tracks, raw_vias, extras):
 
 def scan_board(file):
     source = file.read_text(encoding="utf-8-sig")
+    if not source.lstrip().startswith("(kicad_pcb"):
+        raise QueryError(f"not a KiCad PCB file: {file}")
     metadata = {}
     layers = []
     declared_nets = {}
@@ -788,11 +799,11 @@ def inspect_net(file, net_name, limit):
                 "limitations": ["Multiple declared net codes share this name; assignments cannot be resolved safely."],
             }
     assignments = []
-    for footprint, expr in footprints:
+    for footprint_index, (footprint, expr) in enumerate(footprints):
         for index, pad in enumerate(children(expr, "pad")):
             pad_record = pad_data(pad, footprint, declared_nets, index)
             if pad_record["net_name"] == net_name:
-                assignments.append((footprint, pad_record))
+                assignments.append((footprint, pad_record, footprint_index))
     if not assignments:
         return {
             **data,
@@ -806,7 +817,7 @@ def inspect_net(file, net_name, limit):
             "pads": [],
             "limitations": ["No saved pad assignment with this exact net name exists in the saved PCB."],
         }
-    unresolved = [pad for _footprint, pad in assignments if pad["net_status"] not in {"ASSIGNED", "ASSIGNED_WITHOUT_DECLARATION"}]
+    unresolved = [pad for _footprint, pad, _index in assignments if pad["net_status"] not in {"ASSIGNED", "ASSIGNED_WITHOUT_DECLARATION"}]
     if unresolved:
         return {
             **data,
@@ -816,15 +827,17 @@ def inspect_net(file, net_name, limit):
             "net_code": matching_codes[0] if matching_codes else None,
             "limitations": ["At least one pad has an inconsistent or unresolved saved net assignment."],
         }
-    assignments.sort(key=lambda item: (natural_key(item[0]["reference"] or ""), pad_sort_key(item[1])))
+    # Order by reference, then by position in the file: references can repeat
+    # (REF**) or be missing, and each footprint is still its own row.
+    assignments.sort(key=lambda item: (natural_key(item[0]["reference"] or ""), item[2], pad_sort_key(item[1])))
     footprint_rows = {}
-    for footprint, _pad in assignments:
+    for footprint, _pad, footprint_index in assignments:
         footprint_rows.setdefault(
-            footprint["reference"],
+            footprint_index,
             {"reference": footprint["reference"], "value": footprint["value"], "layer": footprint["layer"]},
         )
-    pads = [{"reference": footprint["reference"], **public_pad(pad)} for footprint, pad in assignments]
-    ordered_footprints = [footprint_rows[key] for key in sorted(footprint_rows, key=natural_key)]
+    pads = [{"reference": footprint["reference"], **public_pad(pad)} for footprint, pad, _index in assignments]
+    ordered_footprints = list(footprint_rows.values())
     return {
         **data,
         "status": "FOUND",

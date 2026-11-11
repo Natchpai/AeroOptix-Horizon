@@ -157,9 +157,11 @@ Report the scope actually reached, not the one requested, if expansion failed.
   global label and a power symbol with the same name are one net. A power
   symbol is any symbol whose library symbol has the `(power)` flag; all of
   them are treated as global, including KiCad's local power symbols.
-- Pin positions of a symbol with `mirror y` at 90 or 270 degrees follow the
-  same rule as `mirror x` but were not checked against KiCad: treat pin-net
-  results for such a symbol as `NOT_VERIFIED`.
+- KiCad 10 does not save `mirror y` at 90 or 270 degrees. It saves that
+  placement as the equivalent `mirror x` form (`mirror y` at 90 is
+  `mirror x` at 270, and the reverse), which is checked against a KiCad
+  netlist. A file from another tool that holds `mirror y` at 90 or 270
+  gets the same pin positions as that `mirror x` form.
 - Buses, complex symbol inheritance, and hidden connectivity may stay unresolved.
 - If a trustworthy parser is unavailable, limit work to transparent observations
   from the target sheet and mark pin-to-net and cross-sheet claims `NOT_VERIFIED`.
