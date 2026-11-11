@@ -4170,6 +4170,16 @@
 		)
 		(uuid "108e605f-a057-4bff-9ac5-69540fe02d68")
 	)
+	(text "max 10mA"
+		(exclude_from_sim no)
+		(at 181.356 186.436 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "1c6574ff-d757-4b3b-bb60-d0affec5c23c")
+	)
 	(text "Soft-Start of the V_{OUT}"
 		(exclude_from_sim no)
 		(at 146.05 218.44 0)
