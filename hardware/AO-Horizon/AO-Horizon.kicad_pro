@@ -615,7 +615,7 @@
     "annotate_start_num": 0,
     "annotation": {
       "method": 1,
-      "sort_order": 1
+      "sort_order": 0
     },
     "bom_export_filename": "documents\\manufacturing\\Assembly\\BOM\\${PROJECTNAME}.csv",
     "bom_fmt_presets": [],
@@ -727,6 +727,18 @@
           "label": "MFR.P/N",
           "name": "MFR.P/N",
           "show": true
+        },
+        {
+          "group_by": false,
+          "label": "Note",
+          "name": "Note",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Type",
+          "name": "Type",
+          "show": false
         }
       ],
       "filter_string": "",
@@ -736,7 +748,20 @@
       "sort_asc": true,
       "sort_field": "Reference"
     },
-    "bus_aliases": {},
+    "bus_aliases": {
+      "IMU1_SPI": [
+        "IMU1_SPI_CLK",
+        "IMU1_SPI_SDI",
+        "IMU1_SPI_SDO",
+        "IMU1_SPI_CS"
+      ],
+      "IMU2_SPI": [
+        "IMU2_SPI_CLK",
+        "IMU2_SPI_SDI",
+        "IMU2_SPI_SDO",
+        "IMU2_SPI_CS"
+      ]
+    },
     "connection_grid_size": 50.0,
     "drawing": {
       "dashed_lines_dash_length_ratio": 12.0,
@@ -793,7 +818,7 @@
         "uuid": "76162bf1-0d95-48cb-b65a-4de551455d04"
       }
     ],
-    "used_designators": "#FLG1,#FLG101-106,#PWR1-20,#PWR101-120,#PWR201-209,#PWR301-307,C101-121,CN101,D101-106,L101-102,R101-108,R115,U101-103",
+    "used_designators": "#FLG1,#FLG101-106,#PWR1-20,#PWR101-120,#PWR201-210,#PWR301-308,#PWR401-410,#PWR501-518,C101-121,C401-404,C501-504,CN101,D101-106,L101-102,R101-108,R115,R501-507,U101-103,U401-402,U501-502",
     "variants": []
   },
   "sheets": [
@@ -808,6 +833,14 @@
     [
       "92584a55-2e01-43a4-9009-7cca80536e22",
       "IO MCU"
+    ],
+    [
+      "fb1126ca-3bad-40db-8444-733c230f17c3",
+      "Sensor - IMU"
+    ],
+    [
+      "2351afe8-b6b0-4086-b07e-5f0a9bb00c48",
+      "Sensor - Barometer"
     ],
     [
       "76162bf1-0d95-48cb-b65a-4de551455d04",
