@@ -24,7 +24,6 @@ The board is split into design zones. Each zone below has its own to-do list.
 Done items live in Git history and the changelog.
 
 - [ ] `block_diagram.kicad_sch`: the working copy holds only its title text; the drawing is gone. Keep it cleared on purpose, or restore it from Git.
-- [ ] Review and squash-merge draft PR #34 (spec 0.25 to 0.33), then merge `main` back into `dev`.
 
 ## 2. Zone Z1: Power supply
 
