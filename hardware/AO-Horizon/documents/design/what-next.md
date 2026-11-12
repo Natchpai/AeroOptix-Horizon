@@ -13,8 +13,8 @@ The board is split into design zones. Each zone below has its own to-do list.
 | ---- | ----- | ----- | --------------- |
 | Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, 2026-10-31); eFuse replaced by the TPS2121 power mux (2026-11-01); mux status LED, OV and ST dividers, input capacitors and LDO enable from PG set (2026-11-03); ERC run and `sch-review` done, P2-019 closed, 5 V budget closed, CN101 is CLIK-Mate (2026-11-03) | OPEN-023, OPEN-025 |
 | Z2 Servo power rail (6 V bus, XT30) | Not drawn | Not started | OPEN-007, OPEN-021, P2-016 |
-| Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | `main_mcu.kicad_sch` | Started (2026-11-11): MCU symbol, VDD/VDDA/VREF+ decoupling, BOOT0 resistors; every GPIO on a local `H7_<pin>` stub label. Gaps in section 4 (`sch-inspect`, 2026-11-12) | P1-001, P1-006 to P1-008, P1-014, DEC-025 |
-| Z4 F100 IO MCU (px4io) | Not drawn | Pins allocated (P1-002), not drawn | P1-002, P1-014, P2-014 |
+| Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | `main_mcu.kicad_sch` | Started (2026-11-11): MCU symbol, VDD decoupling, VDDA and VREF+ RC filters from `+3V3`, BOOT0 resistors; every GPIO on a local `H7_<pin>` stub label. Gaps in section 4 (`sch-inspect`, 2026-11-12) | P1-001, P1-006 to P1-008, P1-014, DEC-025 |
+| Z4 F100 IO MCU (px4io) | `io_mcu.kicad_sch` | Started (2026-11-11): MCU symbol, VDD decoupling, VDDA RC filter from `+3V3`, BOOT0 resistors; GPIOs on local `F1_<pin>` stub labels | P1-002, P1-014, P2-014 |
 | Z5 Sensors (2 × IMU, 2 × barometer, magnetometer) | Not drawn | Library starting points only | OPEN-004, OPEN-013, OPEN-019, P2-012 |
 | Z6 External connectors and outputs (telemetry, GPS, I2C, ESC and servo headers, spare outputs) | Not drawn | Pinouts not checked | OPEN-018, OPEN-023, P2-013, P2-015, P2-018 |
 | Z7 PCB and mechanical | `AO-Horizon.kicad_pcb` | 27 × 29 mm placeholder outline, no footprints | OPEN-009, P3-001 |
@@ -44,11 +44,15 @@ Not drawn. Servo current passes through the board (DEC-019).
 
 Started on 2026-11-11. Pins in pin allocation rev 0.6 (P1-001).
 
-On the saved sheet (`sch-inspect`, 2026-11-12, sheet-local evidence only): U? STM32H743VITx; 5 × 100 nF on `+3V3` for the 5 VDD pins; VBAT on `+3V3`; VDDA on `+3V3A` with 1 × 100 nF; VREF+ (`H7_VREF`) through 22 Ω from `+3V3A` with 100 nF to `GND`; BOOT0 10 kΩ to `GND` (fitted) and 10 kΩ to `+3V3` (DNP). Every GPIO, VCAP, PH0/PH1 and NRST sits on a local stub label only. The sheet has no hierarchical or global labels, so no signal leaves it yet. References are not annotated.
+On the saved sheet (`sch-inspect` of the 13:56 save, 2026-11-12, sheet-local evidence only; KiCad was open): U? STM32H743VITx; 5 × 100 nF on `+3V3` for the 5 VDD pins; VBAT on `+3V3`; VDDA (`H7_VDDA`) through 22 Ω from `+3V3` with 100 nF to `GND`; VREF+ (`H7_VREF`) through a second 22 Ω from `+3V3` with 100 nF to `GND`; BOOT0 10 kΩ to `GND` (fitted) and 10 kΩ to `+3V3` (DNP). The sheet no longer uses `+3V3A`, so DEC-025 holds. Every GPIO, VCAP, PH0/PH1 and NRST sits on a local stub label only. The sheet has no hierarchical or global labels, so no signal leaves it yet. References are not annotated.
 
-- [ ] Decide the H743 VDDA and VREF+ supply. The sheet puts them on `+3V3A`, but DEC-025 says `+3V3A` feeds only the 2 IMUs. Either move them to `+3V3` (with a filter) or change DEC-025. With DEC-039, `+3V3A` comes up after `+3V3`; check the VDDA/VDD power-up rule in the H743 datasheet (`NOT_VERIFIED`).
-- [ ] VCAP: pins 48 and 73 are on `H7_VCAP` with no capacitor. Add the VCAP capacitors (value from the H743 datasheet, `NOT_VERIFIED`).
-- [ ] Bulk capacitor on `+3V3` near the MCU, and the VDDA bulk value (datasheet, `NOT_VERIFIED`); only 100 nF parts are placed now.
+H743 values below are from ST DS12110 Rev 11 via NotebookLM (2026-11-12).
+
+- [ ] VREF+: the two separate 22 Ω filters let VREF+ sit above VDDA, because VDDA carries the ADC current (about 16 mV at 720 µA typ for one ADC, `ESTIMATED`). Tables 77 and 174 allow VREF+ only up to VDDA (`VERIFIED`). Fix: delete the VREF+ 22 Ω and tie VREF+ (pin 20) to `H7_VDDA` (Fig. 41).
+- [ ] VDDA/VREF+ decoupling: add 1 µF on the node, keep 100 nF at each pin (1 µF // 100 nF, Fig. 40/41, `VERIFIED`).
+- [ ] Record the VDDA/VREF+ RC filter from `+3V3` as a decision in the spec (your choice, for cost).
+- [ ] VCAP: pins 48 and 73 are on `H7_VCAP` with no capacitor. Add 2 × 2.2 µF, ±20 %, ESR < 100 mΩ (Table 15, `VERIFIED`).
+- [ ] Bulk capacitor: add 1 × 4.7 µF on `+3V3` near the MCU (Fig. 15: N × 100 nF + 1 × 4.7 µF, `VERIFIED`).
 - [ ] Human review of the pin choices (P1-001).
 - [ ] 16 MHz crystal part and load capacitors on PH0/PH1 (P1-014). Only the `H7_PH0` and `H7_PH1` stubs are drawn.
 - [ ] Reset topology: NRST capacitor and the NRST pad (P1-014, TST-001). Only the `NRST` stub is drawn.
@@ -64,10 +68,11 @@ On the saved sheet (`sch-inspect`, 2026-11-12, sheet-local evidence only): U? ST
 
 ## 5. Zone Z4: F100 IO MCU (px4io)
 
-Not drawn. Pins from `px4/io-v2` (P1-002).
+Started on 2026-11-11. Pins from `px4/io-v2` (P1-002).
 
 - [ ] F100 library part from stock `MCU_ST_STM32F1:STM32F100C8Tx`, and the block diagram text (P2-014).
 - [ ] 24 MHz crystal part and load capacitors (P1-014).
+- [ ] VDDA (`F1_VDDA`): 22 Ω from `+3V3` with only 100 nF. Add 1 µF (Fig. 35 shows 1 µF // 10 nF; DocID16455 Rev 9 via NotebookLM, `VERIFIED`). Table 8 says VDDA "must be the same potential as VDD" (`VERIFIED`); the note allowing up to 300 mV of difference is `NOT_VERIFIED` (not in the cited text). Expected drop about 20 mV with the ADC on (0.8 mA, `ESTIMATED`).
 - [ ] px4io LEDs (blue PB14, amber PB15, green PA11): pick the resistors.
 - [ ] PA10 and PB11: weak pull-up to 3.3 V; pick the value.
 - [ ] BOOT0 and BOOT1 (PB2) pulled down.
