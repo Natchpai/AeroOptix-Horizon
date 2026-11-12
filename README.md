@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.33, 2026-11-03): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.34, 2026-11-12): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -35,7 +35,7 @@ The team website, [natchpai.github.io/AeroOptix-Horizon](https://natchpai.github
 | Outputs | 4 motors (H743), 8 servos (F100, 50 Hz PWM), 3 spare (H743) |
 | Sensors | 2× ICM-45686, ICP-20100 + BMP581 (BMP384 fallback), IST8310 |
 | Board input | 5 V, 4.5 to 5.5 V, 2 A source; power mux limit 1.5 A; overvoltage cut-off 5.6 to 6.3 V (DEC-029, DEC-030, DEC-036) |
-| 3.3 V rails | `+3V3` buck, design current about 0.6 A (DEC-040); `+3V3A` LDO for the 2 IMUs only (DEC-025, DEC-027) |
+| 3.3 V rails | `+3V3` buck, design current about 0.6 A (DEC-040); `+3V3A` LDO for the sensor VDD pins; sensor VDDIO on `+3V3` (DEC-043, DEC-027) |
 | Servo supply | 6 V UBEC into an XT30, 10 A continuous, 15 A peak (XT30 rating `TBD`, OPEN-021) |
 | Board outline | Under 80 mm each side; exact outline `TBD` (OPEN-009) |
 | Mounting | M3, 3.2 mm holes, soft mount; pattern `TBD` |
@@ -86,11 +86,13 @@ The diagram is for reference only. It does not enforce gates or approve releases
 
 ### Design progress
 
-State of the saved KiCad files on 2026-11-03. Details: specification 4.3 and 4.6.
+State of the saved KiCad files on 2026-11-12. Details: specification 4.3 and 4.6; the MCU and sensor sheets are listed in `what-next.md` only.
 
 | Area | State |
 |---|---|
 | Power sheet | Drawn, 53 parts. ERC run by the human owner (only sheet pins to other sheets left) and a `sch-review` found no defect (2026-11-03; not an approval). Open: resistor part numbers (P2-021). |
+| MCU sheets | Started (2026-11-11). H743 and F100 symbols, decoupling, VDDA RC filters, BOOT0 resistors and NRST capacitors. GPIOs on local stub labels; no signal leaves the sheets yet. References not annotated. |
+| Sensor sheets | Started (2026-11-12). 2 × ICM-45686, ICP-20100 and BMP581 with decoupling, I2C pull-ups and address resistors. IST8310 not drawn. Barometers on I2C2. IMU INT1 differs from the pin allocation (open). |
 | Other sheets | No parts yet. |
 | PCB | No footprints; 27 × 29 mm placeholder outline (OPEN-009). |
 | Library | Project symbols, footprints and 3D models for the parts in use. Sensor footprints are starting points, not checked against the drawings (OPEN-013). |
@@ -106,7 +108,7 @@ State of the saved KiCad files on 2026-11-03. Details: specification 4.3 and 4.6
 | Sensors | 2 IMU on SPI1 and SPI4; 2 barometers and the magnetometer on I2C2 |
 | External I/O | ELRS, GPS and compass, air-data sensor, rangefinder, power module, motors, spare outputs, microSD, buzzer, LEDs |
 | USB / debug | USB FS, H743 debug connector (console + SWD), F100 SWD pads |
-| Power | 5 V input, 3.3 V buck, IMU LDO, 6 V servo rail |
+| Power | 5 V input, 3.3 V buck, sensor LDO, 6 V servo rail |
 
 ### External interfaces
 
@@ -154,7 +156,7 @@ The specification tracks OPEN-001 to OPEN-025. Still open:
 - Sensor data, sourcing and footprints (OPEN-004, OPEN-013, OPEN-019)
 - 6 V servo rail budget and XT30 (OPEN-007, OPEN-021)
 - Board outline (OPEN-009) and remaining part numbers (OPEN-010)
-- `+3V3A` start-up on the bench (OPEN-011)
+- `+3V3A` load, sensor VDDIO-before-VDD power-up order, and start-up on the bench (OPEN-011)
 - Motor stop with PWM-only ESCs (OPEN-017) and PWM pull-downs (OPEN-018)
 - Connector pinouts, including the PM02D CLIK-Mate pin order (OPEN-023)
 - Status LED ST level on the bench (OPEN-025)

@@ -115,7 +115,10 @@ export const places: Record<Level, Record<string, Place>> = {
   // Power (L1): left to right, columns 180 px apart: source, input,
   // protection, +5V bar, converters, +3V3 bar, loads. Rail bars stand
   // upright and are wide enough for their name. The +5V bar is centred on
-  // the LDO line (560), the +3V3 bar on the buck line (300).
+  // the LDO line (560), the +3V3 bar on the buck line (300), with the
+  // H743 and F100 lines 85 px either side. The LDO is tall and centred on
+  // 560, so its +3V3A lines to the sensors (515, 605) pass under the
+  // +3V3 bar (DEC-043).
   power: {
     'pw-batt': { x: 0, y: 730 },
     'pw-pm02d': { x: 380, y: 460, h: 600 },
@@ -129,17 +132,17 @@ export const places: Record<Level, Record<string, Place>> = {
     'pw-r5v': { x: 1140, y: 280, w: 120, h: 560 },
 
     'pw-buck': { x: 1440, y: 270 },
-    'pw-ldo': { x: 1440, y: 530, w: 240 },
+    'pw-ldo': { x: 1440, y: 470, w: 240, h: 180 },
     'pw-ubec': { x: 1440, y: 880 },
 
-    'pw-r3v3': { x: 1820, y: 90, w: 120, h: 420 },
+    'pw-r3v3': { x: 1820, y: 130, w: 120, h: 340 },
     'pw-xt30': { x: 1800, y: 880 },
 
     // loads wide enough for their part numbers in full
-    'pw-h743': { x: 2120, y: 60, w: 300, h: 140 },
-    'pw-f100': { x: 2120, y: 230, w: 300, h: 140 },
-    'pw-baro-mag': { x: 2120, y: 440, w: 300 },
-    'pw-imu': { x: 2120, y: 530, w: 300 },
+    'pw-h743': { x: 2120, y: 145, w: 300, h: 140 },
+    'pw-f100': { x: 2120, y: 315, w: 300, h: 140 },
+    'pw-baro-mag': { x: 2120, y: 485, w: 300 },
+    'pw-imu': { x: 2120, y: 575, w: 300 },
     'pw-ports': { x: 2120, y: 790, w: 300 },
     'pw-servos': { x: 2120, y: 880, w: 300 },
     'pw-esc': { x: 2120, y: 980, w: 300 },
@@ -277,7 +280,6 @@ export const lineAt: Record<string, number> = {
   'pw-pm-pdb': 960,
   'pw-5v-buck': 300,
   'pw-5v-ports': 820,
-  'pw-3v3-h743': 130,
   // servo PWM lines 28 px apart, then the rail sense line set apart; the
   // group is centred on 1224, the safety line's mirror on the F100 right side
   ...Object.fromEntries(

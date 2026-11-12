@@ -17,7 +17,13 @@ class AuditResult(unittest.TextTestResult):
 
     @property
     def passed(self):
-        return self.testsRun - len(self.failures) - len(self.errors) - len(self.skipped)
+        # A test with failing subTests adds one failure per subTest, so count
+        # distinct failed tests, not failure records.
+        failed = {id(test) for test, _ in self.failures + self.errors
+                  if not isinstance(test, unittest.case._SubTest)}
+        failed |= {id(test.test_case) for test, _ in self.failures + self.errors
+                   if isinstance(test, unittest.case._SubTest)}
+        return self.testsRun - len(failed) - len(self.skipped)
 
 
 class AuditRunner(unittest.TextTestRunner):
