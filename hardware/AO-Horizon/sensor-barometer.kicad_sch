@@ -2093,7 +2093,7 @@
 		)
 		(uuid "fbce6ab3-094e-4f9d-add7-3dcfdae9728e")
 	)
-	(label "BARO_I2C4_SDA"
+	(label "BARO_I2C2_SDA"
 		(at 184.15 189.23 0)
 		(effects
 			(font
@@ -2133,7 +2133,7 @@
 		)
 		(uuid "7aa4e6cc-5ad3-43e3-b0b8-8c41231f16fa")
 	)
-	(label "BARO_I2C4_SCL"
+	(label "BARO_I2C2_SCL"
 		(at 184.15 88.9 0)
 		(effects
 			(font
@@ -2143,7 +2143,7 @@
 		)
 		(uuid "84fd89f3-8e11-49ad-84fa-f0137dcec2d9")
 	)
-	(label "BARO_I2C4_SCL"
+	(label "BARO_I2C2_SCL"
 		(at 184.15 184.15 0)
 		(effects
 			(font
@@ -2153,7 +2153,7 @@
 		)
 		(uuid "b87c72a3-c8bc-4f24-9686-883d61cd8892")
 	)
-	(label "BARO_I2C4_SDA"
+	(label "BARO_I2C2_SDA"
 		(at 184.15 93.98 0)
 		(effects
 			(font
@@ -2163,7 +2163,7 @@
 		)
 		(uuid "ec1fb16b-c55e-416c-a677-30555205851f")
 	)
-	(hierarchical_label "BARO_I2C4_SCL"
+	(hierarchical_label "BARO_I2C2_SCL"
 		(shape input)
 		(at 124.46 88.9 180)
 		(effects
@@ -2174,7 +2174,7 @@
 		)
 		(uuid "5d5dcd37-7043-4467-aec7-6428172483d7")
 	)
-	(hierarchical_label "BARO_I2C4_SDA"
+	(hierarchical_label "BARO_I2C2_SDA"
 		(shape input)
 		(at 124.46 93.98 180)
 		(effects
