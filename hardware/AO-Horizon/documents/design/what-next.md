@@ -13,9 +13,9 @@ The board is split into design zones. Each zone below has its own to-do list.
 | ---- | ----- | ----- | --------------- |
 | Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, 2026-10-31); eFuse replaced by the TPS2121 power mux (2026-11-01); mux status LED, OV and ST dividers, input capacitors and LDO enable from PG set (2026-11-03); ERC run and `sch-review` done, P2-019 closed, 5 V budget closed, CN101 is CLIK-Mate (2026-11-03) | OPEN-023, OPEN-025 |
 | Z2 Servo power rail (6 V bus, XT30) | Not drawn | Not started | OPEN-007, OPEN-021, P2-016 |
-| Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | `main_mcu.kicad_sch` | Started (2026-11-11): MCU symbol, VDD decoupling, VDDA and VREF+ RC filters from `+3V3`, BOOT0 resistors; every GPIO on a local `H7_<pin>` stub label. Gaps in section 4 (`sch-inspect`, 2026-11-12) | P1-001, P1-006 to P1-008, P1-014, DEC-025 |
-| Z4 F100 IO MCU (px4io) | `io_mcu.kicad_sch` | Started (2026-11-11): MCU symbol, VDD decoupling, VDDA RC filter from `+3V3`, BOOT0 resistors; GPIOs on local `F1_<pin>` stub labels | P1-002, P1-014, P2-014 |
-| Z5 Sensors (2 × IMU, 2 × barometer, magnetometer) | Not drawn | Library starting points only | OPEN-004, OPEN-013, OPEN-019, P2-012 |
+| Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | `main_mcu.kicad_sch` | Started (2026-11-11): MCU symbol, VDD decoupling, VDDA and VREF+ RC filters from `+3V3`, BOOT0 resistors; every GPIO on a local `H7_<pin>` stub label. NRST on hierarchical label `RESET_B` with 100 nF (2026-11-12). Gaps in section 4 (`sch-inspect`, 2026-11-12) | P1-001, P1-006 to P1-008, P1-014, DEC-025 |
+| Z4 F100 IO MCU (px4io) | `io_mcu.kicad_sch` | Started (2026-11-11): MCU symbol, VDD decoupling, VDDA RC filter from `+3V3`, BOOT0 resistors; GPIOs on local `F1_<pin>` stub labels. NRST on hierarchical label `RESET_B` with 100 nF (2026-11-12) | P1-002, P1-014, P2-014 |
+| Z5 Sensors (2 × IMU, 2 × barometer, magnetometer) | `sensor-imu.kicad_sch`, `sensor-barometer.kicad_sch` | Started (2026-11-12): U401, U402 ICM-45686; U501 ICP-20100, U502 BMP581. Drawn, not decided; 4 conflicts with the spec in section 6. Magnetometer not drawn | DEC-025, SEN-002, P1-003, P1-004, OPEN-004, OPEN-013, OPEN-019, P2-012 |
 | Z6 External connectors and outputs (telemetry, GPS, I2C, ESC and servo headers, spare outputs) | Not drawn | Pinouts not checked | OPEN-018, OPEN-023, P2-013, P2-015, P2-018 |
 | Z7 PCB and mechanical | `AO-Horizon.kicad_pcb` | 27 × 29 mm placeholder outline, no footprints | OPEN-009, P3-001 |
 
@@ -44,7 +44,9 @@ Not drawn. Servo current passes through the board (DEC-019).
 
 Started on 2026-11-11. Pins in pin allocation rev 0.6 (P1-001).
 
-On the saved sheet (`sch-inspect` of the 13:56 save, 2026-11-12, sheet-local evidence only; KiCad was open): U? STM32H743VITx; 5 × 100 nF on `+3V3` for the 5 VDD pins; VBAT on `+3V3`; VDDA (`H7_VDDA`) through 22 Ω from `+3V3` with 100 nF to `GND`; VREF+ (`H7_VREF`) through a second 22 Ω from `+3V3` with 100 nF to `GND`; BOOT0 10 kΩ to `GND` (fitted) and 10 kΩ to `+3V3` (DNP). The sheet no longer uses `+3V3A`, so DEC-025 holds. Every GPIO, VCAP, PH0/PH1 and NRST sits on a local stub label only. The sheet has no hierarchical or global labels, so no signal leaves it yet. References are not annotated.
+On the saved sheet (`sch-inspect` of the 13:56 save, 2026-11-12, sheet-local evidence only; KiCad was open): U? STM32H743VITx; 5 × 100 nF on `+3V3` for the 5 VDD pins; VBAT on `+3V3`; VDDA (`H7_VDDA`) through 22 Ω from `+3V3` with 100 nF to `GND`; VREF+ (`H7_VREF`) through a second 22 Ω from `+3V3` with 100 nF to `GND`; BOOT0 10 kΩ to `GND` (fitted) and 10 kΩ to `+3V3` (DNP). The sheet no longer uses `+3V3A`, so DEC-025 holds. Every GPIO, VCAP and PH0/PH1 sits on a local stub label only.
+
+Change in the 23:34 save (`sch-inspect`, 2026-11-12, `VERIFIED` from the saved file, drawn, not decided): NRST (pin 14) moved from the `NRST` stub to hierarchical label `RESET_B`, with a new 100 nF from `RESET_B` to `GND`. The "Main MCU" sheet symbol on `top_hierarchical.kicad_sch` has no sheet pins, so `RESET_B` does not leave the sheet yet. References are not annotated.
 
 H743 values below are from ST DS12110 Rev 11 via NotebookLM (2026-11-12).
 
@@ -55,9 +57,9 @@ H743 values below are from ST DS12110 Rev 11 via NotebookLM (2026-11-12).
 - [ ] Bulk capacitor: add 1 × 4.7 µF on `+3V3` near the MCU (Fig. 15: N × 100 nF + 1 × 4.7 µF, `VERIFIED`).
 - [ ] Human review of the pin choices (P1-001).
 - [ ] 16 MHz crystal part and load capacitors on PH0/PH1 (P1-014). Only the `H7_PH0` and `H7_PH1` stubs are drawn.
-- [ ] Reset topology: NRST capacitor and the NRST pad (P1-014, TST-001). Only the `NRST` stub is drawn.
+- [ ] Reset topology (P1-014, TST-001): the 100 nF on `RESET_B` is drawn. Still open: the NRST pad, and whether the H743 and F100 share one reset net. Each sheet has its own `RESET_B` hierarchical label and neither sheet symbol has a pin, so today they are 2 separate nets. Record the choice in the spec.
 - [ ] BOOT0: the DNP pull-up gives selection by rework only. Decide if that meets FUN-006 and TST-003 ("selectable and observable"), or add a pad, jumper or button (P1-007).
-- [ ] Replace the `H7_<pin>` stubs with function names from the pin allocation, and add the hierarchical or global labels that carry signals to the other sheets (F100 link, sensors, connectors, power).
+- [ ] Replace the `H7_<pin>` stubs with function names from the pin allocation, and add the hierarchical or global labels that carry signals to the other sheets (F100 link, sensors, connectors, power). Then add the matching sheet pins on `top_hierarchical.kicad_sch`: today only "Power Supplies" has pins (`3V3_PG`, `PM02_SCL`, `PM02_SDA`).
 - [ ] Mark unused pins with no-connect flags once the allocation is final (PA10, PA15, PB3, PB4 and the other free pins).
 - [ ] Annotate U?, C? and R?.
 - [ ] Debug: Pixhawk Debug Mini 6-pin JST-SH (1 VREF, 2 TX, 3 RX, 4 SWDIO, 5 SWCLK, 6 GND) on USART3 PD8/PD9 and SWD PA13/PA14 (only stubs drawn), plus an NRST pad. Check the pin order against DS-009 if you can get it (P1-008).
@@ -76,18 +78,35 @@ Started on 2026-11-11. Pins from `px4/io-v2` (P1-002).
 - [ ] px4io LEDs (blue PB14, amber PB15, green PA11): pick the resistors.
 - [ ] PA10 and PB11: weak pull-up to 3.3 V; pick the value.
 - [ ] BOOT0 and BOOT1 (PB2) pulled down.
+- [ ] NRST (pin 7) is on hierarchical label `RESET_B` with a new 100 nF to `GND` (2026-11-12, drawn, not decided). Shared or separate reset with the H743: see the reset item in section 4.
 - [ ] Debug pads: SWDIO, SWCLK, NRST, GND, USART1 TX (PA9).
 
 ## 6. Zone Z5: Sensors
 
-Not drawn. Parts decided (DEC-008, DEC-010, DEC-011); library starting points only.
+Started on 2026-11-12. Parts decided (DEC-008, DEC-010, DEC-011). Both sheets are on `top_hierarchical.kicad_sch` with no sheet pins, so no sensor signal reaches the H743 yet. Magnetometer (IST8310) not drawn.
 
+On the saved sheets (`sch-inspect` of the 23:34 save, 2026-11-12, sheet-local evidence only; all drawn, not decided):
+- `sensor-imu.kicad_sch`: U401 and U402 ICM-45686. VDD on `+3V3A`, VDDIO on `+3V3`, RESV (pin 7) on `GND`, 100 nF on each of VDD and VDDIO (C401 to C404). SPI on `IMU1_SPI_*` / `IMU2_SPI_*` labels, carried by bus labels `{IMU1_SPI}` and `{IMU2_SPI}` (bus aliases in `AO-Horizon.kicad_pro`). INT1, INT2 (pin 9) and the AUX1 pins have no-connect flags.
+- `sensor-barometer.kicad_sch`: U501 ICP-20100 and U502 BMP581. VDD on `+3V3A`, VDDIO on `+3V3`, 100 nF each (C501 to C504). Bus labels `BARO_I2C4_SCL` / `BARO_I2C4_SDA` with 5k pull-ups to `+3V3` (R501, R502). ICP-20100 CSB tied to `+3V3`; AD0 5k to `GND` (R504, fitted) and 5k to `+3V3` (R503, DNP). BMP581 CSB 100k to `+3V3` (R507); SA0 5k to `GND` (R506, fitted) and 5k to `+3V3` (R505, DNP). INT pins have no-connect flags.
+
+Conflicts with the spec (`VERIFIED` against the saved files and the spec text):
+- [ ] MAJOR | U401, U402 / VDDIO | IMU VDDIO is on `+3V3`, but DEC-025 says `+3V3A` feeds the IMU "VDD and VDDIO both". Keep the drawing and change DEC-025 (this also changes the SPI level question in OPEN-011), or move VDDIO to `+3V3A`.
+- [ ] MAJOR | U501, U502 / `+3V3A` | Both barometer VDD pins are on `+3V3A`, but DEC-025 says "No other load on `+3V3A`". Move them to `+3V3`, or change DEC-025 and the `+3V3A` load in the power budget.
+- [ ] MAJOR | `BARO_I2C4_*` | The barometer bus is named for I2C4, but SEN-002 and DEC-010 put both barometers on I2C2 (PB10, PB11) with the IST8310. I2C4 (PD12, PD13) is the external MS4525DO and power module bus. Rename to I2C2, or change the spec.
+- [ ] MAJOR | U401, U402 / INT1 | INT1 has a no-connect flag, but the pin allocation gives IMU1 INT1 to PC4 and IMU2 INT1 to PE15 (P1-003, DRDY). Wire INT1 out, or change the allocation.
+
+To do:
+- [ ] Barometer address straps: check that AD0 low gives 0x63 on the ICP-20100 and SA0 low gives 0x46 on the BMP581 (SEN-002), in NotebookLM (`NOT_VERIFIED`).
+- [ ] I2C pull-ups (P1-004): one set per bus, sized for the IST8310 too once it is on the same bus. 5k is not an E24 or E96 value; pick 4.7k, 4.99k or 5.1k.
+- [ ] Sensor decoupling: only 100 nF per supply pin is drawn. Check each datasheet's recommended capacitors (`NOT_VERIFIED`).
+- [ ] Add sheet pins for the IMU SPI buses and the barometer I2C bus on `top_hierarchical.kicad_sch`.
+- [ ] Draw the IST8310 (P1-005, DEC-011).
 - [ ] BMP581: Fig. 32 pad sizes and the pin 1 corner (Fig. 29, 30) on `Bosch_LGA-10_2x2mm_P0.5mm_LayoutBorder3x2y`; no solder mask under it, 20 µm clearance (DS004-13 §8.2) (P2-012).
 - [ ] ICP-20100: land pattern (AN-000140) and pin 1 corner (P2-012).
 - [ ] IST8310: check the stock `LGA-16_3x3mm_P0.5mm` footprint and pin 1 corner against the package drawing (P2-012).
 - [ ] BMP384 fallback: compare footprint and pinout with the BMP581 (P1-015, OPEN-019). Address 0x76, SDO low.
-- [ ] ICM-45686 pin 9 unused: confirm NC or tie to VDDIO in the datasheet (the IMU record note is `NOT_VERIFIED`).
-- [ ] I2C2 pull-ups and SPI chip-selects (P1-003 to P1-005).
+- [ ] ICM-45686 pin 9 unused: drawn with a no-connect flag. Confirm NC or tie to VDDIO in the datasheet (the IMU record note is `NOT_VERIFIED`).
+- [ ] SPI chip-selects (P1-003); I2C2 pull-ups are covered above (P1-004, P1-005).
 - [ ] Buy BMP581 early: DigiKey showed 0 in stock on 2026-10-08 (team note, not checked).
 
 ## 7. Zone Z6: External connectors and outputs
