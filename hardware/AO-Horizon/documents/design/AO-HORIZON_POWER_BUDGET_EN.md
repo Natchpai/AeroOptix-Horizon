@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.19
-**Updated:** 2026-11-03
+**Revision:** 0.20
+**Updated:** 2026-11-12
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012), the 5 V input is a TPS2121 power mux with a 1.5 A limit (DEC-029, DEC-030) and the `+3V3A` LDO is TPS73533DRBR (DEC-027). No other rail, regulator or protection part is approved. Not a verification record.
-**Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012 (closed), OPEN-021, OPEN-024 (closed), OPEN-025 (spec rev 0.28). Decisions: DEC-010, DEC-012, DEC-016, DEC-018, DEC-019, DEC-025, DEC-026 (superseded), DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038. Checklist task: P0-017.
+**Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006, OPEN-007, OPEN-011, OPEN-012 (closed), OPEN-021, OPEN-024 (closed), OPEN-025 (spec rev 0.28). Decisions: DEC-010, DEC-012, DEC-016, DEC-018, DEC-019, DEC-025, DEC-026 (superseded), DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-043. Checklist task: P0-017.
 **Decision owner:** Hardware
 
 Single record for rail loads, rail tolerances, brownout thresholds and power protection requirements.
@@ -37,14 +37,14 @@ From the spec diagram. Candidate only, not approved (spec PWR-013).
                            |            |
                            |            +-> 6 V UBEC -> board XT30 -> on-board 6 V bus
                            |                             -> 8 servo headers (+ IF-050 sense)
-                           +-> TPS2121 mux IN1, 1.5 A (DEC-029/030) -> 5 V bus -> 3.3 V (MCUs, baro, mag)
-                                                                  +-> +3V3A LDO -> 3.3 V_IMU (2 × IMU only, DEC-025)
+                           +-> TPS2121 mux IN1, 1.5 A (DEC-029/030) -> 5 V bus -> 3.3 V (MCUs, sensor VDDIO)
+                                                                  +-> +3V3A LDO -> 3.3 V_IMU (sensor VDD, DEC-043)
                                                                   +-> 5 V external connectors
 USB VBUS (bench) -> TPS2121 mux IN2 ----------------------------^
 ```
 
 - `ASSUMED`: the 5 V input feeds the external connectors directly, and both 3.3 V rails come from the 5 V input.
-- 3.3 V_IMU is the `+3V3A` rail from its own LDO, and it feeds only the 2 IMUs, on VDD and VDDIO (DEC-025, human owner, 2026-10-26). The LDO is TPS73533DRBR (DEC-027, 2026-10-31).
+- 3.3 V_IMU is the `+3V3A` rail from its own LDO. It feeds the VDD pins of the 2 IMUs, both barometers and the IST8310 (AVDD); their VDDIO pins (IST8310 DVDD) stay on `+3V3` (DEC-043, human owner, 2026-11-12; replaces DEC-025). The LDO is TPS73533DRBR (DEC-027, 2026-10-31).
 - USB VBUS powers the board and all external 5 V ports on the bench without the battery (team; all ports: human owner, 2026-10-24). Since 2026-11-01 the TPS2121 power mux joins USB (IN2) and the PM02D (IN1) and blocks reverse current on both channels (TI mux 9.3.6, `VERIFIED`). PR1 has a 12.1 kΩ / 5 kΩ divider from the PM02D and CP2 a 16.5 kΩ / 5 kΩ divider from `VBUS` (DEC-031 to DEC-034), so the PM02D has priority; USB takes over below about 3.98 V typ at `VBUS` 5.0 V (XCOMP) or 3.56 V typ (VREF mode, 16.5 kΩ not fitted).
 - The saved `power_supplies.kicad_sch` draws `+3V3` from the TPS62142RGTR buck (DEC-012) and `+3V3A` from the TPS73533DRBR LDO (DEC-027), both fed from `+5V`; the LDO is enabled by the buck power-good, so `+3V3A` starts after `+3V3` (DEC-039); the buck through a 0.33 µH inductor (`+5V_BUCK`). The TPS2121 power mux (U101) is wired from `PM02_5V` (IN1) and `VBUS` (IN2) to `+5V`, with ILIM 80.6 kΩ, a PR1 priority divider 12.1 kΩ / 5 kΩ, a CP2 divider 16.5 kΩ (fitted) / 5 kΩ from `VBUS`, OV dividers 23.2 kΩ / 5 kΩ on both inputs (DEC-036, 2026-11-03) and SS 10 nF; checked against TI mux on 2026-11-01 (sections 6 and 7). The human owner declared the sheet complete on 2026-10-31 and changed the 5 V input to the power mux on 2026-11-01. A status LED on the mux ST pin is kept (DEC-035, 2026-11-03): Q101 switches D103 from `+5V` through 2 kΩ, and ST comes from a 10 kΩ / 10 kΩ divider on `+5V` (DEC-036). LED current `TBD` (LED forward voltage not checked). Details: spec 4.3 "Schematic state".
 
@@ -57,6 +57,11 @@ Typical or average current per load. Peak current listed where known. "TBD" mean
 | Load | Qty | Current each | Peak | Source | Label |
 | ---- | --- | ------------ | ---- | ------ | ----- |
 | ICM-45686, 6-axis low-noise, 6400 Hz | 2 | 0.44 mA | TBD | IMU rec (DS Table 3) | `NOT_VERIFIED` |
+| ICP-20100 VDD | 1 | TBD | TBD | Not read | `NOT_VERIFIED` |
+| BMP581 VDD | 1 | TBD | TBD | Not read | `NOT_VERIFIED` |
+| IST8310 AVDD | 1 | TBD | TBD | Not read | `NOT_VERIFIED` |
+
+Since DEC-043 (2026-11-12), this rail feeds the VDD pins of all sensors. VDDIO (IST8310 DVDD) stays on the 3.3 V rail, so the sensor I/O current stays in the 3.3 V row.
 
 ### 3.3 V
 
@@ -101,7 +106,7 @@ The 4 motor outputs (IF-040 to IF-043) carry only the signal to 4 separate Skywa
 
 | Rail | Known subtotal | Missing | Budget | Margin | Label |
 | ---- | -------------- | ------- | ------ | ------ | ----- |
-| 3.3 V_IMU | 0.88 mA (2 × 0.44 mA) | IMU peak | TBD. 500 mA, TPS73533DRBR (DEC-027, TI SBVS087M 5.3). | TBD | `ESTIMATED` from `NOT_VERIFIED` inputs |
+| 3.3 V_IMU | 0.88 mA (2 × 0.44 mA, IMUs only) | IMU peak; ICP-20100, BMP581 and IST8310 VDD currents (DEC-043) | TBD. 500 mA, TPS73533DRBR (DEC-027, TI SBVS087M 5.3). | TBD | `ESTIMATED` from `NOT_VERIFIED` inputs |
 | 3.3 V | about 244 mA typ (design current about 0.6 A maximum, DEC-040; L101 1.2 A rating, distributor `NOT_VERIFIED`, allows about 0.5 A buck input); about 460 mA with the H743 at its Tj 85 °C maximum, about 570 mA at Tj 105 °C (H743, F100 max 15.4 mA, IST8310, D104 about 2.5 mA, and an assumed 5 mA for the barometers and pull-ups) | ICP-20100, BMP581, pull-ups and px4io LEDs not read | 2 A, TPS62142RGTR (DEC-012, TI SLVSAJ0F) | TBD | `ESTIMATED` from partial inputs |
 | 5 V | Board: about 190 to 215 mA typ, 360 to 400 mA with the H743 at its Tj 85 °C maximum, 445 to 495 mA at Tj 105 °C (3.3 V load through the buck at an assumed 85 % efficiency, 5.0 and 4.5 V in, plus D103 and the LDO). External: about 385 mA (ELRS 100, GPS 100, MS4525DO 5, TF-Luna 150, buzzer 30 mA; human owner). Total about 575 to 600 mA typ, 830 to 880 mA hot worst case | Telemetry 2 (no device planned) | 2 A source (PWR-010); power mux limit 1.0 / 1.5 / 2.0 A with 80.6 kΩ (DEC-030, TI mux, `VERIFIED`) | TBD | `ESTIMATED` from partial inputs |
 | 6 V (on the board) | none | All servo loads | 10 A cont., 15 A inst. (PWR-011), UBEC and XT30 input | TBD | `TBD` |
@@ -183,7 +188,7 @@ All `TBD`. Items to decide:
 
 - [x] ELRS about 100 mA, GPS about 100 mA (human owner estimates, 2026-11-03). Models still from the team (P0-022). Telemetry 2: no device planned.
 - [ ] Servo stall current (team bench test, P0-022). Servo power passes through the board (DEC-019), so it also sizes the board input and bus.
-- [x] 3.3 V_IMU rail structure: `+3V3A` from its own LDO, IMUs only (DEC-025, 2026-10-26). LDO TPS73533DRBR (DEC-027, 2026-10-31).
+- [x] 3.3 V_IMU rail structure: `+3V3A` from its own LDO, sensor VDD pins (DEC-043, 2026-11-12; was IMUs only, DEC-025). LDO TPS73533DRBR (DEC-027, 2026-10-31).
 - [x] USB VBUS as a board power source: yes, on the bench (team). It feeds all external 5 V ports (human owner, 2026-10-24).
 - [x] TPS259251DRC values from TI: done 2026-10-31 (section 7, notebook `TPS25925x eFuse`). Part removed 2026-11-01.
 - [x] TPS2121 values from TI: done 2026-11-01 (section 7, TI mux).

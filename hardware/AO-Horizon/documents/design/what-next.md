@@ -15,7 +15,7 @@ The board is split into design zones. Each zone below has its own to-do list.
 | Z2 Servo power rail (6 V bus, XT30) | Not drawn | Not started | OPEN-007, OPEN-021, P2-016 |
 | Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | `main_mcu.kicad_sch` | Started (2026-11-11): MCU symbol, VDD decoupling, VDDA and VREF+ RC filters from `+3V3`, BOOT0 resistors; every GPIO on a local `H7_<pin>` stub label. NRST on hierarchical label `RESET_B` with 100 nF (2026-11-12). Gaps in section 4 (`sch-inspect`, 2026-11-12) | P1-001, P1-006 to P1-008, P1-014, DEC-025 |
 | Z4 F100 IO MCU (px4io) | `io_mcu.kicad_sch` | Started (2026-11-11): MCU symbol, VDD decoupling, VDDA RC filter from `+3V3`, BOOT0 resistors; GPIOs on local `F1_<pin>` stub labels. NRST on hierarchical label `RESET_B` with 100 nF (2026-11-12) | P1-002, P1-014, P2-014 |
-| Z5 Sensors (2 × IMU, 2 × barometer, magnetometer) | `sensor-imu.kicad_sch`, `sensor-barometer.kicad_sch` | Started (2026-11-12): U401, U402 ICM-45686; U501 ICP-20100, U502 BMP581. Drawn, not decided; 4 conflicts with the spec in section 6. Magnetometer not drawn | DEC-025, SEN-002, P1-003, P1-004, OPEN-004, OPEN-013, OPEN-019, P2-012 |
+| Z5 Sensors (2 × IMU, 2 × barometer, magnetometer) | `sensor-imu.kicad_sch`, `sensor-barometer.kicad_sch` | Started (2026-11-12): U401, U402 ICM-45686; U501 ICP-20100, U502 BMP581. Rails decided (DEC-043); 2 conflicts with the spec in section 6. Magnetometer not drawn | DEC-043, OPEN-011, SEN-002, P1-003, P1-004, OPEN-004, OPEN-013, OPEN-019, P2-012 |
 | Z6 External connectors and outputs (telemetry, GPS, I2C, ESC and servo headers, spare outputs) | Not drawn | Pinouts not checked | OPEN-018, OPEN-023, P2-013, P2-015, P2-018 |
 | Z7 PCB and mechanical | `AO-Horizon.kicad_pcb` | 27 × 29 mm placeholder outline, no footprints | OPEN-009, P3-001 |
 
@@ -90,8 +90,7 @@ On the saved sheets (`sch-inspect` of the 23:34 save, 2026-11-12, sheet-local ev
 - `sensor-barometer.kicad_sch`: U501 ICP-20100 and U502 BMP581. VDD on `+3V3A`, VDDIO on `+3V3`, 100 nF each (C501 to C504). Bus labels `BARO_I2C4_SCL` / `BARO_I2C4_SDA` with 5k pull-ups to `+3V3` (R501, R502). ICP-20100 CSB tied to `+3V3`; AD0 5k to `GND` (R504, fitted) and 5k to `+3V3` (R503, DNP). BMP581 CSB 100k to `+3V3` (R507); SA0 5k to `GND` (R506, fitted) and 5k to `+3V3` (R505, DNP). INT pins have no-connect flags.
 
 Conflicts with the spec (`VERIFIED` against the saved files and the spec text):
-- [ ] MAJOR | U401, U402 / VDDIO | IMU VDDIO is on `+3V3`, but DEC-025 says `+3V3A` feeds the IMU "VDD and VDDIO both". Keep the drawing and change DEC-025 (this also changes the SPI level question in OPEN-011), or move VDDIO to `+3V3A`.
-- [ ] MAJOR | U501, U502 / `+3V3A` | Both barometer VDD pins are on `+3V3A`, but DEC-025 says "No other load on `+3V3A`". Move them to `+3V3`, or change DEC-025 and the `+3V3A` load in the power budget.
+- [x] Sensor rails: settled by DEC-043 (2026-11-12, replaces DEC-025). VDD of every sensor on `+3V3A`, VDDIO on `+3V3`, as drawn.
 - [ ] MAJOR | `BARO_I2C4_*` | The barometer bus is named for I2C4, but SEN-002 and DEC-010 put both barometers on I2C2 (PB10, PB11) with the IST8310. I2C4 (PD12, PD13) is the external MS4525DO and power module bus. Rename to I2C2, or change the spec.
 - [ ] MAJOR | U401, U402 / INT1 | INT1 has a no-connect flag, but the pin allocation gives IMU1 INT1 to PC4 and IMU2 INT1 to PE15 (P1-003, DRDY). Wire INT1 out, or change the allocation.
 
@@ -101,6 +100,10 @@ To do:
 - [ ] Sensor decoupling: only 100 nF per supply pin is drawn. Check each datasheet's recommended capacitors (`NOT_VERIFIED`).
 - [ ] Add sheet pins for the IMU SPI buses and the barometer I2C bus on `top_hierarchical.kicad_sch`.
 - [ ] Draw the IST8310 (P1-005, DEC-011).
+- [ ] Power-up order (OPEN-011): with DEC-039, VDDIO (`+3V3`) comes up before VDD (`+3V3A`). Check in NotebookLM that each sensor allows this (ICM-45686, ICP-20100, BMP581, IST8310).
+- [ ] `+3V3A` load: add ICP-20100, BMP581 and IST8310 VDD currents to the power budget (3.3 V_IMU rows are `TBD`).
+- [ ] IST8310 AVDD on the LDO: check the TPS73533DRBR output tolerance against the 3.6 V absolute maximum (OPEN-004).
+- [ ] Sync the checklist to DEC-043 (README synced 2026-11-12).
 - [ ] BMP581: Fig. 32 pad sizes and the pin 1 corner (Fig. 29, 30) on `Bosch_LGA-10_2x2mm_P0.5mm_LayoutBorder3x2y`; no solder mask under it, 20 µm clearance (DS004-13 §8.2) (P2-012).
 - [ ] ICP-20100: land pattern (AN-000140) and pin 1 corner (P2-012).
 - [ ] IST8310: check the stock `LGA-16_3x3mm_P0.5mm` footprint and pin 1 corner against the package drawing (P2-012).
