@@ -935,8 +935,7 @@ export const boardLinks: Link[] = [
 // Power flow, left to right: source, input, protection, rail, converter,
 // rail, loads. Loads are grouped (engineer's choice, 2026-10-26); a feed
 // the records do not give is a candidate (faded).
-const assumed3v3 =
-  'ASSUMED in the power budget: 3.3 V feeds the MCUs, baro and mag.'
+const assumed3v3 = 'ASSUMED in the power budget: 3.3 V feeds the MCUs.'
 
 export const powerBlocks: Block[] = [
   {
@@ -1015,9 +1014,9 @@ export const powerBlocks: Block[] = [
     rail: 'v3v3a',
     label: '+3V3A LDO',
     sub: 'TPS73533DRBR',
-    refs: ['PWR-013', 'DEC-025', 'DEC-027', 'CMP-009'],
+    refs: ['PWR-013', 'DEC-043', 'DEC-027', 'CMP-009'],
     open: ['OPEN-011'],
-    note: 'Part decided: TPS73533DRBR (DEC-027). +3V3A feeds only the 2 IMUs (DEC-025). The load, the IMU SPI level match with the H743 on +3V3 and the power-up order are open (OPEN-011).',
+    note: 'Part decided: TPS73533DRBR (DEC-027). +3V3A feeds the VDD pins of all sensors; their VDDIO pins stay on +3V3 (DEC-043). The load and the VDDIO-before-VDD power-up order are open (OPEN-011).',
   },
   {
     id: 'pw-r3v3',
@@ -1049,18 +1048,19 @@ export const powerBlocks: Block[] = [
     kind: 'sensor',
     label: 'Baro × 2 + mag',
     sub: 'ICP-20100, BMP581, IST8310',
-    refs: ['SEN-002', 'SEN-003'],
-    open: ['OPEN-004'],
+    refs: ['SEN-002', 'SEN-003', 'DEC-043'],
+    open: ['OPEN-004', 'OPEN-011'],
+    note: 'VDD (IST8310 AVDD) on +3V3A; VDDIO (IST8310 DVDD) on +3V3 (DEC-043). VDDIO-before-VDD power-up order not checked (OPEN-011).',
   },
   {
     id: 'pw-imu',
     level: 'power',
     kind: 'sensor',
     label: 'IMU × 2',
-    sub: 'ICM-45686, VDD + VDDIO',
-    refs: ['SEN-001', 'DEC-025'],
+    sub: 'ICM-45686, VDD',
+    refs: ['SEN-001', 'DEC-043'],
     open: ['OPEN-011'],
-    note: 'Only load on +3V3A (DEC-025). SPI level match with the H743 on +3V3 is not checked (OPEN-011).',
+    note: 'VDD on +3V3A; VDDIO on +3V3 (DEC-043). VDDIO-before-VDD power-up order not checked (OPEN-011).',
   },
   {
     id: 'pw-ports',
@@ -1156,7 +1156,7 @@ export const powerLinks: Link[] = [
     }
   ),
   pw('pw-5v-buck', 'pw-r5v', 'pw-buck', 'v5', '5 V', ['DEC-012']),
-  pw('pw-5v-ldo', 'pw-r5v', 'pw-ldo', 'v5', '5 V', ['DEC-025', 'DEC-027'], {
+  pw('pw-5v-ldo', 'pw-r5v', 'pw-ldo', 'v5', '5 V', ['DEC-043', 'DEC-027'], {
     open: ['OPEN-011'],
   }),
   pw('pw-5v-ports', 'pw-r5v', 'pw-ports', 'v5', '5 V', ['IF-010', 'IF-022'], {
@@ -1172,18 +1172,17 @@ export const powerLinks: Link[] = [
     note: assumed3v3,
   }),
   pw(
-    'pw-3v3-baro-mag',
-    'pw-r3v3',
+    'pw-ldo-baro-mag',
+    'pw-ldo',
     'pw-baro-mag',
-    'v3v3',
-    '3.3 V',
-    ['PWR-013'],
+    'v3v3a',
+    '+3V3A',
+    ['DEC-043'],
     {
-      status: 'candidate',
-      note: assumed3v3,
+      open: ['OPEN-011'],
     }
   ),
-  pw('pw-ldo-imu', 'pw-ldo', 'pw-imu', 'v3v3a', '+3V3A', ['DEC-025'], {
+  pw('pw-ldo-imu', 'pw-ldo', 'pw-imu', 'v3v3a', '+3V3A', ['DEC-043'], {
     open: ['OPEN-011'],
   }),
   pw('pw-pm-pdb', 'pw-pm02d', 'pw-pdb', 'batt', 'Battery', ['PWR-013'], {
