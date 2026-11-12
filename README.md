@@ -92,7 +92,7 @@ State of the saved KiCad files on 2026-11-12. Details: specification 4.3 and 4.6
 |---|---|
 | Power sheet | Drawn, 53 parts. ERC run by the human owner (only sheet pins to other sheets left) and a `sch-review` found no defect (2026-11-03; not an approval). Open: resistor part numbers (P2-021). |
 | MCU sheets | Started (2026-11-11). H743 and F100 symbols, decoupling, VDDA RC filters, BOOT0 resistors and NRST capacitors. GPIOs on local stub labels; no signal leaves the sheets yet. References not annotated. |
-| Sensor sheets | Started (2026-11-12). 2 × ICM-45686, ICP-20100 and BMP581 with decoupling, I2C pull-ups and address resistors. IST8310 not drawn. Barometer bus name and IMU INT1 differ from the spec (open). |
+| Sensor sheets | Started (2026-11-12). 2 × ICM-45686, ICP-20100 and BMP581 with decoupling, I2C pull-ups and address resistors. IST8310 not drawn. Barometers on I2C2. IMU INT1 differs from the pin allocation (open). |
 | Other sheets | No parts yet. |
 | PCB | No footprints; 27 × 29 mm placeholder outline (OPEN-009). |
 | Library | Project symbols, footprints and 3D models for the parts in use. Sensor footprints are starting points, not checked against the drawings (OPEN-013). |

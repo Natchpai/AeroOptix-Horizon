@@ -15,7 +15,7 @@ The board is split into design zones. Each zone below has its own to-do list.
 | Z2 Servo power rail (6 V bus, XT30) | Not drawn | Not started | OPEN-007, OPEN-021, P2-016 |
 | Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | `main_mcu.kicad_sch` | Started (2026-11-11): MCU symbol, VDD decoupling, VDDA and VREF+ RC filters from `+3V3`, BOOT0 resistors; every GPIO on a local `H7_<pin>` stub label. NRST on hierarchical label `RESET_B` with 100 nF (2026-11-12). Gaps in section 4 (`sch-inspect`, 2026-11-12) | P1-001, P1-006 to P1-008, P1-014, DEC-025 |
 | Z4 F100 IO MCU (px4io) | `io_mcu.kicad_sch` | Started (2026-11-11): MCU symbol, VDD decoupling, VDDA RC filter from `+3V3`, BOOT0 resistors; GPIOs on local `F1_<pin>` stub labels. NRST on hierarchical label `RESET_B` with 100 nF (2026-11-12) | P1-002, P1-014, P2-014 |
-| Z5 Sensors (2 × IMU, 2 × barometer, magnetometer) | `sensor-imu.kicad_sch`, `sensor-barometer.kicad_sch` | Started (2026-11-12): U401, U402 ICM-45686; U501 ICP-20100, U502 BMP581. Rails decided (DEC-043); 2 conflicts with the spec in section 6. Magnetometer not drawn | DEC-043, OPEN-011, SEN-002, P1-003, P1-004, OPEN-004, OPEN-013, OPEN-019, P2-012 |
+| Z5 Sensors (2 × IMU, 2 × barometer, magnetometer) | `sensor-imu.kicad_sch`, `sensor-barometer.kicad_sch` | Started (2026-11-12): U401, U402 ICM-45686; U501 ICP-20100, U502 BMP581. Rails decided (DEC-043); bus on I2C2; 1 conflict with the spec in section 6 (IMU INT1). Magnetometer not drawn | DEC-043, OPEN-011, SEN-002, P1-003, P1-004, OPEN-004, OPEN-013, OPEN-019, P2-012 |
 | Z6 External connectors and outputs (telemetry, GPS, I2C, ESC and servo headers, spare outputs) | Not drawn | Pinouts not checked | OPEN-018, OPEN-023, P2-013, P2-015, P2-018 |
 | Z7 PCB and mechanical | `AO-Horizon.kicad_pcb` | 27 × 29 mm placeholder outline, no footprints | OPEN-009, P3-001 |
 
@@ -87,11 +87,11 @@ Started on 2026-11-12. Parts decided (DEC-008, DEC-010, DEC-011). Both sheets ar
 
 On the saved sheets (`sch-inspect` of the 23:34 save, 2026-11-12, sheet-local evidence only; all drawn, not decided):
 - `sensor-imu.kicad_sch`: U401 and U402 ICM-45686. VDD on `+3V3A`, VDDIO on `+3V3`, RESV (pin 7) on `GND`, 100 nF on each of VDD and VDDIO (C401 to C404). SPI on `IMU1_SPI_*` / `IMU2_SPI_*` labels, carried by bus labels `{IMU1_SPI}` and `{IMU2_SPI}` (bus aliases in `AO-Horizon.kicad_pro`). INT1, INT2 (pin 9) and the AUX1 pins have no-connect flags.
-- `sensor-barometer.kicad_sch`: U501 ICP-20100 and U502 BMP581. VDD on `+3V3A`, VDDIO on `+3V3`, 100 nF each (C501 to C504). Bus labels `BARO_I2C4_SCL` / `BARO_I2C4_SDA` with 5k pull-ups to `+3V3` (R501, R502). ICP-20100 CSB tied to `+3V3`; AD0 5k to `GND` (R504, fitted) and 5k to `+3V3` (R503, DNP). BMP581 CSB 100k to `+3V3` (R507); SA0 5k to `GND` (R506, fitted) and 5k to `+3V3` (R505, DNP). INT pins have no-connect flags.
+- `sensor-barometer.kicad_sch`: U501 ICP-20100 and U502 BMP581. VDD on `+3V3A`, VDDIO on `+3V3`, 100 nF each (C501 to C504). Bus labels `BARO_I2C2_SCL` / `BARO_I2C2_SDA` (renamed from `BARO_I2C4_*` in `2f77b2f`) with 5k pull-ups to `+3V3` (R501, R502). ICP-20100 CSB tied to `+3V3`; AD0 5k to `GND` (R504, fitted) and 5k to `+3V3` (R503, DNP). BMP581 CSB 100k to `+3V3` (R507); SA0 5k to `GND` (R506, fitted) and 5k to `+3V3` (R505, DNP). INT pins have no-connect flags.
 
 Conflicts with the spec (`VERIFIED` against the saved files and the spec text):
 - [x] Sensor rails: settled by DEC-043 (2026-11-12, replaces DEC-025). VDD of every sensor on `+3V3A`, VDDIO on `+3V3`, as drawn.
-- [ ] MAJOR | `BARO_I2C4_*` | The barometer bus is named for I2C4, but SEN-002 and DEC-010 put both barometers on I2C2 (PB10, PB11) with the IST8310. I2C4 (PD12, PD13) is the external MS4525DO and power module bus. Rename to I2C2, or change the spec.
+- [x] Barometer bus: labels renamed to `BARO_I2C2_SCL` / `BARO_I2C2_SDA` (2026-11-12, `2f77b2f`), matching SEN-002 and DEC-010. The bus still has no sheet pin to the H743.
 - [ ] MAJOR | U401, U402 / INT1 | INT1 has a no-connect flag, but the pin allocation gives IMU1 INT1 to PC4 and IMU2 INT1 to PE15 (P1-003, DRDY). Wire INT1 out, or change the allocation.
 
 To do:
