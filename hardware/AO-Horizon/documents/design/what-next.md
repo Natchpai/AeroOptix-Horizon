@@ -1,6 +1,6 @@
 # What Next
 
-**Updated:** 2026-11-03
+**Updated:** 2026-11-12
 **Status:** Personal reminder list. Not a requirement, decision or verification record.
 
 The specification and the execution checklist stay the source of truth. This list only points to their IDs.
@@ -13,7 +13,7 @@ The board is split into design zones. Each zone below has its own to-do list.
 | ---- | ----- | ----- | --------------- |
 | Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, 2026-10-31); eFuse replaced by the TPS2121 power mux (2026-11-01); mux status LED, OV and ST dividers, input capacitors and LDO enable from PG set (2026-11-03); ERC run and `sch-review` done, P2-019 closed, 5 V budget closed, CN101 is CLIK-Mate (2026-11-03) | OPEN-023, OPEN-025 |
 | Z2 Servo power rail (6 V bus, XT30) | Not drawn | Not started | OPEN-007, OPEN-021, P2-016 |
-| Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | Not drawn | Pins allocated (P1-001), not drawn | P1-001, P1-006 to P1-008, P1-014 |
+| Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | `main_mcu.kicad_sch` | Started (2026-11-11): MCU symbol, VDD/VDDA/VREF+ decoupling, BOOT0 resistors; every GPIO on a local `H7_<pin>` stub label. Gaps in section 4 (`sch-inspect`, 2026-11-12) | P1-001, P1-006 to P1-008, P1-014, DEC-025 |
 | Z4 F100 IO MCU (px4io) | Not drawn | Pins allocated (P1-002), not drawn | P1-002, P1-014, P2-014 |
 | Z5 Sensors (2 × IMU, 2 × barometer, magnetometer) | Not drawn | Library starting points only | OPEN-004, OPEN-013, OPEN-019, P2-012 |
 | Z6 External connectors and outputs (telemetry, GPS, I2C, ESC and servo headers, spare outputs) | Not drawn | Pinouts not checked | OPEN-018, OPEN-023, P2-013, P2-015, P2-018 |
@@ -42,16 +42,25 @@ Not drawn. Servo current passes through the board (DEC-019).
 
 ## 4. Zone Z3: H743 main MCU
 
-Not drawn. Pins in pin allocation rev 0.6 (P1-001).
+Started on 2026-11-11. Pins in pin allocation rev 0.6 (P1-001).
 
+On the saved sheet (`sch-inspect`, 2026-11-12, sheet-local evidence only): U? STM32H743VITx; 5 × 100 nF on `+3V3` for the 5 VDD pins; VBAT on `+3V3`; VDDA on `+3V3A` with 1 × 100 nF; VREF+ (`H7_VREF`) through 22 Ω from `+3V3A` with 100 nF to `GND`; BOOT0 10 kΩ to `GND` (fitted) and 10 kΩ to `+3V3` (DNP). Every GPIO, VCAP, PH0/PH1 and NRST sits on a local stub label only. The sheet has no hierarchical or global labels, so no signal leaves it yet. References are not annotated.
+
+- [ ] Decide the H743 VDDA and VREF+ supply. The sheet puts them on `+3V3A`, but DEC-025 says `+3V3A` feeds only the 2 IMUs. Either move them to `+3V3` (with a filter) or change DEC-025. With DEC-039, `+3V3A` comes up after `+3V3`; check the VDDA/VDD power-up rule in the H743 datasheet (`NOT_VERIFIED`).
+- [ ] VCAP: pins 48 and 73 are on `H7_VCAP` with no capacitor. Add the VCAP capacitors (value from the H743 datasheet, `NOT_VERIFIED`).
+- [ ] Bulk capacitor on `+3V3` near the MCU, and the VDDA bulk value (datasheet, `NOT_VERIFIED`); only 100 nF parts are placed now.
 - [ ] Human review of the pin choices (P1-001).
-- [ ] 16 MHz crystal part and load capacitors (P1-014).
-- [ ] Reset topology, NRST pad, BOOT0 (P1-007, P1-014).
-- [ ] Debug: Pixhawk Debug Mini 6-pin JST-SH (1 VREF, 2 TX, 3 RX, 4 SWDIO, 5 SWCLK, 6 GND) plus an NRST pad. Check the pin order against DS-009 if you can get it (P1-008).
-- [ ] Wire `3V3_PG` to the H743 as an input only (it also drives the `+3V3A` LDO EN, DEC-039).
-- [ ] USB FS: connector, VBUS sensing, ESD (P1-006); USB-C CC resistors so a USB-C source turns on VBUS (DEC-038); then remove the temporary `PWR_FLAG` on `VBUS` from the power sheet; OR-ing with the PM02D 5 V is the TPS2121 in Z1; `VBUS` already enters the power sheet from a power symbol.
-- [ ] SDMMC1 microSD: pull-ups and ESD protection.
-- [ ] Buzzer (TIM3_CH3) and the 3 board LEDs: pick the drive parts and resistors.
+- [ ] 16 MHz crystal part and load capacitors on PH0/PH1 (P1-014). Only the `H7_PH0` and `H7_PH1` stubs are drawn.
+- [ ] Reset topology: NRST capacitor and the NRST pad (P1-014, TST-001). Only the `NRST` stub is drawn.
+- [ ] BOOT0: the DNP pull-up gives selection by rework only. Decide if that meets FUN-006 and TST-003 ("selectable and observable"), or add a pad, jumper or button (P1-007).
+- [ ] Replace the `H7_<pin>` stubs with function names from the pin allocation, and add the hierarchical or global labels that carry signals to the other sheets (F100 link, sensors, connectors, power).
+- [ ] Mark unused pins with no-connect flags once the allocation is final (PA10, PA15, PB3, PB4 and the other free pins).
+- [ ] Annotate U?, C? and R?.
+- [ ] Debug: Pixhawk Debug Mini 6-pin JST-SH (1 VREF, 2 TX, 3 RX, 4 SWDIO, 5 SWCLK, 6 GND) on USART3 PD8/PD9 and SWD PA13/PA14 (only stubs drawn), plus an NRST pad. Check the pin order against DS-009 if you can get it (P1-008).
+- [ ] Wire `3V3_PG` to the H743 as an input only (it also drives the `+3V3A` LDO EN, DEC-039). Pin allocation rev 0.6 gives it no H743 pin yet: pick one.
+- [ ] USB FS on PA11/PA12, VBUS sense on PA9 (only stubs drawn): connector, VBUS sensing (PA9 FT_u divider question, pin allocation F-06), ESD (P1-006); USB-C CC resistors so a USB-C source turns on VBUS (DEC-038); then remove the temporary `PWR_FLAG` on `VBUS` from the power sheet; OR-ing with the PM02D 5 V is the TPS2121 in Z1; `VBUS` already enters the power sheet from a power symbol.
+- [ ] SDMMC1 microSD (PC8 to PC12, PD2; only stubs drawn): socket, pull-ups and ESD protection.
+- [ ] Buzzer (TIM3_CH3, PB0) and the 3 board LEDs (PE2 to PE4, active low): pick the drive parts and resistors. Only stubs drawn.
 
 ## 5. Zone Z4: F100 IO MCU (px4io)
 
