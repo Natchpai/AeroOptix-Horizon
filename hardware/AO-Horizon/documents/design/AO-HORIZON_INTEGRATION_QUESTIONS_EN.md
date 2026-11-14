@@ -12,10 +12,7 @@ Under each question, fill `Answer:` and `By:` (name or role). In the parts table
 
 ## 2. Already done (no reply needed)
 
-- **Answered by you (rev 0.2):** servo power, environment, GPS port and safety switch, external devices, stock px4io, no IMU heater (S8 to S10). Hardware changed the servo power to a Pixhawk-style servo rail: each servo plugs into a 3-pin header on the board (DEC-019).
-- **Set by hardware:** M3 screws (3.2 mm holes), soft mount, board on its own tray (not on the ESC), USB-C and microSD on adjacent edges, parts up to about 10 to 15 mm tall. USB powers the board and all 5 V ports on the bench. Every servo model is rated for 6 V.
-- **ESC:** 4 × 3-pin headers with the + pin removed, so the ESC BEC does not reach the board. No ESC current sense or telemetry.
-- **For the CAD team:** hardware sends the board outline, height, cable entry sides and dampers. Please draw the tray and the space under the GPS to fit.
+Your earlier answers and the hardware decisions that followed are in the spec: DEC-019 to DEC-023 and MEC-002 to MEC-004.
 
 ## 3. Open question
 

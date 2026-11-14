@@ -4,7 +4,8 @@
 **Updated:** 2026-10-24
 **From:** Hardware
 **To:** Software / PX4 dev team
-**Status:** Answered by the software team on 2026-10-24. The `Team` column and section 6 hold their answers, kept as written. The hardware owner's response is in section 9; the spec records the result in rev 0.12. The IO MCU is now the STM32F100C8T6B on the same pins (section 9); the board summary and the section 4 title show it. Other rows and the answers still say F103 or 8 MHz as sent. Nothing here is drawn in the schematic yet.
+**Record status:** closed, historical. Answered 2026-10-24; current pins are in AO-HORIZON_PIN_ALLOCATION_EN.md and the spec.
+**Status:** Answered by the software team on 2026-10-24. The `Team` column and section 6 hold their answers, kept as written. The hardware owner's response is in section 9; the spec records the result in rev 0.12. The IO MCU is now the STM32F100C8T6B on the same pins (section 9); the board summary and the section 4 title show it. Other rows and the answers still say F103 or 8 MHz as sent. As of 2026-10-24, nothing here was drawn in the schematic.
 
 ## 1. How to reply
 
@@ -212,7 +213,7 @@ Answer: 0x76 (SDO low), the default of the PX4 bmp388 driver.
 
 ## 7. Answers from review 0.2 (kept for reference)
 
-Your 0.2 answers, unchanged. The spec and the other records cite them by question number. Pins named here may have moved since; sections 3 to 5 are the current pinmap.
+Your 0.2 answers, unchanged. The spec and the other records cite them by question number. Pins named here may have moved since; sections 3 to 5 are as sent; current pins are in the pin allocation record.
 
 **Q1. Source of the pinout.** Did this pinout come from Pixhawk 6C, Pixhawk 6X, or both? Which PX4 board target did you test with (for example `px4_fmu-v6c`)?
 

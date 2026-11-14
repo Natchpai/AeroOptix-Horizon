@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets\AO-Horizon-v2.png" alt="AO-Horizon title" width="100%" >
+  <img src="assets/AO-Horizon-v2.png" alt="AO-Horizon title" width="100%" >
 </p>
 
 > **Status:** `DRAFT`
@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.38, 2026-11-14): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.39, 2026-11-14): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -19,28 +19,28 @@ The team website, [natchpai.github.io/AeroOptix-Horizon](https://natchpai.github
 
 ## Key Features
 
-- STM32H743VIT6 main MCU; STM32F100C8T6B IO MCU (px4io) over USART at 1.5 Mb/s
-- 4 motor outputs (H743 TIM5), 8 servo headers on an on-board 6 V rail (UBEC through an XT30), 3 spare outputs
-- 2× ICM-45686 IMU (SPI), ICP-20100 + BMP581 barometers and IST8310 magnetometer (I2C)
-- 5 V input through a TPS2121 power mux (power module and USB), 3.3 V from a TPS62142RGTR buck, IMU rail from a TPS73533DRBR LDO
-- USB FS, microSD, Pixhawk Debug Mini, F100 SWD pads, selectable BOOT0
+- STM32H743VIT6 flight MCU and STM32F100C8T6B px4io MCU, linked over USART at 1.5 Mb/s
+- 4 motor outputs on the H743, 8 servo headers on an on-board 6 V rail, 3 spare outputs
+- 2× ICM-45686 IMU on SPI; ICP-20100 and BMP581 barometers and IST8310 magnetometer on I2C
+- 5 V input through a TPS2121 power mux (power module or USB), 3.3 V buck, separate LDO for the sensor VDD pins
+- USB FS, microSD, debug access to both MCUs, selectable BOOT0
 
 ## Specifications
 
 | Parameter | Specification |
 |---|---|
-| Main MCU | STM32H743VIT6 |
-| IO MCU | STM32F100C8T6B (px4io) |
+| Main MCU | STM32H743VIT6 (DEC-001) |
+| IO MCU | STM32F100C8T6B (px4io, DEC-002) |
 | Clocks | H743 16 MHz, F100 24 MHz, both from CMOS oscillators (DEC-017, DEC-044) |
-| Outputs | 4 motors (H743), 8 servos (F100, 50 Hz PWM), 3 spare (H743) |
-| Sensors | 2× ICM-45686, ICP-20100 + BMP581 (BMP384 fallback), IST8310 |
-| Board input | 5 V, 4.5 to 5.5 V, 2 A source; power mux limit 1.5 A; overvoltage cut-off 5.6 to 6.3 V (DEC-029, DEC-030, DEC-036) |
-| 3.3 V rails | `+3V3` buck, design current about 0.6 A (DEC-040); `+3V3A` LDO for the sensor VDD pins; sensor VDDIO on `+3V3` (DEC-043, DEC-027) |
-| Servo supply | 6 V UBEC into an XT30, 10 A continuous, 15 A peak (XT30 rating `TBD`, OPEN-021) |
-| Board outline | Under 80 mm each side; exact outline `TBD` (OPEN-009) |
-| Mounting | M3, 3.2 mm holes, soft mount; pattern `TBD` |
-| Layers / stackup | `TBD` |
-| Temperature | Parts rated −40 to +85 °C (DEC-020) |
+| Outputs | 4 motors (H743), 8 servos (F100, 50 Hz PWM), 3 spare (H743) (DEC-016, FUN-003, IF-017 to IF-019) |
+| Sensors | 2× ICM-45686, ICP-20100 + BMP581 (BMP384 fallback), IST8310 (DEC-008, DEC-010, DEC-011) |
+| Board input | 5 V, 4.5 to 5.5 V, 2 A source; power mux limit 1.5 A; overvoltage cut-off 5.6 to 6.3 V (PWR-010, DEC-029, DEC-030, DEC-036) |
+| 3.3 V rails | `+3V3` buck, design current about 0.6 A (DEC-012, DEC-040); `+3V3A` LDO for the sensor VDD pins; sensor VDDIO on `+3V3` (DEC-043, DEC-027) |
+| Servo supply | 6 V UBEC into an XT30, 10 A continuous, 15 A peak (PWR-011, DEC-019; XT30 rating `TBD`, OPEN-021) |
+| Board outline | Under 80 mm each side; exact outline `TBD` (MEC-001, OPEN-009) |
+| Mounting | M3, 3.2 mm holes, soft mount; pattern `TBD` (MEC-002, OPEN-009) |
+| Layers / stackup | `TBD` (PCB-001, PCB-002) |
+| Temperature | Parts rated −40 to +85 °C (ENV-001, DEC-020) |
 
 *Specifications describe design targets unless explicitly identified as measured or verified results.*
 
@@ -86,17 +86,16 @@ The diagram is for reference only. It does not enforce gates or approve releases
 
 ### Design progress
 
-State of the saved KiCad files on 2026-11-14 (not committed). Details: specification 4.2 "Schematic state", 4.3 and 4.6.
+State of the saved KiCad files. The MCU, sensor and USB sheets and some power-sheet fields are not committed yet. Sheets not listed have no parts. Part lists, references and save dates are in specification 4.2 "Schematic state", 4.3 and 4.6.
 
 | Area | State |
 |---|---|
-| Power sheet | Drawn, 53 parts. ERC run by the human owner (only sheet pins to other sheets left) and a `sch-review` found no defect (2026-11-03; not an approval). Open: resistor part numbers (P2-021). |
-| MCU sheets | In capture (`mcu-main-fc`, `mcu-io`). H743 (U201) and F100 (U301) with decoupling, VCAP and bulk capacitors, VDDA RC filters, BOOT pull-downs, NRST capacitors and a microSD socket. Sensor buses, USB, SWD, USART6 to the F100 and I2C4 to the power sheet are wired through sheet pins. Clocks from 16 MHz and 24 MHz CMOS oscillators (DEC-044); HSE bypass set in firmware (DEC-045). Both NRST pins share one net (OPEN-026). Most passives not annotated. |
-| Sensor sheets | In capture (`sensor-imu`, `sensor-navigation`). 2 × ICM-45686, ICP-20100, BMP581 and IST8310 with decoupling, I2C pull-ups and address resistors, all on I2C2 except the SPI IMUs. IMU INT1 wired to the H743. IST8310 strapped to 0x0C, not 0x0E (OPEN-027). |
-| USB and debug sheet | In capture (`conn-usb-debug`). USB-C receptacle, USBLC6-2SC6 ESD, 5 kΩ CC resistors; VBUS to the power mux and to PA9. H743 SWD on a 4-pin connector and F100 SWD on 4 pads, no console or NRST, no footprints (OPEN-029). Part numbers not decided (OPEN-010). |
-| Other sheets | No parts yet. |
-| PCB | No footprints; 27 × 29 mm placeholder outline (OPEN-009). |
-| Library | Project symbols, footprints and 3D models for the parts in use. Sensor footprints are starting points, not checked against the drawings (OPEN-013). |
+| Power sheet | Drawn; human ERC and a `sch-review` of the 2026-11-03 save are under Verification; resistor part numbers open (P2-021). |
+| MCU sheets | In capture; both NRST pins share one net (OPEN-026) and the oscillator data is open (OPEN-028). |
+| Sensor sheets | In capture with all five sensors; the IST8310 is strapped to 0x0C, not the decided 0x0E (OPEN-027). |
+| USB and debug sheet | In capture; parts drawn, not approved (OPEN-010); debug access has no console or NRST yet (OPEN-029). |
+| PCB | No footprints, placeholder outline only (OPEN-009). |
+| Library | Project parts for the parts in use; sensor footprints not checked against the drawings (OPEN-013). |
 
 ## Hardware Design
 
@@ -108,62 +107,37 @@ State of the saved KiCad files on 2026-11-14 (not committed). Details: specifica
 | F100 IO controller | px4io: 8 servo outputs, safety switch and LED, servo rail sense, servo failsafe |
 | Sensors | 2 IMU on SPI1 and SPI4; 2 barometers and the magnetometer on I2C2 |
 | External I/O | ELRS, GPS and compass, air-data sensor, rangefinder, power module, motors, spare outputs, microSD, buzzer, LEDs |
-| USB / debug | USB FS, H743 debug connector (console + SWD), F100 SWD pads |
+| USB / debug | USB FS; H743 debug connector (target: console + SWD, IF-045; as drawn: OPEN-029); F100 SWD pads |
 | Power | 5 V input, 3.3 V buck, sensor LDO, 6 V servo rail |
 
 ### External interfaces
 
-Allocations agreed with the software team (DEC-014, DEC-018). Connector pinouts are not checked yet (OPEN-023).
-
-| Interface | Function | Allocation |
-|---|---|---|
-| Tel1 | ELRS receiver (RC and MAVLink), JST-GH 6-pin | UART7 |
-| Tel2 | Telemetry 2 (free) | USART1 |
-| GPS1 + compass | 10-pin full GPS port | USART2 + I2C1 |
-| Debug | Pixhawk Debug Mini | USART3 + SWD |
-| MS4525DO + PM02D | Air-data sensor and power module | I2C4 |
-| TF-Luna | Rangefinder | UART8 |
-| Motors 1 to 4 | Skywalker 80A V2 ESCs, 3-pin headers, + pin removed (OPEN-017) | TIM5_CH1 to CH4 |
-| Spare 1 to 3 | Spare outputs | TIM4_CH3, TIM4_CH4, TIM1_CH1 |
-| microSD | Flight logs | SDMMC1, 4-bit |
-| Buzzer | PX4 tone alarm | TIM3_CH3 |
-| F100 servos 1 to 8 | Flaperons, ruddervators, 4 tilt servos | TIM2, TIM3, TIM4 channels |
-| F100 safety | Safety button and LED, through GPS1 | GPIO |
+Interface allocations agreed with the software team (DEC-014, DEC-018) are in specification sections 3.4 and 3.5 ([spec](hardware/AO-Horizon/documents/design/AO-HORIZON_SPEC_EN.md)) and the [pin allocation record](hardware/AO-Horizon/documents/design/AO-HORIZON_PIN_ALLOCATION_EN.md); connector pinouts are not checked yet (OPEN-023).
 
 ### Design Considerations
 
-- The IO MCU is an STM32F100C8T6B so px4io runs with its 24 MHz clock (DEC-002, DEC-017). Both MCUs take their clock from CMOS oscillators (DEC-044), so the H743 board config (firmware and bootloader) and a custom px4io build set HSE bypass (DEC-045).
-- USB is a bench supply and needs a USB-C port above 1 A; the power module has priority (DEC-031 to DEC-034, DEC-038).
-- The ESCs look PWM-only, so motor stop on an H743 hang is open (OPEN-017).
-- Sensor sourcing risk: ICP-20100 is EOL, BMP581 stock is short (OPEN-004).
-- Firmware is owned by the software team: PX4 v1.16.2, based on `px4/fmu-v6c`.
-- Decisions, values and evidence are in the specification; this README only summarizes them.
+- IO MCU and clocks: STM32F100C8T6B for px4io at 24 MHz; CMOS oscillators with HSE bypass set in firmware (DEC-002, DEC-017, DEC-044, DEC-045).
+- USB power: bench supply only, needs a USB-C port above 1 A; the power module has priority (DEC-031 to DEC-034, DEC-038).
+- Motor stop: the ESCs look PWM-only, so motor stop on an H743 hang is open (OPEN-017).
+- Sensor sourcing: ICP-20100 is EOL, BMP581 stock is short (OPEN-004).
+- Firmware: owned by the software team, PX4 v1.16.2 based on `px4/fmu-v6c` (DEC-014).
 
 ## Verification
 
 | Check | Result | Evidence |
 |---|---|---|
-| Schematic ERC | Power sheet only | Run by the human owner, 2026-11-03; sheet pins to other sheets left |
-| Schematic review | Power sheet only | `sch-review`, spec 4.3, 2026-11-03 |
+| Schematic ERC | Power sheet, 2026-11-03 save only | Run by the human owner; only sheet pins to other sheets left. Later saves and other sheets not checked |
+| Schematic review | Power sheet, 2026-11-03 save only | `sch-review`, spec 4.3 |
 | PCB DRC | `NOT_VERIFIED` | PCB is empty |
 | BOM / footprint review | `NOT_VERIFIED` | `TBD` |
 | Prototype functional test | `NOT_VERIFIED` | Bench tasks P4-012 to P4-015 open |
 
 ## Open Items
 
-The specification tracks OPEN-001 to OPEN-029. Still open:
+The specification tracks every open item in section 8.2 of the [specification](hardware/AO-Horizon/documents/design/AO-HORIZON_SPEC_EN.md). Top items now:
 
-- MCU pins partly drawn; human review of the pin choices pending (OPEN-001)
-- Sensor data, sourcing and footprints (OPEN-004, OPEN-013, OPEN-019)
-- 6 V servo rail budget and XT30 (OPEN-007, OPEN-021)
-- Board outline (OPEN-009) and remaining part numbers (OPEN-010)
-- `+3V3A` load, sensor VDDIO-before-VDD power-up order, and start-up on the bench (OPEN-011)
-- Motor stop with PWM-only ESCs (OPEN-017) and PWM pull-downs (OPEN-018)
-- Connector pinouts, including the PM02D CLIK-Mate pin order (OPEN-023)
-- Status LED ST level on the bench (OPEN-025)
-- Reset topology: both NRST pins on one net as drawn (OPEN-026)
+- Motor stop with PWM-only ESCs (OPEN-017)
 - IST8310 address straps, 0x0C drawn against 0x0E decided (OPEN-027)
-- Clock sources: oscillator part numbers and data (OPEN-028)
 - Debug access: no console or NRST on the drawn connector and pads (OPEN-029)
 
 ## How we work
@@ -201,7 +175,8 @@ AeroOptix-Horizon/
 | [Execution checklist](hardware/AO-Horizon/documents/design/AO-HORIZON_EXECUTION_CHECKLIST_EN.md) | Work plan and evidence tracker |
 | [Power budget](hardware/AO-Horizon/documents/design/AO-HORIZON_POWER_BUDGET_EN.md) | Rail loads, tolerances and protection |
 | [Power mux notes](hardware/AO-Horizon/documents/design/AO-HORIZON_POWER_MUX_NOTES_EN.md) | TPS2121 modes and resistor calculations |
-| [Pin allocation](hardware/AO-Horizon/documents/design/AO-HORIZON_PIN_ALLOCATION_EN.md) | H743 and F100 pin allocation (rev 0.6) |
+| [Pin allocation](hardware/AO-Horizon/documents/design/AO-HORIZON_PIN_ALLOCATION_EN.md) | H743 and F100 pin allocation |
+| [Software clock note](hardware/AO-Horizon/documents/design/AO-HORIZON_SW_CLOCK_NOTE_EN.md) | HSE bypass request to the software team (DEC-045, P1-017) |
 | [Design records index](hardware/AO-Horizon/documents/design/README.md) | All other records: sensor selection, pinmap review and decisions, integration questions, sourcing |
 | [Team website](https://natchpai.github.io/AeroOptix-Horizon/) | Block diagram, MCU pinouts and status ([source](web/README.md)) |
 

@@ -4,6 +4,7 @@
 **Updated:** 2026-10-24
 **From:** Hardware
 **To:** Software team and all members
+**Record status:** closed, historical. Answered 2026-10-24; current pins are in AO-HORIZON_PIN_ALLOCATION_EN.md and the spec.
 **Status:** Answered by the software team on 2026-10-24 and accepted by the hardware owner. D1 to D7 are signed "Software team (proposal for the team)"; a separate whole-team confirmation is not recorded. The hardware owner's response is in section 9. The spec records the result in rev 0.11, and the S7 update in rev 0.12.
 
 ## 1. How to reply
@@ -85,7 +86,7 @@ Options:
 
 Hardware impact: pin assignment only. Both options fit the board.
 
-Decision: (a) H743 TIM5, PA0 to PA3, with the motors in DShot only (S1). This needs DShot-capable ESCs; the planned ESC is a Holybro Tekko32 F4 4-in-1 with AM32 firmware, still to be confirmed.
+Decision: (a) H743 TIM5, PA0 to PA3, with the motors in DShot only (S1). This needs DShot-capable ESCs; the planned ESC is a Holybro Tekko32 F4 4-in-1 with AM32 firmware, still to be confirmed (the team later chose Skywalker ESCs, IF-040).
 By: Software team (proposal for the team)
 
 **D3. Failsafe positions for the 8 servos.**
@@ -201,7 +202,7 @@ ST: DS5319 Rev 20, STM32F103x8/B datasheet, Tables 20 and 22 (`https://www.st.co
 ## 9. Hardware owner response (2026-10-24)
 
 - All answers accepted as written, except S7.
-- **S7:** the IO MCU stays STM32F103C8T6 (DEC-002). The proposed STM32F100C8T6B is not used. The team's fallback applies: option (a), an 8 MHz crystal with PLL ×3 to 24 MHz. The software team builds and keeps the px4io image and the px4io bootloader for 8 MHz.
+- **S7:** the IO MCU stays STM32F103C8T6 (DEC-002). The proposed STM32F100C8T6B is not used. The team's fallback applies: option (a), an 8 MHz crystal with PLL ×3 to 24 MHz. The software team builds and keeps the px4io image and the px4io bootloader for 8 MHz (superseded, see the note below and DEC-017, DEC-044, DEC-045).
 - **S6:** the PX4 docs give the Pixhawk Debug Mini pinout as 1 VREF, 2 Console TX, 3 Console RX, 4 SWDIO, 5 SWCLK, 6 GND. NRST is not on the connector; hardware adds an NRST pad next to it (`https://docs.px4.io/main/en/debug/swd_debug.html`, read 2026-10-24; DS-009 itself not read).
 - **New open items from the answers** (spec rev 0.11): motor stop on an H743 hang depends on the ESC's signal-loss behavior (OPEN-017); the PWM pull-down value must suit bidirectional DShot (OPEN-018); the BMP384 fallback needs a footprint check against the BMP581 (OPEN-019).
 - Pinmap review 0.3 (`AO-HORIZON_PINMAP_REVIEW_EN.md`) shows the result.
