@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.34, 2026-11-12): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.35, 2026-11-14): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -86,13 +86,14 @@ The diagram is for reference only. It does not enforce gates or approve releases
 
 ### Design progress
 
-State of the saved KiCad files on 2026-11-12. Details: specification 4.3 and 4.6; the MCU and sensor sheets are listed in `what-next.md` only.
+State of the saved KiCad files on 2026-11-14 (not committed). Details: specification 4.2 "Schematic state", 4.3 and 4.6.
 
 | Area | State |
 |---|---|
 | Power sheet | Drawn, 53 parts. ERC run by the human owner (only sheet pins to other sheets left) and a `sch-review` found no defect (2026-11-03; not an approval). Open: resistor part numbers (P2-021). |
-| MCU sheets | Started (2026-11-11). H743 and F100 symbols, decoupling, VDDA RC filters, BOOT0 resistors and NRST capacitors. GPIOs on local stub labels; no signal leaves the sheets yet. References not annotated. |
-| Sensor sheets | Started (2026-11-12). 2 × ICM-45686, ICP-20100 and BMP581 with decoupling, I2C pull-ups and address resistors. IST8310 not drawn. Barometers on I2C2. IMU INT1 differs from the pin allocation (open). |
+| MCU sheets | In capture (`mcu-main-fc`, `mcu-io`). H743 and F100 symbols, decoupling, VDDA RC filters, BOOT0 resistors, NRST capacitors and a microSD socket. Sensor buses, USB, USART6 to the F100 and I2C4 to the power sheet are wired through sheet pins. Both NRST pins sit on the buck PG net (OPEN-026). Not yet drawn: VCAP capacitors, crystals, debug connector. References not annotated. |
+| Sensor sheets | In capture (`sensor-imu`, `sensor-navigation`). 2 × ICM-45686, ICP-20100, BMP581 and IST8310 with decoupling, I2C pull-ups and address resistors, all on I2C2 except the SPI IMUs. IMU INT1 wired to the H743. IST8310 strapped to 0x0C, not 0x0E (OPEN-027). |
+| USB sheet | In capture (`conn-usb-debug`). USB-C receptacle, USBLC6-2SC6 ESD, 5 kΩ CC resistors; VBUS to the power mux and to PA9. Part numbers not decided (OPEN-010). |
 | Other sheets | No parts yet. |
 | PCB | No footprints; 27 × 29 mm placeholder outline (OPEN-009). |
 | Library | Project symbols, footprints and 3D models for the parts in use. Sensor footprints are starting points, not checked against the drawings (OPEN-013). |
@@ -150,9 +151,9 @@ Allocations agreed with the software team (DEC-014, DEC-018). Connector pinouts 
 
 ## Open Items
 
-The specification tracks OPEN-001 to OPEN-025. Still open:
+The specification tracks OPEN-001 to OPEN-027. Still open:
 
-- MCU pins not in the schematic yet (OPEN-001)
+- MCU pins partly drawn; human review of the pin choices pending (OPEN-001)
 - Sensor data, sourcing and footprints (OPEN-004, OPEN-013, OPEN-019)
 - 6 V servo rail budget and XT30 (OPEN-007, OPEN-021)
 - Board outline (OPEN-009) and remaining part numbers (OPEN-010)
@@ -160,6 +161,8 @@ The specification tracks OPEN-001 to OPEN-025. Still open:
 - Motor stop with PWM-only ESCs (OPEN-017) and PWM pull-downs (OPEN-018)
 - Connector pinouts, including the PM02D CLIK-Mate pin order (OPEN-023)
 - Status LED ST level on the bench (OPEN-025)
+- Reset topology: both NRST pins on the buck PG net as drawn (OPEN-026)
+- IST8310 address straps, 0x0C drawn against 0x0E decided (OPEN-027)
 
 ## How we work
 
