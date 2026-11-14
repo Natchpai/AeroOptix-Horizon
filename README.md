@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.35, 2026-11-14): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.38, 2026-11-14): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -31,7 +31,7 @@ The team website, [natchpai.github.io/AeroOptix-Horizon](https://natchpai.github
 |---|---|
 | Main MCU | STM32H743VIT6 |
 | IO MCU | STM32F100C8T6B (px4io) |
-| Clocks | H743 16 MHz, F100 24 MHz crystal |
+| Clocks | H743 16 MHz, F100 24 MHz, both from CMOS oscillators (DEC-017, DEC-044) |
 | Outputs | 4 motors (H743), 8 servos (F100, 50 Hz PWM), 3 spare (H743) |
 | Sensors | 2× ICM-45686, ICP-20100 + BMP581 (BMP384 fallback), IST8310 |
 | Board input | 5 V, 4.5 to 5.5 V, 2 A source; power mux limit 1.5 A; overvoltage cut-off 5.6 to 6.3 V (DEC-029, DEC-030, DEC-036) |
@@ -91,9 +91,9 @@ State of the saved KiCad files on 2026-11-14 (not committed). Details: specifica
 | Area | State |
 |---|---|
 | Power sheet | Drawn, 53 parts. ERC run by the human owner (only sheet pins to other sheets left) and a `sch-review` found no defect (2026-11-03; not an approval). Open: resistor part numbers (P2-021). |
-| MCU sheets | In capture (`mcu-main-fc`, `mcu-io`). H743 and F100 symbols, decoupling, VDDA RC filters, BOOT0 resistors, NRST capacitors and a microSD socket. Sensor buses, USB, USART6 to the F100 and I2C4 to the power sheet are wired through sheet pins. Both NRST pins sit on the buck PG net (OPEN-026). Not yet drawn: VCAP capacitors, crystals, debug connector. References not annotated. |
+| MCU sheets | In capture (`mcu-main-fc`, `mcu-io`). H743 (U201) and F100 (U301) with decoupling, VCAP and bulk capacitors, VDDA RC filters, BOOT pull-downs, NRST capacitors and a microSD socket. Sensor buses, USB, SWD, USART6 to the F100 and I2C4 to the power sheet are wired through sheet pins. Clocks from 16 MHz and 24 MHz CMOS oscillators (DEC-044); HSE bypass set in firmware (DEC-045). Both NRST pins share one net (OPEN-026). Most passives not annotated. |
 | Sensor sheets | In capture (`sensor-imu`, `sensor-navigation`). 2 × ICM-45686, ICP-20100, BMP581 and IST8310 with decoupling, I2C pull-ups and address resistors, all on I2C2 except the SPI IMUs. IMU INT1 wired to the H743. IST8310 strapped to 0x0C, not 0x0E (OPEN-027). |
-| USB sheet | In capture (`conn-usb-debug`). USB-C receptacle, USBLC6-2SC6 ESD, 5 kΩ CC resistors; VBUS to the power mux and to PA9. Part numbers not decided (OPEN-010). |
+| USB and debug sheet | In capture (`conn-usb-debug`). USB-C receptacle, USBLC6-2SC6 ESD, 5 kΩ CC resistors; VBUS to the power mux and to PA9. H743 SWD on a 4-pin connector and F100 SWD on 4 pads, no console or NRST, no footprints (OPEN-029). Part numbers not decided (OPEN-010). |
 | Other sheets | No parts yet. |
 | PCB | No footprints; 27 × 29 mm placeholder outline (OPEN-009). |
 | Library | Project symbols, footprints and 3D models for the parts in use. Sensor footprints are starting points, not checked against the drawings (OPEN-013). |
@@ -132,7 +132,7 @@ Allocations agreed with the software team (DEC-014, DEC-018). Connector pinouts 
 
 ### Design Considerations
 
-- The IO MCU is an STM32F100C8T6B so stock px4io runs with its 24 MHz crystal (DEC-002, DEC-017).
+- The IO MCU is an STM32F100C8T6B so px4io runs with its 24 MHz clock (DEC-002, DEC-017). Both MCUs take their clock from CMOS oscillators (DEC-044), so the H743 board config (firmware and bootloader) and a custom px4io build set HSE bypass (DEC-045).
 - USB is a bench supply and needs a USB-C port above 1 A; the power module has priority (DEC-031 to DEC-034, DEC-038).
 - The ESCs look PWM-only, so motor stop on an H743 hang is open (OPEN-017).
 - Sensor sourcing risk: ICP-20100 is EOL, BMP581 stock is short (OPEN-004).
@@ -151,7 +151,7 @@ Allocations agreed with the software team (DEC-014, DEC-018). Connector pinouts 
 
 ## Open Items
 
-The specification tracks OPEN-001 to OPEN-027. Still open:
+The specification tracks OPEN-001 to OPEN-029. Still open:
 
 - MCU pins partly drawn; human review of the pin choices pending (OPEN-001)
 - Sensor data, sourcing and footprints (OPEN-004, OPEN-013, OPEN-019)
@@ -161,8 +161,10 @@ The specification tracks OPEN-001 to OPEN-027. Still open:
 - Motor stop with PWM-only ESCs (OPEN-017) and PWM pull-downs (OPEN-018)
 - Connector pinouts, including the PM02D CLIK-Mate pin order (OPEN-023)
 - Status LED ST level on the bench (OPEN-025)
-- Reset topology: both NRST pins on the buck PG net as drawn (OPEN-026)
+- Reset topology: both NRST pins on one net as drawn (OPEN-026)
 - IST8310 address straps, 0x0C drawn against 0x0E decided (OPEN-027)
+- Clock sources: oscillator part numbers and data (OPEN-028)
+- Debug access: no console or NRST on the drawn connector and pads (OPEN-029)
 
 ## How we work
 
