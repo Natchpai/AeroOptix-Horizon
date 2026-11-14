@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.39, 2026-11-14): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.40, 2026-11-14): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -91,8 +91,8 @@ State of the saved KiCad files. The MCU, sensor and USB sheets and some power-sh
 | Area | State |
 |---|---|
 | Power sheet | Drawn; human ERC and a `sch-review` of the 2026-11-03 save are under Verification; resistor part numbers open (P2-021). |
-| MCU sheets | In capture; both NRST pins share one net (OPEN-026) and the oscillator data is open (OPEN-028). |
-| Sensor sheets | In capture with all five sensors; the IST8310 is strapped to 0x0C, not the decided 0x0E (OPEN-027). |
+| MCU sheets | In capture; one shared reset with one button decided, button not drawn (DEC-046, OPEN-026); oscillator parts decided, data open (DEC-048, OPEN-028); VREF+ tied to VDDA (DEC-049). |
+| Sensor sheets | In capture with all five sensors; IST8310 at 0x0C as strapped (DEC-047, closes OPEN-027). |
 | USB and debug sheet | In capture; parts drawn, not approved (OPEN-010); debug access has no console or NRST yet (OPEN-029). |
 | PCB | No footprints, placeholder outline only (OPEN-009). |
 | Library | Project parts for the parts in use; sensor footprints not checked against the drawings (OPEN-013). |
@@ -137,7 +137,7 @@ Interface allocations agreed with the software team (DEC-014, DEC-018) are in sp
 The specification tracks every open item in section 8.2 of the [specification](hardware/AO-Horizon/documents/design/AO-HORIZON_SPEC_EN.md). Top items now:
 
 - Motor stop with PWM-only ESCs (OPEN-017)
-- IST8310 address straps, 0x0C drawn against 0x0E decided (OPEN-027)
+- Reset: the button is not drawn, and an H743 internal reset may also reset the F100 (OPEN-026)
 - Debug access: no console or NRST on the drawn connector and pads (OPEN-029)
 
 ## How we work

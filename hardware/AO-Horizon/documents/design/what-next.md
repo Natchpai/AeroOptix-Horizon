@@ -15,7 +15,7 @@ The board is split into design zones. Each zone below has its own to-do list.
 | Z2 Servo power rail (6 V bus, XT30) | Not drawn | Not started | OPEN-007, OPEN-021, P2-016 |
 | Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | `mcu-main-fc.kicad_sch`, `conn-usb-debug.kicad_sch` | In capture (spec 4.2 "Schematic state"); U201, U202 annotated, passives not | P1-001, P1-006 to P1-008, P1-014, P2-022, OPEN-026, OPEN-028, OPEN-029 |
 | Z4 F100 IO MCU (px4io) | `mcu-io.kicad_sch` | In capture (spec 4.2 "Schematic state"); U301, U302 annotated, passives not | P1-002, P1-014, P2-014, P2-022, OPEN-026, OPEN-028, OPEN-029 |
-| Z5 Sensors (2 × IMU, 2 × barometer, magnetometer) | `sensor-imu.kicad_sch`, `sensor-navigation.kicad_sch` | All five sensors drawn (U401, U402, U501, U502, U503; spec 4.2); rails per DEC-043; IST8310 address open (OPEN-027) | DEC-043, OPEN-011, OPEN-027, SEN-002, P1-003, P1-004, OPEN-004, OPEN-013, OPEN-019, P2-012 |
+| Z5 Sensors (2 × IMU, 2 × barometer, magnetometer) | `sensor-imu.kicad_sch`, `sensor-navigation.kicad_sch` | All five sensors drawn (U401, U402, U501, U502, U503; spec 4.2); rails per DEC-043; IST8310 at 0x0C (DEC-047) | DEC-043, OPEN-011, DEC-047, SEN-002, P1-003, P1-004, OPEN-004, OPEN-013, OPEN-019, P2-012 |
 | Z6 External connectors and outputs (telemetry, GPS, I2C, ESC and servo headers, spare outputs) | Not drawn | Pinouts not checked | OPEN-018, OPEN-023, P2-013, P2-015, P2-018 |
 | Z7 PCB and mechanical | `AO-Horizon.kicad_pcb` | 27 × 29 mm placeholder outline, no footprints | OPEN-009, P3-001 |
 
@@ -45,11 +45,10 @@ Pins in the pin allocation (P1-001). Current state: spec 4.2 "Schematic state" (
 
 H743 values below are from ST DS12110 Rev 11 via NotebookLM (2026-11-12).
 
-- [ ] VREF+: the two separate 22 Ω filters let VREF+ sit above VDDA, because VDDA carries the ADC current (about 16 mV at 720 µA typ for one ADC, `ESTIMATED`). Tables 77 and 174 allow VREF+ only up to VDDA (`VERIFIED`). Fix: delete the VREF+ 22 Ω and tie VREF+ (pin 20) to `H7_VDDA` (Fig. 41).
-- [ ] Record the VDDA/VREF+ RC filter from `+3V3` as a decision in the spec (your choice, for cost).
+- [x] VREF+ tied to VDDA on one 22 Ω RC filter from `+3V3` (DEC-049, drawn in the 17:35 save).
 - [ ] Human review of the pin choices (P1-001).
-- [ ] 16 MHz clock: CMOS oscillator U202 (DEC-044). Pick the part and check its data (OPEN-028). Firmware side: P1-017.
-- [ ] Reset topology (P1-014, TST-001, OPEN-026): `RESET_B` joins only H743 NRST and F100 NRST (100 nF each); `3V3_PG` stays local to U102 PG, R113 and R115 to U103 EN (DEC-039). Check in NotebookLM whether an internal reset (IWDG, software, debugger) drives NRST low on the H743 and F100; if so, an H743 reset also resets the F100. Decide shared or separate reset and record it in the spec. NRST pad still to draw (OPEN-029).
+- [ ] 16 MHz clock: CMOS oscillator U202 (DEC-044), part decided (DEC-048). Check its data against the HSE external-clock limits (OPEN-028). Firmware side: P1-017.
+- [ ] Reset (DEC-046: one shared `RESET_B` for H743 and F100 NRST, one button): draw the reset button. Check in NotebookLM whether an internal reset (IWDG, software, debugger) drives NRST low on the H743 and F100; if so, an H743 reset also resets the F100 (OPEN-026, SAF-001). `3V3_PG` stays local (DEC-039). NRST pad still to draw (OPEN-029).
 - [ ] BOOT0: the DNP pull-up gives selection by rework only. Decide if that meets FUN-006 and TST-003 ("selectable and observable"), or add a pad, jumper or button (P1-007).
 - [ ] Replace the remaining `H7_<pin>` stub labels (USART3 console and other GPIOs) with function names from the pin allocation, and carry the signals that leave the sheet through sheet pins.
 - [ ] Mark unused pins with no-connect flags once the allocation is final (PA10, PA15, PB3, PB4 and the other free pins).
@@ -68,18 +67,18 @@ H743 values below are from ST DS12110 Rev 11 via NotebookLM (2026-11-12).
 Pins from `px4/io-v2` (P1-002). Current state: spec 4.2 "Schematic state".
 
 - [ ] F100 library part from stock `MCU_ST_STM32F1:STM32F100C8Tx`, and the block diagram text (P2-014).
-- [ ] 24 MHz clock: CMOS oscillator U302 (DEC-044). Pick the part and check its data (OPEN-028). Custom px4io build: P1-017.
+- [ ] 24 MHz clock: CMOS oscillator U302 (DEC-044), part decided (DEC-048). Check its data against the HSE external-clock limits (OPEN-028). Custom px4io build: P1-017.
 - [ ] VDDA (`F1_VDDA`): 22 Ω from `+3V3` with only 100 nF. Add 1 µF (Fig. 35 shows 1 µF // 10 nF; DocID16455 Rev 9 via NotebookLM, `VERIFIED`). Table 8 says VDDA "must be the same potential as VDD" (`VERIFIED`); the note allowing up to 300 mV of difference is `NOT_VERIFIED` (not in the cited text). Expected drop about 20 mV with the ADC on (0.8 mA, `ESTIMATED`).
 - [ ] px4io LEDs (blue PB14, amber PB15, green PA11): pick the resistors.
 - [ ] PA10 and PB11: weak pull-up to 3.3 V; pick the value.
-- [ ] NRST (pin 7) shares `RESET_B` with the H743 only; decide shared or separate reset (OPEN-026).
+- [ ] NRST (pin 7) on the shared `RESET_B` (DEC-046); the internal-reset check is in Z3 (OPEN-026).
 - [ ] Debug pads: drawn as 4 pads (VREF, SWDIO, SWCLK, GND), no NRST and no console TX (PA9). Decide the pin set (OPEN-029, P1-008).
 
 ## 6. Zone Z5: Sensors
 
 Parts decided (DEC-008, DEC-010, DEC-011). Current state: spec 4.2 "Schematic state": all five sensors drawn, rails per DEC-043, IMU SPI and INT1 lines and I2C2 (`NAV_I2C2_*`) reach the H743.
 
-- [ ] MAJOR | U503 / CAD0, CAD1 | Both CAD pins strapped low give an address that differs from DEC-011. Fit R508 and leave R509 off, leave both floating, or record the drawn address (OPEN-027).
+- [x] IST8310 address: 0x0C as strapped (DEC-047). The software team sets 0x0C in the PX4 start script (P1-018).
 
 To do:
 - [ ] Barometer address straps: check in NotebookLM that AD0 low on the ICP-20100 and SA0 low on the BMP581 give the SEN-002 addresses (`NOT_VERIFIED`).

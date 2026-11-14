@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: MCU Pin Allocation
 
-**Revision:** 0.7
+**Revision:** 0.8
 **Updated:** 2026-11-14
 **Status:** Draft. The software team's answers (pinmap review 0.2 and 0.3, decisions file) are applied. The IO MCU is the STM32F100C8T6B (DEC-002). Partly drawn in the schematic (spec 4.2 "Schematic state"). HSE from CMOS oscillators (DEC-044, DEC-045). DMA, interrupt priority and timer clock checks (P1-010) are not done by hardware. Not a verification record.
-**Requirement refs:** IF-010 to IF-024, IF-030 to IF-037, IF-040 to IF-051, SEN-001 to SEN-003, DEC-002, DEC-014 to DEC-018, DEC-043 to DEC-045. Checklist tasks: P1-001, P1-002, P1-003 to P1-005 (partial), P1-009 (partial).
+**Requirement refs:** IF-010 to IF-024, IF-030 to IF-037, IF-040 to IF-051, SEN-001 to SEN-003, DEC-002, DEC-014 to DEC-018, DEC-043 to DEC-047. Checklist tasks: P1-001, P1-002, P1-003 to P1-005 (partial), P1-009 (partial).
 **Decision owner:** Hardware
 
 Single record for the STM32H743VIT6 (LQFP100) and STM32F100C8T6B (LQFP48) pin allocation.
@@ -54,7 +54,7 @@ Script inputs and outputs are not kept in the repo.
 | USB VBUS sense | IF-022 | OTG_FS_VBUS | PA9 | 68 | match |
 | SWD | IF-045 | SWDIO | PA13 | 72 | not checked |
 | SWD | IF-045 | SWCLK | PA14 | 76 | not checked |
-| Reset | TST-001 | NRST | NRST | 14 | - |
+| Reset (shared `RESET_B`, one button, DEC-046) | TST-001 | NRST | NRST | 14 | - |
 | F100 link | IF-024 | USART6_TX | PC6 | 63 | match |
 | F100 link | IF-024 | USART6_RX | PC7 | 64 | match |
 | IMU1 | SEN-001 | SPI1_SCK | PA5 | 29 | match |
@@ -89,7 +89,7 @@ AF numbers (`VERIFIED`): the NuttX pinmap gives AF2 for TIM5_CH1 to CH4 on PA0 t
 
 Design choices behind the table (`ASSUMED`, for review):
 - Each IMU has its own SPI bus (SPI1, SPI4), so a fault on one bus does not take out both IMUs.
-- Both barometers and the magnetometer share I2C2 (I2C3 dropped by the team to free PC9 for microSD). Addresses: ICP-20100 0x63, BMP581 0x46, IST8310 0x0E (the drawn straps give 0x0C, spec OPEN-027). They do not overlap. One bus fault can now take out both barometers.
+- Both barometers and the magnetometer share I2C2 (I2C3 dropped by the team to free PC9 for microSD). Addresses: ICP-20100 0x63, BMP581 0x46, IST8310 0x0C (spec DEC-047; the PX4 start script sets it, P1-018). They do not overlap. One bus fault can now take out both barometers.
 - USART6 for the F100 link, same as `px4/fmu-v6c`.
 - Motors on TIM5, one timer with DMA, so all four can run bidirectional DShot from timer 0 (team, S3).
 - microSD on SDMMC1, because the `px4/fmu-v6c` SDMMC2 pins clash with GPS1 RX and Telemetry 2 (F-14).
@@ -124,7 +124,7 @@ Debug console (USART3), SWD and NRST: the drawn H743 debug connector has no cons
 | Servo rail sense | IF-050 | ADC1_IN4 (3:1 divider) | PA4 | 14 | not checked |
 | SWD | IF-051 | SWDIO | PA13 | 34 | match (row text) |
 | SWD | IF-051 | SWCLK | PA14 | 37 | match (row text) |
-| Reset | IF-051 | NRST | NRST | 7 | - |
+| Reset (shared `RESET_B`, one button, DEC-046) | IF-051 | NRST | NRST | 7 | - |
 | HSE CMOS oscillator, 24 MHz | DEC-044 | OSC_IN | PD0 | 5 | - |
 | Not used (HSE bypass, DEC-045) | DEC-045 | OSC_OUT | PD1 | 6 | - |
 | Boot select | P1-014 | BOOT0 (pull-down) | BOOT0 | 44 | - |
@@ -180,7 +180,7 @@ Closed findings stay listed with their outcome.
 - [ ] Human reviews the pin choices and the design choices in sections 1 and 2.
 - [ ] P1-010: DMA streams, interrupt priorities and timer clock per peripheral. TIM5 DMA and the SDMMC1 setup are in the software port (decisions file S2, S4).
 - [ ] P1-011: pull-down value on the PWM lines, with bidirectional DShot on the motor lines (F-16).
-- [ ] OPEN-028: oscillator part numbers and data, and the HSE external-clock limits of both MCUs (P1-014).
+- [ ] OPEN-028: oscillator data (parts decided, DEC-048) against the HSE external-clock limits of both MCUs (P1-014).
 - [ ] Pick the weak pull-up value on F100 PA10 and PB11, and the resistors for the px4io LEDs on PB14, PB15 and PA11.
 - [ ] Run the datasheet text match on the rows marked `not checked`, and on the section 2 rows against the F100 DS.
 - [ ] Human confirms critical pins (power, SWD, USB, BOOT0, oscillator inputs) against the datasheet pinout figures.

@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.22
+**Revision:** 0.23
 **Updated:** 2026-11-14
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012), the 5 V input is a TPS2121 power mux with a 1.5 A limit (DEC-029, DEC-030) and the `+3V3A` LDO is TPS73533DRBR (DEC-027). No other rail, regulator or protection part is approved. Not a verification record.
-**Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006 (closed), OPEN-007, OPEN-011, OPEN-021, OPEN-024 (closed), OPEN-025, OPEN-028. Decisions: DEC-007, DEC-010, DEC-011, DEC-012, DEC-018, DEC-019, DEC-025, DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-039, DEC-040, DEC-043, DEC-044. Checklist task: P0-017.
+**Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006 (closed), OPEN-007, OPEN-011, OPEN-021, OPEN-024 (closed), OPEN-025, OPEN-028. Decisions: DEC-007, DEC-010, DEC-011, DEC-012, DEC-018, DEC-019, DEC-025, DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-039, DEC-040, DEC-043, DEC-044, DEC-048. Checklist task: P0-017.
 **Decision owner:** Hardware
 
 Single record for rail loads, rail tolerances, brownout thresholds and power protection requirements.
@@ -71,7 +71,7 @@ Since DEC-043 (2026-11-12), this rail feeds the VDD pins of all sensors. VDDIO (
 | ICP-20100 | 1 | TBD | TBD | invensense.tdk.com unreachable | `NOT_VERIFIED` |
 | BMP581 (barometer 2, DEC-010) | 1 | TBD | TBD | Not read yet (NotebookLM notebook `BMP581`) | `NOT_VERIFIED` |
 | IST8310 (magnetometer, DEC-011) | 1 | 1.2 mA at 200 sps, 0.32 mA at 50 sps (typ, AVDD 2.8 V) | Not stated | IST8310 DS V1.2, 4.3 (NotebookLM) | `VERIFIED` at 2.8 V; at 3.3 V `NOT_VERIFIED` |
-| Clock oscillators U202 (ECS-2520MV-160-CN-TR, 16 MHz) and U302 (ASDDV-24.000MHZ-LC-T, 24 MHz), type decided 2026-11-14 (spec DEC-044), part numbers drawn, not decided (OPEN-028) | 2 | TBD | TBD | Datasheets not read | `NOT_VERIFIED` |
+| Clock oscillators U202 (ECS-2520MV-160-CN-TR, 16 MHz) and U302 (ASDDV-24.000MHZ-LC-T, 24 MHz), type decided 2026-11-14 (spec DEC-044), part numbers decided (DEC-048), data open (OPEN-028) | 2 | TBD | TBD | Datasheets not read | `NOT_VERIFIED` |
 | I2C pull-ups | TBD | TBD | - | Depends on P1-004, P1-005 | `TBD` |
 | LEDs: 3 board (IF-047), 3 px4io, safety LED (IF-049) | 7 | TBD (set by the resistors) | - | Resistors not chosen | `TBD` |
 | External 3.3 V devices | TBD | TBD | TBD | Not defined | `TBD` |
