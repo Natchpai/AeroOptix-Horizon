@@ -329,7 +329,7 @@
 					(justify right)
 				)
 			)
-			(property "Footprint" "0_Package_DFN_QFN:Texas_VQFN-HR-12_2x2.5mm_P0.5mm_ThermalVias"
+			(property "Footprint" "0_Package_DFN_QFN:Texas_VQFN-HR-12_2x2.5mm_P0.5mm"
 				(at 1.27 -34.29 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -5063,12 +5063,6 @@
 		(uuid "f396f78a-5bc9-436f-a75e-741303730202")
 	)
 	(junction
-		(at 193.04 184.15)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "f61859f8-3630-4c3f-a109-31b48224f84f")
-	)
-	(junction
 		(at 210.82 101.6)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -5827,16 +5821,6 @@
 			(type default)
 		)
 		(uuid "517d7d2b-d527-4013-87ba-2bd475b33a55")
-	)
-	(wire
-		(pts
-			(xy 193.04 184.15) (xy 194.31 184.15)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "51c44ace-c8f9-443e-9203-bd9456894384")
 	)
 	(wire
 		(pts
@@ -7360,18 +7344,6 @@
 		)
 		(uuid "2905dd61-5a55-43ce-861e-12e0d6194159")
 	)
-	(hierarchical_label "3V3_PG"
-		(shape output)
-		(at 194.31 184.15 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(thickness 0.1588)
-			)
-			(justify left)
-		)
-		(uuid "484cc181-7ffc-4aa2-a658-cdcd89753c45")
-	)
 	(hierarchical_label "PM02_SDA"
 		(shape bidirectional)
 		(at 88.9 83.82 0)
@@ -7745,7 +7717,7 @@
 				)
 			)
 		)
-		(property "Description" "Power symbol creates a global label with name \"+3V3A\""
+		(property "Description" "Power symbol creates a global label with name \"+3.3VA\""
 			(at 368.3 186.69 0)
 			(hide yes)
 			(show_name no)
@@ -7937,7 +7909,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 87.63 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -8152,7 +8124,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 60.96 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -8285,7 +8257,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 265.43 53.34 0)
 			(hide yes)
 			(show_name no)
@@ -8400,7 +8372,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 82.55 62.23 0)
 			(hide yes)
 			(show_name no)
@@ -8514,7 +8486,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 368.3 198.12 0)
 			(hide yes)
 			(show_name no)
@@ -8648,7 +8620,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 163.83 63.5 0)
 			(hide yes)
 			(show_name no)
@@ -8782,7 +8754,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 294.64 113.03 0)
 			(hide yes)
 			(show_name no)
@@ -9158,7 +9130,7 @@
 				)
 			)
 		)
-		(property "Description" "500mA, low IQ, low dropout regulator with enable function"
+		(property "Description" "500mA Low Quiescent Current, Low Noise, High PSRR LDO Linear Regulator, Fixed 3.3V Output, 2.7-6.5V Input Voltage, VSON-8"
 			(at 339.09 194.31 0)
 			(hide yes)
 			(show_name no)
@@ -9293,7 +9265,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 218.44 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -9542,7 +9514,7 @@
 				(justify left)
 			)
 		)
-		(property "Datasheet" "https://www.ti.com/lit/ds/symlink/tps62140.pdf"
+		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/TPS62140.pdf"
 			(at 154.94 203.2 0)
 			(hide yes)
 			(show_name no)
@@ -9712,7 +9684,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 322.58 203.2 0)
 			(hide yes)
 			(show_name no)
@@ -9905,7 +9877,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 317.5 176.53 0)
 			(hide yes)
 			(show_name no)
@@ -10219,7 +10191,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 129.54 190.5 0)
 			(hide yes)
 			(show_name no)
@@ -10355,7 +10327,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 173.99 63.5 0)
 			(hide yes)
 			(show_name no)
@@ -10489,7 +10461,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 307.34 176.53 0)
 			(hide yes)
 			(show_name no)
@@ -10702,7 +10674,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 238.76 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -11032,7 +11004,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 228.6 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -11326,7 +11298,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 97.79 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -11893,7 +11865,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 107.95 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -12261,7 +12233,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 312.42 200.66 0)
 			(hide yes)
 			(show_name no)
@@ -12454,7 +12426,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 50.8 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -12587,7 +12559,7 @@
 				)
 			)
 		)
-		(property "Description" "CONN HEADER SMD R/A 2mm"
+		(property "Description" "Generic connector, single row, 01x06 with mounting pin"
 			(at 46.99 81.28 0)
 			(hide yes)
 			(show_name no)
@@ -13108,7 +13080,7 @@
 				)
 			)
 		)
-		(property "Description" "FIXED IND 330nH 1.2A 130mΩ 0603"
+		(property "Description" "Inductor"
 			(at 73.66 168.91 0)
 			(hide yes)
 			(show_name no)
@@ -13312,7 +13284,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 184.15 110.49 0)
 			(hide yes)
 			(show_name no)
@@ -13663,7 +13635,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 119.38 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -13855,7 +13827,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 186.69 63.5 0)
 			(hide yes)
 			(show_name no)
@@ -13969,7 +13941,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 356.87 198.12 0)
 			(hide yes)
 			(show_name no)
@@ -14257,7 +14229,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "0_Package_DFN_QFN:Texas_VQFN-HR-12_2x2.5mm_P0.5mm_ThermalVias"
+		(property "Footprint" "0_Package_DFN_QFN:Texas_VQFN-HR-12_2x2.5mm_P0.5mm"
 			(at 259.08 124.46 0)
 			(hide yes)
 			(show_name no)
@@ -14423,7 +14395,7 @@
 				)
 			)
 		)
-		(property "Description" "CAP TANT 47uF ±10% 10V CASE-B-3528-21(mm)"
+		(property "Description" "Polarized capacitor"
 			(at 148.59 63.5 0)
 			(hide yes)
 			(show_name no)
@@ -15398,7 +15370,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 208.28 182.88 0)
 			(hide yes)
 			(show_name no)

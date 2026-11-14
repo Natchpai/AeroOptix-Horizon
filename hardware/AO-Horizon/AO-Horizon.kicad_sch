@@ -129,7 +129,7 @@
 		)
 		(uuid "2666f3bf-456d-42c7-8c0a-9e3c48a1d45a")
 	)
-	(text "......"
+	(text "Connector - USB & Debug"
 		(exclude_from_sim no)
 		(at 59.69 152.4 0)
 		(effects
@@ -171,7 +171,7 @@
 		)
 		(uuid "2d8734f4-59df-4e9d-83a4-14f5d54992e3")
 	)
-	(text "......"
+	(text "MCU - Main FC"
 		(exclude_from_sim no)
 		(at 59.69 121.92 0)
 		(effects
@@ -199,7 +199,7 @@
 		)
 		(uuid "40f580c8-95d7-4b38-9c51-12f644764c69")
 	)
-	(text "......"
+	(text "Sensor - IMU"
 		(exclude_from_sim no)
 		(at 59.69 137.16 0)
 		(effects
@@ -347,7 +347,7 @@
 		)
 		(uuid "8b6c6316-c7db-4365-b0d5-e3d166a1056e")
 	)
-	(text "......"
+	(text "Sensor - Navigation"
 		(exclude_from_sim no)
 		(at 59.69 144.78 0)
 		(effects
@@ -361,7 +361,7 @@
 		)
 		(uuid "9d25e987-5571-4a75-884a-16e06c1e97f4")
 	)
-	(text "......"
+	(text "MCU - IO"
 		(exclude_from_sim no)
 		(at 59.69 129.54 0)
 		(effects

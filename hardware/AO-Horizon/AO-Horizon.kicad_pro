@@ -519,7 +519,7 @@
       {
         "name": "+3V3",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 3,
+        "priority": 5,
         "schematic_color": "rgb(206, 107, 221)",
         "tuning_profile": "",
         "wire_width": 15
@@ -527,7 +527,7 @@
       {
         "name": "+3V3A",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 1,
+        "priority": 3,
         "schematic_color": "rgb(115, 125, 222)",
         "tuning_profile": "",
         "wire_width": 15
@@ -535,7 +535,7 @@
       {
         "name": "+5V",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 4,
+        "priority": 6,
         "schematic_color": "rgb(206, 163, 20)",
         "tuning_profile": "",
         "wire_width": 15
@@ -543,15 +543,31 @@
       {
         "name": "+6V",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 0,
+        "priority": 2,
         "schematic_color": "rgb(229, 106, 20)",
         "tuning_profile": ""
       },
       {
         "name": "GND",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 2,
+        "priority": 4,
         "schematic_color": "rgb(46, 46, 69)",
+        "tuning_profile": "",
+        "wire_width": 15
+      },
+      {
+        "name": "SDMMC",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 1,
+        "schematic_color": "rgb(121, 176, 214)",
+        "tuning_profile": "",
+        "wire_width": 15
+      },
+      {
+        "name": "USB_FS",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 0,
+        "schematic_color": "rgb(33, 177, 226)",
         "tuning_profile": "",
         "wire_width": 15
       }
@@ -561,6 +577,36 @@
     },
     "net_colors": {},
     "netclass_assignments": {
+      "/Top/Connector - USB & Debug/USB_D_N": [
+        "USB_FS"
+      ],
+      "/Top/Connector - USB & Debug/USB_D_P": [
+        "USB_FS"
+      ],
+      "/Top/Connector - USB & Debug/USB_FS_D_N": [
+        "USB_FS"
+      ],
+      "/Top/Connector - USB & Debug/USB_FS_D_P": [
+        "USB_FS"
+      ],
+      "/Top/MCU - Main FC/SDMMC1_CLK": [
+        "SDMMC"
+      ],
+      "/Top/MCU - Main FC/SDMMC1_CMD": [
+        "SDMMC"
+      ],
+      "/Top/MCU - Main FC/SDMMC1_DAT0": [
+        "SDMMC"
+      ],
+      "/Top/MCU - Main FC/SDMMC1_DAT1": [
+        "SDMMC"
+      ],
+      "/Top/MCU - Main FC/SDMMC1_DAT2": [
+        "SDMMC"
+      ],
+      "/Top/MCU - Main FC/SDMMC1_DAT3": [
+        "SDMMC"
+      ],
       "/Top/Power Supplies/+5V_BUCK": [
         "+5V"
       ],
@@ -749,6 +795,20 @@
       "sort_field": "Reference"
     },
     "bus_aliases": {
+      "F1_SWD": [
+        "F1_SWDIO",
+        "F1_SWCLK"
+      ],
+      "H7_SWD": [
+        "H7_SWDIO",
+        "H7_SWCLK"
+      ],
+      "H7_TIM5": [
+        "H7_TIM5_CH1",
+        "H7_TIM5_CH2",
+        "H7_TIM5_CH3",
+        "H7_TIM5_CH4"
+      ],
       "IMU1_SPI": [
         "IMU1_SPI_CLK",
         "IMU1_SPI_SDI",
@@ -760,6 +820,11 @@
         "IMU2_SPI_SDI",
         "IMU2_SPI_SDO",
         "IMU2_SPI_CS"
+      ],
+      "USB_FS": [
+        "USB_FS_D_P",
+        "USB_FS_D_N",
+        "USB_FS_VBUS"
       ]
     },
     "connection_grid_size": 50.0,
@@ -818,7 +883,7 @@
         "uuid": "76162bf1-0d95-48cb-b65a-4de551455d04"
       }
     ],
-    "used_designators": "#FLG1,#FLG101-106,#PWR1-20,#PWR101-120,#PWR201-210,#PWR301-308,#PWR401-410,#PWR501-518,C101-121,C401-404,C501-504,CN101,D101-106,L101-102,R101-108,R115,R501-507,U101-103,U401-402,U501-502",
+    "used_designators": "#FLG1,#FLG101-106,#PWR1-20,#PWR101-120,#PWR201-217,#PWR301-311,#PWR401-410,#PWR501-522,#PWR601-616,C101-121,C201-209,C301-306,C401-404,C501-507,C601,CN101,CN601,D101-106,L101-102,R101-108,R115,R201-206,R301-305,R501-511,R601-603,SD201,U101-103,U201,U301,U401-402,U501-503,U601",
     "variants": []
   },
   "sheets": [
@@ -828,11 +893,11 @@
     ],
     [
       "398ca7b7-7738-4225-954b-67f201e2f059",
-      "Main MCU"
+      "MCU - Main FC"
     ],
     [
       "92584a55-2e01-43a4-9009-7cca80536e22",
-      "IO MCU"
+      "MCU - IO"
     ],
     [
       "fb1126ca-3bad-40db-8444-733c230f17c3",
@@ -840,7 +905,11 @@
     ],
     [
       "2351afe8-b6b0-4086-b07e-5f0a9bb00c48",
-      "Sensor - Barometer"
+      "Sensor - Navigation"
+    ],
+    [
+      "e4fd025c-5aca-4297-81cf-f2f81b4535ba",
+      "Connector - USB & Debug"
     ],
     [
       "76162bf1-0d95-48cb-b65a-4de551455d04",
