@@ -1,6 +1,6 @@
 # Handoff: team website
 
-**Updated:** 2026-11-12
+**Updated:** 2026-11-16
 **Status:** Clickable mockup, live on GitHub Pages. The engineer approved the Pinout page and reviewed the Block diagram for size and labels. Rail colours, SVG export, the record-driven Overview (progress, spec changes, next action, build stamp) and the IO MCU layout are live (PR #20, squash commit `2fd8638`).
 
 ## Where things are
@@ -42,6 +42,7 @@
 - Mockup first, then deploy (done).
 - Pinout page: OK as it is.
 - Block diagram, Board view only: Main MCU block 720x640 (was 900x700), Buzzer moved from the top edge to the left edge, XT30 above the servo headers. The System view keeps its FC block size.
+- Actuator outputs (2026-11-16, spec DEC-050 and DEC-051): the F100 drives the ESCs (MAIN 1 to 4) and the flaperons and ruddervators (MAIN 5 to 8); H743 TIM5 drives the tilt servos (AUX 1 to 4); no DShot. System view: the F100 is 400x672 with three right-side ends 200 px apart (safety line, 4 ESC lines to `j-esc`, 4 surface lines plus rail sense to `j-servo`); new `j-aux` (Tilt servo headers × 4) takes the old ESC slot on the H743 right side with one `TIM5 × 4` line, because the spec does not say which tilt servo is on which AUX output. The F100 SWD pads moved down to stay level with the F100 centre. Overview: the ESC and servo port labels show the MAIN and AUX numbers; the links are `PWM × 4` and `PWM × 8`. The oscillator pin rows (DEC-044, DEC-045) are in `pinsNotOnDiagram`. The bullets below describe the 2026-10-24 layout where it differs.
 - Board view, IO MCU area (engineer's request, 2026-10-24):
   - The F100 block is square, 400x400.
   - Servo headers are one tall block, 200x300, so "Servo headers × 8" shows in full.

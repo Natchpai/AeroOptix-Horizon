@@ -176,8 +176,8 @@ export const systemBlocks: Block[] = [
     level: 'system',
     kind: 'connector',
     label: 'Servo headers × 8',
-    sub: 'Signal, +6 V, GND',
-    refs: [...range('IF', 30, 37), 'DEC-019'],
+    sub: 'MAIN 5 to 8, AUX 1 to 4',
+    refs: [...range('IF', 30, 37), 'DEC-019', 'DEC-051'],
     open: ['OPEN-007', 'OPEN-021'],
   },
   {
@@ -255,8 +255,8 @@ export const systemBlocks: Block[] = [
     level: 'system',
     kind: 'connector',
     label: 'ESC headers × 4',
-    sub: '3-pin, + removed',
-    refs: range('IF', 40, 43),
+    sub: 'MAIN 1 to 4, + removed',
+    refs: [...range('IF', 40, 43), 'DEC-051'],
     open: ['OPEN-017', 'OPEN-018'],
   },
 ]
@@ -339,10 +339,10 @@ export const systemLinks: Link[] = [
     from: 'o-esc',
     to: 'esc',
     bus: 'pwm',
-    label: 'DShot × 4',
-    refs: range('IF', 40, 43),
+    label: 'PWM × 4',
+    refs: [...range('IF', 40, 43), 'DEC-051'],
     open: ['OPEN-017', 'OPEN-018'],
-    pins: [{ mcu: 'h743', refs: range('IF', 40, 43) }],
+    pins: [{ mcu: 'f100', refs: range('IF', 40, 43) }],
   },
   {
     id: 's-fc-servo',
@@ -350,9 +350,12 @@ export const systemLinks: Link[] = [
     from: 'o-servo',
     to: 'servos',
     bus: 'pwm',
-    label: 'PWM 50 Hz × 8',
-    refs: range('IF', 30, 37),
-    pins: [{ mcu: 'f100', refs: range('IF', 30, 37) }],
+    label: 'PWM × 8',
+    refs: [...range('IF', 30, 37), 'DEC-051'],
+    pins: [
+      { mcu: 'f100', refs: range('IF', 30, 33) },
+      { mcu: 'h743', refs: range('IF', 34, 37) },
+    ],
   },
   {
     id: 's-fc-servo-pwr',
@@ -628,18 +631,27 @@ export const boardBlocks: Block[] = [
     level: 'board',
     kind: 'connector',
     label: 'ESC headers × 4',
-    sub: '3-pin, + removed',
-    refs: range('IF', 40, 43),
-    open: ['OPEN-017', 'OPEN-018'],
+    sub: 'MAIN 1 to 4, + removed',
+    refs: [...range('IF', 40, 43), 'DEC-051'],
+    open: ['OPEN-017', 'OPEN-018', 'OPEN-031'],
   },
   {
     id: 'j-servo',
     level: 'board',
     kind: 'connector',
-    label: 'Servo headers × 8',
-    sub: 'Signal, +6 V, GND',
-    refs: [...range('IF', 30, 37), 'DEC-019'],
+    label: 'Surface servo headers × 4',
+    sub: 'MAIN 5 to 8, +6 V',
+    refs: [...range('IF', 30, 33), 'DEC-019', 'DEC-051'],
     open: ['OPEN-007', 'OPEN-021'],
+  },
+  {
+    id: 'j-aux',
+    level: 'board',
+    kind: 'connector',
+    label: 'Tilt servo headers × 4',
+    sub: 'AUX 1 to 4, +6 V',
+    refs: [...range('IF', 34, 37), 'DEC-019', 'DEC-051'],
+    open: ['OPEN-031'],
   },
   {
     id: 'p-spare',
@@ -845,15 +857,16 @@ export const boardLinks: Link[] = [
     pins: [{ mcu: 'h743', refs: ['IF-045'] }],
   },
   {
-    id: 'b-esc',
+    // one line: the spec does not say which tilt servo is on which AUX
+    // output (DEC-051)
+    id: 'b-aux',
     level: 'board',
     from: 'h743',
-    to: 'j-esc',
+    to: 'j-aux',
     bus: 'pwm',
-    label: 'TIM5 DShot',
-    refs: range('IF', 40, 43),
-    open: ['OPEN-017', 'OPEN-018'],
-    pins: [{ mcu: 'h743', refs: range('IF', 40, 43) }],
+    label: 'TIM5 × 4',
+    refs: [...range('IF', 34, 37), 'DEC-051'],
+    pins: [{ mcu: 'h743', refs: range('IF', 34, 37) }],
   },
   {
     id: 'b-spare',
@@ -886,17 +899,31 @@ export const boardLinks: Link[] = [
     pins: [{ mcu: 'h743', refs: ['IF-047'], fn: '^LED' }],
   },
   // F100 I/O
-  // one line per servo output, labelled with its timer channel (spec 3.5)
+  // one line per F100 output, labelled with its timer channel (spec 3.5,
+  // DEC-051): MAIN 1 to 4 to the ESC headers, MAIN 5 to 8 to the surfaces
   ...(
     [
-      ['IF-030', 'TIM2_CH1'],
-      ['IF-031', 'TIM2_CH2'],
-      ['IF-032', 'TIM4_CH3'],
-      ['IF-033', 'TIM4_CH4'],
-      ['IF-034', 'TIM3_CH1'],
-      ['IF-035', 'TIM3_CH2'],
-      ['IF-036', 'TIM3_CH3'],
-      ['IF-037', 'TIM3_CH4'],
+      ['IF-040', 'TIM2_CH1'],
+      ['IF-041', 'TIM2_CH2'],
+      ['IF-042', 'TIM4_CH3'],
+      ['IF-043', 'TIM4_CH4'],
+    ] as const
+  ).map(([ref, label], i): Link => ({
+    id: `b-esc-${i + 1}`,
+    level: 'board',
+    from: 'f100',
+    to: 'j-esc',
+    bus: 'pwm',
+    label,
+    refs: [ref],
+    pins: [{ mcu: 'f100', refs: [ref] }],
+  })),
+  ...(
+    [
+      ['IF-030', 'TIM3_CH1'],
+      ['IF-031', 'TIM3_CH2'],
+      ['IF-032', 'TIM3_CH3'],
+      ['IF-033', 'TIM3_CH4'],
     ] as const
   ).map(([ref, label], i): Link => ({
     id: `b-servo-${i + 1}`,
@@ -1220,14 +1247,16 @@ export const pinsNotOnDiagram: {
   reason: string
 }[] = [
   { mcu: 'h743', refs: ['TST-001'], reason: 'Reset pin, test access' },
-  { mcu: 'h743', refs: ['DEC-017'], reason: 'Crystal' },
+  { mcu: 'h743', refs: ['DEC-044'], reason: 'CMOS oscillator' },
+  { mcu: 'h743', refs: ['DEC-045'], reason: 'OSC_OUT not used (HSE bypass)' },
   { mcu: 'h743', refs: ['P1-007'], reason: 'Boot select' },
   {
     mcu: 'h743',
     refs: ['IF-048'],
     reason: 'Analog battery inputs, reserve (DEC-023)',
   },
-  { mcu: 'f100', refs: ['DEC-017'], reason: 'Crystal' },
+  { mcu: 'f100', refs: ['DEC-044'], reason: 'CMOS oscillator' },
+  { mcu: 'f100', refs: ['DEC-045'], reason: 'OSC_OUT not used (HSE bypass)' },
   { mcu: 'f100', refs: ['P1-014'], reason: 'Boot select' },
 ]
 

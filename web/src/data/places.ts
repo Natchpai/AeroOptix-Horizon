@@ -97,19 +97,23 @@ export const places: Record<Level, Record<string, Place>> = {
     // IO MCU under the H743, centred on it. Its right side drives the
     // safety line to GPS1 and the servo group, centred on 1130; its left
     // side the SWD pads, in the USB and debug column.
-    f100: { x: 560, y: 900, w: 400, h: 460 },
-    'p-f100dbg': { x: 40, y: 1100 },
+    // Tall for its three right-side ends (DEC-051): the safety line, the
+    // ESC group and the surface group, 200 apart, centred on 1236.
+    f100: { x: 560, y: 900, w: 400, h: 672 },
+    'p-f100dbg': { x: 40, y: 1206 },
 
     // connectors, right column, 92 apart. GPS1 is tall, so it faces both
-    // the H743 (796) and the F100 (1036); the servo headers sit under it.
+    // the H743 (796) and the F100 (1036). The tilt servo headers (AUX, H743
+    // TIM5) sit above it; the ESC and surface headers (MAIN, F100) under it.
     'j-tel1': { x: 1300, y: 214, w: 240 },
     'j-tel2': { x: 1300, y: 306, w: 240 },
     'j-pm': { x: 1300, y: 398, w: 240 },
     'j-air': { x: 1300, y: 490, w: 240 },
     'j-lidar': { x: 1300, y: 582, w: 240 },
-    'j-esc': { x: 1300, y: 674, w: 240 },
+    'j-aux': { x: 1300, y: 674, w: 240 },
     'j-gps': { x: 1300, y: 776, w: 240, h: 280 },
-    'j-servo': { x: 1300, y: 1084, w: 240, h: 280 },
+    'j-esc': { x: 1300, y: 1160, w: 240, h: 152 },
+    'j-servo': { x: 1300, y: 1338, w: 240, h: 196 },
   },
 
   // Power (L1): left to right, columns 180 px apart: source, input,
@@ -231,8 +235,9 @@ export const zones: Partial<Record<Level, Zone[]>> = {
         'j-pm',
         'j-air',
         'j-lidar',
-        'j-esc',
+        'j-aux',
         'j-gps',
+        'j-esc',
         'j-servo',
       ],
     },
@@ -247,8 +252,11 @@ export const sideOverrides: Record<string, [Side, Side]> = {}
  * `npm run check` tests that the ends on a side are equally spaced.
  */
 export const bundles: string[][] = [
-  // servo PWM lines, with the rail sense line set apart (engineer's rule)
-  [...Array.from({ length: 8 }, (_, i) => `b-servo-${i + 1}`), 'b-servo-sense'],
+  // ESC PWM lines (MAIN 1 to 4)
+  Array.from({ length: 4 }, (_, i) => `b-esc-${i + 1}`),
+  // surface servo PWM lines (MAIN 5 to 8), with the rail sense line set
+  // apart (engineer's rule)
+  [...Array.from({ length: 4 }, (_, i) => `b-servo-${i + 1}`), 'b-servo-sense'],
   // servo headers to servos: PWM and the 6 V bus side by side
   ['s-fc-servo', 's-fc-servo-pwr'],
 ]
@@ -280,10 +288,14 @@ export const lineAt: Record<string, number> = {
   'pw-pm-pdb': 960,
   'pw-5v-buck': 300,
   'pw-5v-ports': 820,
-  // servo PWM lines 28 px apart, then the rail sense line set apart; the
-  // group is centred on 1224, the safety line's mirror on the F100 right side
+  // F100 right side, three ends 200 apart centred on 1236: the safety line
+  // (1036), the ESC group (centred on 1236) and the surface group with the
+  // rail sense line set apart (centred on 1436). Lines 28 px apart.
   ...Object.fromEntries(
-    Array.from({ length: 8 }, (_, i) => [`b-servo-${i + 1}`, 1104 + i * 28])
+    Array.from({ length: 4 }, (_, i) => [`b-esc-${i + 1}`, 1194 + i * 28])
   ),
-  'b-servo-sense': 1344,
+  ...Object.fromEntries(
+    Array.from({ length: 4 }, (_, i) => [`b-servo-${i + 1}`, 1372 + i * 28])
+  ),
+  'b-servo-sense': 1500,
 }
