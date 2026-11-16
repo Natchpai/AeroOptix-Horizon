@@ -30,7 +30,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "0_Package_DFN_QFN:Texas_VQFN-HR-12_2x2.5mm_P0.5mm_ThermalVias"
+		(property "Footprint" "0_Package_DFN_QFN:Texas_VQFN-HR-12_2x2.5mm_P0.5mm"
 			(at 1.27 -34.29 0)
 			(show_name no)
 			(do_not_autoplace no)

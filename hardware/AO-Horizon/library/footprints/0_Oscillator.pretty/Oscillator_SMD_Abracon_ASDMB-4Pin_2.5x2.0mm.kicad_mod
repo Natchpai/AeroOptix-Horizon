@@ -1,0 +1,224 @@
+(footprint "Oscillator_SMD_Abracon_ASDMB-4Pin_2.5x2.0mm"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Abracon LLC , CMOS Oscillator")
+	(property "Reference" "REF**"
+		(at 0 -2.2 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "eaab0e0b-f767-4872-9e26-dcf0de2d9804")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "Untitled"
+		(at 0 2.55 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "2f8bd60f-dc1a-44da-aeb0-125d3fe2ff19")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "961dc7e0-922b-4500-8865-f3e3a739c9af")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" "Abracon LLC , CMOS Oscillator"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "9e326e62-9d31-48b1-83b0-96db7f1d7626")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(solder_mask_margin 0.03)
+	(solder_paste_margin_ratio -0.05)
+	(attr smd)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -1.6 0.65)
+		(end -1.6 1.55)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "efd95a6c-7727-4d89-9883-c35dea71fb48")
+	)
+	(fp_line
+		(start -1.6 1.55)
+		(end -0.7 1.55)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "a0f3e122-059f-448d-8e1b-dfeee71313ad")
+	)
+	(fp_line
+		(start -1.5 -1.45)
+		(end 1.5 -1.45)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "700da6ba-e193-4774-9c3a-8a2be25bd82d")
+	)
+	(fp_line
+		(start -1.5 1.45)
+		(end -1.5 -1.45)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "4f0c4734-3581-4106-b46e-130463503a48")
+	)
+	(fp_line
+		(start 1.5 -1.45)
+		(end 1.5 1.45)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "e3a0081c-f71d-42f8-93d5-8073484e27cc")
+	)
+	(fp_line
+		(start 1.5 1.45)
+		(end -1.5 1.45)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "9523819d-9bb3-436d-be16-74cb09c93a08")
+	)
+	(fp_line
+		(start -1.25 -1)
+		(end 1.25 -1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "ab5c4162-e0c7-4cf1-96ba-260989fda94c")
+	)
+	(fp_line
+		(start -1.25 1)
+		(end -1.25 -1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "7a6fdf85-4fac-4d20-b25f-78506f93355f")
+	)
+	(fp_line
+		(start 1.25 -1)
+		(end 1.25 1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "b04b6820-5f87-44c9-a2ed-8ca0e6e7a443")
+	)
+	(fp_line
+		(start 1.25 1)
+		(end -1.25 1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "225aa210-c82a-493a-8865-c87c0ad25d7f")
+	)
+	(fp_circle
+		(center -0.85 0.6)
+		(end -0.7 0.6)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill yes)
+		(layer "F.Fab")
+		(uuid "d6301c28-e6de-460f-88c5-bff349b29201")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "0df453a7-05f5-4950-8bb9-a7dd2b684a93")
+		(effects
+			(font
+				(size 0.42 0.42)
+				(thickness 0.06)
+			)
+		)
+	)
+	(pad "1" smd roundrect
+		(at -0.825 0.775 180)
+		(size 0.65 0.85)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.15)
+		(uuid "d870421a-a1c3-4284-99c6-36d3bf40ec5c")
+	)
+	(pad "2" smd roundrect
+		(at 0.825 0.775 180)
+		(size 0.65 0.85)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.15)
+		(uuid "5724fc10-7f8c-4b9a-86f9-8b1a16c9cb8c")
+	)
+	(pad "3" smd roundrect
+		(at 0.825 -0.775 180)
+		(size 0.65 0.85)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.15)
+		(uuid "0ab7ed69-93eb-4955-ac4e-d0318606cbdd")
+	)
+	(pad "4" smd roundrect
+		(at -0.825 -0.775 180)
+		(size 0.65 0.85)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.15)
+		(uuid "051508d0-9930-4c38-9915-67d599844c0c")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/library/3D/Oscillator/Oscillator_SMD_Abracon_ASDMB-4Pin_2.5x2.0mm.step"
+		(offset
+			(xyz 0 0 0.42)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 90 180 -0)
+		)
+	)
+)

@@ -2,7 +2,8 @@
 
 **Revision:** 0.1
 **Updated:** 2026-10-16
-**Status:** Working summary. Not a quote. No part is approved.
+**Status:** Snapshot 2026-10-16; refresh before buying. Working summary. Not a quote. No part is approved.
+**Requirement refs:** CMP-001 (spec).
 **Decision owner:** Human engineer
 
 Single record for price and stock of the STM32H743VI main MCU. Add a new part number as a new column.

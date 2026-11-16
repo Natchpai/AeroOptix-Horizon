@@ -1,7 +1,7 @@
 ---
 name: progress-update
-description: Update the spec, checklist, design records, README and CHANGELOG from saved CAD data, git history and decisions stated in this session.
-argument-hint: "[since <git-ref|YYYY-MM-DD>] [ignore <ref|lib>...]"
+description: Update the spec, checklist, design records, README and CHANGELOG from saved CAD data, git history and decisions stated in this session. Modes: full (default), light (spec and checklist only, during DRAFT), sync (catch up the other docs before a commit).
+argument-hint: "[light | sync] [since <git-ref|YYYY-MM-DD>] [ignore <ref|lib>...]"
 disable-model-invocation: true
 ---
 
@@ -37,6 +37,28 @@ that part by hand and say so in the report.
   cited NotebookLM answers. PDFs stay closed.
 - Write plain English: short sentences, exact names (refs, nets, part
   numbers), no em dash.
+
+## Modes
+
+The first argument picks the mode. The rules above apply in every mode.
+
+| Mode | Use it for | Steps | Docs edited |
+| ---- | ---------- | ----- | ----------- |
+| full (default) | A full catch-up, or any work in CHECK or RELEASE | 0 to 8 | All, step 6 |
+| `light` | Recording decisions and drawing changes as they happen in DRAFT or PRELIMINARY | 0 to 8, with the light lines in 3, 6 and 8 | Spec and checklist only |
+| `sync` | Right before a commit, after one or more `light` runs | 0, 6 (sync), 7, 8 | Design records, README, CHANGELOG |
+
+- Read the phase from `README.md`. `light` and `sync` run only when it says
+  `DRAFT` or `PRELIMINARY`. In any other phase, or if the phase is missing,
+  run full mode and say why in the report.
+- **Open revision:** a spec change-note row that is not in `HEAD`
+  (`git diff HEAD -- <spec>` shows it as added). The spec and checklist each
+  get at most one open revision. A run that finds one adds to it and keeps
+  its revision number. A run that finds none adds one new revision. This
+  gives one revision per commit instead of one per decision.
+- A `light` run leaves README, CHANGELOG and the design records behind on
+  purpose. `sync` catches them up from `git diff HEAD` of the spec and
+  checklist, so `light` needs no notes or marker files.
 
 ## Steps
 
@@ -106,6 +128,10 @@ table changes, and new library items.
   `/kicad-link-audit`; leave it to the human to run.
 - **Session:** list each design decision the human stated, with a quote.
 
+`light`: compare against the spec's current "Schematic state" rows and trace
+only the parts and nets that differ from them. If the human only stated a
+decision and no sheet changed since the open revision, skip the sheet trace.
+
 Done when every changed sheet has a state table (block, as drawn, evidence)
 and every part in it is tagged DECISION or DRAWN.
 
@@ -136,11 +162,12 @@ Read each file first. Reuse its ID prefixes, tables and headings; new rows
 take the next unused ID. Where a doc has no place for a fact, add the smallest
 fitting row or table and mention it in the report.
 
-1. **Spec:** revision and date; the confirmed part-number list; decision
+1. **Spec:** revision and date (open-revision rule in Modes); the confirmed part-number list; decision
    rows; component-constraint rows for decided parts; a "Schematic state"
    table under the matching architecture section; open-item rows; change-note
    row; verdict or status summary line.
-2. **Checklist:** follow `hardware-checklist` update rules. Revision and date;
+2. **Checklist:** follow `hardware-checklist` update rules. Revision and date
+   (open-revision rule);
    task status (`DONE` needs an evidence record and the human's
    confirmation); tasks for new work; a tracker row for each new open item;
    the next-action line.
@@ -154,6 +181,19 @@ fitting row or table and mention it in the report.
 
 Done when every decision and open item added to the spec also appears in the
 checklist, the README and the CHANGELOG (for each doc that exists).
+
+**`light`:** do items 1 and 2 only, using the open-revision rule in Modes:
+the revision and date change only when a new revision starts; otherwise add
+to the open change-note row. Skip items 3 to 5. Done when every decision and
+open item added to the spec has its checklist task or tracker row.
+
+**`sync`:** read `git diff HEAD` of the spec and checklist and treat every
+added or changed DEC and OPEN row as input. Do items 3 to 5 for them, and set
+the README spec revision to the open revision. Leave the spec and checklist
+as they are, except for a broken cross-reference. If there is no open
+revision, say that nothing needs syncing and stop. Done when every DEC and
+OPEN row in that diff also appears in the README and the CHANGELOG, and every
+design record that owns an affected value is updated.
 
 ### 7. Check
 Run preflight again with `--findings-only` and the same `--since`. It reads
@@ -176,5 +216,11 @@ decision and open-item ID you cite exists in the spec.
 - Not changed, with the reason (phase, records not touched, ignored items).
 - A proposed commit message, for example
   `docs(design): record <topic> and <sheet> state`.
+
+`light` report, at most 10 lines: the IDs added or changed, the open revision
+number, MAJOR and CRITICAL findings in full, a count of MINOR and INFO
+findings, the step 7 result, and the line "README, CHANGELOG and design
+records not synced; run `/progress-update sync` before committing." No commit
+message.
 
 Stop there. Staging, committing and pushing wait for the human.

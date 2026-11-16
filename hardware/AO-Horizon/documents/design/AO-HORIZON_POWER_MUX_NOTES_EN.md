@@ -1,8 +1,8 @@
 # AeroOptix-Horizon: TPS2121 Power Mux Notes
 
-**Revision:** 0.6
-**Updated:** 2026-11-03
-**Status:** Design note for reading and re-calculation. Not a requirement or verification record. Decisions live in the spec (DEC-029 to DEC-037, PWR-015; references as in the 17:11 save, 2026-11-03; OPEN-024 closed; OPEN-025 open).
+**Revision:** 0.7
+**Updated:** 2026-11-14
+**Status:** Design note for reading and re-calculation. Not a requirement or verification record. Decisions live in the spec (DEC-029 to DEC-037, PWR-015; OPEN-024 closed; OPEN-025 open).
 **Source:** TI TPS212x datasheet SLVSEA3F (August 2020), NotebookLM notebook `TPS212x 2.8-V to 22-V Priority Power MUX with Seamless Switchover`, read as source fulltext. TI values are `VERIFIED`; calculated values are `ESTIMATED`, before resistor tolerance.
 
 ## 1. What the mux does on this board
@@ -84,24 +84,15 @@ Here PR1 is compared with CP2, not with VREF. So the CP2 voltage sets the switch
    `k2 ≤ VBUS_min / 1.10 V = 4.75 / 1.10 = 4.32`. With 5 kΩ: `Rtop ≤ 16.6 kΩ`, so 16.5 kΩ (k2 = 4.3).
 2. **Highest CP2.** `VCP2_max = VBUS_max / k2 = 5.25 / 4.3 = 1.221 V`.
 3. **PR1.** At the lowest valid PM02D (4.5 V), PR1 must stay above the highest CP2 plus the offset:
-   `4.5 V / k1 > 1.221 V + 0.040 V`, so `k1 < 3.57`. With 5 kΩ: `Rtop < 12.85 kΩ`. 12.7 kΩ leaves only 40 mV. 12.4 kΩ (k1 = 3.48) looked fine before resistor tolerance but fails step 5, so the board uses 12.1 kΩ (k1 = 3.42, DEC-034).
+   `4.5 V / k1 > 1.221 V + 0.040 V`, so `k1 < 3.57`. With 5 kΩ: `Rtop < 12.85 kΩ`. 12.7 kΩ leaves only 40 mV. 12.4 kΩ (k1 = 3.48) passes here but fails step 5, so the board uses 12.1 kΩ (k1 = 3.42, DEC-034).
 4. **Check.** Switch point `= VCP2 × k1`: 3.78 / 3.98 / 4.18 V for `VBUS` 4.75 / 5.0 / 5.25 V, plus up to 0.14 V offset, so 4.31 V before resistor tolerance.
 5. **Resistor tolerance.** Worst case at `VBUS` 5.25 V, each 1 % resistor in the bad direction:
    - CP2 high: R105 16.335 kΩ, R106 5.05 kΩ, so `VCP2 = 5.25 × 5.05 / 21.385 = 1.24 V`.
    - PR1 ratio low: R101 12.221 kΩ, R102 4.95 kΩ, so `4.95 / 17.171 = 0.2883`.
    - Switch point `= 1.24 / 0.2883 = 4.30 V`, plus the offset `0.040 / 0.2883 = 0.14 V`, so **4.44 V**: 0.06 V below the 4.5 V minimum.
-   - With the old 12.4 kΩ the same case gave 4.52 V, 0.02 V above the minimum. 0.5 % resistors would also have fixed it (4.45 V); R101 12.1 kΩ with 1 % parts was chosen (DEC-034).
+   - With 12.4 kΩ the same case gives 4.52 V, 0.02 V above the minimum.
    - It only matters on the bench: in flight there is no `VBUS`, so CP2 is 0 V.
 6. **Check the fallback.** If CP2 is not fitted, the same PR1 works in VREF mode (5.2): 3.39 to 3.76 V.
-
-Why not other values:
-
-| Change | Result |
-| ------ | ------ |
-| Keep PR1 at 13.7 kΩ in XCOMP | Worst case 4.72 V: a PM02D at 4.5 V would hand over to USB |
-| Keep PR1 at 12.4 kΩ in XCOMP | Worst case 4.52 V with 1 % resistors (5.3 step 5): just above 4.5 V |
-| CP2 top 15.8 kΩ (with PR1 12.4 kΩ) | More fast-mode margin, but worst-case switch point about 4.53 V before resistor tolerance |
-| CP2 top 10.2 kΩ (TI 5 V example, 1.64 V) | Switch point about 6 V: USB always wins |
 
 Weak point: at `VBUS` 4.75 V, CP2 is about 1.10 V, the same as VREF max. A part may then stay in VREF mode. That is safe: the PM02D still has priority, only the switchover is slow.
 
@@ -122,7 +113,6 @@ The channel turns off when its OV pin reaches VREF.
 
 - `Vov = 1.06 V × k`. With 23.2 kΩ / 5 kΩ (k = 5.64, DEC-036): 5.98 V typ, 5.70 to 6.20 V over the VREF range, 5.60 to 6.31 V with 1 % resistors. The channel turns back on below `1.04 V × k` = 5.87 V typ (VREF falling 0.99 / 1.04 / 1.09 V).
 - Window: the lowest trip must stay above the 5.5 V input maximum (PWR-010). `+5V` stays below 5.5 V in normal operation (PWR-015); the OV trip is a fault guard. 23.2 kΩ is the lowest E96 value that meets 5.5 V in the worst case (22.6 kΩ gives 5.48 V).
-- Was 23.7 kΩ (6.08 V typ) until 2026-11-02, then 21.5 kΩ, which could trip at 5.27 V.
 
 ### 5.6 Current limit (ILIM)
 
@@ -135,7 +125,9 @@ The channel turns off when its OV pin reaches VREF.
 - Inrush current `= C_load × slew`. With about 60 µF on `+5V` and `+5V_BUCK`: about 0.47 A.
 - Output dip during a switchover: `VDIP = IOUT × tSW / COUT`. At 1 A, 100 µs, 60 µF: about 1.7 V. At 5 µs: about 0.08 V.
 
-## 6. As drawn (saved file, 2026-11-02 00:32)
+## 6. As drawn
+
+The spec DEC rows and 4.3 "Schematic state" own these values; this table maps them to the mux pins.
 
 | Pin | Parts | Value | Decision |
 | --- | ----- | ----- | -------- |

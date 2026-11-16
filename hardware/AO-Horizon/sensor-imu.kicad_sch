@@ -958,20 +958,12 @@
 		(uuid "d88a73c7-33d0-4cff-932a-f047aaeb5a7e")
 	)
 	(no_connect
-		(at 186.69 198.12)
-		(uuid "07b266b3-a4fd-4973-9aa7-5262fefdf510")
-	)
-	(no_connect
 		(at 240.03 177.8)
 		(uuid "2754e7fa-4958-493d-9d59-d9c74e9fb02f")
 	)
 	(no_connect
 		(at 240.03 88.9)
 		(uuid "2f11f202-42d0-4318-89a3-17e073e2a726")
-	)
-	(no_connect
-		(at 186.69 104.14)
-		(uuid "3aabfa2f-d94a-43c8-be6f-d49447cbd620")
 	)
 	(no_connect
 		(at 186.69 109.22)
@@ -1347,6 +1339,16 @@
 		)
 		(uuid "9c810b1f-092f-4f56-a67e-6d0f1801e6b5")
 	)
+	(wire
+		(pts
+			(xy 153.67 198.12) (xy 186.69 198.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9d8cac6b-fdeb-4334-9374-000d884cb6a8")
+	)
 	(bus
 		(pts
 			(xy 162.56 190.5) (xy 162.56 170.18)
@@ -1456,6 +1458,16 @@
 			(type default)
 		)
 		(uuid "ee9681e6-9bd1-42aa-963a-01bbc15279ba")
+	)
+	(wire
+		(pts
+			(xy 153.67 104.14) (xy 186.69 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f2117c2c-5741-4c4a-ac89-d73778967088")
 	)
 	(wire
 		(pts
@@ -1588,6 +1600,17 @@
 		)
 		(uuid "038c7cb4-8fa4-48fc-aa5b-0030ab3c80eb")
 	)
+	(hierarchical_label "IMU1_INT1"
+		(shape output)
+		(at 153.67 104.14 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "42114da3-3a5b-402a-bac6-77165b363dca")
+	)
 	(hierarchical_label "{IMU2_SPI}"
 		(shape bidirectional)
 		(at 153.67 167.64 180)
@@ -1598,6 +1621,17 @@
 			(justify right)
 		)
 		(uuid "7278ab45-f9e7-4f59-a6fc-e56c7844e884")
+	)
+	(hierarchical_label "IMU2_INT1"
+		(shape output)
+		(at 153.67 198.12 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "c25b37af-c9ee-4c9d-9e8e-4fc429ef0bda")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -1891,7 +1925,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 195.58 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -2305,7 +2339,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 226.06 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -2418,7 +2452,7 @@
 				)
 			)
 		)
-		(property "Description" "Power symbol creates a global label with name \"+3V3A\""
+		(property "Description" "Power symbol creates a global label with name \"+3.3VA\""
 			(at 226.06 59.69 0)
 			(hide yes)
 			(show_name no)
@@ -2529,7 +2563,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 195.58 160.02 0)
 			(hide yes)
 			(show_name no)
@@ -2642,7 +2676,7 @@
 				)
 			)
 		)
-		(property "Description" "Power symbol creates a global label with name \"+3V3A\""
+		(property "Description" "Power symbol creates a global label with name \"+3.3VA\""
 			(at 226.06 153.67 0)
 			(hide yes)
 			(show_name no)
@@ -2988,7 +3022,7 @@
 				)
 			)
 		)
-		(property "Description" "MLCC"
+		(property "Description" "Unpolarized capacitor"
 			(at 226.06 160.02 0)
 			(hide yes)
 			(show_name no)

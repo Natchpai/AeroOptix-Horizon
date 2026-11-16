@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: MCU Pin Allocation
 
-**Revision:** 0.6
-**Updated:** 2026-10-24
-**Status:** Draft. The software team's answers (pinmap review 0.2 and 0.3, decisions file) are applied. The IO MCU is now the STM32F100C8T6B (DEC-002); no pin moved. Not drawn in the schematic yet. DMA, interrupt priority and timer clock checks (P1-010) are not done by hardware. Not a verification record.
-**Requirement refs:** IF-010 to IF-024, IF-030 to IF-037, IF-040 to IF-051, SEN-001 to SEN-003, DEC-002, DEC-014 to DEC-018 (spec rev 0.12). Checklist tasks: P1-001, P1-002, P1-003 to P1-005 (partial), P1-009 (partial).
+**Revision:** 0.9
+**Updated:** 2026-11-16
+**Status:** Draft. The software team's answers (pinmap review 0.2 and 0.3, decisions file) are applied. The IO MCU is the STM32F100C8T6B (DEC-002). Partly drawn in the schematic (spec 4.2 "Schematic state"). HSE from CMOS oscillators (DEC-044, DEC-045). Actuator outputs per DEC-050 and DEC-051 (F100 MAIN 1 to 8, H743 AUX 1 to 4); no pin changed. DMA, interrupt priority and timer clock checks (P1-010) are not done by hardware. Not a verification record.
+**Requirement refs:** IF-010 to IF-024, IF-030 to IF-037, IF-040 to IF-051, SEN-001 to SEN-003, DEC-002, DEC-014 to DEC-018, DEC-043 to DEC-047, DEC-050, DEC-051. Checklist tasks: P1-001, P1-002, P1-003 to P1-005 (partial), P1-009 (partial).
 **Decision owner:** Hardware
 
 Single record for the STM32H743VIT6 (LQFP100) and STM32F100C8T6B (LQFP48) pin allocation.
@@ -11,13 +11,13 @@ Single record for the STM32H743VIT6 (LQFP100) and STM32F100C8T6B (LQFP48) pin al
 Evidence labels follow `.claude/rules/engineering.md`: `VERIFIED`, `ASSUMED`, `ESTIMATED`, `NOT_VERIFIED`.
 
 Source keys used below:
-- **ST XML**: ST `STM32_open_pin_data` repo, files `mcu/STM32H743VITx.xml` and `mcu/STM32F103C(8-B)Tx.xml`, commit `7d1f151` (2026-06-29), fetched 2026-10-18 and again 2026-10-24, and `mcu/STM32F100C(8-B)Tx.xml` (`master`, fetched 2026-10-24). Lists the signals that each package pin can carry.
+- **ST XML**: ST `STM32_open_pin_data` repo, `mcu/STM32H743VITx.xml` and `mcu/STM32F103C(8-B)Tx.xml` (commit `7d1f151`), and `mcu/STM32F100C(8-B)Tx.xml` (`master`, fetched 2026-10-24). Lists the signals that each package pin can carry.
 - **H7 DS**: ST DS12110 Rev 11 (STM32H742xI/G, STM32H743xI/G), Table 9 pin/ball definition, read as NotebookLM source fulltext (notebook `STM32H743VI`).
-- **F1 DS**: ST DS5319 Rev 20 (STM32F103x8/B), Table 5 pin definitions, read as NotebookLM source fulltext (notebook `STM32F103C8T`). Used for the section 2 checks before the IO MCU changed.
+- **F1 DS**: ST DS5319 Rev 20 (STM32F103x8/B), Table 5, NotebookLM notebook `STM32F103C8T`; used for the section 2 checks before the IO MCU changed.
 - **F100 DS**: ST DocID16455 Rev 9 (STM32F100x4/6/8/B), Table 4 pin definitions and Tables 8, 10, 21, read as NotebookLM source fulltext (notebook `STM32F100`), 2026-10-24.
 
 How each row was checked:
-- **Pin/signal**: a script confirmed the signal is listed for that pin in ST XML, so it is `VERIFIED`. Rows added on 2026-10-24 were checked the same way.
+- **Pin/signal**: a script confirmed the signal is listed for that pin in ST XML, so it is `VERIFIED`.
 - **DS**: a script found the signal name in that pin's row of the datasheet text. This is a text match on extracted PDF text, so a human should still confirm the critical pins against the datasheet. `not checked` means the row was added after the datasheet pass.
 - **Conflicts**: no pin is assigned twice, and the interrupt pins use different EXTI lines (checked by script, 2026-10-24).
 - **Source**: the H743 pins mostly follow Pixhawk 6C (`px4/fmu-v6c`) and the F100 pins follow `px4/io-v2`, by team decision (DEC-014). The team tested them on a NUCLEO-H753ZI and in PX4 SITL only (pinmap review Q2). Some pins were proposed by hardware and accepted by the team (pinmap review section 3.6, decisions file H2).
@@ -42,10 +42,10 @@ Script inputs and outputs are not kept in the repo.
 | MS4525DO + power module | IF-014, IF-048 | I2C4_SDA | PD13 | 60 | match |
 | TF-Luna | IF-015 | UART8_TX | PE1 | 98 | match |
 | TF-Luna | IF-015 | UART8_RX | PE0 | 97 | match |
-| Motor 1 (front-R) | IF-040 | TIM5_CH1 (AF2) | PA0 | 22 | not checked |
-| Motor 2 (rear-L) | IF-041 | TIM5_CH2 (AF2) | PA1 | 23 | not checked |
-| Motor 3 (front-L) | IF-042 | TIM5_CH3 (AF2) | PA2 | 24 | not checked |
-| Motor 4 (rear-R) | IF-043 | TIM5_CH4 (AF2) | PA3 | 25 | not checked |
+| AUX 1, tilt servo | IF-034, IF-035, IF-036, IF-037 | TIM5_CH1 (AF2) | PA0 | 22 | not checked |
+| AUX 2, tilt servo | IF-034, IF-035, IF-036, IF-037 | TIM5_CH2 (AF2) | PA1 | 23 | not checked |
+| AUX 3, tilt servo | IF-034, IF-035, IF-036, IF-037 | TIM5_CH3 (AF2) | PA2 | 24 | not checked |
+| AUX 4, tilt servo | IF-034, IF-035, IF-036, IF-037 | TIM5_CH4 (AF2) | PA3 | 25 | not checked |
 | Spare output 1 | IF-017 | TIM4_CH3 | PD14 | 61 | match |
 | Spare output 2 | IF-018 | TIM4_CH4 | PD15 | 62 | match |
 | Spare output 3 | IF-019 | TIM1_CH1 | PE9 | 39 | match |
@@ -54,7 +54,7 @@ Script inputs and outputs are not kept in the repo.
 | USB VBUS sense | IF-022 | OTG_FS_VBUS | PA9 | 68 | match |
 | SWD | IF-045 | SWDIO | PA13 | 72 | not checked |
 | SWD | IF-045 | SWCLK | PA14 | 76 | not checked |
-| Reset | TST-001 | NRST | NRST | 14 | - |
+| Reset (shared `RESET_B`, one button, DEC-046) | TST-001 | NRST | NRST | 14 | - |
 | F100 link | IF-024 | USART6_TX | PC6 | 63 | match |
 | F100 link | IF-024 | USART6_RX | PC7 | 64 | match |
 | IMU1 | SEN-001 | SPI1_SCK | PA5 | 29 | match |
@@ -81,17 +81,17 @@ Script inputs and outputs are not kept in the repo.
 | LED green | IF-047 | GPIO output, active low | PE4 | 3 | - |
 | Analog battery V (reserve) | IF-048 | ADC123_INP10 | PC0 | 15 | - |
 | Analog battery I (reserve) | IF-048 | ADC123_INP11 | PC1 | 16 | - |
-| HSE crystal, 16 MHz | DEC-017 | OSC_IN | PH0 | 12 | - |
-| HSE crystal, 16 MHz | DEC-017 | OSC_OUT | PH1 | 13 | - |
+| HSE CMOS oscillator, 16 MHz | DEC-044 | OSC_IN | PH0 | 12 | - |
+| Not used (HSE bypass, DEC-045) | DEC-045 | OSC_OUT | PH1 | 13 | - |
 | Boot select | P1-007 | BOOT0 | BOOT0 | 94 | - |
 
 AF numbers (`VERIFIED`): the NuttX pinmap gives AF2 for TIM5_CH1 to CH4 on PA0 to PA3 and for TIM3_CH3 on PB0 (`documents/reference/px4-matek-h743-slim/stm32h7x3xx_pinmap.h`). HRT runs on TIM8, which needs no pin (team, Q15). IMU pin 9 (INT2/FSYNC/CLKIN) is not connected to the MCU; it is handled as the ICM-45686 datasheet says for an unused pin (team, Q16).
 
 Design choices behind the table (`ASSUMED`, for review):
 - Each IMU has its own SPI bus (SPI1, SPI4), so a fault on one bus does not take out both IMUs.
-- Both barometers and the magnetometer share I2C2 (I2C3 dropped by the team to free PC9 for microSD). Addresses: ICP-20100 0x63, BMP581 0x46, IST8310 0x0E. They do not overlap. One bus fault can now take out both barometers.
+- Both barometers and the magnetometer share I2C2 (I2C3 dropped by the team to free PC9 for microSD). Addresses: ICP-20100 0x63, BMP581 0x46, IST8310 0x0C (spec DEC-047; the PX4 start script sets it, P1-018). They do not overlap. One bus fault can now take out both barometers.
 - USART6 for the F100 link, same as `px4/fmu-v6c`.
-- Motors on TIM5, one timer with DMA, so all four can run bidirectional DShot from timer 0 (team, S3).
+- TIM5 (PA0 to PA3) drives the 4 tilt servos as AUX 1 to 4 (spec DEC-050, DEC-051); the team sets which tilt servo is on which AUX output in PX4. No DShot. Before DEC-050 TIM5 drove the motors with bidirectional DShot (team, S3).
 - microSD on SDMMC1, because the `px4/fmu-v6c` SDMMC2 pins clash with GPS1 RX and Telemetry 2 (F-14).
 - Buzzer on TIM3_CH3, PB0, same as `px4/fmu-v6c` (decisions file H2).
 - TIM4 on PD14/PD15 rather than PB8/PB9, which leaves PB8/PB9 for I2C1.
@@ -100,18 +100,24 @@ Design choices behind the table (`ASSUMED`, for review):
 
 Free I/O after this allocation (25 pins): PA8, PA10, PB1, PB2, PB5, PB6, PB7, PB12, PB13, PC2_C, PC3_C, PC5, PC13, PC14, PC15, PD0, PD1, PD3, PD4, PD7, PD10, PD11, PE5, PE6, PE10. PA15, PB3 and PB4 are also free but not counted. PC14 and PC15 are free because no LSE is used (team, Q6).
 
+PH1 (H743) and PD1 (F100) are OSC_OUT pins, unused in HSE bypass (DEC-045). They are not in any free I/O list or count: their use as GPIO is `NOT_VERIFIED`.
+
+Debug console (USART3), SWD and NRST: the drawn H743 debug connector has SWD and NRST (`RESET_B` on pin 4) but no console (spec OPEN-029).
+
 ## 2. STM32F100C8T6B (LQFP48)
+
+Output numbers and the first actuator mapping follow spec DEC-051. The team sets the mapping in PX4 (QGC Actuators) and may change it; the pins do not change.
 
 | Function | Ref | Signal | Pin | LQFP48 | DS (default / remap) |
 | -------- | --- | ------ | --- | ------ | -------------------- |
-| Flaperon L | IF-030 | TIM2_CH1 | PA0 | 10 | match, default (TIM2_CH1_ETR) |
-| Flaperon R | IF-031 | TIM2_CH2 | PA1 | 11 | match, default |
-| Ruddervator L | IF-032 | TIM4_CH3 | PB8 | 45 | match, default |
-| Ruddervator R | IF-033 | TIM4_CH4 | PB9 | 46 | match, default |
-| Tilt servo 1 (front-R) | IF-034 | TIM3_CH1 | PA6 | 16 | match, default |
-| Tilt servo 2 (rear-L) | IF-035 | TIM3_CH2 | PA7 | 17 | match, default |
-| Tilt servo 3 (front-L) | IF-036 | TIM3_CH3 | PB0 | 18 | match, default |
-| Tilt servo 4 (rear-R) | IF-037 | TIM3_CH4 | PB1 | 19 | match, default |
+| MAIN 1, motor 1 (front-R) | IF-040 | TIM2_CH1 | PA0 | 10 | match, default (TIM2_CH1_ETR) |
+| MAIN 2, motor 2 (rear-L) | IF-041 | TIM2_CH2 | PA1 | 11 | match, default |
+| MAIN 3, motor 3 (front-L) | IF-042 | TIM4_CH3 | PB8 | 45 | match, default |
+| MAIN 4, motor 4 (rear-R) | IF-043 | TIM4_CH4 | PB9 | 46 | match, default |
+| MAIN 5, flaperon L | IF-030 | TIM3_CH1 | PA6 | 16 | match, default |
+| MAIN 6, flaperon R | IF-031 | TIM3_CH2 | PA7 | 17 | match, default |
+| MAIN 7, ruddervator L | IF-032 | TIM3_CH3 | PB0 | 18 | match, default |
+| MAIN 8, ruddervator R | IF-033 | TIM3_CH4 | PB1 | 19 | match, default |
 | H743 link | IF-024 | USART2_TX | PA2 | 12 | match, default |
 | H743 link | IF-024 | USART2_RX | PA3 | 13 | match, default |
 | px4io console | IF-051 | USART1_TX | PA9 | 30 | match, default |
@@ -120,9 +126,9 @@ Free I/O after this allocation (25 pins): PA8, PA10, PB1, PB2, PB5, PB6, PB7, PB
 | Servo rail sense | IF-050 | ADC1_IN4 (3:1 divider) | PA4 | 14 | not checked |
 | SWD | IF-051 | SWDIO | PA13 | 34 | match (row text) |
 | SWD | IF-051 | SWCLK | PA14 | 37 | match (row text) |
-| Reset | IF-051 | NRST | NRST | 7 | - |
-| HSE crystal, 24 MHz | DEC-017 | OSC_IN | PD0 | 5 | - |
-| HSE crystal, 24 MHz | DEC-017 | OSC_OUT | PD1 | 6 | - |
+| Reset (shared `RESET_B`, one button, DEC-046) | IF-051 | NRST | NRST | 7 | - |
+| HSE CMOS oscillator, 24 MHz | DEC-044 | OSC_IN | PD0 | 5 | - |
+| Not used (HSE bypass, DEC-045) | DEC-045 | OSC_OUT | PD1 | 6 | - |
 | Boot select | P1-014 | BOOT0 (pull-down) | BOOT0 | 44 | - |
 | Boot select | P1-014 | BOOT1 (pull-down) | PB2 | 20 | DS row: PB2/BOOT1 |
 
@@ -142,6 +148,8 @@ Reserved for px4io-v2 functions (F-13). Not used for anything else. The LEDs are
 | PA8 | PPM | Unconnected |
 | PC14, PC15 | Board sense, read at boot | Unconnected (team, Q6) |
 
+Console (PA9) and NRST: the drawn F100 debug pads have neither (spec OPEN-029).
+
 Free I/O after this allocation (4 pins): PB3, PB6, PB7, PB12. PB3 is a JTAG pin after reset and needs the SWJ remap (SWD only) before use as GPIO (`ASSUMED`, F1 reference manual not checked).
 
 ## 3. Findings
@@ -150,22 +158,22 @@ Closed findings stay listed with their outcome.
 
 | ID | Severity | Ref | Label | Finding | Source |
 | -- | -------- | --- | ----- | ------- | ------ |
-| F-15 | MAJOR | IF-040 to IF-043 | `NOT_VERIFIED` | Motor stop on an H743 hang relies on the ESC stopping when DShot frames stop. ESC signal-loss behavior is not checked (spec OPEN-017, SAF-015). | Decisions file S1 |
-| F-16 | MINOR | IF-040 to IF-043 | `NOT_VERIFIED` | Every PWM line gets a weak pull-down (Q10). The motor lines carry bidirectional DShot, which idles high and turns the line around for the ESC reply. Pick the pull-down and any series resistor so they do not upset that (spec OPEN-018). | Pinmap review Q10, decisions file S3 |
+| F-15 | MAJOR | IF-040 to IF-043 | `NOT_VERIFIED` | Motor stop on an H743 hang: since DEC-050 the ESCs run PWM from the F100, which sets the disarmed value 0.5 s after H743 data stops (DEC-051). Whether the Skywalker 80A V2 stops on that pulse is not checked (spec OPEN-017, SAF-015). | Decisions file S1; spec DEC-051 |
+| F-16 | MINOR | IF-030 to IF-043 | `NOT_VERIFIED` | Every PWM line gets a weak pull-down (Q10). Since DEC-050 no line carries DShot. Pick the pull-down and any series resistor for PWM and the boot-time output state (spec OPEN-018). | Pinmap review Q10, decisions file S3 |
 | F-18 | INFO | IO MCU | `VERIFIED` | STM32F100C(8-B)Tx and STM32F103C(8-B)Tx LQFP48: all 48 pin names and types match, and every signal in section 2 is on the same pin. The F103 adds USB, CAN and ADC2; the F100 adds DAC, CEC and TIM6, TIM7, TIM15 to TIM17. None of these is used. | ST XML, compared by script 2026-10-24 |
-| F-17 | INFO | IF-045 | `VERIFIED` | The Pixhawk Debug Mini connector has no NRST pin (1 VREF, 2 Console TX, 3 Console RX, 4 SWDIO, 5 SWCLK, 6 GND). Add an NRST pad next to it. | `https://docs.px4.io/main/en/debug/swd_debug.html` (read 2026-10-24; DS-009 not read) |
+| F-17 | INFO | IF-045 | `VERIFIED` | The Pixhawk Debug Mini connector has no NRST pin (1 VREF, 2 Console TX, 3 Console RX, 4 SWDIO, 5 SWCLK, 6 GND). Add an NRST pad next to it. As drawn (2026-11-16): 5-pin SWD with NRST (`RESET_B`) on pin 4, no console (spec OPEN-029). | `https://docs.px4.io/main/en/debug/swd_debug.html` (read 2026-10-24; DS-009 not read) |
 | F-06 | INFO | H743 PA9 | `NOT_VERIFIED` | PA9 (OTG_FS_VBUS) is FT_u. Whether VBUS can connect directly, or needs a divider when VDD is off, is not checked. | H7 DS Table 9 |
 | F-05 | INFO | H743 PC4 | `VERIFIED` | PC4 (IMU1 INT1) is TT_a, so it is 3.3 V tolerant only, not 5 V. This is fine for a 3.3 V IMU. | H7 DS Table 9 |
-| F-03 | INFO | F100 PA0 to PA7, PB0, PB1, PB5 | `VERIFIED` | These pins are not 5 V tolerant (no FT in the type column). They carry the servo outputs, the 3.3 V px4io link, the servo rail sense and the safety button (PA5 is unconnected). Keep 5 V off them: the servo rail sense goes through its divider, and the safety button switches to 3.3 V or GND. | F100 DS Table 4 (was F1 DS Table 5 for the F103) |
+| F-03 | INFO | F100 PA0 to PA7, PB0, PB1, PB5 | `VERIFIED` | These pins are not 5 V tolerant (no FT in the type column). They carry the ESC and servo outputs, the 3.3 V px4io link, the servo rail sense and the safety button (PA5 is unconnected). Keep 5 V off them: the servo rail sense goes through its divider, and the safety button switches to 3.3 V or GND. | F100 DS Table 4 (was F1 DS Table 5 for the F103) |
 | F-13 | INFO | F100 reserved pins | `VERIFIED` | Stock px4io-v2 also drives or reads PB14, PB15, PA11 (LEDs), PA15 (servo fault), PA5 and PA12 (RSSI), PC13 and PA10 (Spektrum), PB10, PB11, PB4 (SBUS), PA8 (PPM), PC14 and PC15 (board sense). Applied in section 2. | PX4 v1.16.2 `boards/px4/io-v2/src/board_config.h` |
 | F-14 | INFO | H743 microSD | `VERIFIED` | `px4/fmu-v6c` puts microSD on SDMMC2, which clashes with GPS1 RX (PD6) and Telemetry 2 (PB14, PB15) here. SDMMC1 on PC8 to PC12 and PD2 is used instead; all six signals are listed in ST XML (checked 2026-10-24). | PX4 v1.16.2 `boards/px4/fmu-v6c/nuttx-config/include/board.h`; ST XML |
-| F-02 | Closed | IF-034 to IF-037 | `VERIFIED` | Spec labels TIM3_CH5 to CH8 did not exist. Corrected to TIM3_CH1 to CH4 in spec rev 0.11 (team, Q3). | ST XML; F1 DS Table 5 (F103) |
-| F-11 | Closed | IO MCU HSE | `VERIFIED` | Stock px4io-v2 uses a 24 MHz HSE, outside the STM32F103 crystal range of 4 to 16 MHz (F1 DS Table 22). Resolved by the STM32F100C8T6B, whose HSE takes 4 to 24 MHz (F100 DS Table 21), with a 24 MHz crystal and stock px4io (DEC-002, DEC-017). | F1 DS Tables 20 and 22; F100 DS Table 21 (NotebookLM source fulltext); PX4 v1.16.2 `boards/px4/io-v2/nuttx-config/include/board.h` |
+| F-02 | Closed | IF-034 to IF-037 | `VERIFIED` | Spec labels TIM3_CH5 to CH8 did not exist; corrected to TIM3_CH1 to CH4 (team, Q3). | ST XML; F1 DS Table 5 (F103) |
+| F-11 | Closed | IO MCU HSE | `VERIFIED` | Stock px4io-v2 uses a 24 MHz HSE, outside the STM32F103 crystal range of 4 to 16 MHz (F1 DS Table 22). Resolved by the STM32F100C8T6B, HSE 4 to 24 MHz (F100 DS Table 21; DEC-002, DEC-017). Superseded by DEC-044 and DEC-045: CMOS oscillator and a custom px4io build. | F1 DS Tables 20 and 22; F100 DS Table 21 (NotebookLM source fulltext); PX4 v1.16.2 `boards/px4/io-v2/nuttx-config/include/board.h` |
 | F-12 | Closed | H743 TIM5 | `ASSUMED` | `px4/fmu-v6c` gives DMA only to TIM1 and TIM4. The team will declare TIM5 with DMA in the port (decisions file S2); not checked by hardware. | PX4 v1.16.2 `boards/px4/fmu-v6c/src/timer_config.cpp` |
 | F-01 | Closed | IF-016 | `VERIFIED` | IF-016 used the same UART7 as Telemetry 1. Dropped (team, Q4). | Spec section 3 |
 | F-04 | Closed | IF-038 | `VERIFIED` | FlySky protocol was undefined. Dropped; RC comes over ELRS on UART7 (team, Q5). | Spec IF-038 |
 | F-07 | Closed | IF-024 | `VERIFIED` | No F100 reflash path from the H743. PX4 updates the F100 over the link; the first flash is over SWD (team, Q9). | Pinmap review Q9 |
-| F-08 | Closed | H743 PA10 | `VERIFIED` | The note about OTG_FS_ID is reworded: USB is device only and PA10 is free (team, Q19). | Section 1 |
+| F-08 | Closed | H743 PA10 | `VERIFIED` | USB is device only, so PA10 (OTG_FS_ID) is free (team, Q19). | Section 1 |
 | F-09 | Closed | Power module | `ASSUMED` | Power module on I2C4 with the MS4525DO. Team: INA228 at 0x45 (older units INA226 at 0x41). The module label is not checked. | Pinmap review Q14 |
 | F-10 | Closed | H743 TIM15 | - | TIM15 dropped; motors moved to TIM5 (team, Q17). | Pinmap review Q17 |
 
@@ -173,11 +181,11 @@ Closed findings stay listed with their outcome.
 
 - [ ] Human reviews the pin choices and the design choices in sections 1 and 2.
 - [ ] P1-010: DMA streams, interrupt priorities and timer clock per peripheral. TIM5 DMA and the SDMMC1 setup are in the software port (decisions file S2, S4).
-- [ ] P1-011: pull-down value on the PWM lines, with bidirectional DShot on the motor lines (F-16).
-- [ ] P1-014: crystal parts and load capacitors for 16 MHz (H743) and 24 MHz (F100).
+- [ ] P1-011: pull-down value on the PWM lines (F-16; no DShot since DEC-050).
+- [ ] OPEN-028: oscillator data (parts decided, DEC-048) against the HSE external-clock limits of both MCUs (P1-014).
 - [ ] Pick the weak pull-up value on F100 PA10 and PB11, and the resistors for the px4io LEDs on PB14, PB15 and PA11.
 - [ ] Run the datasheet text match on the rows marked `not checked`, and on the section 2 rows against the F100 DS.
-- [ ] Human confirms critical pins (power, SWD, USB, BOOT0, crystals) against the datasheet pinout figures.
+- [ ] Human confirms critical pins (power, SWD, USB, BOOT0, oscillator inputs) against the datasheet pinout figures.
 
 ## 5. Sources
 
@@ -185,7 +193,7 @@ Closed findings stay listed with their outcome.
 - STM32H743VI datasheet (NotebookLM source): https://www.st.com/resource/en/datasheet/stm32h743vi.pdf
 - STM32F103C8 datasheet (NotebookLM source, earlier checks): https://www.st.com/resource/en/datasheet/stm32f103c8.pdf
 - STM32F100 datasheet DocID16455 Rev 9 (NotebookLM notebook `STM32F100`)
-- Requirements: `AO-HORIZON_SPEC_EN.md` rev 0.12, sections 3.4 and 3.5
+- Requirements: `AO-HORIZON_SPEC_EN.md` sections 3.4, 3.5 and 8.1
 - PX4 Matek H743-Slim board port and NuttX pinmap (reference copies): `documents/reference/px4-matek-h743-slim/`
 - ICM-45686 DS-000489 Rev 1.1 and IST8310 Datasheet V1.2 (NotebookLM sources)
 - Team answers: `AO-HORIZON_PINMAP_REVIEW_EN.md` rev 0.3 with the team's 0.2 and 0.3 answers and `AO-HORIZON_PINMAP_DECISIONS_EN.md` rev 0.2 (2026-10-24)

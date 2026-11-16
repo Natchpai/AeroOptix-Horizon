@@ -14,4 +14,7 @@
 	(lib (name "0_Package_LGA") (type "KiCad") (uri "${KIPRJMOD}/library/footprints/0_Package_LGA.pretty") (options "") (descr ""))
 	(lib (name "0_Package_CSP") (type "KiCad") (uri "${KIPRJMOD}/library/footprints/0_Package_CSP.pretty") (options "") (descr ""))
 	(lib (name "0_Conn_Molex") (type "KiCad") (uri "${KIPRJMOD}/library/footprints/0_Conn_Molex.pretty") (options "") (descr ""))
+	(lib (name "0_Conn_Card") (type "KiCad") (uri "${KIPRJMOD}/library/footprints/0_Conn_Card.pretty") (options "") (descr ""))
+	(lib (name "0_Conn_USB") (type "KiCad") (uri "${KIPRJMOD}/library/footprints/0_Conn_USB.pretty") (options "") (descr ""))
+	(lib (name "0_Oscillator") (type "KiCad") (uri "${KIPRJMOD}/library/footprints/0_Oscillator.pretty") (options "") (descr ""))
 )
