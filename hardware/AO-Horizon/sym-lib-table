@@ -17,4 +17,5 @@
 	(lib (name "0_Conn_Card") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Conn_Card.kicad_symdir") (options "") (descr ""))
 	(lib (name "0_Conn_USB") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Conn_USB.kicad_symdir") (options "") (descr ""))
 	(lib (name "0_Oscillator") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Oscillator.kicad_symdir") (options "") (descr ""))
+	(lib (name "0_Switch") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Switch.kicad_symdir") (options "") (descr ""))
 )
