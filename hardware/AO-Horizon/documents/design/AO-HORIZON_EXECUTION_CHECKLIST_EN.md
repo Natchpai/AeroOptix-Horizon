@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Execution Checklist
 
-**Revision:** 0.36
+**Revision:** 0.37
 **Updated:** 2026-11-14
 **Status:** Active execution tracker; not an approval or verification record
-**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.40
+**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.41
 
 Use the specification for confirmed requirements and decisions. This checklist records the sequence of work and the evidence needed to close each gate. Diagram content is reference material. User-confirmed requirements take precedence. All sensor parts are chosen (DEC-008, DEC-010, DEC-011); their lifecycle and sourcing risks are open.
 
@@ -106,7 +106,7 @@ Firmware tasks P2-005 to P2-007 do not block the hardware release.
 | P2-019 | Resolve the power-sheet findings (spec 4.3), then run ERC on the sheet and ask for a `sch-review`. Done 2026-11-03 (closed by the human owner): findings fixed; ERC run by the human owner, only the hierarchical sheet pins `3V3_PG`, `PM02_SCL` and `PM02_SDA` left; `sch-review` found no defect (spec 4.3). Decisions on the way: DEC-035 to DEC-041. Not a finding: the two DNP diodes D105 and D106 are ESD parts parked for another sheet (human owner, 2026-11-02). Left over: resistor part fields (P2-021); the temporary `PWR_FLAG` on `VBUS` (P1-006, P2-022); ST low level (P4-012). | OPEN-011, OPEN-023, OPEN-025, DEC-028, DEC-029 | Hardware | DONE | Saved schematic, commit `304de41`; ERC run by the human owner, only hierarchical sheet pins left; `sch-review` in spec 4.3 |
 | P2-020 | Set the TPS2121 power mux parts from TI data (DEC-029). Wired and checked against TI SLVSEA3F (spec CMP-008 and 4.7): current limit (DEC-030), PM02D priority and XCOMP switchover (DEC-031 to DEC-034), OV dividers (DEC-036, PWR-015). The 10 nF soft-start capacitor C108 is below the TI Table 9-1 range (extrapolated). OPEN-024 closed. Open: input capacitance for the PM02D cable (see DEC-037, P4-013); bench test of the switchover. | DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-036, PWR-015, OPEN-006 | Hardware | IN_PROGRESS | Spec CMP-008 and 4.7 "5 V power mux settings"; bench switchover measurement |
 | P2-021 | Fill MFR, MFR.P/N and LCSC on the power-sheet resistors R101 to R115, with 1 % parts in the PR1, CP2, OV and ST dividers (DEC-031 to DEC-036). The human owner chooses the parts. | P2-019, DEC-031 to DEC-036 | Hardware | OPEN | Saved schematic with filled fields |
-| P2-022 | Finish the MCU, sensor and USB sheets (spec 4.2 "Schematic state"): annotate the passives on `mcu-main-fc`, `mcu-io` and `conn-usb-debug`; footprints and part fields for the new capacitors and the debug connector and pads; oscillator footprints and fields per DEC-048; microSD DET to an MCU pin, CMD and DAT pull-ups and ESD; C507 footprint; the reset button (DEC-046, OPEN-026) and debug pin set (OPEN-029, P1-008); run `/kicad-link-audit` for the new `0_Oscillator` library; remove the temporary `PWR_FLAG` on `VBUS` if ERC allows. Then run ERC and ask for a `sch-review`. | DEC-046, DEC-048, OPEN-026, OPEN-028, OPEN-029, P1-008, P1-014, SEN-001 to SEN-003, IF-022, IF-044 | Hardware | IN_PROGRESS | Saved, annotated schematic; ERC output; `sch-review` record |
+| P2-022 | Finish the MCU, sensor and USB sheets (spec 4.2 "Schematic state"): annotate the passives on `mcu-main-fc`, `mcu-io` and `conn-usb-debug`; footprints and part fields for the new capacitors and the debug connector and pads; oscillator footprints and fields per DEC-048; microSD DET to an MCU pin, CMD and DAT pull-ups and ESD; C507 footprint; the reset button (DEC-046, OPEN-026) and debug pin set (OPEN-029, P1-008); the H743 VDDA capacitor value (OPEN-030); annotate and wire the `conn-external` connectors (OPEN-023); run `/kicad-link-audit` for the new `0_Oscillator` library; remove the temporary `PWR_FLAG` on `VBUS` if ERC allows. Then run ERC and ask for a `sch-review`. | DEC-046, DEC-048, OPEN-023, OPEN-026, OPEN-028, OPEN-029, OPEN-030, P1-008, P1-014, SEN-001 to SEN-003, IF-022, IF-044 | Hardware | IN_PROGRESS | Saved, annotated schematic; ERC output; `sch-review` record |
 
 ## P3: PCB and fabrication release
 
@@ -194,11 +194,12 @@ Descriptions are in the specification (section 8.2). Status and owner below are 
 | OI-029 | OPEN-027 | IST8310 I2C address straps | Closed 2026-11-14: 0x0C as strapped (DEC-047); PX4 start at 0x0C (P1-018). | Closed |
 | OI-030 | OPEN-028 | Clock sources: oscillator parts and data | Type decided: CMOS oscillators (DEC-044), HSE bypass in firmware (DEC-045). Drawn: U202 16 MHz into PH0, U302 24 MHz into PD0, each through 22 Ω; part numbers decided 2026-11-14 (DEC-048). Oscillator data and the HSE external-clock limits `NOT_VERIFIED`. | Hardware / P1 (P1-014), P2 (P2-022); software team (P1-017) |
 | OI-031 | OPEN-029 | Debug connector and pads: no console, no NRST | Drawn, not decided: H743 4-pin connector and F100 4 pads with VREF, SWDIO, SWCLK, GND; IF-045, IF-051 and TST-001 ask for the console and NRST too. | Human owner / P1 (P1-008), P2 (P2-022) |
+| OI-032 | OPEN-030 | H743 VDDA bulk capacitor against DEC-049 | Drawn, not decided: 2.2 µF on `H7_VDDA` (18:38 save); DEC-049 says 4.7 µF. ST recommended decoupling not re-checked (`NOT_VERIFIED`). | Human owner / P2 (P2-022) |
 
 ## Current next action
 
 - Finish the MCU, sensor and USB sheets, then run ERC and ask for a `sch-review` (P2-022).
-- Draw the reset button (DEC-046, OPEN-026) and decide the debug pin set (OPEN-029, P1-008).
+- Draw the reset button (DEC-046, OPEN-026), decide the debug pin set (OPEN-029, P1-008) and confirm the H743 VDDA capacitor against DEC-049 (OPEN-030).
 - Check the oscillator data and the HSE external-clock limits before layout (OPEN-028, CMP-010); the software team sets HSE bypass and the IST8310 address (P1-017, P1-018).
 - Send integration questions rev 0.4 and collect the team inputs, mainly D13 on the ESC (P0-022).
 - Before PCB placement: check the connector pinouts against DS-009 and the CN101 pin order (P2-015), design the servo bus and XT30 input (P2-016), and draw the ESC headers (P2-018).
