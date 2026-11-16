@@ -13,7 +13,7 @@ Status: `live` records are kept up to date; `closed, historical` records are ans
 | `AO-HORIZON_POWER_BUDGET_EN.md` | live | Draft rail loads, tolerances, brownout and protection needs (P0-017). |
 | `AO-HORIZON_PIN_ALLOCATION_EN.md` | live | Draft STM32H743 and STM32F100 pin allocation (P1). |
 | `AO-HORIZON_POWER_MUX_NOTES_EN.md` | live | TPS2121 power mux: the four modes and how to calculate the PR1, CP2, OV, ILIM and SS parts, with the values as drawn (DEC-029 to DEC-034). Design note, not a record. |
-| `AO-HORIZON_INTEGRATION_QUESTIONS_EN.md` | live | Open integration questions for the team (P0-022): ESC (D13), parts and team tests. Earlier answers are in the spec (DEC-019 to DEC-023, MEC-002 to MEC-004) and in Git history. |
+| `AO-HORIZON_INTEGRATION_QUESTIONS_EN.md` | live | Integration questions for the team, rev 0.5: D13 to D16 answered (DEC-050, DEC-051, P0-023); parts and team tests still open (P0-022). Earlier answers are in the spec (DEC-019 to DEC-023, MEC-002 to MEC-004) and in Git history. |
 | `AO-HORIZON_SW_CLOCK_NOTE_EN.md` | live | Note to the software team: HSE bypass for the CMOS oscillators in the H743 board config and bootloader and a custom px4io build (DEC-044, DEC-045, P1-017), with the PX4 v1.16.2 source evidence and questions. |
 | `AO-HORIZON_H7_MCU_SOURCING_EN.md` | snapshot | STM32H743VI price and stock, 2026-10-16. Refresh before buying. |
 | `AO-HORIZON_PINMAP_REVIEW_EN.md` | closed, historical | H743 and IO MCU pinmap review 0.3, answered by the software team on 2026-10-24 (0.2 answers kept). Current pins are in the pin allocation record and the spec. |

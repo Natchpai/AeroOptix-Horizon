@@ -7,11 +7,11 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.40, 2026-11-14): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.42, 2026-11-16): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
-AeroOptix-Horizon is a custom PX4 flight controller with two MCUs. The STM32H743VIT6 runs the flight stack and drives the 4 motor outputs. The STM32F100C8T6B runs px4io and drives the 8 servo outputs, the safety switch and the servo failsafe.
+AeroOptix-Horizon is a custom PX4 flight controller with two MCUs. The STM32H743VIT6 runs the flight stack and drives the 4 tilt servo outputs. The STM32F100C8T6B runs px4io and drives the 4 ESC outputs, the 4 control-surface servo outputs, the safety switch and the output failsafe (DEC-050, DEC-051).
 
 Pixhawk 6C and 6X are functional references only; their schematics and PCBs are not copied. H743 pins mostly follow `px4/fmu-v6c`, F100 pins follow `px4/io-v2` (DEC-014).
 
@@ -20,7 +20,7 @@ The team website, [natchpai.github.io/AeroOptix-Horizon](https://natchpai.github
 ## Key Features
 
 - STM32H743VIT6 flight MCU and STM32F100C8T6B px4io MCU, linked over USART at 1.5 Mb/s
-- 4 motor outputs on the H743, 8 servo headers on an on-board 6 V rail, 3 spare outputs
+- 4 ESC outputs (MAIN 1 to 4) and 4 control-surface outputs (MAIN 5 to 8) on the F100, 4 tilt servo outputs (AUX 1 to 4) on the H743; 8 servo headers on an on-board 6 V rail, 3 spare outputs
 - 2× ICM-45686 IMU on SPI; ICP-20100 and BMP581 barometers and IST8310 magnetometer on I2C
 - 5 V input through a TPS2121 power mux (power module or USB), 3.3 V buck, separate LDO for the sensor VDD pins
 - USB FS, microSD, debug access to both MCUs, selectable BOOT0
@@ -32,7 +32,7 @@ The team website, [natchpai.github.io/AeroOptix-Horizon](https://natchpai.github
 | Main MCU | STM32H743VIT6 (DEC-001) |
 | IO MCU | STM32F100C8T6B (px4io, DEC-002) |
 | Clocks | H743 16 MHz, F100 24 MHz, both from CMOS oscillators (DEC-017, DEC-044) |
-| Outputs | 4 motors (H743), 8 servos (F100, 50 Hz PWM), 3 spare (H743) (DEC-016, FUN-003, IF-017 to IF-019) |
+| Outputs | F100 MAIN 1 to 4: 4 ESCs (PWM, 1000 to 2000 µs); F100 MAIN 5 to 8: 4 control surfaces (50 Hz PWM); H743 AUX 1 to 4: 4 tilt servos; 3 spare (H743) (DEC-050, DEC-051, FUN-002, FUN-003, IF-017 to IF-019) |
 | Sensors | 2× ICM-45686, ICP-20100 + BMP581 (BMP384 fallback), IST8310 (DEC-008, DEC-010, DEC-011) |
 | Board input | 5 V, 4.5 to 5.5 V, 2 A source; power mux limit 1.5 A; overvoltage cut-off 5.6 to 6.3 V (PWR-010, DEC-029, DEC-030, DEC-036) |
 | 3.3 V rails | `+3V3` buck, design current about 0.6 A (DEC-012, DEC-040); `+3V3A` LDO for the sensor VDD pins; sensor VDDIO on `+3V3` (DEC-043, DEC-027) |
@@ -86,14 +86,15 @@ The diagram is for reference only. It does not enforce gates or approve releases
 
 ### Design progress
 
-State of the saved KiCad files. The MCU, sensor and USB sheets and some power-sheet fields are not committed yet. Sheets not listed have no parts. Part lists, references and save dates are in specification 4.2 "Schematic state", 4.3 and 4.6.
+State of the saved KiCad files (committed in `7e593b3`). Sheets not listed have no parts. Part lists, references and save dates are in specification 4.2 "Schematic state", 4.3 and 4.6.
 
 | Area | State |
 |---|---|
 | Power sheet | Drawn; human ERC and a `sch-review` of the 2026-11-03 save are under Verification; resistor part numbers open (P2-021). |
-| MCU sheets | In capture; one shared reset with one button decided, button not drawn (DEC-046, OPEN-026); oscillator parts decided, data open (DEC-048, OPEN-028); VREF+ tied to VDDA (DEC-049). |
+| MCU sheets | In capture; one shared reset with one button decided, button drawn on `user-interface` and its part not checked (DEC-046, OPEN-026); board LEDs on `{H7_LED}` not drawn (IF-047); oscillator parts decided, data open (DEC-048, OPEN-028); VREF+ tied to VDDA (DEC-049). |
 | Sensor sheets | In capture with all five sensors; IST8310 at 0x0C as strapped (DEC-047, closes OPEN-027). |
-| USB and debug sheet | In capture; parts drawn, not approved (OPEN-010); debug access has no console or NRST yet (OPEN-029). |
+| USB and debug sheet | In capture; parts drawn, not approved (OPEN-010); the H743 debug connector has SWD and NRST but no console, and the F100 pads have no NRST (OPEN-029). |
+| External connectors | `conn-external`: 5 JST-GH connectors drawn, not wired or annotated (OPEN-023). Actuator headers not drawn (DEC-051, P2-018). |
 | PCB | No footprints, placeholder outline only (OPEN-009). |
 | Library | Project parts for the parts in use; sensor footprints not checked against the drawings (OPEN-013). |
 
@@ -103,8 +104,8 @@ State of the saved KiCad files. The MCU, sensor and USB sheets and some power-sh
 
 | Block | Role |
 |---|---|
-| H743 main controller | Flight stack and interface host |
-| F100 IO controller | px4io: 8 servo outputs, safety switch and LED, servo rail sense, servo failsafe |
+| H743 main controller | Flight stack and interface host; 4 tilt servo outputs (AUX 1 to 4) |
+| F100 IO controller | px4io: 4 ESC and 4 control-surface outputs (MAIN 1 to 8), safety switch and LED, servo rail sense, output failsafe (DEC-051) |
 | Sensors | 2 IMU on SPI1 and SPI4; 2 barometers and the magnetometer on I2C2 |
 | External I/O | ELRS, GPS and compass, air-data sensor, rangefinder, power module, motors, spare outputs, microSD, buzzer, LEDs |
 | USB / debug | USB FS; H743 debug connector (target: console + SWD, IF-045; as drawn: OPEN-029); F100 SWD pads |
@@ -118,7 +119,7 @@ Interface allocations agreed with the software team (DEC-014, DEC-018) are in sp
 
 - IO MCU and clocks: STM32F100C8T6B for px4io at 24 MHz; CMOS oscillators with HSE bypass set in firmware (DEC-002, DEC-017, DEC-044, DEC-045).
 - USB power: bench supply only, needs a USB-C port above 1 A; the power module has priority (DEC-031 to DEC-034, DEC-038).
-- Motor stop: the ESCs look PWM-only, so motor stop on an H743 hang is open (OPEN-017).
+- Actuator outputs and H743 failure: the ESCs run timer PWM from the F100 (no DShot). When the H743 stops, the F100 turns the motors off and sets the surfaces to a fixed position, with no landing; the tilt servos on the H743 hold their last angle (DEC-050, DEC-051). Whether the ESCs stop on the failsafe pulse is open (OPEN-017).
 - Sensor sourcing: ICP-20100 is EOL, BMP581 stock is short (OPEN-004).
 - Firmware: owned by the software team, PX4 v1.16.2 based on `px4/fmu-v6c` (DEC-014).
 
@@ -136,9 +137,11 @@ Interface allocations agreed with the software team (DEC-014, DEC-018) are in sp
 
 The specification tracks every open item in section 8.2 of the [specification](hardware/AO-Horizon/documents/design/AO-HORIZON_SPEC_EN.md). Top items now:
 
-- Motor stop with PWM-only ESCs (OPEN-017)
-- Reset: the button is not drawn, and an H743 internal reset may also reset the F100 (OPEN-026)
-- Debug access: no console or NRST on the drawn connector and pads (OPEN-029)
+- ESC stop on the F100 failsafe pulse (OPEN-017)
+- Reset: the button part is not checked, and an H743 internal reset may also reset the F100 (OPEN-026)
+- Debug access: no console, and no NRST on the F100 pads (OPEN-029)
+- H743 VDDA capacitor drawn 2.2 µF where DEC-049 says 4.7 µF (OPEN-030)
+- Actuator headers: keep the ESC headers (no + pin) apart from the +6 V servo headers; ESC PWM rate (OPEN-031)
 
 ## How we work
 

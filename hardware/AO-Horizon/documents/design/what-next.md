@@ -1,6 +1,6 @@
 # What Next
 
-**Updated:** 2026-11-14
+**Updated:** 2026-11-16
 **Status:** Personal reminder list. Not a requirement, decision or verification record.
 
 The specification and the execution checklist stay the source of truth. This list only points to their IDs.
@@ -13,10 +13,10 @@ The board is split into design zones. Each zone below has its own to-do list.
 | ---- | ----- | ----- | --------------- |
 | Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, P2-019) | P2-020, P2-021, OPEN-025 |
 | Z2 Servo power rail (6 V bus, XT30) | Not drawn | Not started | OPEN-007, OPEN-021, P2-016 |
-| Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | `mcu-main-fc.kicad_sch`, `conn-usb-debug.kicad_sch` | In capture (spec 4.2 "Schematic state"); U201, U202 annotated, passives not | P1-001, P1-006 to P1-008, P1-014, P2-022, OPEN-026, OPEN-028, OPEN-029 |
+| Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | `mcu-main-fc.kicad_sch`, `conn-usb-debug.kicad_sch`, `user-interface.kicad_sch` | In capture (spec 4.2 "Schematic state"); U201, U202 annotated, passives not | P1-001, P1-006 to P1-008, P1-014, P2-022, OPEN-026, OPEN-028, OPEN-029 |
 | Z4 F100 IO MCU (px4io) | `mcu-io.kicad_sch` | In capture (spec 4.2 "Schematic state"); U301, U302 annotated, passives not | P1-002, P1-014, P2-014, P2-022, OPEN-026, OPEN-028, OPEN-029 |
 | Z5 Sensors (2 × IMU, 2 × barometer, magnetometer) | `sensor-imu.kicad_sch`, `sensor-navigation.kicad_sch` | All five sensors drawn (U401, U402, U501, U502, U503; spec 4.2); rails per DEC-043; IST8310 at 0x0C (DEC-047) | DEC-043, OPEN-011, DEC-047, SEN-002, P1-003, P1-004, OPEN-004, OPEN-013, OPEN-019, P2-012 |
-| Z6 External connectors and outputs (telemetry, GPS, I2C, ESC and servo headers, spare outputs) | Not drawn | Pinouts not checked | OPEN-018, OPEN-023, P2-013, P2-015, P2-018 |
+| Z6 External connectors and outputs (telemetry, GPS, I2C, ESC and servo headers, spare outputs) | `conn-external.kicad_sch` (5 JST-GH, not wired); actuator headers not drawn | Pinouts not checked; outputs per DEC-051 (MAIN 1 to 8, AUX 1 to 4) | OPEN-018, OPEN-023, OPEN-031, P2-013, P2-015, P2-018 |
 | Z7 PCB and mechanical | `AO-Horizon.kicad_pcb` | 27 × 29 mm placeholder outline, no footprints | OPEN-009, P3-001 |
 
 ## 1. Git
@@ -48,7 +48,7 @@ H743 values below are from ST DS12110 Rev 11 via NotebookLM (2026-11-12).
 - [x] VREF+ tied to VDDA on one 22 Ω RC filter from `+3V3` (DEC-049, drawn in the 17:35 save).
 - [ ] Human review of the pin choices (P1-001).
 - [ ] 16 MHz clock: CMOS oscillator U202 (DEC-044), part decided (DEC-048). Check its data against the HSE external-clock limits (OPEN-028). Firmware side: P1-017.
-- [ ] Reset (DEC-046: one shared `RESET_B` for H743 and F100 NRST, one button): draw the reset button. Check in NotebookLM whether an internal reset (IWDG, software, debugger) drives NRST low on the H743 and F100; if so, an H743 reset also resets the F100 (OPEN-026, SAF-001). `3V3_PG` stays local (DEC-039). NRST pad still to draw (OPEN-029).
+- [ ] Reset (DEC-046: one shared `RESET_B` for H743 and F100 NRST, one button): check the drawn button B? (LCSC C2689510) and its `B` reference prefix. Check in NotebookLM whether an internal reset (IWDG, software, debugger) drives NRST low on the H743 and F100; if so, an H743 reset also resets the F100 (OPEN-026, SAF-001). `3V3_PG` stays local (DEC-039). NRST is on H743 debug connector pin 4; the F100 pads have none (OPEN-029).
 - [ ] BOOT0: the DNP pull-up gives selection by rework only. Decide if that meets FUN-006 and TST-003 ("selectable and observable"), or add a pad, jumper or button (P1-007).
 - [ ] Replace the remaining `H7_<pin>` stub labels (USART3 console and other GPIOs) with function names from the pin allocation, and carry the signals that leave the sheet through sheet pins.
 - [ ] Mark unused pins with no-connect flags once the allocation is final (PA10, PA15, PB3, PB4 and the other free pins).
@@ -103,8 +103,8 @@ Not drawn.
 - [ ] Connector pinouts against the Pixhawk standard DS-009: Telemetry 1 and 2, GPS1 10-pin (3.3 V and buzzer pins), airspeed, TF-Luna (OPEN-023, P2-015).
 - [ ] Telemetry 2 (USART1, PB14, PB15): JST-GH 6-pin, as Telemetry 1.
 - [ ] I2C4 (PD12, PD13): check 5 V tolerance in case a module pulls up to 5 V (OPEN-023).
-- [ ] ESC connectors: 4 × 3-pin headers with the + pin removed (IF-040 to IF-043, P2-018).
-- [ ] PWM pull-downs: pick the value so bidirectional DShot still works on the motor lines (P2-013, OPEN-018).
+- [ ] Actuator headers per DEC-051: MAIN 1 to 4 ESC headers (3-pin, + pin removed), MAIN 5 to 8 and AUX 1 to 4 servo headers on the 6 V bus; keep them apart (IF-030 to IF-043, P2-018, OPEN-031).
+- [ ] PWM pull-downs: pick the value (P2-013, OPEN-018; no DShot since DEC-050).
 - [ ] Spare outputs PD14, PD15, PE9: pads only.
 - [ ] PM02D monitor chip and address: asked in the integration questions parts table (P0-022; pin allocation F-09).
 - [ ] CN101 CLIK-Mate pin order (1-2 5 V, 3 SCL, 4 SDA, 5-6 GND) against the PM02D cable and DS-009 (OPEN-023).
@@ -118,9 +118,9 @@ Not drawn.
 
 Pinmap review 0.3 and the integration answers are applied (spec rev 0.12 to 0.14).
 
-- [ ] Send `AO-HORIZON_INTEGRATION_QUESTIONS_EN.md` rev 0.4 to the team (P0-022). It asks only D13 (Skywalker ESCs look PWM-only: how do the motors stop on an H743 hang?), the parts table and test results.
+- [ ] Collect the rest of `AO-HORIZON_INTEGRATION_QUESTIONS_EN.md` rev 0.5 from the team (P0-022): the parts table, test results and the ESC PWM rate (OPEN-031). D13 to D16 are answered (DEC-050, DEC-051).
 - [ ] After the reply: ask Claude to apply it to the spec, power budget and checklist.
-- [ ] Team bench tests, not hardware work: RC-loss failsafe over ELRS MAVLink (S5); ESC on signal loss (OPEN-017, P4-011); servo current and stall current (OPEN-007).
+- [ ] Team bench tests, not hardware work: RC-loss failsafe over ELRS MAVLink (S5); ESC stop on the F100 failsafe pulse and the surface failsafe position (OPEN-017, P4-011); servo current and stall current (OPEN-007).
 
 ## 10. Before the BOM
 
