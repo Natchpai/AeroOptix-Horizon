@@ -20,7 +20,7 @@
 			(in_pos_files yes)
 			(duplicate_pin_numbers_are_jumpers no)
 			(property "Reference" "CN"
-				(at 7.62 1.27 0)
+				(at 7.62 2.54 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -30,7 +30,7 @@
 				)
 			)
 			(property "Value" "Conn_01x06_MountingPin"
-				(at 16.51 -2.54 0)
+				(at 16.51 -1.27 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -62,7 +62,7 @@
 				)
 			)
 			(property "Description" "Generic connector, single row, 01x06 with mounting pin"
-				(at 0 0 0)
+				(at 0 1.27 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -96,8 +96,8 @@
 			)
 			(symbol "Conn_01x06_MountingPin_1_1"
 				(rectangle
-					(start -2.54 6.35)
-					(end 2.54 -10.16)
+					(start -2.54 7.62)
+					(end 2.54 -7.62)
 					(stroke
 						(width 0.254)
 						(type default)
@@ -107,8 +107,8 @@
 					)
 				)
 				(rectangle
-					(start -2.54 5.08)
-					(end -1.27 4.826)
+					(start -2.54 6.35)
+					(end -1.27 6.096)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -118,8 +118,8 @@
 					)
 				)
 				(rectangle
-					(start -2.54 2.667)
-					(end -1.27 2.413)
+					(start -2.54 3.937)
+					(end -1.27 3.683)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -129,8 +129,8 @@
 					)
 				)
 				(rectangle
-					(start -2.54 0.127)
-					(end -1.27 -0.127)
+					(start -2.54 1.397)
+					(end -1.27 1.143)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -140,8 +140,8 @@
 					)
 				)
 				(rectangle
-					(start -2.54 -2.413)
-					(end -1.27 -2.667)
+					(start -2.54 -1.143)
+					(end -1.27 -1.397)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -151,8 +151,8 @@
 					)
 				)
 				(rectangle
-					(start -2.54 -4.953)
-					(end -1.27 -5.207)
+					(start -2.54 -3.683)
+					(end -1.27 -3.937)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -162,8 +162,8 @@
 					)
 				)
 				(rectangle
-					(start -2.54 -7.493)
-					(end -1.27 -7.747)
+					(start -2.54 -6.223)
+					(end -1.27 -6.477)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -173,8 +173,8 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 5.08 0)
-					(length 2.54)
+					(at -6.35 6.35 0)
+					(length 3.81)
 					(name "Pin_1"
 						(effects
 							(font
@@ -191,8 +191,8 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 2.54 0)
-					(length 2.54)
+					(at -6.35 3.81 0)
+					(length 3.81)
 					(name "Pin_2"
 						(effects
 							(font
@@ -209,8 +209,8 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 0 0)
-					(length 2.54)
+					(at -6.35 1.27 0)
+					(length 3.81)
 					(name "Pin_3"
 						(effects
 							(font
@@ -227,8 +227,8 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 -2.54 0)
-					(length 2.54)
+					(at -6.35 -1.27 0)
+					(length 3.81)
 					(name "Pin_4"
 						(effects
 							(font
@@ -245,8 +245,8 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 -5.08 0)
-					(length 2.54)
+					(at -6.35 -3.81 0)
+					(length 3.81)
 					(name "Pin_5"
 						(effects
 							(font
@@ -263,8 +263,8 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 -7.62 0)
-					(length 2.54)
+					(at -6.35 -6.35 0)
+					(length 3.81)
 					(name "Pin_6"
 						(effects
 							(font
@@ -281,7 +281,7 @@
 					)
 				)
 				(pin passive line
-					(at 0 -13.97 90)
+					(at 0 -11.43 90)
 					(length 3.81)
 					(name "MountPin"
 						(effects
@@ -4769,7 +4769,7 @@
 		(uuid "6498baf5-a2eb-4d15-ae7b-6e39a967b046")
 	)
 	(junction
-		(at 46.99 96.52)
+		(at 45.72 96.52)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "661f3b5e-d9b8-4d8e-883a-aec86cda2253")
@@ -4889,7 +4889,7 @@
 		(uuid "a70a4f81-ef95-4566-ad83-e4feb1c0a8fb")
 	)
 	(junction
-		(at 46.99 99.06)
+		(at 45.72 99.06)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "a9532754-fc1d-46f4-bba1-5e5718dab4db")
@@ -5164,6 +5164,16 @@
 	)
 	(wire
 		(pts
+			(xy 45.72 99.06) (xy 58.42 99.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "092edfe2-409f-495d-850e-c7da8b9959ce")
+	)
+	(wire
+		(pts
 			(xy 271.78 106.68) (xy 283.21 106.68)
 		)
 		(stroke
@@ -5224,7 +5234,7 @@
 	)
 	(wire
 		(pts
-			(xy 46.99 96.52) (xy 46.99 99.06)
+			(xy 45.72 96.52) (xy 45.72 99.06)
 		)
 		(stroke
 			(width 0)
@@ -5281,6 +5291,16 @@
 			(type default)
 		)
 		(uuid "142c51d1-2364-4110-9e1b-0079dc4cab2e")
+	)
+	(wire
+		(pts
+			(xy 45.72 93.98) (xy 45.72 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "14c1f954-6747-43d1-8775-6cd2a5c6cd95")
 	)
 	(wire
 		(pts
@@ -5481,6 +5501,16 @@
 			(type default)
 		)
 		(uuid "2a8b7a8c-f66f-43b4-8f55-b53b4f03534c")
+	)
+	(wire
+		(pts
+			(xy 45.72 96.52) (xy 54.61 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2bbd4396-bd8a-4b48-8db1-6e63e60e98f0")
 	)
 	(wire
 		(pts
@@ -6154,16 +6184,6 @@
 	)
 	(wire
 		(pts
-			(xy 46.99 95.25) (xy 46.99 96.52)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "797fabbd-277b-4fd1-9fc8-7f430d91bdc7")
-	)
-	(wire
-		(pts
 			(xy 199.39 128.27) (xy 233.68 128.27)
 		)
 		(stroke
@@ -6241,16 +6261,6 @@
 			(type default)
 		)
 		(uuid "7e9d9d23-a22b-4172-8c03-2ce65c27ffe5")
-	)
-	(wire
-		(pts
-			(xy 46.99 99.06) (xy 58.42 99.06)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7ec4cb42-3d87-41b2-9841-bd01dd98c845")
 	)
 	(wire
 		(pts
@@ -6454,7 +6464,7 @@
 	)
 	(wire
 		(pts
-			(xy 46.99 99.06) (xy 46.99 100.33)
+			(xy 45.72 99.06) (xy 45.72 100.33)
 		)
 		(stroke
 			(width 0)
@@ -6871,16 +6881,6 @@
 			(type default)
 		)
 		(uuid "dc3493f2-e87c-4259-8667-1ee9c102907e")
-	)
-	(wire
-		(pts
-			(xy 46.99 96.52) (xy 54.61 96.52)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "dc61a0d5-1aa9-4f5f-bcc1-ea1846c2da0e")
 	)
 	(wire
 		(pts
@@ -7586,7 +7586,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 46.99 100.33 0)
+		(at 45.72 100.33 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -7597,7 +7597,7 @@
 		(fields_autoplaced yes)
 		(uuid "02fdf4f4-90b8-47a5-a5ed-e6ee5c6be4ec")
 		(property "Reference" "#PWR0107"
-			(at 46.99 106.68 0)
+			(at 45.72 106.68 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7608,7 +7608,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 46.99 105.41 0)
+			(at 45.72 105.41 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7619,7 +7619,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 46.99 100.33 0)
+			(at 45.72 100.33 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7630,7 +7630,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 46.99 100.33 0)
+			(at 45.72 100.33 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7641,7 +7641,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 46.99 100.33 0)
+			(at 45.72 100.33 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12507,7 +12507,7 @@
 	)
 	(symbol
 		(lib_id "0_Conn_Generic:Conn_01x06_MountingPin")
-		(at 46.99 81.28 0)
+		(at 45.72 82.55 0)
 		(mirror y)
 		(unit 1)
 		(body_style 1)
@@ -12518,7 +12518,7 @@
 		(dnp no)
 		(uuid "b24b3d06-2b93-4066-b810-bad4c4886a9c")
 		(property "Reference" "CN101"
-			(at 39.37 74.93 0)
+			(at 38.1 76.2 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -12528,7 +12528,7 @@
 			)
 		)
 		(property "Value" "MOLEX 5024940670"
-			(at 44.45 72.39 0)
+			(at 43.18 73.66 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -12538,7 +12538,7 @@
 			)
 		)
 		(property "Footprint" "0_Conn_Molex:Molex_CLIK-Mate_502494-0670_1x06-1MP_P2.00mm_Horizontal"
-			(at 46.99 81.28 0)
+			(at 45.72 82.55 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12549,7 +12549,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.molex.com/content/dam/molex/molex-dot-com/products/automated/en-us/salesdrawingpdf/502/502494/5024940670_sd.pdf?inline\\"
-			(at 46.99 81.28 0)
+			(at 45.72 82.55 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12560,7 +12560,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x06 with mounting pin"
-			(at 46.99 81.28 0)
+			(at 45.72 82.55 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12571,7 +12571,7 @@
 			)
 		)
 		(property "LCSC" "C587930"
-			(at 46.99 81.28 0)
+			(at 45.72 82.55 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12582,7 +12582,7 @@
 			)
 		)
 		(property "MFR" "MOLEX"
-			(at 46.99 81.28 0)
+			(at 45.72 82.55 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12593,7 +12593,7 @@
 			)
 		)
 		(property "MFR.P/N" "5024940670"
-			(at 46.99 81.28 0)
+			(at 45.72 82.55 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)

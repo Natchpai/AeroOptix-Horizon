@@ -143,7 +143,7 @@
 		)
 		(uuid "2b216858-9abd-4b6b-b2cb-a4f8ccc2f36c")
 	)
-	(text "......"
+	(text "Connector - External"
 		(exclude_from_sim no)
 		(at 59.69 160.02 0)
 		(effects
