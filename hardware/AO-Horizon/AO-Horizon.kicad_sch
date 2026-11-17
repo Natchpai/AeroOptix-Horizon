@@ -115,7 +115,7 @@
 		)
 		(uuid "1c7e433d-06da-4f04-bf71-114bda6d307d")
 	)
-	(text "DESIGN CONVENTIONS\n───────────────────────────────────────────────\nNET NAMING\n  Power     +5V  +3V3  +1V8  (suffix _A for analog)\n  Ground    GND  AGND  PGND  (join at one point only)\n  Signal    <FUNC>_<SIGNAL>   SPI1_SCK  I2C2_SDA\n  Active-low  suffix _N       RESET_N  CS_N\n  Diff pair   suffix _P / _N  USB_DP  USB_DN\n  Format    UPPERCASE, A-Z 0-9 _ only, no spaces\n\nSCHEMATIC STYLE\n  Flow      Inputs left, outputs right, VCC top, GND bottom\n  Grid      50 mil, wires orthogonal, junction dot at 3+ ways\n  Unused    X no-connect marker on every unused pin\n\nREFERENCE DESIGNATORS\n  R C L  passive   D diode/LED   Q transistor   U IC\n  FB ferrite   CN connector  SW switch   TP test point   H mounting hole\n\nUNITS\n  Ω kΩ MΩ  |  pF nF µF  |  nH µH  |  V A mA  |  Hz kHz MHz\n  4k7 = 4.7 kΩ   100n = 100 nF   0R = 0 Ω link\n\nCOMPONENTS\n  Every part: Value, Footprint, MFR, MPR.P/N, LCSC\n───────────────────────────────────────────────"
+	(text "DESIGN CONVENTIONS\n───────────────────────────────────────────────\nSCHEMATIC STYLE\n  Flow      Inputs left, outputs right, VCC top, GND bottom\n  Grid      50 mil, wires orthogonal, junction dot at 3+ ways\n  Unused    X no-connect marker on every unused pin\n\nREFERENCE DESIGNATORS\n  R C L  passive   D diode/LED   Q transistor   U IC\n  FB ferrite   CN connector  SW switch   TP test point   H mounting hole\n\nUNITS\n  Ω kΩ MΩ  |  pF nF µF  |  nH µH  |  V A mA  |  Hz kHz MHz\n  4k7 = 4.7 kΩ   100n = 100 nF   0R = 0 Ω link\n\nCOMPONENTS\n  Every part: Value, Footprint, MFR, MPR.P/N, LCSC\n───────────────────────────────────────────────"
 		(exclude_from_sim no)
 		(at 87.63 300.99 0)
 		(effects
@@ -346,6 +346,20 @@
 			(href "#1")
 		)
 		(uuid "8b6c6316-c7db-4365-b0d5-e3d166a1056e")
+	)
+	(text "DESIGN CONVENTIONS\n─────────────────────────────────────────────────────────\nNET NAMING\n  Format      UPPERCASE, A-Z 0-9 _ only, full words, one name per net\n  Power       +5V  +3V3  +3V3A  VBUS        (_A suffix = analog rail)\n  Ground      GND  AGND  PGND               (join at one point only)\n\n  Off-sheet   port first; add the MCU peripheral on peripheral pins\n              <PORT>_<PERIPH>_<SIGNAL>   GPS1_UART2_TX  NAV_I2C2_SCL\n              GPIO may skip PERIPH       LED_RED  SAFETY_SW\n  Local MCU   H7_ / F1_ prefix           H7_VDDA  H7_BOOT0  H7_PE5\n  Active-low  suffix _B                  RESET_B  SAFETY_LED_B\n  Diff pair   suffix _P / _N only        USB_FS_D_P  USB_FS_D_N\n  Match       sheet pin = hierarchical label; bus member = pin label\n\n  Free choice: bus names ({GPS1}, {AUX_TIM5}), port numbering\n  (MAINn, AUXn, SPAREn), H7_/F1_ on other sheets\n─────────────────────────────────────────────────────────"
+		(exclude_from_sim no)
+		(at 167.64 300.99 0)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 1.524 1.524)
+				(bold yes)
+				(color 0 0 0 1)
+			)
+			(justify left top)
+		)
+		(uuid "92d691b7-f60a-46dd-82ed-b9d01530e19b")
 	)
 	(text "Sensor - Navigation"
 		(exclude_from_sim no)

@@ -129,7 +129,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "0_Conn_Generic:Conn_01x05_MountingPin"
+		(symbol "0_Conn_Generic:Conn_01x06_MountingPin"
 			(pin_names
 				(offset 1.016)
 				(hide yes)
@@ -140,7 +140,7 @@
 			(in_pos_files yes)
 			(duplicate_pin_numbers_are_jumpers no)
 			(property "Reference" "CN"
-				(at 0 7.62 0)
+				(at 7.62 2.54 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -149,8 +149,8 @@
 					)
 				)
 			)
-			(property "Value" "Conn_01x05_MountingPin"
-				(at 12.7 7.62 0)
+			(property "Value" "Conn_01x06_MountingPin"
+				(at 16.51 -1.27 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -181,8 +181,8 @@
 					)
 				)
 			)
-			(property "Description" "Generic connector, single row, 01x05 with mounting pin"
-				(at 0 11.43 0)
+			(property "Description" "Generic connector, single row, 01x06 with mounting pin"
+				(at 0 1.27 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -214,10 +214,10 @@
 					)
 				)
 			)
-			(symbol "Conn_01x05_MountingPin_1_1"
+			(symbol "Conn_01x06_MountingPin_1_1"
 				(rectangle
-					(start -2.54 6.35)
-					(end 2.54 -6.35)
+					(start -2.54 7.62)
+					(end 2.54 -7.62)
 					(stroke
 						(width 0.254)
 						(type default)
@@ -227,8 +227,8 @@
 					)
 				)
 				(rectangle
-					(start -2.54 5.207)
-					(end -1.27 4.953)
+					(start -2.54 6.35)
+					(end -1.27 6.096)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -238,8 +238,8 @@
 					)
 				)
 				(rectangle
-					(start -2.54 2.667)
-					(end -1.27 2.413)
+					(start -2.54 3.937)
+					(end -1.27 3.683)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -249,8 +249,8 @@
 					)
 				)
 				(rectangle
-					(start -2.54 0.127)
-					(end -1.27 -0.127)
+					(start -2.54 1.397)
+					(end -1.27 1.143)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -260,8 +260,8 @@
 					)
 				)
 				(rectangle
-					(start -2.54 -2.413)
-					(end -1.27 -2.667)
+					(start -2.54 -1.143)
+					(end -1.27 -1.397)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -271,8 +271,19 @@
 					)
 				)
 				(rectangle
-					(start -2.54 -4.953)
-					(end -1.27 -5.207)
+					(start -2.54 -3.683)
+					(end -1.27 -3.937)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -2.54 -6.223)
+					(end -1.27 -6.477)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -282,7 +293,7 @@
 					)
 				)
 				(pin passive line
-					(at -6.35 5.08 0)
+					(at -6.35 6.35 0)
 					(length 3.81)
 					(name "Pin_1"
 						(effects
@@ -300,7 +311,7 @@
 					)
 				)
 				(pin passive line
-					(at -6.35 2.54 0)
+					(at -6.35 3.81 0)
 					(length 3.81)
 					(name "Pin_2"
 						(effects
@@ -318,7 +329,7 @@
 					)
 				)
 				(pin passive line
-					(at -6.35 0 0)
+					(at -6.35 1.27 0)
 					(length 3.81)
 					(name "Pin_3"
 						(effects
@@ -336,7 +347,7 @@
 					)
 				)
 				(pin passive line
-					(at -6.35 -2.54 0)
+					(at -6.35 -1.27 0)
 					(length 3.81)
 					(name "Pin_4"
 						(effects
@@ -354,7 +365,7 @@
 					)
 				)
 				(pin passive line
-					(at -6.35 -5.08 0)
+					(at -6.35 -3.81 0)
 					(length 3.81)
 					(name "Pin_5"
 						(effects
@@ -372,7 +383,25 @@
 					)
 				)
 				(pin passive line
-					(at 0 -10.16 90)
+					(at -6.35 -6.35 0)
+					(length 3.81)
+					(name "Pin_6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -11.43 90)
 					(length 3.81)
 					(name "MountPin"
 						(effects
@@ -2387,7 +2416,7 @@
 		(uuid "ac991445-1c1b-4fa3-b91a-41afa6b35977")
 	)
 	(junction
-		(at 203.2 102.87)
+		(at 203.2 105.41)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "c7190906-67ac-4fd3-992c-cce565b68fb8")
@@ -2578,16 +2607,6 @@
 	)
 	(wire
 		(pts
-			(xy 209.55 93.98) (xy 264.16 93.98)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "28d493fb-1fce-4976-9ef1-801b3fc5f074")
-	)
-	(wire
-		(pts
 			(xy 106.68 97.79) (xy 88.9 97.79)
 		)
 		(stroke
@@ -2728,7 +2747,7 @@
 	)
 	(wire
 		(pts
-			(xy 210.82 96.52) (xy 209.55 96.52)
+			(xy 210.82 99.06) (xy 209.55 99.06)
 		)
 		(stroke
 			(width 0)
@@ -2868,7 +2887,7 @@
 	)
 	(wire
 		(pts
-			(xy 237.49 88.9) (xy 257.81 88.9)
+			(xy 240.03 88.9) (xy 257.81 88.9)
 		)
 		(stroke
 			(width 0)
@@ -2898,7 +2917,7 @@
 	)
 	(wire
 		(pts
-			(xy 203.2 101.6) (xy 203.2 104.14)
+			(xy 203.2 104.14) (xy 203.2 106.68)
 		)
 		(stroke
 			(width 0)
@@ -2938,7 +2957,7 @@
 	)
 	(wire
 		(pts
-			(xy 209.55 88.9) (xy 229.87 88.9)
+			(xy 209.55 88.9) (xy 232.41 88.9)
 		)
 		(stroke
 			(width 0)
@@ -3088,7 +3107,7 @@
 	)
 	(wire
 		(pts
-			(xy 237.49 91.44) (xy 257.81 91.44)
+			(xy 240.03 91.44) (xy 257.81 91.44)
 		)
 		(stroke
 			(width 0)
@@ -3098,7 +3117,7 @@
 	)
 	(wire
 		(pts
-			(xy 209.55 91.44) (xy 229.87 91.44)
+			(xy 209.55 91.44) (xy 232.41 91.44)
 		)
 		(stroke
 			(width 0)
@@ -3108,7 +3127,7 @@
 	)
 	(wire
 		(pts
-			(xy 203.2 102.87) (xy 210.82 102.87)
+			(xy 203.2 105.41) (xy 210.82 105.41)
 		)
 		(stroke
 			(width 0)
@@ -3178,7 +3197,7 @@
 	)
 	(wire
 		(pts
-			(xy 210.82 96.52) (xy 210.82 102.87)
+			(xy 210.82 99.06) (xy 210.82 105.41)
 		)
 		(stroke
 			(width 0)
@@ -3195,16 +3214,6 @@
 			(type default)
 		)
 		(uuid "ffb93a38-3971-4950-802a-9a4fb8e277b6")
-	)
-	(label "F1_SWDIO_CN"
-		(at 209.55 177.8 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "03a16d22-1658-408f-ba55-64b6fc2da0cb")
 	)
 	(label "USB_D_N"
 		(at 91.44 95.25 0)
@@ -3225,16 +3234,6 @@
 			(justify left bottom)
 		)
 		(uuid "218613f2-3880-4eda-9668-99fedefcb576")
-	)
-	(label "F1_SWCLK_CN"
-		(at 209.55 186.69 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "2bad2fd7-822c-4f8f-87f9-730f3c98481c")
 	)
 	(label "H7_SWCLK"
 		(at 247.65 91.44 0)
@@ -3276,6 +3275,16 @@
 		)
 		(uuid "50baf975-c8c6-4c21-b96d-7846b4730abc")
 	)
+	(label "DBG_F1_SWCLK"
+		(at 210.82 186.69 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "59b8ff1d-dc59-4621-8da6-8ac0b2b2932b")
+	)
 	(label "USB_FS_VBUS"
 		(at 139.7 67.31 180)
 		(effects
@@ -3285,16 +3294,6 @@
 			(justify right bottom)
 		)
 		(uuid "5d38309c-8b2d-4c0b-84ee-a26a9e0b2725")
-	)
-	(label "RESET_B"
-		(at 215.9 93.98 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "6a0e8cb4-2843-4b91-9aeb-c0d19f76ff5e")
 	)
 	(label "H7_SWD_VREF33"
 		(at 214.63 72.39 0)
@@ -3316,6 +3315,16 @@
 		)
 		(uuid "829227e3-816f-4dcc-bf46-1d003a353820")
 	)
+	(label "DBG_F1_SWDIO"
+		(at 210.82 177.8 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "85ee64dc-c0eb-4a46-9f10-d3749504e2aa")
+	)
 	(label "F1_SWD_VREF33"
 		(at 209.55 158.75 0)
 		(effects
@@ -3336,7 +3345,7 @@
 		)
 		(uuid "a189eb83-d7c2-476b-9e3f-f4034059493c")
 	)
-	(label "H7_SWDIO_CN"
+	(label "DBG_H7_SWDIO"
 		(at 215.9 88.9 0)
 		(effects
 			(font
@@ -3366,7 +3375,7 @@
 		)
 		(uuid "cf108479-b4e9-416a-bed2-f9d7b75f38dc")
 	)
-	(label "H7_SWCLK_CN"
+	(label "DBG_H7_SWCLK"
 		(at 215.9 91.44 0)
 		(effects
 			(font
@@ -3375,6 +3384,17 @@
 			(justify left bottom)
 		)
 		(uuid "ed2db869-dbfd-4d78-a0d8-6515c999d773")
+	)
+	(hierarchical_label "{DBG_UART3}"
+		(shape input)
+		(at 260.35 100.33 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "504f6800-01a8-429c-a794-18c2eb317ae4")
 	)
 	(hierarchical_label "{H7_SWD}"
 		(shape bidirectional)
@@ -3386,17 +3406,6 @@
 			(justify left)
 		)
 		(uuid "5e13cb22-1712-4730-8677-07e0c7ab6096")
-	)
-	(hierarchical_label "RESET_B"
-		(shape output)
-		(at 264.16 93.98 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "753f789d-2ac6-4a4e-888e-2c77ead38052")
 	)
 	(hierarchical_label "{F1_SWD}"
 		(shape bidirectional)
@@ -3419,6 +3428,17 @@
 			(justify left)
 		)
 		(uuid "abb3db22-18b8-459a-9ff7-db9a45dd4476")
+	)
+	(hierarchical_label "DBG_UART1_TX"
+		(shape input)
+		(at 267.97 198.12 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "bac295a2-ab50-4dff-9197-5abb8f561d0e")
 	)
 	(hierarchical_label "{USB_FS}"
 		(shape input)
@@ -3620,7 +3640,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 233.68 91.44 90)
+		(at 236.22 91.44 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3630,7 +3650,7 @@
 		(dnp no)
 		(uuid "07d812a0-fd35-433e-90f4-59f34bb61adc")
 		(property "Reference" "R?"
-			(at 238.76 90.17 90)
+			(at 241.3 90.17 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3640,7 +3660,7 @@
 			)
 		)
 		(property "Value" "22R"
-			(at 233.68 91.44 90)
+			(at 236.22 91.44 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3650,7 +3670,7 @@
 			)
 		)
 		(property "Footprint" "0_Resistor_SMD:R_0402_1005Metric_NomDensity"
-			(at 233.68 93.218 90)
+			(at 236.22 93.218 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3661,7 +3681,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 233.68 91.44 0)
+			(at 236.22 91.44 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3672,7 +3692,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 233.68 91.44 0)
+			(at 236.22 91.44 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4094,7 +4114,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 203.2 104.14 0)
+		(at 203.2 106.68 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4105,7 +4125,7 @@
 		(fields_autoplaced yes)
 		(uuid "57eec8a3-7412-4460-9e0c-a0ff1c6db3c0")
 		(property "Reference" "#PWR0614"
-			(at 203.2 110.49 0)
+			(at 203.2 113.03 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4116,7 +4136,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 203.2 109.22 0)
+			(at 203.2 111.76 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4127,7 +4147,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 203.2 104.14 0)
+			(at 203.2 106.68 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4138,7 +4158,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 203.2 104.14 0)
+			(at 203.2 106.68 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4149,7 +4169,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 203.2 104.14 0)
+			(at 203.2 106.68 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4329,7 +4349,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 233.68 88.9 90)
+		(at 236.22 88.9 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4339,7 +4359,7 @@
 		(dnp no)
 		(uuid "73c62d03-fc79-4fd0-8906-7e0234143e8d")
 		(property "Reference" "R?"
-			(at 238.76 87.63 90)
+			(at 241.3 87.63 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4349,7 +4369,7 @@
 			)
 		)
 		(property "Value" "22R"
-			(at 233.68 88.9 90)
+			(at 236.22 88.9 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4359,7 +4379,7 @@
 			)
 		)
 		(property "Footprint" "0_Resistor_SMD:R_0402_1005Metric_NomDensity"
-			(at 233.68 90.678 90)
+			(at 236.22 90.678 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4370,7 +4390,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 233.68 88.9 0)
+			(at 236.22 88.9 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4381,7 +4401,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 233.68 88.9 0)
+			(at 236.22 88.9 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4559,6 +4579,102 @@
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/e4fd025c-5aca-4297-81cf-f2f81b4535ba"
 					(reference "CN601")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "0_Conn_Generic:Conn_01x06_MountingPin")
+		(at 203.2 92.71 0)
+		(mirror y)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "808bb928-d7a0-44df-bcdd-59bf5c952aab")
+		(property "Reference" "CN?"
+			(at 203.2 80.01 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Conn_01x06_MountingPin"
+			(at 203.2 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 203.2 92.71 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 203.2 92.71 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x06 with mounting pin"
+			(at 203.2 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "3"
+			(uuid "e828d559-3dac-4918-8891-ad36a849f886")
+		)
+		(pin "6"
+			(uuid "f89180e7-0c40-407b-9e63-7425be471db8")
+		)
+		(pin "2"
+			(uuid "1640352e-6a81-4f02-a7fe-d2c920d13319")
+		)
+		(pin "MP"
+			(uuid "8eda42ad-3b64-4ab3-96f2-2e0e90472226")
+		)
+		(pin "1"
+			(uuid "a021d1a9-cf79-4fa9-925a-d7cf0be91f5c")
+		)
+		(pin "4"
+			(uuid "2474e84a-05f9-497d-b33a-06776072f6a2")
+		)
+		(pin "5"
+			(uuid "25732b65-85f6-49ea-824e-5c20c1694b2e")
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/e4fd025c-5aca-4297-81cf-f2f81b4535ba"
+					(reference "CN?")
 					(unit 1)
 				)
 			)
@@ -5572,99 +5688,6 @@
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/e4fd025c-5aca-4297-81cf-f2f81b4535ba"
 					(reference "#PWR0613")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "0_Conn_Generic:Conn_01x05_MountingPin")
-		(at 203.2 91.44 0)
-		(mirror y)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "ee5a070b-1650-4f3f-bed2-9db63540a72e")
-		(property "Reference" "CN?"
-			(at 203.2 80.01 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "Conn_01x05_MountingPin"
-			(at 203.2 82.55 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 203.2 91.44 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 203.2 91.44 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Generic connector, single row, 01x05 with mounting pin"
-			(at 203.2 80.01 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "bf58cc11-51cf-4516-8a42-90f1f7258ee4")
-		)
-		(pin "MP"
-			(uuid "868c05b7-7d39-4a6b-9f20-2ae719ab0ef8")
-		)
-		(pin "5"
-			(uuid "06328cfc-8fa2-404d-8d13-3c606c37dd65")
-		)
-		(pin "4"
-			(uuid "41b96239-d234-4c3f-a324-1393d5a7db7b")
-		)
-		(pin "3"
-			(uuid "2e6cff40-9cc2-4518-9295-504004366757")
-		)
-		(pin "2"
-			(uuid "df0e2f00-d0e3-4861-a309-59e05f8eaeb1")
-		)
-		(instances
-			(project "AO-Horizon"
-				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/e4fd025c-5aca-4297-81cf-f2f81b4535ba"
-					(reference "CN?")
 					(unit 1)
 				)
 			)

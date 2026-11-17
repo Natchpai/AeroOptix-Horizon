@@ -589,22 +589,22 @@
       "/Top/Connector - USB & Debug/USB_FS_D_P": [
         "USB_FS"
       ],
-      "/Top/MCU - Main FC/SDMMC1_CLK": [
+      "/Top/MCU - Main FC/H7_SDMMC1_CLK": [
         "SDMMC"
       ],
-      "/Top/MCU - Main FC/SDMMC1_CMD": [
+      "/Top/MCU - Main FC/H7_SDMMC1_CMD": [
         "SDMMC"
       ],
-      "/Top/MCU - Main FC/SDMMC1_DAT0": [
+      "/Top/MCU - Main FC/H7_SDMMC1_DAT0": [
         "SDMMC"
       ],
-      "/Top/MCU - Main FC/SDMMC1_DAT1": [
+      "/Top/MCU - Main FC/H7_SDMMC1_DAT1": [
         "SDMMC"
       ],
-      "/Top/MCU - Main FC/SDMMC1_DAT2": [
+      "/Top/MCU - Main FC/H7_SDMMC1_DAT2": [
         "SDMMC"
       ],
-      "/Top/MCU - Main FC/SDMMC1_DAT3": [
+      "/Top/MCU - Main FC/H7_SDMMC1_DAT3": [
         "SDMMC"
       ],
       "/Top/Power Supplies/+5V_BUCK": [
@@ -795,36 +795,61 @@
       "sort_field": "Reference"
     },
     "bus_aliases": {
+      "AUX_TIM5": [
+        "AUX1_TIM5_CH1",
+        "AUX2_TIM5_CH2",
+        "AUX3_TIM5_CH3",
+        "AUX4_TIM5_CH4"
+      ],
+      "DBG_UART3": [
+        "DBG_UART3_RX",
+        "DBG_UART3_TX"
+      ],
+      "ESC": [
+        "MAIN1_TIM2_CH1",
+        "MAIN2_TIM2_CH2",
+        "MAIN3_TIM4_CH3",
+        "MAIN4_TIM4_CH4"
+      ],
+      "EXT_I2C4": [
+        "EXT_I2C4_SDA",
+        "EXT_I2C4_SCL"
+      ],
       "F1_SWD": [
         "F1_SWDIO",
         "F1_SWCLK"
-      ],
-      "H7_LED": [
-        "H7_LED_RED",
-        "H7_LED_BLUE",
-        "H7_LED_GREEN"
       ],
       "H7_SWD": [
         "H7_SWDIO",
         "H7_SWCLK"
       ],
-      "H7_TIM5": [
-        "H7_TIM5_CH1",
-        "H7_TIM5_CH2",
-        "H7_TIM5_CH3",
-        "H7_TIM5_CH4"
+      "IMU1_SPI1": [
+        "IMU1_SPI1_CLK",
+        "IMU1_SPI1_SDI",
+        "IMU1_SPI1_SDO",
+        "IMU1_SPI1_CS"
       ],
-      "IMU1_SPI": [
-        "IMU1_SPI_CLK",
-        "IMU1_SPI_SDI",
-        "IMU1_SPI_SDO",
-        "IMU1_SPI_CS"
+      "IMU2_SPI4": [
+        "IMU2_SPI4_CLK",
+        "IMU2_SPI4_SDI",
+        "IMU2_SPI4_SDO",
+        "IMU2_SPI4_CS"
       ],
-      "IMU2_SPI": [
-        "IMU2_SPI_CLK",
-        "IMU2_SPI_SDI",
-        "IMU2_SPI_SDO",
-        "IMU2_SPI_CS"
+      "LED": [
+        "LED_RED",
+        "LED_BLUE",
+        "LED_GREEN"
+      ],
+      "SPARE_TIM": [
+        "SPARE2_TIM4_CH3",
+        "SPARE3_TIM4_CH4",
+        "SPARE1_TIM1_CH1"
+      ],
+      "SURFACE": [
+        "MAIN5_TIM3_CH1",
+        "MAIN6_TIM3_CH2",
+        "MAIN7_TIM3_CH3",
+        "MAIN8_TIM3_CH4"
       ],
       "USB_FS": [
         "USB_FS_D_P",
@@ -888,7 +913,7 @@
         "uuid": "76162bf1-0d95-48cb-b65a-4de551455d04"
       }
     ],
-    "used_designators": "#FLG1,#FLG101-106,#PWR1-20,#PWR101-120,#PWR201-217,#PWR301-311,#PWR401-410,#PWR501-522,#PWR601-617,C101-121,C201-209,C301-306,C401-404,C501-507,C601,CN101,CN601,D101-106,L101-102,R101-108,R115,R201-206,R301-305,R501-511,R601-603,SD201,U101-103,U201,U301,U401-402,U501-503,U601",
+    "used_designators": "#FLG1,#FLG101-106,#PWR1-20,#PWR101-120,#PWR201-218,#PWR301-312,#PWR401-410,#PWR501-522,#PWR601-617,C101-121,C201-209,C301-306,C401-404,C501-507,C601,CN101,CN601,D101-106,L101-102,R101-108,R115,R201-206,R301-305,R501-511,R601-603,SD201,U101-103,U201,U301,U401-402,U501-503,U601",
     "variants": []
   },
   "sheets": [

@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.42, 2026-11-16): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.43, 2026-11-17): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -86,14 +86,14 @@ The diagram is for reference only. It does not enforce gates or approve releases
 
 ### Design progress
 
-State of the saved KiCad files (committed in `7e593b3`). Sheets not listed have no parts. Part lists, references and save dates are in specification 4.2 "Schematic state", 4.3 and 4.6.
+State of the saved KiCad files (2026-11-17 16:40 save; last committed in `7e593b3`). Sheets not listed have no parts. Part lists, references and save dates are in specification 4.2 "Schematic state", 4.3 and 4.6.
 
 | Area | State |
 |---|---|
 | Power sheet | Drawn; human ERC and a `sch-review` of the 2026-11-03 save are under Verification; resistor part numbers open (P2-021). |
-| MCU sheets | In capture; one shared reset with one button decided, button drawn on `user-interface` and its part not checked (DEC-046, OPEN-026); board LEDs on `{H7_LED}` not drawn (IF-047); oscillator parts decided, data open (DEC-048, OPEN-028); VREF+ tied to VDDA (DEC-049). |
+| MCU sheets | In capture; one shared reset with one button decided, button drawn on `user-interface` and its part not checked (DEC-046, OPEN-026); board LEDs on `{LED}` not drawn (IF-047); oscillator parts decided, data open (DEC-048, OPEN-028); VREF+ tied to VDDA (DEC-049); all allocated pins labelled with DEC-052 net names and every sheet pin matching its label; a few names open (OPEN-032); new 22 Ω and 10 nF on the ADC inputs, servo-rail divider not drawn (OPEN-033). |
 | Sensor sheets | In capture with all five sensors; IST8310 at 0x0C as strapped (DEC-047, closes OPEN-027). |
-| USB and debug sheet | In capture; parts drawn, not approved (OPEN-010); the H743 debug connector has SWD and NRST but no console, and the F100 pads have no NRST (OPEN-029). |
+| USB and debug sheet | In capture; parts drawn, not approved (OPEN-010); the H743 debug connector is 6-pin with SWD on pins 2 and 3 (the Pixhawk Debug Mini uses 4 and 5), no console and no NRST; the F100 pads have no NRST (OPEN-029). |
 | External connectors | `conn-external`: 5 JST-GH connectors drawn, not wired or annotated (OPEN-023). Actuator headers not drawn (DEC-051, P2-018). |
 | PCB | No footprints, placeholder outline only (OPEN-009). |
 | Library | Project parts for the parts in use; sensor footprints not checked against the drawings (OPEN-013). |
@@ -120,6 +120,7 @@ Interface allocations agreed with the software team (DEC-014, DEC-018) are in sp
 - IO MCU and clocks: STM32F100C8T6B for px4io at 24 MHz; CMOS oscillators with HSE bypass set in firmware (DEC-002, DEC-017, DEC-044, DEC-045).
 - USB power: bench supply only, needs a USB-C port above 1 A; the power module has priority (DEC-031 to DEC-034, DEC-038).
 - Actuator outputs and H743 failure: the ESCs run timer PWM from the F100 (no DShot). When the H743 stops, the F100 turns the motors off and sets the surfaces to a fixed position, with no landing; the tilt servos on the H743 hold their last angle (DEC-050, DEC-051). Whether the ESCs stop on the failsafe pulse is open (OPEN-017).
+- Net names: a signal that leaves its sheet starts with its port, plus the MCU peripheral on peripheral pins (for example `GPS1_UART2_TX`); `H7_`/`F1_` on nets local to an MCU sheet; `_B` for active-low. Bus names and port numbering are the designer's choice (DEC-052, partly drawn).
 - Sensor sourcing: ICP-20100 is EOL, BMP581 stock is short (OPEN-004).
 - Firmware: owned by the software team, PX4 v1.16.2 based on `px4/fmu-v6c` (DEC-014).
 
@@ -139,9 +140,11 @@ The specification tracks every open item in section 8.2 of the [specification](h
 
 - ESC stop on the F100 failsafe pulse (OPEN-017)
 - Reset: the button part is not checked, and an H743 internal reset may also reset the F100 (OPEN-026)
-- Debug access: no console, and no NRST on the F100 pads (OPEN-029)
+- Debug access: H743 connector pin order differs from the Pixhawk Debug Mini, no console, no NRST (OPEN-029)
 - H743 VDDA capacitor drawn 2.2 µF where DEC-049 says 4.7 µF (OPEN-030)
 - Actuator headers: keep the ESC headers (no + pin) apart from the +6 V servo headers; ESC PWM rate (OPEN-031)
+- Net names: `OSC_*` prefix choice, spare output order against the pin allocation (OPEN-032)
+- Servo rail sense: the 3:1 divider on F100 PA4 is not drawn (OPEN-033)
 
 ## How we work
 

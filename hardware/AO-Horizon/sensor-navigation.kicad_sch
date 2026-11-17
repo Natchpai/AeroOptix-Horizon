@@ -2955,16 +2955,6 @@
 		)
 		(uuid "fc51114d-e593-4f29-9378-777359cee651")
 	)
-	(label "NAV_I2C2_SDA"
-		(at 184.15 137.16 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "035986d3-f680-41ff-954d-6c412f2fe500")
-	)
 	(label "BARO1_AD0"
 		(at 184.15 76.2 0)
 		(effects
@@ -2986,24 +2976,14 @@
 		(uuid "2105fda6-5d1d-4371-ba69-2d4e4c70738a")
 	)
 	(label "NAV_I2C2_SCL"
-		(at 184.15 205.74 0)
+		(at 184.15 132.08 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "22c37543-5aed-41dd-99c0-3f7b7f41a4ab")
-	)
-	(label "NAV_I2C2_SDA"
-		(at 184.15 210.82 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "35075e2d-5e4b-4ce0-aac5-2b59378bfebc")
+		(uuid "26b827ae-ae00-49e5-8134-52b93ddeeb1b")
 	)
 	(label "BARO2_SA0"
 		(at 184.15 142.24 0)
@@ -3065,15 +3045,35 @@
 		)
 		(uuid "89effb47-e549-4af9-83a2-27061cef98e3")
 	)
-	(label "NAV_I2C2_SCL"
-		(at 184.15 132.08 0)
+	(label "NAV_I2C2_SDA"
+		(at 184.15 137.16 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "b87c72a3-c8bc-4f24-9686-883d61cd8892")
+		(uuid "8c828b8e-6f44-4184-95a0-8129402f4fc2")
+	)
+	(label "NAV_I2C2_SCL"
+		(at 184.15 205.74 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8df6c352-02d7-427f-9b08-e616f0eda977")
+	)
+	(label "NAV_I2C2_SDA"
+		(at 184.15 210.82 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ae5556b8-b1e1-493e-ac89-d709fd23b8bb")
 	)
 	(label "MAG_CAD1"
 		(at 255.27 205.74 0)

@@ -570,6 +570,16 @@
 	)
 	(wire
 		(pts
+			(xy 240.03 177.8) (xy 210.82 177.8)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ed15a75e-e42e-42bf-8110-b889089b6e15")
+	)
+	(wire
+		(pts
 			(xy 210.82 154.94) (xy 226.06 154.94)
 		)
 		(stroke
@@ -577,6 +587,16 @@
 			(type default)
 		)
 		(uuid "f079ce37-8acd-46a1-b81b-1b211914e62d")
+	)
+	(label "BUZZER_TIM3_CH3"
+		(at 210.82 177.8 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "383c7dc4-5b92-4940-8f39-9955575d5244")
 	)
 	(label "RESET_B"
 		(at 110.49 154.94 180)
@@ -588,7 +608,7 @@
 		)
 		(uuid "55095ae7-241f-439f-b67e-ab4dc9164c91")
 	)
-	(label "H7_LED_GREEN"
+	(label "LED_GREEN"
 		(at 210.82 162.56 0)
 		(effects
 			(font
@@ -598,7 +618,7 @@
 		)
 		(uuid "9265cf1e-556c-43dd-950b-9481a8b3cc9b")
 	)
-	(label "H7_LED_BLUE"
+	(label "LED_BLUE"
 		(at 210.82 158.75 0)
 		(effects
 			(font
@@ -608,7 +628,7 @@
 		)
 		(uuid "f4d5c152-9a01-4bbc-9bdc-7c66f503f7fb")
 	)
-	(label "H7_LED_RED"
+	(label "LED_RED"
 		(at 210.82 154.94 0)
 		(effects
 			(font
@@ -618,7 +638,18 @@
 		)
 		(uuid "f5ceedce-e7ca-4444-bee3-194fe9025eef")
 	)
-	(hierarchical_label "{H7_LED}"
+	(hierarchical_label "BUZZER_TIM3_CH3"
+		(shape input)
+		(at 240.03 177.8 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "64da85fb-884d-48c5-966e-867e3d4c0260")
+	)
+	(hierarchical_label "{LED}"
 		(shape input)
 		(at 238.76 146.05 0)
 		(effects

@@ -1,6 +1,6 @@
 # What Next
 
-**Updated:** 2026-11-16
+**Updated:** 2026-11-17
 **Status:** Personal reminder list. Not a requirement, decision or verification record.
 
 The specification and the execution checklist stay the source of truth. This list only points to their IDs.
@@ -36,7 +36,7 @@ Not drawn. Servo current passes through the board (DEC-019).
 - [ ] Check the board-mount XT30 rating against PWR-011 (OPEN-021, P2-016).
 - [ ] Size the 6 V and servo GND copper, pick where servo GND joins logic GND (away from the sensors), and add bulk capacitors (OPEN-021).
 - [ ] 8 × 3-pin servo headers (signal, +6 V, GND) on the bussed 6 V rail (DEC-019).
-- [ ] Servo rail divider on F100 PA4: match the px4io 3:1 scaling (IF-050).
+- [ ] Servo rail divider on F100 PA4: match the px4io 3:1 scaling (IF-050). Drawn so far: 22 Ω and 10 nF only (OPEN-033).
 - [ ] Wait for the team's servo stall current (OPEN-007, P0-022).
 
 ## 4. Zone Z3: H743 main MCU
@@ -50,10 +50,11 @@ H743 values below are from ST DS12110 Rev 11 via NotebookLM (2026-11-12).
 - [ ] 16 MHz clock: CMOS oscillator U202 (DEC-044), part decided (DEC-048). Check its data against the HSE external-clock limits (OPEN-028). Firmware side: P1-017.
 - [ ] Reset (DEC-046: one shared `RESET_B` for H743 and F100 NRST, one button): check the drawn button B? (LCSC C2689510) and its `B` reference prefix. Check in NotebookLM whether an internal reset (IWDG, software, debugger) drives NRST low on the H743 and F100; if so, an H743 reset also resets the F100 (OPEN-026, SAF-001). `3V3_PG` stays local (DEC-039). NRST is on H743 debug connector pin 4; the F100 pads have none (OPEN-029).
 - [ ] BOOT0: the DNP pull-up gives selection by rework only. Decide if that meets FUN-006 and TST-003 ("selectable and observable"), or add a pad, jumper or button (P1-007).
-- [ ] Replace the remaining `H7_<pin>` stub labels (USART3 console and other GPIOs) with function names from the pin allocation, and carry the signals that leave the sheet through sheet pins.
+- [ ] Net names (OPEN-032, DEC-052): choose for `OSC_16M00_OUT` and `OSC_24M00_OUT` (add `H7_`/`F1_`, or amend DEC-052); set the spare output order and update the pin allocation; add `DBG_UART3_*` members on `conn-usb-debug` with the debug pin set; info: `SS{slash}TR`, `3V3_LED_A`, `USB_FS_VBUS` carried twice. Then run ERC.
+- [ ] Replace the remaining `H7_<pin>` stub labels with function names from the pin allocation, and carry the signals that leave the sheet through sheet pins.
 - [ ] Mark unused pins with no-connect flags once the allocation is final (PA10, PA15, PB3, PB4 and the other free pins).
 - [ ] Annotate the passives (P2-022).
-- [ ] Debug: drawn as a 4-pin SWD connector (VREF, SWDIO, SWCLK, GND) without console or NRST; IF-045 asks for the Pixhawk Debug Mini 6-pin plus an NRST pad. Decide the pin set (OPEN-029, P1-008).
+- [ ] Debug: drawn as a 6-pin connector with SWDIO and SWCLK on pins 2 and 3, pins 4 and 5 open, no console and no NRST (16:40 save). The Pixhawk Debug Mini puts SWD on pins 4 and 5 and the console on 2 and 3; IF-045 also asks for an NRST pad. Decide the pin set (OPEN-029, P1-008).
 - [ ] `3V3_PG` reaches no MCU pin now (local net, DEC-039). Decide if the H743 should read it; the pin allocation gives it no pin (OPEN-026).
 - [ ] USB: VBUS reaches PA9 through 0 Ω with no divider; settle the PA9 FT_u question (pin allocation F-06, P1-006). Then remove the temporary `PWR_FLAG` on `VBUS` from the power sheet if ERC allows (P2-022).
 - [ ] INFO | U601 / USB D+, D- | `NOT_VERIFIED` | On `conn-usb-debug` the data lines pass through U601 USBLC6-2SC6 (connector side on pins 1 and 3, MCU side on pins 6 and 4), so they depend on the internal link between pins 1-6 and 3-4. Check in the ST datasheet that those pin pairs are joined inside, or route D+ and D- past the pins on one net.
