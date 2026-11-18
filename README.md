@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.43, 2026-11-17): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.44, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -94,7 +94,7 @@ State of the saved KiCad files (2026-11-17 16:40 save; last committed in `7e593b
 | MCU sheets | In capture; one shared reset with one button decided, button drawn on `user-interface` and its part not checked (DEC-046, OPEN-026); board LEDs on `{LED}` not drawn (IF-047); oscillator parts decided, data open (DEC-048, OPEN-028); VREF+ tied to VDDA (DEC-049); all allocated pins labelled with DEC-052 net names and every sheet pin matching its label; a few names open (OPEN-032); new 22 Ω and 10 nF on the ADC inputs, servo-rail divider not drawn (OPEN-033). |
 | Sensor sheets | In capture with all five sensors; IST8310 at 0x0C as strapped (DEC-047, closes OPEN-027). |
 | USB and debug sheet | In capture; parts drawn, not approved (OPEN-010); the H743 debug connector is 6-pin with SWD on pins 2 and 3 (the Pixhawk Debug Mini uses 4 and 5), no console and no NRST; the F100 pads have no NRST (OPEN-029). |
-| External connectors | `conn-external`: 5 JST-GH connectors drawn, not wired or annotated (OPEN-023). Actuator headers not drawn (DEC-051, P2-018). |
+| External connectors | 2026-11-18 save, not yet in the spec: `conn-peripherals` (TELEM 1 and 2, I2C4, rangefinder, GPS1) and `conn-actuator` (MAIN 1 to 8, AUX 1 to 4) drawn and wired on their sheets; the peripherals sheet has no sheet pins yet, and the + rows of the MAIN 1 to 4 and MAIN 5 to 8 headers are swapped (`what-next.md`). RC IN not drawn (DEC-053, P2-023). Pinouts open (OPEN-023). |
 | PCB | No footprints, placeholder outline only (OPEN-009). |
 | Library | Project parts for the parts in use; sensor footprints not checked against the drawings (OPEN-013). |
 
@@ -107,7 +107,7 @@ State of the saved KiCad files (2026-11-17 16:40 save; last committed in `7e593b
 | H743 main controller | Flight stack and interface host; 4 tilt servo outputs (AUX 1 to 4) |
 | F100 IO controller | px4io: 4 ESC and 4 control-surface outputs (MAIN 1 to 8), safety switch and LED, servo rail sense, output failsafe (DEC-051) |
 | Sensors | 2 IMU on SPI1 and SPI4; 2 barometers and the magnetometer on I2C2 |
-| External I/O | ELRS, GPS and compass, air-data sensor, rangefinder, power module, motors, spare outputs, microSD, buzzer, LEDs |
+| External I/O | SiK telemetry radio, RC receiver (PPM, F100), GPS and compass, air-data sensor, rangefinder, power module, motors (one 4in1 ESC), spare outputs, microSD, buzzer, LEDs (DEC-053, DEC-054) |
 | USB / debug | USB FS; H743 debug connector (target: console + SWD, IF-045; as drawn: OPEN-029); F100 SWD pads |
 | Power | 5 V input, 3.3 V buck, sensor LDO, 6 V servo rail |
 
@@ -138,7 +138,8 @@ Interface allocations agreed with the software team (DEC-014, DEC-018) are in sp
 
 The specification tracks every open item in section 8.2 of the [specification](hardware/AO-Horizon/documents/design/AO-HORIZON_SPEC_EN.md). Top items now:
 
-- ESC stop on the F100 failsafe pulse (OPEN-017)
+- ESC stop on the F100 failsafe pulse, now the Tekko32 with AM32 (OPEN-017)
+- RC IN not drawn; FS-iA6B PPM level and RC-loss behavior, Tekko32 pinout (OPEN-034)
 - Reset: the button part is not checked, and an H743 internal reset may also reset the F100 (OPEN-026)
 - Debug access: H743 connector pin order differs from the Pixhawk Debug Mini, no console, no NRST (OPEN-029)
 - H743 VDDA capacitor drawn 2.2 µF where DEC-049 says 4.7 µF (OPEN-030)

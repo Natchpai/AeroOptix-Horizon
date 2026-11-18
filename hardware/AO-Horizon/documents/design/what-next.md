@@ -1,9 +1,32 @@
 # What Next
 
-**Updated:** 2026-11-17
+**Updated:** 2026-11-19
 **Status:** Personal reminder list. Not a requirement, decision or verification record.
 
 The specification and the execution checklist stay the source of truth. This list only points to their IDs.
+
+## 0. To do later: found on 2026-11-19 (not yet in the spec)
+
+Found by `/progress-update` on the saved files (2026-11-18 16:52 save, KiCad closed, not committed before this run), with `sch-inspect` and the preflight. The spec 4.2 "Schematic state" still describes the 2026-11-17 16:40 save. Decide each item, then ask Claude to record it.
+
+Drawing issues:
+- [ ] MAJOR | CN802, CN803 / `+6V` | `VERIFIED` | The + rows are swapped. CN802 (MAIN 1 to 4, ESCs, via R805 to R808) has `+6V` on pins 1b to 4b, but IF-040 says the ESC headers drop the + pin. CN803 (MAIN 5 to 8, control surfaces, via R809 to R812) has no-connect flags on pins 1b to 4b, so the surface servos get no power (DEC-019). CN801 (AUX 1 to 4, tilt servos) is on `+6V` as expected. With the DEC-054 adapter cable (signal and GND only) no ESC BEC reaches `+6V`, but IF-040 and OPEN-031 (1) still need the + pin removed.
+- [ ] MAJOR | `Connector - Peripherals` sheet symbol | `VERIFIED` | The sheet symbol on `top_hierarchical` has no sheet pins, so none of the 14 hierarchical labels on `conn-peripherals` (TEL1, TEL2, GPS1 UART and I2C, RNG, `{EXT_I2C4}`, buzzer, safety) reach the MCU sheets. Add the sheet pins (P2-022, OPEN-032).
+- [ ] MINOR | `mcu-io` sheet pins | `VERIFIED` | The `MCU - IO` sheet symbol still has `SAFETY_SW` and `SAFETY_LED_B`; the child labels are now `GPS1_SAFETY_SWITCH` and `GPS1_SAFTY_LED`. ERC will flag the mismatch. `SAFTY` also breaks the DEC-052 full-word rule (OPEN-032).
+- [ ] MINOR | Q901 to Q903, D901 to D903 / `LED_RED`, `LED_BLUE`, `LED_GREEN` | `VERIFIED` | Each board LED is switched low-side by a 2SK3018W N-FET (22 Ω gate resistor, 10 kΩ gate pull-down), so the LED is on when the H743 pin is high. IF-047 and the `px4/fmu-v6c` LEDs are active low. Choose: set the LEDs active high in the board config, or drive the LEDs straight from the pins. R903, R906, R909 and D901, D902 have value `?`.
+- [ ] INFO | `+6V` | `VERIFIED` | `+6V` has no source: only C801 to C804, the CN801 and CN802 + rows and R813 are on it. The XT30 UBEC input is not drawn (P2-016).
+- [ ] MINOR | C208, C214, C215, C301, C307, C507 | `VERIFIED` (preflight) | No footprint.
+
+Drawn, not decided (record in the spec when you agree):
+- [ ] `conn-external` removed; `conn-peripherals` has CN701 and CN702 (TELEM 1 and 2, JST-GH 6-pin, pins 4 and 5 with no-connect flags, so CTS/RTS are unconnected as DEC-053 needs), CN703 (I2C4 airspeed, 4-pin), CN704 (rangefinder, 4-pin) and CN705 (GPS1, 10-pin: 5 V, TX, RX, SCL, SDA, safety switch, safety LED, 3.3 V, buzzer, GND), each signal through PESD4USB3BBTBR-Q ESD (D701 to D706) and 22 Ω, I2C pull-ups 5 kΩ to `+3V3` (R705, R706, R712, R713), 100 nF on `+5V` (C701 to C705). Pinouts against DS-009 still open (OPEN-023).
+- [ ] `conn-actuator`: CN801 to CN803 Samtec TSW-104-08-F-T-RA (3-row right-angle, 4 positions each), 22 Ω (R801 to R812) and PESD5V0U2BT (D801 to D806) on each signal, 4 × 10 µF on `+6V`. Servo rail divider R813 46.4 kΩ / R814 23.2 kΩ with C805 100 nF (3:1, about 2.0 V at 6 V, `ESTIMATED`), which answers the missing divider in OPEN-033.
+- [ ] `conn-usb-debug`: CN602 (H743) and CN603 (F100), JST-SH 6-pin `SM06B-SRSS-TB`, both in the Pixhawk Debug Mini order (1 VREF, 2 TX, 3 RX, 4 SWDIO, 5 SWCLK, 6 GND) with 22 Ω on each signal. H743 console on USART3 (PD8, PD9), F100 TX on PA9; CN603 pin 3 (`DBG_F1_RX`) reaches nothing. Still no NRST pad (OPEN-029). IF-051 said pads for the F100; now a connector.
+- [ ] `user-interface`: reset button annotated B901; LEDs D901 to D903 with Q901 to Q903 (see the LED item above).
+- [ ] `power_supplies`: D102 changed from PESD2USB3UV-T to PESD5V0U2BT (LCSC C85399) on the PM02D I2C lines at CN101.
+- [ ] `mcu-main-fc`, `mcu-io`: passives annotated (C201 to C217, R201 to R208, C301 to C310, R301 to R309).
+- [ ] RC IN (DEC-053) not drawn yet (P2-023).
+
+Docs to catch up after the decisions: spec 4.2 and 4.3 for the 16:52 save, OPEN-023, OPEN-029, OPEN-031, OPEN-032, OPEN-033, and the checklist trackers. Then run `/progress-update`.
 
 ## Zone list
 
@@ -103,6 +126,7 @@ Not drawn.
 
 - [ ] Connector pinouts against the Pixhawk standard DS-009: Telemetry 1 and 2, GPS1 10-pin (3.3 V and buzzer pins), airspeed, TF-Luna (OPEN-023, P2-015).
 - [ ] Telemetry 2 (USART1, PB14, PB15): JST-GH 6-pin, as Telemetry 1.
+- [ ] RC IN per DEC-053: CN706 1x3 header, 6.2 kΩ / 10 kΩ divider, `RCIN_TIM1_CH1` to F100 PA8 (P2-023, OPEN-034).
 - [ ] I2C4 (PD12, PD13): check 5 V tolerance in case a module pulls up to 5 V (OPEN-023).
 - [ ] Actuator headers per DEC-051: MAIN 1 to 4 ESC headers (3-pin, + pin removed), MAIN 5 to 8 and AUX 1 to 4 servo headers on the 6 V bus; keep them apart (IF-030 to IF-043, P2-018, OPEN-031).
 - [ ] PWM pull-downs: pick the value (P2-013, OPEN-018; no DShot since DEC-050).
@@ -121,7 +145,8 @@ Pinmap review 0.3 and the integration answers are applied (spec rev 0.12 to 0.14
 
 - [ ] Collect the rest of `AO-HORIZON_INTEGRATION_QUESTIONS_EN.md` rev 0.5 from the team (P0-022): the parts table, test results and the ESC PWM rate (OPEN-031). D13 to D16 are answered (DEC-050, DEC-051).
 - [ ] After the reply: ask Claude to apply it to the spec, power budget and checklist.
-- [ ] Team bench tests, not hardware work: RC-loss failsafe over ELRS MAVLink (S5); ESC stop on the F100 failsafe pulse and the surface failsafe position (OPEN-017, P4-011); servo current and stall current (OPEN-007).
+- [ ] Team inputs for DEC-053 and DEC-054: FS-iA6B current, PPM level and failsafe; Tekko32 8-pin pinout and the adapter cable (OPEN-034).
+- [ ] Team bench tests, not hardware work: RC loss with the FS-iA6B in PPM mode (P4-016, replaces S5); ESC stop on the F100 failsafe pulse and the surface failsafe position (OPEN-017, P4-011); servo current and stall current (OPEN-007).
 
 ## 10. Before the BOM
 

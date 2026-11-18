@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.23
-**Updated:** 2026-11-14
+**Revision:** 0.24
+**Updated:** 2026-11-19
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012), the 5 V input is a TPS2121 power mux with a 1.5 A limit (DEC-029, DEC-030) and the `+3V3A` LDO is TPS73533DRBR (DEC-027). No other rail, regulator or protection part is approved. Not a verification record.
-**Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006 (closed), OPEN-007, OPEN-011, OPEN-021, OPEN-024 (closed), OPEN-025, OPEN-028. Decisions: DEC-007, DEC-010, DEC-011, DEC-012, DEC-018, DEC-019, DEC-025, DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-039, DEC-040, DEC-043, DEC-044, DEC-048. Checklist task: P0-017.
+**Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006 (closed), OPEN-007, OPEN-011, OPEN-021, OPEN-024 (closed), OPEN-025, OPEN-028. Decisions: DEC-007, DEC-010, DEC-011, DEC-012, DEC-018, DEC-019, DEC-053, DEC-054, DEC-025, DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-039, DEC-040, DEC-043, DEC-044, DEC-048. Checklist task: P0-017.
 **Decision owner:** Hardware
 
 Single record for rail loads, rail tolerances, brownout thresholds and power protection requirements.
@@ -80,7 +80,8 @@ Since DEC-043 (2026-11-12), this rail feeds the VDD pins of all sensors. VDDIO (
 
 | Load | Ref | Current each | Peak | Source | Label |
 | ---- | --- | ------------ | ---- | ------ | ----- |
-| Telemetry 1, ELRS receiver | IF-010 | about 100 mA (model TBD) | - | Human owner, 2026-11-03 | `ASSUMED` |
+| Telemetry 1, Holybro SiK radio V3 (DEC-053; replaces ELRS) | IF-010 | 100 mA transmit at 20 dBm, 25 mA receive | - | Holybro SiK telemetry radio V3 docs page, https://docs.holybro.com/radio/sik-telemetry-radio-v3 (100 mW model `ASSUMED`) | `VERIFIED` |
+| RC IN, FlySky FS-iA6B receiver (DEC-053) | IF-038 | about 50 mA (placeholder; human owner: "small") | - | No current on the FlySky product page (OPEN-034) | `ASSUMED` |
 | Telemetry 2 | IF-011 | TBD (no device planned; connector fitted for a second receiver) | TBD | Team | `TBD` |
 | GPS1 + compass | IF-012 | about 100 mA (Holybro M9N, to be confirmed) | - | Human owner, 2026-11-03 | `ASSUMED` |
 | MS4525DO | IF-014 | about 5 mA (5 V Pixhawk layout if the module has a regulator; 3.3 V or 5 V version TBD, team) | - | Snippet | `NOT_VERIFIED` |
@@ -100,7 +101,7 @@ All of this current passes through the XT30 input and the on-board 6 V and servo
 
 All 8 servos can move at the same time (team): the tilt servos move all the time in hover, and the 4 surface servos move together in cruise.
 
-The 4 motor outputs (IF-040 to IF-043) carry only the signal to 4 separate Skywalker 80A V2 ESCs; motor power does not pass through the board (`ASSUMED`). The ESC headers have the + pin removed, so the ESC BECs (5 V) do not reach the board.
+The 4 motor outputs (IF-040 to IF-043) carry only the signal and GND to one Tekko32 F4 4in1 50A ESC through an adapter cable (DEC-054); motor power does not pass through the board (`ASSUMED`). The ESC headers have the + pin removed, so no ESC supply reaches the board; the ESC's VBAT, current and telemetry wires stay in the cable.
 
 ## 4. Totals
 
@@ -108,12 +109,12 @@ The 4 motor outputs (IF-040 to IF-043) carry only the signal to 4 separate Skywa
 | ---- | -------------- | ------- | ------ | ------ | ----- |
 | 3.3 V_IMU | 0.88 mA (2 × 0.44 mA, IMUs only) | IMU peak; ICP-20100, BMP581 and IST8310 VDD currents (DEC-043) | TBD. 500 mA, TPS73533DRBR (DEC-027, TI SBVS087M 5.3). | TBD | `ESTIMATED` from `NOT_VERIFIED` inputs |
 | 3.3 V | about 244 mA typ (design current about 0.6 A maximum, DEC-040; L101 1.2 A rating, distributor `NOT_VERIFIED`, allows about 0.5 A buck input); about 460 mA with the H743 at its Tj 85 °C maximum, about 570 mA at Tj 105 °C (H743, F100 max 15.4 mA, IST8310, D104 about 2.5 mA, and an assumed 5 mA for the barometers and pull-ups) | ICP-20100, BMP581, pull-ups and px4io LEDs not read | 2 A, TPS62142RGTR (DEC-012, TI SLVSAJ0F) | TBD | `ESTIMATED` from partial inputs |
-| 5 V | Board: about 190 to 215 mA typ, 360 to 400 mA with the H743 at its Tj 85 °C maximum, 445 to 495 mA at Tj 105 °C (3.3 V load through the buck at an assumed 85 % efficiency, 5.0 and 4.5 V in, plus D103 and the LDO). External: about 385 mA (ELRS 100, GPS 100, MS4525DO 5, TF-Luna 150, buzzer 30 mA; human owner). Total about 575 to 600 mA typ, 830 to 880 mA hot worst case | Telemetry 2 (no device planned) | 2 A source (PWR-010); power mux limit 1.0 / 1.5 / 2.0 A with 80.6 kΩ (DEC-030, TI mux, `VERIFIED`) | TBD | `ESTIMATED` from partial inputs |
+| 5 V | Board: about 190 to 215 mA typ, 360 to 400 mA with the H743 at its Tj 85 °C maximum, 445 to 495 mA at Tj 105 °C (3.3 V load through the buck at an assumed 85 % efficiency, 5.0 and 4.5 V in, plus D103 and the LDO). External: about 435 mA (SiK radio 100, FS-iA6B 50 placeholder, GPS 100, MS4525DO 5, TF-Luna 150, buzzer 30 mA; DEC-053, human owner). Total about 625 to 650 mA typ, 880 to 930 mA hot worst case | Telemetry 2 (no device planned) | 2 A source (PWR-010); power mux limit 1.0 / 1.5 / 2.0 A with 80.6 kΩ (DEC-030, TI mux, `VERIFIED`) | TBD | `ESTIMATED` from partial inputs |
 | 6 V (on the board) | none | All servo loads | 10 A cont., 15 A inst. (PWR-011), UBEC and XT30 input | TBD | `TBD` |
 
 The subtotals are far from complete. Do not use them to size a regulator. The MCUs and the external 5 V devices are likely the largest loads (`ASSUMED`).
 
-**5 V headroom (`ESTIMATED` from the rows above).** Room left for GPS, ELRS and the MS4525DO after the board and the TF-Luna 150 mA peak:
+**5 V headroom (`ESTIMATED` from the rows above).** Room left for GPS, the SiK radio, the RC receiver and the MS4525DO after the board and the TF-Luna 150 mA peak:
 
 | 5 V source | Typical | Hot worst case (H743 at Tj 105 °C) |
 | ---------- | ------- | ---------------------------------- |
@@ -122,7 +123,7 @@ The subtotals are far from complete. Do not use them to size a regulator. The MC
 | USB 900 mA port | about 540 mA | about 260 mA |
 | Bench USB-C port above 1 A (DEC-038) | as the PM02D row: the 1.0 A minimum mux limit sets the room | as the PM02D row |
 
-With the human owner's estimates (ELRS 100, GPS 100, MS4525DO 5, TF-Luna 150, buzzer 30 mA, about 385 mA), the PM02D or a bench USB-C port above 1 A has about 400 mA left typical and about 120 mA in the hot worst case (`ESTIMATED`, 2026-11-03).
+With the loads in section 3 (SiK radio 100, FS-iA6B 50 placeholder, GPS 100, MS4525DO 5, TF-Luna 150, buzzer 30 mA, about 435 mA; DEC-053), the PM02D or a bench USB-C port above 1 A has about 350 mA left typical and about 70 mA in the hot worst case (`ESTIMATED`, 2026-11-19; was about 400 and 120 mA with ELRS on 2026-11-03). If the FS-iA6B draws more than the 50 mA placeholder, the hot worst-case room shrinks by the same amount (OPEN-034).
 
 ## 5. Rail tolerances (PWR-013)
 
@@ -183,7 +184,8 @@ All `TBD`. Items to decide:
 
 ## 9. Open inputs
 
-- [x] ELRS about 100 mA, GPS about 100 mA (human owner estimates, 2026-11-03). Models still from the team (P0-022). Telemetry 2: no device planned.
+- [x] GPS about 100 mA (human owner estimate, 2026-11-03). SiK radio 100 mA transmit (Holybro, `VERIFIED`; replaces ELRS 100 mA, DEC-053). Model still from the team (P0-022). Telemetry 2: no device planned.
+- [ ] FS-iA6B supply current (50 mA placeholder, OPEN-034).
 - [ ] Servo stall current (team bench test, P0-022). Servo power passes through the board (DEC-019), so it also sizes the board input and bus.
 - [x] 3.3 V_IMU rail structure: `+3V3A` from its own LDO, sensor VDD pins (DEC-043, 2026-11-12; was IMUs only, DEC-025). LDO TPS73533DRBR (DEC-027, 2026-10-31).
 - [x] USB VBUS as a board power source: yes, on the bench (team). It feeds all external 5 V ports (human owner, 2026-10-24).

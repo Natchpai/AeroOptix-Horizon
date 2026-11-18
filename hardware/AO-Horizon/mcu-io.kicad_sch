@@ -1878,7 +1878,7 @@
 		)
 		(uuid "d31a8135-565e-48a0-a443-e67c1f6bf3af")
 	)
-	(text "Conn - GPS"
+	(text "Conn - GPS1"
 		(exclude_from_sim no)
 		(at 293.37 153.67 0)
 		(effects
@@ -1897,7 +1897,7 @@
 		(effects
 			(font
 				(face "Century Gothic")
-				(size 2.54 2.54)
+				(size 2.032 2.032)
 				(bold yes)
 			)
 			(justify left)
@@ -1923,7 +1923,7 @@
 		(effects
 			(font
 				(face "Century Gothic")
-				(size 2.54 2.54)
+				(size 2.032 2.032)
 				(bold yes)
 			)
 			(justify left)
@@ -2329,16 +2329,6 @@
 	)
 	(wire
 		(pts
-			(xy 299.72 165.1) (xy 318.77 165.1)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0afc510a-c75f-4f10-8960-070a4a15c014")
-	)
-	(wire
-		(pts
 			(xy 143.51 224.79) (xy 143.51 226.06)
 		)
 		(stroke
@@ -2366,16 +2356,6 @@
 			(type default)
 		)
 		(uuid "0f6e1dcd-b2dd-4f67-bd42-946df643e40d")
-	)
-	(wire
-		(pts
-			(xy 299.72 161.29) (xy 318.77 161.29)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "102bca16-f8b0-4b54-aff4-bfb06a723600")
 	)
 	(wire
 		(pts
@@ -2416,6 +2396,16 @@
 			(type default)
 		)
 		(uuid "16b1b40e-83d2-4ff9-ab75-69543f9db7d4")
+	)
+	(wire
+		(pts
+			(xy 297.18 161.29) (xy 318.77 161.29)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "187ef66f-b07d-4046-b462-2a25b3102ac1")
 	)
 	(bus
 		(pts
@@ -2636,6 +2626,16 @@
 			(type default)
 		)
 		(uuid "3c8953a2-1d4d-4898-bf95-e744ba2f0d4e")
+	)
+	(wire
+		(pts
+			(xy 297.18 167.64) (xy 318.77 167.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3cbde990-b635-48fb-81ff-5e12ff85f407")
 	)
 	(wire
 		(pts
@@ -3817,7 +3817,7 @@
 		)
 		(uuid "2cfdd2f1-eb59-4f33-8ef7-a9ba804afaed")
 	)
-	(label "SAFETY_LED_B"
+	(label "GPS1_SAFTY_LED"
 		(at 171.45 172.72 0)
 		(effects
 			(font
@@ -3836,16 +3836,6 @@
 			(justify left bottom)
 		)
 		(uuid "3c5f2bf5-0f39-45ef-bece-6c457ed652e8")
-	)
-	(label "SAFETY_LED_B"
-		(at 299.72 165.1 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "3cb9a66a-909e-48fb-8522-c1fc07cbe59b")
 	)
 	(label "MAIN5_TIM3_CH1"
 		(at 299.72 224.79 0)
@@ -4037,16 +4027,6 @@
 		)
 		(uuid "9edea20a-2278-49ee-9c38-131d0bf985fb")
 	)
-	(label "SAFETY_SW"
-		(at 299.72 161.29 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "ac70d123-9619-483c-8208-4262aa844a72")
-	)
 	(label "OSC_24M00_OUT"
 		(at 135.89 121.92 0)
 		(effects
@@ -4147,6 +4127,16 @@
 		)
 		(uuid "dab8163d-b4d3-4d09-8f63-8cf1263da06b")
 	)
+	(label "GPS1_SAFTY_LED"
+		(at 297.18 167.64 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "db886dbc-5a41-46c8-ae0e-68954742a271")
+	)
 	(label "MAIN4_TIM4_CH4"
 		(at 171.45 162.56 0)
 		(effects
@@ -4187,7 +4177,7 @@
 		)
 		(uuid "e2eaf8aa-1920-4020-a2da-4056940cb602")
 	)
-	(label "SAFETY_SW"
+	(label "GPS1_SAFETY_SWITCH"
 		(at 171.45 152.4 0)
 		(effects
 			(font
@@ -4267,6 +4257,16 @@
 		)
 		(uuid "fb035ceb-99b7-4939-9f03-4c8e926d823c")
 	)
+	(label "GPS1_SAFETY_SWITCH"
+		(at 297.18 161.29 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "fb817fc7-1d3d-4ddc-95e7-65c0e30f8965")
+	)
 	(label "F1_ADC1_IN4"
 		(at 252.73 121.92 180)
 		(effects
@@ -4287,7 +4287,18 @@
 		)
 		(uuid "fe19a21d-c710-4771-b913-71905be224e5")
 	)
-	(hierarchical_label "SAFETY_SW"
+	(hierarchical_label "GPS1_SAFTY_LED"
+		(shape output)
+		(at 318.77 167.64 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "0a855026-8006-49d6-b634-1ec2cc7d4bf7")
+	)
+	(hierarchical_label "GPS1_SAFETY_SWITCH"
 		(shape input)
 		(at 318.77 161.29 0)
 		(effects
@@ -4296,7 +4307,7 @@
 			)
 			(justify left)
 		)
-		(uuid "0570a6df-0a81-4e82-af3e-ac2e1e81154e")
+		(uuid "134aab6a-e6cb-4c4b-afc3-22f0377cca7a")
 	)
 	(hierarchical_label "{F1_SWD}"
 		(shape bidirectional)
@@ -4387,17 +4398,6 @@
 		)
 		(uuid "c6cb11be-1f22-4d56-bbf0-363b5ce30aa0")
 	)
-	(hierarchical_label "SAFETY_LED_B"
-		(shape output)
-		(at 318.77 165.1 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "f834e4f6-9cac-4250-95da-4ba45124c519")
-	)
 	(symbol
 		(lib_id "Device:R")
 		(at 143.51 229.87 180)
@@ -4409,7 +4409,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "039f9235-ef88-4e8a-b725-595214738333")
-		(property "Reference" "R?"
+		(property "Reference" "R309"
 			(at 145.034 228.854 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4473,7 +4473,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "R?")
+					(reference "R309")
 					(unit 1)
 				)
 			)
@@ -4567,7 +4567,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "092978f5-f29c-4d37-8b6a-b8b06ba95b91")
-		(property "Reference" "R?"
+		(property "Reference" "R304"
 			(at 267.97 118.11 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4629,7 +4629,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "R?")
+					(reference "R304")
 					(unit 1)
 				)
 			)
@@ -4646,7 +4646,7 @@
 		(in_pos_files yes)
 		(dnp yes)
 		(uuid "12afc708-6385-4389-9434-b465282e7493")
-		(property "Reference" "R?"
+		(property "Reference" "R306"
 			(at 123.444 218.694 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4710,7 +4710,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "R?")
+					(reference "R306")
 					(unit 1)
 				)
 			)
@@ -4727,7 +4727,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "170b96c3-b727-4e37-a30a-4662ca39c483")
-		(property "Reference" "R?"
+		(property "Reference" "R301"
 			(at 245.11 83.82 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4789,7 +4789,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "R?")
+					(reference "R301")
 					(unit 1)
 				)
 			)
@@ -4962,7 +4962,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "2b91f0a5-cf0f-4232-b13d-5f4f8313ab6f")
-		(property "Reference" "C?"
+		(property "Reference" "C303"
 			(at 177.8 72.39 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5059,7 +5059,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "C?")
+					(reference "C303")
 					(unit 1)
 				)
 			)
@@ -5077,7 +5077,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "37ae9434-a82a-4d14-aee1-5a51ca3073ba")
-		(property "Reference" "C?"
+		(property "Reference" "C307"
 			(at 240.03 91.44 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5141,7 +5141,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "C?")
+					(reference "C307")
 					(unit 1)
 				)
 			)
@@ -5158,7 +5158,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "3f804e2d-8180-4568-b51b-1d47da58b0d6")
-		(property "Reference" "C?"
+		(property "Reference" "C306"
 			(at 228.6 91.44 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5255,7 +5255,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "C?")
+					(reference "C306")
 					(unit 1)
 				)
 			)
@@ -5272,7 +5272,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "416edb2e-cfb7-45d8-92ff-5927c7c33c81")
-		(property "Reference" "R?"
+		(property "Reference" "R305"
 			(at 280.67 127 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5334,7 +5334,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "R?")
+					(reference "R305")
 					(unit 1)
 				)
 			)
@@ -5351,7 +5351,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "43a8caf0-a7c8-4552-a399-cc61c456ea5e")
-		(property "Reference" "R?"
+		(property "Reference" "R302"
 			(at 153.67 119.38 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5413,7 +5413,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "R?")
+					(reference "R302")
 					(unit 1)
 				)
 			)
@@ -5430,7 +5430,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "4b0af7fa-5107-49d6-80c7-6c086ad8c547")
-		(property "Reference" "C?"
+		(property "Reference" "C305"
 			(at 198.12 72.39 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5527,7 +5527,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "C?")
+					(reference "C305")
 					(unit 1)
 				)
 			)
@@ -5623,7 +5623,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "610031f7-e8de-4224-afa1-49f1737eda0d")
-		(property "Reference" "R?"
+		(property "Reference" "R303"
 			(at 267.97 115.57 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5685,7 +5685,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "R?")
+					(reference "R303")
 					(unit 1)
 				)
 			)
@@ -5858,7 +5858,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "7088d26f-3be6-440b-a348-207d482acfdd")
-		(property "Reference" "C?"
+		(property "Reference" "C302"
 			(at 167.64 72.39 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5955,7 +5955,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "C?")
+					(reference "C302")
 					(unit 1)
 				)
 			)
@@ -6130,7 +6130,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "82558fc2-26e5-470a-b2ca-93384fe5c265")
-		(property "Reference" "R?"
+		(property "Reference" "R307"
 			(at 123.444 228.854 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6194,7 +6194,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "R?")
+					(reference "R307")
 					(unit 1)
 				)
 			)
@@ -6212,7 +6212,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "98167cc7-31bc-45bb-8fc1-2ed144090705")
-		(property "Reference" "C?"
+		(property "Reference" "C301"
 			(at 158.75 72.39 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6276,7 +6276,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "C?")
+					(reference "C301")
 					(unit 1)
 				)
 			)
@@ -6293,7 +6293,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9eae480d-6489-48e9-af1e-af1e5c77986f")
-		(property "Reference" "C?"
+		(property "Reference" "C304"
 			(at 187.96 72.39 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6390,7 +6390,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "C?")
+					(reference "C304")
 					(unit 1)
 				)
 			)
@@ -6786,7 +6786,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "ac1b67a2-b667-4295-8e9e-8ae90301a0e5")
-		(property "Reference" "C?"
+		(property "Reference" "C308"
 			(at 182.88 97.79 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6883,7 +6883,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "C?")
+					(reference "C308")
 					(unit 1)
 				)
 			)
@@ -7095,7 +7095,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "df27d973-14ee-4e67-a3bb-f665ee85ada8")
-		(property "Reference" "C?"
+		(property "Reference" "C310"
 			(at 276.225 134.62 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7214,7 +7214,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "C?")
+					(reference "C310")
 					(unit 1)
 				)
 			)
@@ -7310,7 +7310,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f54f2a2b-94e2-4b75-a257-a97c9b25a613")
-		(property "Reference" "C?"
+		(property "Reference" "C309"
 			(at 110.49 128.27 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7407,7 +7407,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "C?")
+					(reference "C309")
 					(unit 1)
 				)
 			)
@@ -7424,7 +7424,7 @@
 		(in_pos_files yes)
 		(dnp yes)
 		(uuid "f8e0f98e-6f0d-4966-a19d-96963c0bf02e")
-		(property "Reference" "R?"
+		(property "Reference" "R308"
 			(at 145.034 218.694 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7488,7 +7488,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
-					(reference "R?")
+					(reference "R308")
 					(unit 1)
 				)
 			)

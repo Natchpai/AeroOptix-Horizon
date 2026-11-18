@@ -3842,7 +3842,7 @@
 	)
 	(rectangle
 		(start 306.07 128.27)
-		(end 354.33 146.05)
+		(end 354.33 151.13)
 		(stroke
 			(width 0)
 			(type default)
@@ -3865,8 +3865,8 @@
 		(uuid "13eee226-6c90-408a-a3fb-48677c0c2f7e")
 	)
 	(rectangle
-		(start 306.07 152.4)
-		(end 354.33 167.64)
+		(start 306.07 158.75)
+		(end 354.33 173.99)
 		(stroke
 			(width 0)
 			(type default)
@@ -4002,7 +4002,7 @@
 		(effects
 			(font
 				(face "Century Gothic")
-				(size 2.54 2.54)
+				(size 2.032 2.032)
 				(bold yes)
 			)
 			(justify left)
@@ -4026,7 +4026,7 @@
 		(effects
 			(font
 				(face "Century Gothic")
-				(size 2.54 2.54)
+				(size 2.032 2.032)
 				(bold yes)
 			)
 			(justify left)
@@ -4039,7 +4039,7 @@
 		(effects
 			(font
 				(face "Century Gothic")
-				(size 2.54 2.54)
+				(size 2.032 2.032)
 				(bold yes)
 			)
 			(justify left)
@@ -4074,7 +4074,7 @@
 	)
 	(text "Conn - Spare"
 		(exclude_from_sim no)
-		(at 306.07 151.13 0)
+		(at 306.07 157.48 0)
 		(effects
 			(font
 				(face "Century Gothic")
@@ -4156,7 +4156,7 @@
 		(effects
 			(font
 				(face "Century Gothic")
-				(size 2.54 2.54)
+				(size 2.032 2.032)
 				(bold yes)
 			)
 			(justify left)
@@ -4181,7 +4181,7 @@
 		(effects
 			(font
 				(face "Century Gothic")
-				(size 2.54 2.54)
+				(size 2.032 2.032)
 				(bold yes)
 			)
 			(justify left)
@@ -4194,7 +4194,7 @@
 		(effects
 			(font
 				(face "Century Gothic")
-				(size 2.54 2.54)
+				(size 2.032 2.032)
 				(bold yes)
 			)
 			(justify left)
@@ -4667,7 +4667,7 @@
 		(uuid "679a818a-2d24-4561-a860-1c3277cb83c2")
 	)
 	(bus_entry
-		(at 328.93 162.56)
+		(at 328.93 168.91)
 		(size 2.54 -2.54)
 		(stroke
 			(width 0)
@@ -4757,7 +4757,7 @@
 		(uuid "b760b0a9-2948-4962-81fd-e01926ce61c6")
 	)
 	(bus_entry
-		(at 328.93 160.02)
+		(at 328.93 166.37)
 		(size 2.54 -2.54)
 		(stroke
 			(width 0)
@@ -4784,7 +4784,7 @@
 		(uuid "dbdfa972-cd03-4af4-b172-e1e8f9508bb5")
 	)
 	(bus_entry
-		(at 328.93 165.1)
+		(at 328.93 171.45)
 		(size 2.54 -2.54)
 		(stroke
 			(width 0)
@@ -5012,7 +5012,7 @@
 	)
 	(wire
 		(pts
-			(xy 125.73 246.38) (xy 149.86 246.38)
+			(xy 332.74 147.32) (xy 312.42 147.32)
 		)
 		(stroke
 			(width 0)
@@ -5122,7 +5122,7 @@
 	)
 	(wire
 		(pts
-			(xy 312.42 162.56) (xy 328.93 162.56)
+			(xy 312.42 168.91) (xy 328.93 168.91)
 		)
 		(stroke
 			(width 0)
@@ -5412,7 +5412,7 @@
 	)
 	(wire
 		(pts
-			(xy 312.42 160.02) (xy 328.93 160.02)
+			(xy 312.42 166.37) (xy 328.93 166.37)
 		)
 		(stroke
 			(width 0)
@@ -5492,7 +5492,7 @@
 	)
 	(bus
 		(pts
-			(xy 331.47 156.21) (xy 331.47 162.56)
+			(xy 331.47 162.56) (xy 331.47 168.91)
 		)
 		(stroke
 			(width 0)
@@ -5762,7 +5762,7 @@
 	)
 	(wire
 		(pts
-			(xy 312.42 165.1) (xy 328.93 165.1)
+			(xy 312.42 171.45) (xy 328.93 171.45)
 		)
 		(stroke
 			(width 0)
@@ -6342,16 +6342,6 @@
 	)
 	(wire
 		(pts
-			(xy 237.49 146.05) (xy 259.08 146.05)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "819875e3-ba0a-49c4-b6d0-4d6184f8d249")
-	)
-	(wire
-		(pts
 			(xy 209.55 219.71) (xy 209.55 217.17)
 		)
 		(stroke
@@ -6399,6 +6389,16 @@
 			(type default)
 		)
 		(uuid "8853182b-ea0d-4935-acd7-1a80512e3776")
+	)
+	(wire
+		(pts
+			(xy 237.49 146.05) (xy 259.08 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "88b0ce59-b5cd-402e-aebe-428343ce87c0")
 	)
 	(wire
 		(pts
@@ -6722,7 +6722,7 @@
 	)
 	(bus
 		(pts
-			(xy 331.47 156.21) (xy 332.74 154.94)
+			(xy 331.47 162.56) (xy 332.74 161.29)
 		)
 		(stroke
 			(width 0)
@@ -7612,7 +7612,7 @@
 	)
 	(bus
 		(pts
-			(xy 332.74 154.94) (xy 335.28 154.94)
+			(xy 332.74 161.29) (xy 335.28 161.29)
 		)
 		(stroke
 			(width 0)
@@ -7851,7 +7851,7 @@
 		(uuid "13b9d4af-c6ab-45a9-8748-08ab4f5be093")
 	)
 	(label "SPARE1_TIM1_CH1"
-		(at 312.42 160.02 0)
+		(at 312.42 166.37 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -7941,7 +7941,7 @@
 		(uuid "25c3f44a-3525-423b-9600-ce4f9d5693f5")
 	)
 	(label "SPARE3_TIM4_CH4"
-		(at 312.42 165.1 0)
+		(at 312.42 171.45 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -8561,12 +8561,12 @@
 		(uuid "91c841ff-ebf2-4ef1-b151-09ce83f43ba5")
 	)
 	(label "BUZZER_TIM3_CH3"
-		(at 149.86 246.38 180)
+		(at 312.42 147.32 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right bottom)
+			(justify left bottom)
 		)
 		(uuid "9355e893-57dd-4c30-aac0-8c3cbb804e72")
 	)
@@ -8741,7 +8741,7 @@
 		(uuid "b5d8b498-e927-4a32-b6d5-ac9c8d938c85")
 	)
 	(label "SPARE2_TIM4_CH3"
-		(at 312.42 162.56 0)
+		(at 312.42 168.91 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9317,7 +9317,7 @@
 	)
 	(hierarchical_label "{SPARE_TIM}"
 		(shape bidirectional)
-		(at 335.28 154.94 0)
+		(at 335.28 161.29 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9349,7 +9349,7 @@
 		(uuid "66c3752f-3902-4072-b608-fb1413d9c80f")
 	)
 	(hierarchical_label "{AUX_TIM5}"
-		(shape input)
+		(shape output)
 		(at 340.36 106.68 0)
 		(effects
 			(font
@@ -9361,12 +9361,12 @@
 	)
 	(hierarchical_label "BUZZER_TIM3_CH3"
 		(shape output)
-		(at 125.73 246.38 180)
+		(at 332.74 147.32 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right)
+			(justify left)
 		)
 		(uuid "91d12a74-3521-44a1-891e-b595201f9902")
 	)
@@ -9546,7 +9546,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "00166ef2-403c-43b8-9659-ebf0a538522b")
-		(property "Reference" "C?"
+		(property "Reference" "C214"
 			(at 179.07 200.66 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9610,7 +9610,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "C?")
+					(reference "C214")
 					(unit 1)
 				)
 			)
@@ -9627,7 +9627,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "0051a818-c842-4c5d-bdc7-38867240d4c9")
-		(property "Reference" "C?"
+		(property "Reference" "C204"
 			(at 177.8 45.72 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9724,7 +9724,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "C?")
+					(reference "C204")
 					(unit 1)
 				)
 			)
@@ -9741,7 +9741,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "01f39daa-50c1-45d4-99ec-7aea223b2fcf")
-		(property "Reference" "C?"
+		(property "Reference" "C210"
 			(at 152.4 97.79 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9838,7 +9838,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "C?")
+					(reference "C210")
 					(unit 1)
 				)
 			)
@@ -9934,7 +9934,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "0ddbddee-52f9-4092-9b54-83c719eb4a5d")
-		(property "Reference" "C?"
+		(property "Reference" "C213"
 			(at 85.725 87.63 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10053,7 +10053,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "C?")
+					(reference "C213")
 					(unit 1)
 				)
 			)
@@ -10778,7 +10778,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "387d4f6c-9be2-40c0-91c4-d0f02c653c70")
-		(property "Reference" "C?"
+		(property "Reference" "C203"
 			(at 167.64 45.72 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10875,7 +10875,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "C?")
+					(reference "C203")
 					(unit 1)
 				)
 			)
@@ -10971,7 +10971,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "4702dd9c-193c-4468-ba70-db1819c5fd55")
-		(property "Reference" "C?"
+		(property "Reference" "C212"
 			(at 75.565 87.63 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11090,7 +11090,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "C?")
+					(reference "C212")
 					(unit 1)
 				)
 			)
@@ -11107,7 +11107,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "4944959f-ac58-4ee5-9393-2137330563d0")
-		(property "Reference" "C?"
+		(property "Reference" "C209"
 			(at 180.34 66.04 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11204,7 +11204,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "C?")
+					(reference "C209")
 					(unit 1)
 				)
 			)
@@ -11221,7 +11221,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "4ac3127f-b3ff-43dc-a8d4-ee91b88eef2e")
-		(property "Reference" "R?"
+		(property "Reference" "R205"
 			(at 66.04 71.12 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11283,7 +11283,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "R?")
+					(reference "R205")
 					(unit 1)
 				)
 			)
@@ -11301,7 +11301,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "50c08bcd-d324-4b50-8f17-2e9e39a84d22")
-		(property "Reference" "C?"
+		(property "Reference" "C201"
 			(at 147.32 45.72 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11365,7 +11365,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "C?")
+					(reference "C201")
 					(unit 1)
 				)
 			)
@@ -11382,7 +11382,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "5821b003-ba3f-4701-8b70-9d55515c9b72")
-		(property "Reference" "C?"
+		(property "Reference" "C206"
 			(at 198.12 45.72 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11479,7 +11479,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "C?")
+					(reference "C206")
 					(unit 1)
 				)
 			)
@@ -11496,7 +11496,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "5aaaeea6-ecb6-4dc1-8987-ed45958b1810")
-		(property "Reference" "R?"
+		(property "Reference" "R208"
 			(at 334.01 204.47 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11560,7 +11560,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "R?")
+					(reference "R208")
 					(unit 1)
 				)
 			)
@@ -11577,7 +11577,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "67d6d2d0-4ada-4120-8655-65021c0a2531")
-		(property "Reference" "C?"
+		(property "Reference" "C216"
 			(at 347.98 191.77 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11674,7 +11674,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "C?")
+					(reference "C216")
 					(unit 1)
 				)
 			)
@@ -11770,7 +11770,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "68859b2a-b6bb-40ea-807d-367d0e006d66")
-		(property "Reference" "C?"
+		(property "Reference" "C205"
 			(at 187.96 45.72 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11867,7 +11867,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "C?")
+					(reference "C205")
 					(unit 1)
 				)
 			)
@@ -11884,7 +11884,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "85eab441-3147-4005-854c-99697eff7ab1")
-		(property "Reference" "C?"
+		(property "Reference" "C207"
 			(at 240.03 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11981,7 +11981,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "C?")
+					(reference "C207")
 					(unit 1)
 				)
 			)
@@ -12685,7 +12685,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9700e985-926c-4caf-8040-166b28ac6888")
-		(property "Reference" "R?"
+		(property "Reference" "R207"
 			(at 252.73 201.93 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12747,7 +12747,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "R?")
+					(reference "R207")
 					(unit 1)
 				)
 			)
@@ -12764,7 +12764,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "a13b0dae-d261-4a7b-b0a8-22573a4ec5fa")
-		(property "Reference" "C?"
+		(property "Reference" "C211"
 			(at 106.68 127 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12861,7 +12861,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "C?")
+					(reference "C211")
 					(unit 1)
 				)
 			)
@@ -13132,7 +13132,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "c0b5d7ff-564a-4c7f-af9c-e6616f07902b")
-		(property "Reference" "R?"
+		(property "Reference" "R204"
 			(at 147.32 118.11 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13194,7 +13194,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "R?")
+					(reference "R204")
 					(unit 1)
 				)
 			)
@@ -13211,7 +13211,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "c2c36232-837c-4e09-97e6-54e8f46deffe")
-		(property "Reference" "R?"
+		(property "Reference" "R206"
 			(at 66.04 78.74 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13273,7 +13273,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "R?")
+					(reference "R206")
 					(unit 1)
 				)
 			)
@@ -13370,7 +13370,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e093a663-3e10-40bc-99a4-52490b479c20")
-		(property "Reference" "C?"
+		(property "Reference" "C217"
 			(at 69.2125 228.6255 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13467,7 +13467,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "C?")
+					(reference "C217")
 					(unit 1)
 				)
 			)
@@ -13484,7 +13484,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e1d18f7d-210a-4973-8fa8-cda803ebe0c7")
-		(property "Reference" "C?"
+		(property "Reference" "C202"
 			(at 157.48 45.72 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13581,7 +13581,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "C?")
+					(reference "C202")
 					(unit 1)
 				)
 			)
@@ -13598,7 +13598,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e1e3be39-0f43-4be5-9ae4-d317ca1002b2")
-		(property "Reference" "R?"
+		(property "Reference" "R201"
 			(at 259.08 50.8 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13660,7 +13660,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "R?")
+					(reference "R201")
 					(unit 1)
 				)
 			)
@@ -13677,7 +13677,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e8a3ac07-a282-4f68-ac11-92ba6ce5d60a")
-		(property "Reference" "R?"
+		(property "Reference" "R203"
 			(at 124.714 84.074 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13741,7 +13741,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "R?")
+					(reference "R203")
 					(unit 1)
 				)
 			)
@@ -13758,7 +13758,7 @@
 		(in_pos_files yes)
 		(dnp yes)
 		(uuid "ed4de27e-b582-40ec-a402-251162d394b3")
-		(property "Reference" "R?"
+		(property "Reference" "R202"
 			(at 124.714 73.914 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13822,7 +13822,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "R?")
+					(reference "R202")
 					(unit 1)
 				)
 			)
@@ -13840,7 +13840,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "fe84e542-48d3-45ca-988a-9da632682d1a")
-		(property "Reference" "C?"
+		(property "Reference" "C208"
 			(at 251.46 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13904,7 +13904,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "C?")
+					(reference "C208")
 					(unit 1)
 				)
 			)
@@ -13922,7 +13922,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "ff341758-1abd-43cc-a021-91c87c2094e6")
-		(property "Reference" "C?"
+		(property "Reference" "C215"
 			(at 189.23 200.66 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13986,7 +13986,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/398ca7b7-7738-4225-954b-67f201e2f059"
-					(reference "C?")
+					(reference "C215")
 					(unit 1)
 				)
 			)

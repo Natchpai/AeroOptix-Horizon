@@ -1,10 +1,10 @@
 # AeroOptix-Horizon: Integration Questions for the Team
 
-**Revision:** 0.5
-**Updated:** 2026-11-16
+**Revision:** 0.6
+**Updated:** 2026-11-19
 **From:** Hardware
 **To:** Software team, CAD team and all members
-**Status:** D14 to D16 answered by the team on 2026-11-16 (spec DEC-051, checklist P0-023). Still open: the parts table and the team tests (checklist P0-022). Answered questions from rev 0.1 to 0.4 are in the spec (DEC-019 to DEC-023, DEC-050, MEC-002 to MEC-004) and in Git history.
+**Status:** D14 to D16 answered by the team on 2026-11-16 (spec DEC-051, checklist P0-023). Still open: the parts table and the team tests (checklist P0-022). Rev 0.6: RC and telemetry set changed by the team (spec DEC-053) and the ESC is now the Tekko32 4in1 (DEC-054). Answered questions from rev 0.1 to 0.4 are in the spec (DEC-019 to DEC-023, DEC-050, MEC-002 to MEC-004) and in Git history.
 
 ## 1. How to reply
 
@@ -65,11 +65,12 @@ By: Jakarin
 
 | Item | What we need | Known | Team |
 |---|---|---|---|
-| ELRS receiver | Model and link | | |
+| RC receiver | Current draw; PPM signal level (3.3 V or 5 V); what the PPM output does on link loss (stops, holds, or sends failsafe values) and how you set its failsafe | FlySky FS-iA6B, PPM mode, RC IN (DEC-053) | |
+| Telemetry radio | Confirm the 100 mW model; setup for 920 to 925 MHz | Holybro SiK V3 on TELEM1 (DEC-053) | |
 | GPS module | Confirm Holybro M9N, photo of the plug | | |
 | Airspeed | Link or photo; 3.3 V or 5 V version | MS4525DO | |
 | PM02D | Chip on the label (INA228 or INA226), photo of the plug | | |
-| ESC | Link | 4 × Skywalker 80A V2 | |
+| ESC | Pinout of the 8-pin 1.0 mm connector (photo or Holybro pin map); BEC on it or not; adapter cable to MAIN 1 to 4 (signal and GND only) | One Tekko32 F4 4in1 50A AM32, no PDB (DEC-054) | |
 | Tilt servos | Stall current | 4 × RDS3235 | |
 | Other servos | Which goes where (flaperon, ruddervator), how many, stall current | Kingmax C507, DS-843MG | |
 | UBEC | Model and link | 10 A, XT30 | |
@@ -77,6 +78,6 @@ By: Jakarin
 ## 5. Team tests still open
 
 Send the results when you have them:
-- S5: RC-loss failsafe over ELRS MAVLink.
+- RC loss with the FS-iA6B in PPM mode: turn the transmitter off and check that PX4 reports RC loss (checklist P4-016; replaces S5, ELRS is dropped).
 - OPEN-017: halt the H743 over SWD while armed and check what the ESCs, tilt servos and surfaces do (checklist P4-011).
 - Servo current: all servos together, and one servo stalled (OPEN-007).

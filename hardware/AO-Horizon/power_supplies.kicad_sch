@@ -783,7 +783,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "0_Protection_ESD:PESD2USB3UV-T"
+		(symbol "0_Protection_ESD:PESD5V0U2BT"
 			(pin_names
 				(hide yes)
 			)
@@ -793,7 +793,7 @@
 			(in_pos_files yes)
 			(duplicate_pin_numbers_are_jumpers no)
 			(property "Reference" "D"
-				(at 5.715 2.54 0)
+				(at 8.89 1.905 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -803,8 +803,8 @@
 					(justify left)
 				)
 			)
-			(property "Value" "PESD2USB3UV-T"
-				(at 5.715 0.635 0)
+			(property "Value" "PESD5V0U2BT"
+				(at 8.89 0 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -815,7 +815,7 @@
 				)
 			)
 			(property "Footprint" "0_Package_TO_SOT_SMD:SOT-23"
-				(at 5.715 -1.27 0)
+				(at 8.89 -1.905 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -837,8 +837,8 @@
 					)
 				)
 			)
-			(property "Description" "ESD DIODE 3.3VWM 2.6VC SOT-23"
-				(at 19.685 -4.318 0)
+			(property "Description" "ESD DIODE 5VWM SOT-23"
+				(at 22.86 -4.953 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -848,7 +848,7 @@
 					)
 				)
 			)
-			(property "ki_keywords" "usb esd protection suppression transient"
+			(property "ki_keywords" "esd protection suppression transient"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -870,7 +870,7 @@
 					)
 				)
 			)
-			(symbol "PESD2USB3UV-T_0_0"
+			(symbol "PESD5V0U2BT_0_0"
 				(pin passive line
 					(at 0 -5.08 90)
 					(length 2.54)
@@ -890,7 +890,7 @@
 					)
 				)
 			)
-			(symbol "PESD2USB3UV-T_0_1"
+			(symbol "PESD5V0U2BT_0_1"
 				(rectangle
 					(start -4.445 2.54)
 					(end 4.445 -2.54)
@@ -904,7 +904,7 @@
 				)
 				(polyline
 					(pts
-						(xy -2.54 2.54) (xy -2.54 1.27)
+						(xy -3.175 0.381) (xy -3.175 0.635)
 					)
 					(stroke
 						(width 0)
@@ -916,7 +916,7 @@
 				)
 				(polyline
 					(pts
-						(xy -2.54 1.27) (xy -2.54 -1.27) (xy 2.54 -1.27) (xy 2.54 1.27)
+						(xy -2.54 2.54) (xy -2.54 -1.524) (xy 2.54 -1.524) (xy 2.54 2.54)
 					)
 					(stroke
 						(width 0)
@@ -928,7 +928,7 @@
 				)
 				(polyline
 					(pts
-						(xy -2.54 1.27) (xy -1.905 0) (xy -3.175 0) (xy -2.54 1.27)
+						(xy -2.54 0.381) (xy -3.175 1.651) (xy -1.905 1.651) (xy -2.54 0.381)
 					)
 					(stroke
 						(width 0)
@@ -940,7 +940,7 @@
 				)
 				(polyline
 					(pts
-						(xy -1.905 1.016) (xy -1.905 1.27) (xy -3.175 1.27) (xy -3.175 1.27)
+						(xy -2.54 0.381) (xy -1.905 -0.889) (xy -3.175 -0.889) (xy -2.54 0.381)
 					)
 					(stroke
 						(width 0)
@@ -952,7 +952,19 @@
 				)
 				(polyline
 					(pts
-						(xy 0 -1.27) (xy 0 -2.54)
+						(xy -1.905 0.127) (xy -1.905 0.381) (xy -3.175 0.381) (xy -3.175 0.381)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -1.524) (xy 0 -2.54)
 					)
 					(stroke
 						(width 0)
@@ -963,7 +975,7 @@
 					)
 				)
 				(circle
-					(center 0 -1.27)
+					(center 0 -1.524)
 					(radius 0.254)
 					(stroke
 						(width 0)
@@ -975,7 +987,7 @@
 				)
 				(polyline
 					(pts
-						(xy 2.54 2.54) (xy 2.54 1.27)
+						(xy 1.905 0.381) (xy 1.905 0.635)
 					)
 					(stroke
 						(width 0)
@@ -987,7 +999,7 @@
 				)
 				(polyline
 					(pts
-						(xy 2.54 1.27) (xy 1.905 0) (xy 3.175 0) (xy 2.54 1.27)
+						(xy 2.54 0.381) (xy 1.905 1.651) (xy 3.175 1.651) (xy 2.54 0.381)
 					)
 					(stroke
 						(width 0)
@@ -999,7 +1011,19 @@
 				)
 				(polyline
 					(pts
-						(xy 3.175 1.016) (xy 3.175 1.27) (xy 1.905 1.27) (xy 1.905 1.27)
+						(xy 2.54 0.381) (xy 1.905 -0.889) (xy 3.175 -0.889) (xy 2.54 0.381)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.175 0.127) (xy 3.175 0.381) (xy 1.905 0.381) (xy 1.905 0.381)
 					)
 					(stroke
 						(width 0)
@@ -1010,7 +1034,7 @@
 					)
 				)
 			)
-			(symbol "PESD2USB3UV-T_1_1"
+			(symbol "PESD5V0U2BT_1_1"
 				(pin passive line
 					(at -2.54 5.08 270)
 					(length 2.54)
@@ -4247,13 +4271,14 @@
 	)
 	(text "LDO 3V3 500mA"
 		(exclude_from_sim no)
-		(at 300.99 153.67 0)
+		(at 283.21 153.67 0)
 		(effects
 			(font
 				(face "Century Gothic")
-				(size 3.048 3.048)
+				(size 2.54 2.54)
 				(bold yes)
 			)
+			(justify left)
 		)
 		(uuid "8d3da8c9-c216-48a0-8010-6473fd5bd754")
 	)
@@ -4273,13 +4298,14 @@
 	)
 	(text "Power Input Conn"
 		(exclude_from_sim no)
-		(at 46.99 40.64 0)
+		(at 29.21 40.64 0)
 		(effects
 			(font
 				(face "Century Gothic")
-				(size 3.048 3.048)
+				(size 2.54 2.54)
 				(bold yes)
 			)
+			(justify left)
 		)
 		(uuid "942d8fc6-178e-447c-ae65-8e7dad6960d9")
 	)
@@ -4351,7 +4377,7 @@
 		(effects
 			(font
 				(face "Century Gothic")
-				(size 3.048 3.048)
+				(size 2.54 2.54)
 				(bold yes)
 			)
 			(justify left)
@@ -4535,11 +4561,11 @@
 	)
 	(text "Buck Converter 3V3 2A (2.5MHz)"
 		(exclude_from_sim no)
-		(at 29.21 153.67 0)
+		(at 27.94 153.67 0)
 		(effects
 			(font
 				(face "Century Gothic")
-				(size 3.048 3.048)
+				(size 2.54 2.54)
 				(bold yes)
 			)
 			(justify left)
@@ -10076,124 +10102,6 @@
 		)
 	)
 	(symbol
-		(lib_id "0_Protection_ESD:PESD2USB3UV-T")
-		(at 71.12 91.44 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "3f15d1d5-6573-4264-b0c4-996efce38d5e")
-		(property "Reference" "D102"
-			(at 76.2 90.17 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "PESD2USB3UV-T"
-			(at 76.2 92.71 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "0_Package_TO_SOT_SMD:SOT-23"
-			(at 76.835 92.71 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Datasheet" ""
-			(at 74.295 103.505 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "ESD DIODE 3.3VWM 2.6VC SOT-23"
-			(at 90.805 95.758 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C3704436"
-			(at 71.12 91.44 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "MFR" "Nexperia"
-			(at 71.12 91.44 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "MFR.P/N" "PESD2USB3UV-TR"
-			(at 71.12 91.44 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "2"
-			(uuid "75c32a88-58b2-41c8-9fae-e18fff62f62c")
-		)
-		(pin "1"
-			(uuid "e84c4b81-5e6a-4ae7-9563-faee13470a22")
-		)
-		(pin "3"
-			(uuid "291b89d4-ed31-4c9e-b1b6-375b7c967522")
-		)
-		(instances
-			(project "AO-Horizon"
-				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/5920cc04-6cd8-462c-b523-fb850d762b0c"
-					(reference "D102")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C")
 		(at 129.54 190.5 0)
 		(unit 1)
@@ -12557,6 +12465,125 @@
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/5920cc04-6cd8-462c-b523-fb850d762b0c"
 					(reference "C109")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "0_Protection_ESD:PESD5V0U2BT")
+		(at 71.12 91.44 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a5f040d1-58ae-4956-925e-f98ccca696d1")
+		(property "Reference" "D102"
+			(at 77.47 90.17 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "PESD5V0U2BT,215"
+			(at 77.47 92.71 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "0_Package_TO_SOT_SMD:SOT-23"
+			(at 80.01 93.345 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Datasheet" ""
+			(at 74.295 103.505 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "ESD DIODE 5VWM SOT-23"
+			(at 93.98 96.393 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C85399"
+			(at 71.12 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "Nexperia"
+			(at 71.12 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "PESD5V0U2BT,215"
+			(at 71.12 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "8248d9e7-c744-430a-8d7a-ba66bd04cb2b")
+		)
+		(pin "2"
+			(uuid "12d93675-708a-4a68-bc8e-c3d0d27fdd00")
+		)
+		(pin "3"
+			(uuid "781450fc-d5fd-4e92-b5a9-ddd6e35a39fa")
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/5920cc04-6cd8-462c-b523-fb850d762b0c"
+					(reference "D102")
 					(unit 1)
 				)
 			)
