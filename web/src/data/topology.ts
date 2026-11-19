@@ -685,9 +685,10 @@ export const boardBlocks: Block[] = [
     id: 'buzzer',
     level: 'board',
     kind: 'io',
-    label: 'Buzzer',
-    sub: 'Passive',
-    refs: ['IF-046'],
+    label: 'Buzzer driver',
+    sub: 'Q701, to GPS1',
+    refs: ['IF-046', 'DEC-068'],
+    open: ['OPEN-023'],
   },
   {
     id: 'leds',
@@ -905,7 +906,7 @@ export const boardLinks: Link[] = [
     to: 'buzzer',
     bus: 'pwm',
     label: 'TIM3_CH3',
-    refs: ['IF-046'],
+    refs: ['IF-046', 'DEC-068'],
     pins: [{ mcu: 'h743', refs: ['IF-046'] }],
   },
   {
