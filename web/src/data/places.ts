@@ -37,35 +37,37 @@ export const places: Record<Level, Record<string, Place>> = {
     // their line going down
     'o-tel1': { x: 480, y: 0, w: 240 },
     'o-tel2': { x: 480, y: 92, w: 240 },
-    'o-gps': { x: 480, y: 184, w: 240 },
-    'o-air': { x: 480, y: 276, w: 240 },
-    'o-lidar': { x: 480, y: 368, w: 240 },
-    'o-usb': { x: 480, y: 460, w: 240 },
-    'o-sd': { x: 480, y: 552, w: 240 },
-    'o-dbg': { x: 480, y: 644, w: 240 },
-    'o-esc': { x: 480, y: 736, w: 240 },
+    'o-rcin': { x: 480, y: 184, w: 240 },
+    'o-gps': { x: 480, y: 276, w: 240 },
+    'o-air': { x: 480, y: 368, w: 240 },
+    'o-lidar': { x: 480, y: 460, w: 240 },
+    'o-usb': { x: 480, y: 552, w: 240 },
+    'o-sd': { x: 480, y: 644, w: 240 },
+    'o-dbg': { x: 480, y: 736, w: 240 },
+    'o-esc': { x: 480, y: 828, w: 240 },
 
     // power chain, left to right: battery, PM02D (battery down to the PDB),
-    // PDB (tall: UBEC at 430, ESCs at 1020), UBEC into the XT30
+    // PDB (tall: UBEC at 430, ESC at 1112), UBEC into the XT30
     battery: { x: -1540, y: 200 },
     pm02d: { x: -1180, y: 140, h: 180 },
-    pdb: { x: -1180, y: 380, h: 690 },
+    pdb: { x: -1180, y: 380, h: 782 },
     ubec: { x: -820, y: 400 },
 
     // devices, level with their ports, wide enough for their notes
-    elrs: { x: 940, y: 0, w: 260 },
+    sik: { x: 940, y: 0, w: 260 },
     tel2dev: { x: 940, y: 92, w: 260 },
-    gps: { x: 940, y: 184, w: 260 },
-    airspeed: { x: 940, y: 276, w: 260 },
-    lidar: { x: 940, y: 368, w: 260 },
-    pc: { x: 940, y: 460, w: 260 },
-    card: { x: 940, y: 552, w: 260 },
-    probe: { x: 940, y: 644, w: 260 },
+    rx: { x: 940, y: 184, w: 260 },
+    gps: { x: 940, y: 276, w: 260 },
+    airspeed: { x: 940, y: 368, w: 260 },
+    lidar: { x: 940, y: 460, w: 260 },
+    pc: { x: 940, y: 552, w: 260 },
+    card: { x: 940, y: 644, w: 260 },
+    probe: { x: 940, y: 736, w: 260 },
 
     // actuators under their ports; the ESC line from the PDB runs under
     // the servos
-    servos: { x: -490, y: 900, w: 300 },
-    esc: { x: 470, y: 990, w: 260 },
+    servos: { x: -490, y: 992, w: 300 },
+    esc: { x: 470, y: 1082, w: 260 },
   },
 
   // System (L1), in zones: on-board I/O on top, sensors and the I2C2 bus
@@ -97,10 +99,11 @@ export const places: Record<Level, Record<string, Place>> = {
     // IO MCU under the H743, centred on it. Its right side drives the
     // safety line to GPS1 and the servo group, centred on 1130; its left
     // side the SWD pads, in the USB and debug column.
-    // Tall for its three right-side ends (DEC-051): the safety line, the
-    // ESC group and the surface group, 200 apart, centred on 1236.
-    f100: { x: 560, y: 900, w: 400, h: 672 },
-    'p-f100dbg': { x: 40, y: 1206 },
+    // Tall for its four right-side ends (DEC-051, DEC-053): the safety
+    // line, RC IN, the ESC group and the surface group, 200 apart, centred
+    // on 1336.
+    f100: { x: 560, y: 900, w: 400, h: 872 },
+    'p-f100dbg': { x: 40, y: 1306 },
 
     // connectors, right column, 92 apart. GPS1 is tall, so it faces both
     // the H743 (796) and the F100 (1036). The tilt servo headers (AUX, H743
@@ -112,8 +115,9 @@ export const places: Record<Level, Record<string, Place>> = {
     'j-lidar': { x: 1300, y: 582, w: 240 },
     'j-aux': { x: 1300, y: 674, w: 240 },
     'j-gps': { x: 1300, y: 776, w: 240, h: 280 },
-    'j-esc': { x: 1300, y: 1160, w: 240, h: 152 },
-    'j-servo': { x: 1300, y: 1338, w: 240, h: 196 },
+    'j-rcin': { x: 1300, y: 1206, w: 240 },
+    'j-esc': { x: 1300, y: 1360, w: 240, h: 152 },
+    'j-servo': { x: 1300, y: 1538, w: 240, h: 196 },
   },
 
   // Power (L1): left to right, columns 180 px apart: source, input,
@@ -179,6 +183,7 @@ export const zones: Partial<Record<Level, Zone[]>> = {
         'o-servo',
         'o-tel1',
         'o-tel2',
+        'o-rcin',
         'o-gps',
         'o-air',
         'o-lidar',
@@ -197,8 +202,9 @@ export const zones: Partial<Record<Level, Zone[]>> = {
       id: 'z-out-dev',
       label: 'Out board: devices',
       blocks: [
-        'elrs',
+        'sik',
         'tel2dev',
+        'rx',
         'gps',
         'airspeed',
         'lidar',
@@ -237,6 +243,7 @@ export const zones: Partial<Record<Level, Zone[]>> = {
         'j-lidar',
         'j-aux',
         'j-gps',
+        'j-rcin',
         'j-esc',
         'j-servo',
       ],
@@ -270,9 +277,9 @@ export const lineAt: Record<string, number> = {
   // Overview: PM02D to its port, two lines 28 apart, centred on both
   's-pm-fc-pwr': 216,
   's-pm-fc-i2c': 244,
-  // PDB right side: UBEC and ESC lines, centred on the PDB (725)
+  // PDB right side: UBEC and ESC lines, centred on the PDB (771)
   's-pdb-ubec': 430,
-  's-pdb-esc': 1020,
+  's-pdb-esc': 1112,
   // servo headers to servos pair, centred on both (-340)
   's-fc-servo': -354,
   's-fc-servo-pwr': -326,
@@ -288,14 +295,16 @@ export const lineAt: Record<string, number> = {
   'pw-pm-pdb': 960,
   'pw-5v-buck': 300,
   'pw-5v-ports': 820,
-  // F100 right side, three ends 200 apart centred on 1236: the safety line
-  // (1036), the ESC group (centred on 1236) and the surface group with the
-  // rail sense line set apart (centred on 1436). Lines 28 px apart.
+  // F100 right side, four ends 200 apart centred on 1336: the safety line
+  // (1036), RC IN (1236), the ESC group (centred on 1436) and the surface
+  // group with the rail sense line set apart (centred on 1636). Lines 28 px
+  // apart.
+  'b-rcin': 1236,
   ...Object.fromEntries(
-    Array.from({ length: 4 }, (_, i) => [`b-esc-${i + 1}`, 1194 + i * 28])
+    Array.from({ length: 4 }, (_, i) => [`b-esc-${i + 1}`, 1394 + i * 28])
   ),
   ...Object.fromEntries(
-    Array.from({ length: 4 }, (_, i) => [`b-servo-${i + 1}`, 1372 + i * 28])
+    Array.from({ length: 4 }, (_, i) => [`b-servo-${i + 1}`, 1572 + i * 28])
   ),
-  'b-servo-sense': 1500,
+  'b-servo-sense': 1700,
 }
