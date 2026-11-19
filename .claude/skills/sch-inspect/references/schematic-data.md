@@ -30,7 +30,9 @@ checked against the file itself. Rules, commands and the JSON contract are in
 | `label` | Named connection local to one sheet instance |
 | `hierarchical_label`, parent `sheet` pins | Connection across a parent-child sheet boundary, matched by name |
 | `global_label`, power symbols | Project-wide connection by name |
-| `bus`, bus labels | Not expanded by the tool |
+| `bus`, labels on a bus | Bus segments, grouped like wires. A label or sheet pin on a segment names the bus: vector `D[0..7]`, group `P{A B}` (members `P.A`, `P.B`) or `{ALIAS}` |
+| `bus_entry` | Drawing only: a member joins by label name, not by the entry |
+| `bus_aliases` in `<project>.kicad_pro` (KiCad 10), `bus_alias` in a sheet (older files) | Alias name to member list, project wide |
 | `sheet`, `Sheetfile`, UUID | Hierarchy and reused-sheet identity |
 
 A pin-to-net association depends on the symbol definition, unit, placement
