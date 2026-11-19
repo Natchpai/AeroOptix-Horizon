@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only KiCad schematic discovery and conservative local, hierarchical and project net evidence (v1.1.1).
+"""Read-only KiCad schematic discovery and conservative local, hierarchical, project net and bus evidence (v1.2.0).
 
 Python 3.10+ standard library only. Never modifies project files.
 """
@@ -9,6 +9,7 @@ import argparse
 import json
 import sys
 import math
+import re
 from pathlib import Path
 
 
@@ -24,9 +25,13 @@ _INTERFACE_LIMITS = [
     'Parent sheet pins, other connected sheet pins, and wire/label paths are geometric/interface evidence only',
     'Destination child pins and labels are sheet-local evidence only; global labels, cross-sheet power nets, reused instances, buses and inherited symbols are not fully resolved',
     'Not a KiCad-equivalent full-project net resolver']
+_BUS_LIMIT = ('Bus members join by name as in KiCad 10: a label with the member name on the bus sheet, '
+              'a sheet pin to the hierarchical label of the same name, or a global bus label; bus entries are not needed. '
+              'Bus-to-bus entries and member names held only by power symbols or sheet pins are not resolved')
 PROJECT_NET_LIMITS = [
     'Conservative geometry and declared labels only; not KiCad netlist parity',
-    'Complex symbol inheritance, buses, hidden connectivity, and ambiguous unit instances may be unresolved',
+    'Complex symbol inheritance, hidden connectivity, and ambiguous unit instances may be unresolved',
+    _BUS_LIMIT,
     'Starting reference with pins on multiple separate nets needs a pin-specific query']
 
 # One entry per command: the top-level `verification` value and `limitations`
@@ -46,9 +51,15 @@ MODES = {
     'hier-net': {'verification': 'HIERARCHICAL_INTERFACE_EVIDENCE_ONLY', 'limitations': _INTERFACE_LIMITS},
     'connected-pins': {'verification': 'PARENT_CONNECTED_PINS_GEOMETRY_ONLY', 'limitations': _INTERFACE_LIMITS},
     'project-net': {'verification': 'INSTANCE_AWARE_PROJECT_EVIDENCE_ONLY', 'limitations': PROJECT_NET_LIMITS},
-    'net': {'verification': 'INSTANCE_AWARE_PROJECT_EVIDENCE_ONLY', 'limitations': PROJECT_NET_LIMITS[:2] + [
+    'net': {'verification': 'INSTANCE_AWARE_PROJECT_EVIDENCE_ONLY', 'limitations': PROJECT_NET_LIMITS[:3] + [
         'The name is matched exactly against label and power symbol text, not against KiCad full net paths',
-        'A local label repeated in several sheet instances gives one result per separate net']},
+        'A local label repeated in several sheet instances gives one result per separate net',
+        'Bus names are not net names; use the bus command for them']},
+    'bus': {'verification': 'INSTANCE_AWARE_PROJECT_EVIDENCE_ONLY', 'limitations': [
+        'Conservative geometry and declared labels only; not KiCad netlist parity',
+        _BUS_LIMIT,
+        'Members match by name inside a sheet, by short name (groups) or index (vectors) across a sheet pin, and by name across global bus labels',
+        'Bus aliases come from the project file and from bus_alias forms in the sheets']},
     'components': {'verification': 'STRUCTURAL_DISCOVERY_ONLY', 'limitations': [
         'Structural list only; no electrical connectivity or pin-net verification',
         'A reference is resolved per sheet instance only when the symbol has exactly one matching instance path; otherwise the Reference property is shown',
@@ -226,7 +237,7 @@ def load_file(path: Path):
         raise QueryError(f'cannot read {path}: {exc}') from exc
     if not source.lstrip().startswith('(kicad_sch'):
         raise QueryError(f'not a KiCad schematic: {path}')
-    symbols, sheets, geometry = [], [], []
+    symbols, sheets, geometry, aliases = [], [], [], []
     file_uuid = None
     for tag, fragment in forms(source):
         if tag == 'symbol':
@@ -237,8 +248,11 @@ def load_file(path: Path):
             file_uuid = parse(fragment)[1]  # root UUID form is (uuid VALUE)
         elif tag in _GEOMETRY_TAGS:
             geometry.append((tag, fragment))
+        elif tag == 'bus_alias':
+            aliases.append(parse(fragment))
     cached = {'uuid': file_uuid, 'symbols': symbols, 'sheets': sheets,
-              'geometry_forms': geometry, 'geometry': None}
+              'geometry_forms': geometry, 'geometry': None, 'bus': None,
+              'bus_aliases': aliases}
     _FILES[key] = cached
     return cached
 
@@ -274,6 +288,27 @@ def is_on_segment(point, a, b, tol=0.002):
         return False
     closest = (a[0]+max(0,min(1,t))*vx, a[1]+max(0,min(1,t))*vy)
     return math.dist(point, closest) <= tol
+
+
+def at_segment_end(point, a, b, tol=0.002):
+    """True when point is an end of segment a-b.
+
+    KiCad joins a symbol pin or another segment's end to a segment only at
+    the segment's ends; on the middle of a segment they stay apart unless a
+    junction is there. Labels, junctions and sheet pins join anywhere on it.
+    """
+    return bool(point) and (math.dist(point, a) <= tol or math.dist(point, b) <= tol)
+
+
+def pin_segments(point, wires, junctions):
+    """Indexes of the wire segments a symbol pin connects to.
+
+    A pin connects at a segment end, or on the middle of a segment only
+    where a junction sits.
+    """
+    at_junction = bool(point) and any(j and math.dist(point, j) <= 0.002 for j in junctions)
+    return [i for i, (a, b) in enumerate(wires)
+            if at_segment_end(point, a, b) or (at_junction and is_on_segment(point, a, b))]
 
 
 def local_geometry(path):
@@ -313,11 +348,95 @@ def local_geometry(path):
     # A label drawn on a bus is not a scalar-net label.  Bus expansion and
     # bus entries are deliberately unsupported, so excluding these labels is
     # safer than letting identical bus names union scalar local-net groups.
-    labels = [label for label in labels if not (
-        label['point'] and any(is_on_segment(label['point'], a, b) for a, b in buses)
-    )]
+    on_bus = [bool(label['point']) and any(is_on_segment(label['point'], a, b) for a, b in buses)
+              for label in labels]
+    loaded['bus'] = (buses, [l for l, b in zip(labels, on_bus) if b])
+    labels = [l for l, b in zip(labels, on_bus) if not b]
     loaded['geometry'] = (lib, wires, labels, junctions, no_connects)
     return loaded['geometry']
+
+
+def bus_geometry(path):
+    """Return (bus segments, labels on bus segments) of one schematic file."""
+    local_geometry(path)
+    return load_file(path)['bus']
+
+
+# KiCad text escapes such as {slash} look like a one-member group.
+_ESCAPES = {'slash', 'backslash', 'lt', 'gt', 'colon', 'dblquote', 'quote',
+            'comma', 'tab', 'return', 'brace', 'space', 'pipe'}
+_VECTOR = re.compile(r'^([^\[\]{}\s]*)\[(\d+)\.\.(\d+)\]$')
+_GROUP = re.compile(r'^([^\[\]{}\s]*)\{([^{}]+)\}$')
+
+
+def bus_members(name, aliases, _depth=0, _stack=()):
+    """Expand a bus name into an ordered list of (key, member net name).
+
+    Returns None for a scalar name. A vector P[a..b] gives Pa..Pb with key
+    ('v', index). A group P{m1 m2} gives P.m1 (or m1 without a prefix) with
+    key ('g', m1); a member may be a vector or an alias. An alias expands
+    only inside braces: a bare alias name is a plain net name in KiCad 10.
+    Keys match members across a sheet pin, as in KiCad: vectors by index,
+    groups by short name.
+    """
+    if not name or _depth > 8:
+        return None
+    m = _VECTOR.match(name)
+    if m:
+        prefix, a, b = m.group(1), int(m.group(2)), int(m.group(3))
+        if abs(a - b) > 4096:
+            return None
+        step = 1 if b >= a else -1
+        return [(('v', i), f'{prefix}{i}') for i in range(a, b + step, step)]
+    m = _GROUP.match(name)
+    if not m or m.group(2).strip() in _ESCAPES:
+        return None
+    prefix, items = m.group(1), [x for x in re.split(r'[\s,]+', m.group(2)) if x]
+    out = []
+    for item in items:
+        if item in aliases and item not in _stack:
+            names = []
+            for member in aliases[item]:
+                sub = bus_members(member, aliases, _depth + 1, (*_stack, item))
+                names += [n for _, n in sub] if sub else [member]
+        else:
+            sub = _VECTOR.match(item) and bus_members(item, aliases, _depth + 1)
+            names = [n for _, n in sub] if sub else [item]
+        for short in names:
+            member = (('g', short), f'{prefix}.{short}' if prefix else short)
+            if member not in out:
+                out.append(member)
+    return out or None
+
+
+def load_bus_aliases(root, files):
+    """Bus aliases: the project file first, then bus_alias forms in sheets.
+
+    KiCad 10 keeps aliases in <project>.kicad_pro (schematic.bus_aliases).
+    Older files keep (bus_alias "NAME" (members ...)) in a schematic; KiCad
+    applies those to the whole project.
+    """
+    aliases = {}
+    pro = root.with_suffix('.kicad_pro')
+    if pro.is_file():
+        try:
+            data = json.loads(pro.read_text(encoding='utf-8-sig'))
+        except (OSError, UnicodeError, ValueError) as exc:
+            raise QueryError(f'cannot read bus aliases from {pro}: {exc}') from exc
+        schematic = data.get('schematic') if isinstance(data, dict) else None
+        raw = schematic.get('bus_aliases', {}) if isinstance(schematic, dict) else {}
+        raw = {} if raw is None else raw
+        if not isinstance(raw, dict):
+            raise QueryError(f'bus_aliases in {pro} is not an object')
+        for key, members in raw.items():
+            if isinstance(members, list):
+                aliases[str(key)] = [str(x) for x in members]
+    for file in files:
+        for form in load_file(file)['bus_aliases']:
+            members = first(form, 'members')
+            if len(form) > 1 and isinstance(form[1], str) and members:
+                aliases.setdefault(form[1], [x for x in members[1:] if isinstance(x, str)])
+    return aliases
 
 
 def lib_definition(symbol, lib):
@@ -332,7 +451,7 @@ def lib_definition(symbol, lib):
     return lib.get(val(symbol, 'lib_id'))
 
 
-def pins_from_symbol(symbol, lib):
+def pins_from_symbol(symbol, lib, unit=None):
     """Return placed pin positions for common native KiCad symbols.
 
     Complex inheritance, unsupported pin transforms, or missing libraries are
@@ -349,7 +468,7 @@ def pins_from_symbol(symbol, lib):
         rotation = float(at[3]) if at and len(at) > 3 else 0.0
     except (ValueError, TypeError):
         return [], ['symbol rotation invalid']
-    unit = str(val(symbol, 'unit', '1'))
+    unit = str(unit) if unit is not None else str(val(symbol, 'unit', '1'))
     # (convert N) is the legacy name of (body_style N).
     style = str(val(symbol, 'body_style', val(symbol, 'convert', '1')))
     mirror = first(symbol, 'mirror')
@@ -405,6 +524,7 @@ def power_symbol_anchors(path, lib):
         definition = lib_definition(expr, lib)
         if definition is None or first(definition, 'power') is None:
             continue
+        flag = first(definition, 'power')
         info = symbol_info(expr, path)
         pins, problems = pins_from_symbol(expr, lib)
         for problem in problems:
@@ -415,17 +535,21 @@ def power_symbol_anchors(path, lib):
             continue
         for pin in pins:
             result.append({'name': name, 'lib_id': lib_id,
+                           'local': len(flag) > 1 and flag[1] == 'local',
                            'symbol_uuid': info['uuid'],
                            'position_mm': pin['position_mm']})
     return result, warnings
 
 
-def resolve_local_networks(wires, labels, junctions, pin_points=()):
-    """Build sheet-local conductive wire groups; crossings alone do not join.
+def resolve_local_networks(wires, labels, junctions, pin_points=(), mid_points=()):
+    """Build sheet-local conductive groups as KiCad 10 does.
 
-    Endpoints, explicit junctions, label anchor points and pin attachment points
-    split segments. Local labels with the same name unify groups within this
-    sheet; global/hierarchical labels are evidence, not cross-sheet resolved.
+    A segment joins its two ends and every junction, label and mid point
+    (sheet pin) on it. A symbol pin (pin_points) or another segment's end
+    joins a segment only at that segment's end; on its middle they stay
+    apart (checked with a KiCad 10.0.8 netlist). Crossings never join.
+    Labels of any kind with the same name join on this sheet; global and
+    hierarchical connections to other sheets are not resolved here.
     """
     precision = 4  # KiCad coordinates normally use 4 decimals, mm
     def key(p):
@@ -445,27 +569,25 @@ def resolve_local_networks(wires, labels, junctions, pin_points=()):
         a,b=find(a),find(b)
         if a!=b:
             parent[b]=a
-    anchors = [p for a,b in wires for p in (a,b)]
-    anchors += [p for p in junctions if p]
-    anchors += [l['point'] for l in labels if l['point']]
-    anchors += list(pin_points)
-    for p in anchors:
+    joiners = [p for p in junctions if p]
+    joiners += [l['point'] for l in labels if l['point']]
+    joiners += [p for p in mid_points if p]
+    for p in [*joiners, *pin_points]:
         add(p)
-    # Union all anchored points on each conductive segment. Crossing
-    # segments without an endpoint/junction remain separate networks.
     for a,b in wires:
-        on=[add(p) for p in anchors if is_on_segment(p,a,b)]
-        for k in on[1:]:
-            union(on[0],k)
-    # Only local label scope can be resolved without sheet hierarchy.
-    local_names={}
+        end=add(a)
+        union(end, add(b))
+        for p in joiners:
+            if is_on_segment(p,a,b):
+                union(end, add(p))
+    names={}
     for label in labels:
-        if label['kind']=='label' and label['point']:
+        if label['point'] and label['name']:
             k=add(label['point'])
-            if label['name'] in local_names:
-                union(k,local_names[label['name']])
+            if label['name'] in names:
+                union(k,names[label['name']])
             else:
-                local_names[label['name']]=k
+                names[label['name']]=k
     groups={}
     for label in labels:
         if label['point']:
@@ -513,10 +635,11 @@ def inspect_pins(root, data, reference, limit, resolved=False):
             annotated=[]
             for pin in pins_by_uuid[m['uuid']]:
                 pos=tuple(pin['position_mm'])
-                attached=[i for i,(a,b) in enumerate(wires) if is_on_segment(pos,a,b)]
+                attached=pin_segments(pos,wires,junctions)
                 near_labels=[{'kind':l['kind'],'name':l['name']} for l in labels if l['point'] and (math.dist(pos,l['point']) < .002 or any(is_on_segment(l['point'], *wires[i]) for i in attached))]
                 pin['local_wire_segments_at_pin']=len(attached)
-                pin['candidate_labels_on_same_segment']=near_labels[:10]
+                pin['candidate_labels_on_same_segment']=near_labels[:limit]
+                pin['candidate_labels_truncated']=len(near_labels)>limit
                 pin['no_connect_marker']=any(p and math.dist(pos,p)<.002 for p in nc)
                 pin['connection_evidence']='DIRECT_GEOMETRY_ONLY'
                 if resolved:
@@ -539,7 +662,7 @@ def inspect_pins(root, data, reference, limit, resolved=False):
                         for power in power_anchors:
                             at_power = tuple(power['position_mm'])
                             if find(add(at_power)) == target_group and (
-                                any(is_on_segment(at_power, a, b) for a, b in wires)
+                                pin_segments(at_power, wires, junctions)
                                 or math.dist(pos, at_power) < .002
                             ):
                                 power_matches.append({
@@ -599,14 +722,14 @@ def connected_parent_pins(parent_file, wires, labels, junctions, origin, limit):
     # Include other pins as graph anchors, but avoid connecting to a pin that
     # merely occupies a crossing of two unrelated segments.
     positions = [tuple(c['position_mm']) for c in candidates]
-    add, find, _ = resolve_local_networks(wires, labels, junctions, [origin, *positions])
+    add, find, _ = resolve_local_networks(wires, labels, junctions, positions, [origin])
     connected = []
     origin_is_attached = any(is_on_segment(origin, a, b) for a, b in wires)
     if origin_is_attached:
         network = find(add(origin))
         for c in candidates:
             pos = tuple(c['position_mm'])
-            if not any(is_on_segment(pos, a, b) for a, b in wires):
+            if not pin_segments(pos, wires, junctions):
                 continue
             if find(add(pos)) == network:
                 connected.append(c)
@@ -647,7 +770,7 @@ def connected_parent_sheet_pins(parent_file, wires, labels, junctions, origin, s
                 'position_mm': [round(v, 4) for v in point],
             })
     positions = [tuple(item['position_mm']) for item in candidates]
-    add, find, _ = resolve_local_networks(wires, labels, junctions, [origin, *positions])
+    add, find, _ = resolve_local_networks(wires, labels, junctions, (), [origin, *positions])
     connected = []
     if any(is_on_segment(origin, a, b) for a, b in wires):
         network = find(add(origin))
@@ -690,7 +813,7 @@ def inspect_destination_sheet_pin(parent_file, endpoint, limit, root_dir):
     for label in matching[:limit]:
         point = label['point']
         hits = connected_parent_pins(child, wires, labels, junctions, point, limit)
-        add, find, groups = resolve_local_networks(wires, labels, junctions, [point])
+        add, find, groups = resolve_local_networks(wires, labels, junctions, (), [point])
         anchored = any(is_on_segment(point, a, b) for a, b in wires)
         same_network = groups.get(find(add(point)), []) if anchored else []
         results.append({
@@ -757,7 +880,7 @@ def hierarchical_trace(root: Path, data, reference: str, limit: int, discover_pi
                     parent_cache[parent] = local_geometry(parent)
                 _, wires, labels, junctions, _ = parent_cache[parent]
                 at = matching[0]['position']
-                add, find, groups = resolve_local_networks(wires, labels, junctions, [at])
+                add, find, groups = resolve_local_networks(wires, labels, junctions, (), [at])
                 attached = any(is_on_segment(at, a, b) for a, b in wires)
                 attached = attached or any(l['point'] and math.dist(l['point'], at) < .002 for l in labels)
                 connected_labels = groups.get(find(add(at)), []) if attached else []
@@ -771,6 +894,7 @@ def hierarchical_trace(root: Path, data, reference: str, limit: int, discover_pi
                                'parent_labels_on_path': [
                                    {'kind': l['kind'], 'name': l['name']}
                                    for l in connected_labels[:limit]],
+                               'parent_labels_truncated': len(connected_labels) > limit,
                                'project_net_verified': False}
                 if discover_pins:
                     trace.update(connected_parent_pins(parent, wires, labels, junctions, at, limit))
@@ -830,11 +954,26 @@ def build_project_graph(root, data, max_instances):
     for an explicitly matched hierarchical interface or equal global/power
     names. This is NOT a KiCad-equivalent ERC/netlist computation.
 
-    Returns (instances, cached, graph, details). A graph node is
-    (instance index, local group).
+    Bus members are graph nodes (instance index, ('bus', bus group, key)).
+    KiCad 10 joins a member to every net on that sheet with a label of the
+    member name (no bus entry needed), joins a parent sheet pin on a bus to
+    the child hierarchical label of the same name (vectors by index, groups
+    by short name), and joins global bus labels of one name.
+
+    Returns (instances, cached, graph, details, buses). A graph node is
+    (instance index, local group) or a bus member node. `buses` holds the
+    bus-group edges, the aliases and the parsed bus names.
     """
     from collections import defaultdict
     instances = build_instance_tree(root, data, max_instances)
+    aliases = load_bus_aliases(root, [Path(d['file']) for d in data])
+    parsed = {}
+
+    def members_of(name):
+        if name not in parsed:
+            parsed[name] = bus_members(name, aliases)
+        return parsed[name]
+
     cached = {}
     for node in instances:
         file = Path(node['file'])
@@ -846,15 +985,21 @@ def build_project_graph(root, data, max_instances):
         sheet_pins = []
         for expr in loaded['symbols']:
             info = symbol_info(expr, file)
-            pins, warnings = pins_from_symbol(expr, lib)
+            # A reused sheet can place another unit of the symbol in each
+            # instance: give the pins of every unit an instance uses.
+            own = str(info['unit'] or '1')
+            units = {own} | {str(x['unit']) for x in info['instances'] if x.get('unit') is not None}
             # Same test as power_symbol_anchors: the (power) flag of the
             # embedded library symbol, not the library name.
             definition = lib_definition(expr, lib)
             is_power = definition is not None and first(definition, 'power') is not None
-            for pin in pins:
-                component_pins.append({**pin, 'reference': info['reference_property'],
-                                       'instances': info['instances'], 'symbol_uuid': info['uuid'],
-                                       'lib_id': info['lib_id'], 'is_power': is_power})
+            for unit in sorted(units):
+                pins, _ = pins_from_symbol(expr, lib, unit)
+                for pin in pins:
+                    component_pins.append({**pin, 'reference': info['reference_property'],
+                                           'instances': info['instances'], 'symbol_uuid': info['uuid'],
+                                           'lib_id': info['lib_id'], 'is_power': is_power,
+                                           'unit': unit, 'own_unit': own})
         for expr in loaded['sheets']:
             for pin in children(expr, 'pin'):
                 point = xy(pin)
@@ -862,17 +1007,22 @@ def build_project_graph(root, data, max_instances):
                     sheet_pins.append({'name': pin[1], 'point': point,
                                        'sheet_uuid': val(expr, 'uuid')})
         powers, warnings = power_symbol_anchors(file, lib)
-        anchors = [tuple(p['position_mm']) for p in component_pins]
-        anchors += [x['point'] for x in sheet_pins]
-        anchors += [tuple(p['position_mm']) for p in powers]
-        add, find, groups = resolve_local_networks(wires, labels, junctions, anchors)
+        pin_points = [tuple(p['position_mm']) for p in component_pins]
+        pin_points += [tuple(p['position_mm']) for p in powers]
+        anchors = pin_points + [x['point'] for x in sheet_pins]
+        add, find, groups = resolve_local_networks(
+            wires, labels, junctions, pin_points, [x['point'] for x in sheet_pins])
         # Only an electrically anchored node is admitted; a coincident crossing
         # without a junction is never proof of connectivity.
         # Capture THIS file's graph and geometry; otherwise the cached closure
         # would read values rebound by later iterations of the file loop.
-        def group(point, _find=find, _add=add, _wires=wires,
-                  _labels=labels, _anchors=anchors):
-            if any(is_on_segment(point, a, b) for a, b in _wires) or any(
+        def group(point, mid=False, _find=find, _add=add, _wires=wires,
+                  _labels=labels, _anchors=anchors, _junctions=junctions):
+            # A label or sheet pin (mid) joins anywhere on a wire; a symbol
+            # pin at a wire end or at a junction on a wire.
+            on_wire = (any(is_on_segment(point, a, b) for a, b in _wires) if mid
+                       else bool(pin_segments(point, _wires, _junctions)))
+            if on_wire or any(
                     l['point'] and math.dist(l['point'], point) < 0.002 for l in _labels):
                 return _find(_add(point))
             # Direct physical pin overlap is an endpoint, but no validation.
@@ -882,15 +1032,67 @@ def build_project_graph(root, data, max_instances):
         for p in component_pins:
             p['_group'] = group(tuple(p['position_mm']))
         for p in sheet_pins:
-            p['_group'] = group(p['point'])
+            p['_group'] = group(p['point'], mid=True)
         for p in powers:
             p['_group'] = group(tuple(p['position_mm']))
+        # Buses: segments are grouped like wires. Labels and sheet pins on a
+        # segment name the bus and give its members.
+        buses, bus_labels = bus_geometry(file)
+        bus_pins = [x for x in sheet_pins
+                    if any(is_on_segment(x['point'], a, b) for a, b in buses)]
+        badd, bfind, _ = resolve_local_networks(
+            buses, bus_labels, junctions, (), [x['point'] for x in bus_pins])
+        bus_groups, bus_hier, bus_global, bus_warnings = {}, [], [], []
+
+        def name_bus(point, name, kind, _find=bfind, _add=badd,
+                     _groups=bus_groups, _warnings=bus_warnings, _file=file):
+            key = _find(_add(point))
+            item = _groups.setdefault(key, {'names': set(), 'keys': {}, 'conflict': False})
+            item['names'].add(name)
+            members = members_of(name)
+            if members is None:
+                # KiCad gives such a bus no members (bus to net conflict).
+                item['conflict'] = True
+                _warnings.append({'file': str(_file), 'name': name, 'kind': kind,
+                                  'reason': 'name on a bus is not a bus name; the bus is not expanded'})
+                return key
+            for member_key, full in members:
+                item['keys'].setdefault(member_key, set()).add(full)
+            return key
+        for l in bus_labels:
+            key = name_bus(l['point'], l['name'], l['kind'])
+            if key is not None and l['kind'] == 'hierarchical_label':
+                bus_hier.append((l['name'], key))
+            elif key is not None and l['kind'] == 'global_label':
+                bus_global.append((l['name'], key))
+        for x in bus_pins:
+            x['_bus'] = name_bus(x['point'], x['name'], 'sheet_pin')
+        for item in bus_groups.values():
+            if item['conflict']:
+                item['keys'] = {}
+        # Every label name on this sheet and the local groups that carry it.
+        label_groups = defaultdict(set)
+        for l in labels:
+            if l['point'] and l['name']:
+                found = group(l['point'], mid=True)
+                if found is not None:
+                    label_groups[l['name']].add(found)
         cached[file] = {'labels': labels, 'components': component_pins,
                         'sheet_pins': sheet_pins, 'powers': powers,
-                        'group': group, 'warnings': warnings}
+                        'group': group, 'warnings': warnings,
+                        'bus_groups': bus_groups, 'bus_hier': bus_hier,
+                        'bus_global': bus_global, 'bus_pins': bus_pins,
+                        'bus_warnings': bus_warnings, 'label_groups': label_groups}
 
     graph = defaultdict(set)
-    details = defaultdict(lambda: {'components': [], 'global': set(), 'power': set(), 'hier': [], 'labels': set()})
+    details = defaultdict(lambda: {'components': [], 'global': set(), 'power': set(), 'hier': [], 'labels': set(),
+                                   'bus_links': []})
+    bus_edges = defaultdict(set)
+    bus_named = defaultdict(list)
+
+    def link(a, b):
+        graph[a].add(b)
+        graph[b].add(a)
     # Group keys per global name. KiCad joins a global label and a power
     # symbol that share a name, so both kinds go into one table.
     named_nodes = defaultdict(list)
@@ -899,7 +1101,8 @@ def build_project_graph(root, data, max_instances):
         d = cached[file]
         def key(g): return (i, g)
         for p in d['components']:
-            if p['_group'] is not None and p['lib_id'] and not p['is_power']:
+            if p['_group'] is not None and p['lib_id'] and not p['is_power'] \
+                    and p['unit'] == instance_unit(p, node['path']):
                 matches = [x for x in p['instances'] if x.get('path') == node['path']]
                 ref = matches[0]['reference'] if len(matches) == 1 else p['reference']
                 details[key(p['_group'])]['components'].append({
@@ -908,7 +1111,7 @@ def build_project_graph(root, data, max_instances):
         for l in d['labels']:
             if not l['point']:
                 continue
-            group = d['group'](l['point'])
+            group = d['group'](l['point'], mid=True)
             if group is None: continue
             item = details[key(group)]
             if l['kind'] == 'global_label':
@@ -923,8 +1126,37 @@ def build_project_graph(root, data, max_instances):
                 # PWR_FLAG is an ERC power-driver marker, not an electrical
                 # net name. Unioning it globally bridges otherwise unrelated
                 # nets that merely contain a PWR_FLAG symbol.
+                # A local power symbol is one net per sheet instance.
                 if p['name'] != 'PWR_FLAG':
-                    named_nodes[p['name']].append(key(p['_group']))
+                    name = ('local', i, p['name']) if p['local'] else p['name']
+                    named_nodes[name].append(key(p['_group']))
+        global_buses = {bus_key for _, bus_key in d['bus_global']}
+        member_nodes = defaultdict(list)
+        for bus_key, item in d['bus_groups'].items():
+            names = sorted(item['names'])
+            for member_key, fulls in item['keys'].items():
+                member_node = (i, ('bus', bus_key, member_key))
+                graph[member_node]  # a member with no net is still a node
+                attached = False
+                for full in fulls:
+                    # Members of one name on this sheet are one net, and the
+                    # members of a global bus are global names.
+                    member_nodes[full].append(member_node)
+                    if bus_key in global_buses:
+                        named_nodes[full].append(member_node)
+                    for local in d['label_groups'].get(full, ()):
+                        link(member_node, key(local))
+                        attached = True
+                details[member_node]['bus_links'].append({
+                    'bus_names': names, 'members': sorted(fulls),
+                    'instance_path': node['path'], 'file': str(file),
+                    'member_net_on_sheet': attached})
+        for nodes in member_nodes.values():
+            for other in nodes[1:]:
+                link(nodes[0], other)
+        for name, bus_key in d['bus_global']:
+            if not d['bus_groups'][bus_key]['conflict']:
+                bus_named[name].append((i, bus_key))
         if node['parent'] is None: continue
         parent_idx = node['parent']
         parent_file = Path(instances[parent_idx]['file'])
@@ -937,20 +1169,54 @@ def build_project_graph(root, data, max_instances):
             child_matches = [l for l in d['labels'] if l['kind'] == 'hierarchical_label'
                              and l['name'] == p['name'] and l['point']]
             for l in child_matches:
-                child_group = d['group'](l['point'])
+                child_group = d['group'](l['point'], mid=True)
                 if child_group is not None:
                     # This is the CHILD instance, not the last loop iteration.
                     target = (i, child_group)
                     graph[origin].add(target)
                     graph[target].add(origin)
+        # A parent sheet pin on a bus meets the child bus with the
+        # hierarchical label of the same name.
+        for p in pd['bus_pins']:
+            if p['sheet_uuid'] != sheet_uuid or p['_bus'] is None:
+                continue
+            if pd['bus_groups'][p['_bus']]['conflict']:
+                continue
+            for name, child_bus in d['bus_hier']:
+                if name != p['name'] or d['bus_groups'][child_bus]['conflict']:
+                    continue
+                bus_edges[(parent_idx, p['_bus'])].add((i, child_bus))
+                bus_edges[(i, child_bus)].add((parent_idx, p['_bus']))
+                for member_key, _ in members_of(name):
+                    link((parent_idx, ('bus', p['_bus'], member_key)),
+                         (i, ('bus', child_bus, member_key)))
     # Global labels and power symbols are global *by KiCad semantics*.
     for keys in named_nodes.values():
         first_key = keys[0]
         for other in keys[1:]:
             graph[first_key].add(other)
             graph[other].add(first_key)
+    for name, found in bus_named.items():
+        for other in found[1:]:
+            bus_edges[found[0]].add(other)
+            bus_edges[other].add(found[0])
+            for member_key, _ in members_of(name):
+                link((found[0][0], ('bus', found[0][1], member_key)),
+                     (other[0], ('bus', other[1], member_key)))
 
-    return instances, cached, graph, details
+    buses = {'edges': bus_edges, 'aliases': aliases, 'members_of': members_of}
+    return instances, cached, graph, details, buses
+
+
+def instance_unit(pin, path):
+    """Unit of a placed symbol in one sheet instance.
+
+    The instance entry for that path wins; without one, the symbol's own unit.
+    """
+    matches = [x for x in pin['instances'] if x.get('path') == path]
+    if len(matches) == 1 and matches[0].get('unit') is not None:
+        return str(matches[0]['unit'])
+    return pin['own_unit']
 
 
 def reach(graph, start):
@@ -972,11 +1238,14 @@ def net_evidence(instances, details, reached, limit):
                   key=lambda p: (p['instance_path'], p['reference'] or '', p['pin_number'] or ''))
     globals_found = sorted({x for group in reached for x in details[group]['global']})
     power_found = sorted({x for group in reached for x in details[group]['power']})
+    links = sorted((x for group in reached for x in details[group]['bus_links']),
+                   key=lambda x: (x['instance_path'], x['bus_names'], x['members']))
     return {'connected_component_pins': pins[:limit],
             'total_connected_component_pins': len(pins),
             'connected_pins_truncated': len(pins) > limit,
             'global_labels': globals_found[:limit], 'power_net_names': power_found[:limit],
             'names_truncated': len(globals_found)>limit or len(power_found)>limit,
+            'bus_links': links[:limit], 'bus_links_truncated': len(links) > limit,
             'groups_visited': len(reached), 'instance_count': len(instances),
             'project_net_verified': False,
             'limitations': list(PROJECT_NET_LIMITS)}
@@ -984,11 +1253,11 @@ def net_evidence(instances, details, reached, limit):
 
 def project_connections(root, data, reference, limit, max_instances, pin_filter=None):
     """Connectivity evidence for the net on one component pin."""
-    instances, cached, graph, details = build_project_graph(root, data, max_instances)
+    instances, cached, graph, details, _ = build_project_graph(root, data, max_instances)
     starts = []
     for i, node in enumerate(instances):
         for p in cached[Path(node['file'])]['components']:
-            if p['_group'] is None: continue
+            if p['_group'] is None or p['unit'] != instance_unit(p, node['path']): continue
             matches = [x for x in p['instances'] if x.get('path') == node['path']]
             ref = matches[0]['reference'] if len(matches)==1 else p['reference']
             if ref == reference and (pin_filter is None or str(p["number"]) == pin_filter):
@@ -1016,7 +1285,7 @@ def net_connections(root, data, name, limit, max_instances):
     are one result; a local label repeated in separate sheet instances gives
     one result per instance.
     """
-    instances, _, graph, details = build_project_graph(root, data, max_instances)
+    instances, _, graph, details, _ = build_project_graph(root, data, max_instances)
     kinds = (('label', 'labels'), ('global_label', 'global'),
              ('hierarchical_label', 'hier'), ('power_symbol', 'power'))
     starts = {}
@@ -1043,6 +1312,107 @@ def net_connections(root, data, name, limit, max_instances):
                         'matched_by_truncated': len(unique) > limit,
                         **net_evidence(instances, details, reached, limit)})
     return results
+
+
+def bus_connections(root, data, name, limit, max_instances):
+    """List bus names, or trace one bus and each of its members.
+
+    Returns (results, warnings). With a name, one result per connected bus:
+    every sheet instance it reaches, and per member the sheets where a net
+    carries the member name and the component pins on that member net.
+    """
+    instances, cached, graph, details, buses = build_project_graph(root, data, max_instances)
+    members_of, aliases = buses['members_of'], buses['aliases']
+    groups = {}
+    for i, node in enumerate(instances):
+        for bus_key, item in cached[Path(node['file'])]['bus_groups'].items():
+            groups[(i, bus_key)] = item
+    warnings = []
+    for d in cached.values():
+        for w in d['bus_warnings']:
+            if w not in warnings:
+                warnings.append(w)
+    if name is None:
+        rows = {}
+        for (i, _), item in sorted(groups.items(), key=lambda kv: instances[kv[0][0]]['path']):
+            for bus_name in sorted(item['names']):
+                row = rows.setdefault(bus_name, {
+                    'name': bus_name, 'kind': 'bus_name',
+                    'members': [full for _, full in members_of(bus_name) or []],
+                    'occurrences': []})
+                occurrence = {'instance_path': instances[i]['path'], 'file': instances[i]['file']}
+                if occurrence not in row['occurrences']:
+                    row['occurrences'].append(occurrence)
+        bus_names = sorted(rows)
+        for alias, members in aliases.items():
+            used_by = [n for n in bus_names if alias in re.split(r'[\s,{}]+', n)]
+            rows.setdefault(alias, {'name': alias, 'kind': 'alias', 'members': list(members),
+                                    'used_by': used_by, 'occurrences': []})
+        out = []
+        for row in sorted(rows.values(), key=lambda r: (r['kind'], r['name'])):
+            row['total_members'] = len(row['members'])
+            row['members_truncated'] = len(row['members']) > limit
+            row['members'] = row['members'][:limit]
+            row['total_occurrences'] = len(row['occurrences'])
+            row['occurrences_truncated'] = len(row['occurrences']) > limit
+            row['occurrences'] = row['occurrences'][:limit]
+            out.append(row)
+        return out, warnings
+    wanted = {name}
+    if name in aliases:
+        wanted.add('{' + name + '}')
+    if name.startswith('{') and name.endswith('}') and name[1:-1] in aliases:
+        wanted.add(name[1:-1])
+    starts = [k for k, item in groups.items() if item['names'] & wanted]
+    if not starts:
+        return [{'status': 'BUS_NAME_NOT_FOUND', 'bus_name': name,
+                 'project_net_verified': False, 'instance_count': len(instances)}], warnings
+    results, seen = [], set()
+    for start in sorted(starts, key=lambda k: (instances[k[0]]['path'], k[1])):
+        if start in seen:
+            continue
+        component, queue = {start}, [start]
+        while queue:
+            for other in buses['edges'][queue.pop()]:
+                if other not in component:
+                    component.add(other)
+                    queue.append(other)
+        seen |= component
+        ordered = sorted(component, key=lambda k: (instances[k[0]]['path'], k[1]))
+        occurrences = [{'instance_path': instances[i]['path'], 'file': instances[i]['file'],
+                        'bus_names': sorted(groups[(i, b)]['names']),
+                        'members_resolved': not groups[(i, b)]['conflict']} for i, b in ordered]
+        member_keys = []
+        for k in ordered:
+            for member_key in groups[k]['keys']:
+                if member_key not in member_keys:
+                    member_keys.append(member_key)
+        members = []
+        for member_key in member_keys:
+            nodes = [(i, ('bus', b, member_key)) for i, b in ordered if member_key in groups[(i, b)]['keys']]
+            reached = set()
+            for n in nodes:
+                if n not in reached:
+                    reached |= reach(graph, n)
+            sheets = [x for n in nodes for x in details[n]['bus_links']]
+            names = sorted({m for x in sheets for m in x['members']})
+            evidence = net_evidence(instances, details, reached, limit)
+            for unused in ('limitations', 'instance_count', 'bus_links', 'bus_links_truncated', 'project_net_verified'):
+                evidence.pop(unused)
+            members.append({'member': names[0] if names else None, 'member_names': names,
+                            'sheets': [{'instance_path': x['instance_path'], 'file': x['file'],
+                                        'member_net_on_sheet': x['member_net_on_sheet']}
+                                       for x in sheets][:limit],
+                            'sheets_truncated': len(sheets) > limit,
+                            **evidence})
+        results.append({'status': 'BUS_CONNECTIVITY_EVIDENCE', 'bus_name': name,
+                        'occurrences': occurrences[:limit],
+                        'occurrences_truncated': len(occurrences) > limit,
+                        'members': members[:limit], 'total_members': len(members),
+                        'members_truncated': len(members) > limit,
+                        'project_net_verified': False,
+                        'limitations': list(MODES['bus']['limitations'])})
+    return results, warnings
 
 
 def reference_parts(reference):
@@ -1143,7 +1513,7 @@ def discover(root: Path, max_files: int):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('mode', choices=list(MODES))
-    ap.add_argument('target', nargs='?', help='reference, sheet filename/name (sheet) or net name (net)')
+    ap.add_argument('target', nargs='?', help='reference, sheet filename/name (sheet), net name (net) or bus name (bus)')
     ap.add_argument('--project', required=True, help='root .kicad_sch (preferred) or its directory')
     ap.add_argument('--limit', type=int, default=20)
     ap.add_argument('--max-files', type=int, default=100)
@@ -1168,7 +1538,7 @@ def main(argv=None):
             raise QueryError('--sheet and --prefix are only supported with components')
         if args.mode == 'components' and args.target:
             raise QueryError('components takes --sheet and --prefix, not a target')
-        if args.mode not in ('summary', 'instances', 'components') and not args.target:
+        if args.mode not in ('summary', 'instances', 'components', 'bus') and not args.target:
             raise QueryError(f'{args.mode} requires a target')
         root = root_file(args.project)
         data, missing, outside = discover(root, args.max_files)
@@ -1176,6 +1546,8 @@ def main(argv=None):
         warnings = []
         if args.mode == 'net':
             records = net_connections(root, data, args.target, args.limit, args.max_files)
+        elif args.mode == 'bus':
+            records, warnings = bus_connections(root, data, args.target, args.limit, args.max_files)
         elif args.mode == 'components':
             records, sheet_found = list_components(root, data, args.max_files, args.sheet, args.prefix)
             if not sheet_found:
@@ -1214,7 +1586,8 @@ def main(argv=None):
                'warnings': pin_issues if args.mode in ('pins','local-net','hier-net','connected-pins') else warnings}
         print(json.dumps(out, ensure_ascii=False, indent=2))
         return 0
-    except (QueryError, OSError, UnicodeError, RecursionError, IndexError, KeyError, TypeError, ValueError) as exc:
+    except (QueryError, OSError, UnicodeError, RecursionError, IndexError, KeyError, TypeError, ValueError,
+            AttributeError) as exc:
         # Malformed saved data must give JSON on stderr, not a traceback.
         print(json.dumps({'error': str(exc), 'verification': 'NOT_VERIFIED'}, ensure_ascii=False), file=sys.stderr)
         return 2

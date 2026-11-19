@@ -65,6 +65,51 @@ def component(ref, x, y, uid, path, value='Generic', lib='TEST:OnePin'):
        (instances (project "Test" (path "{path}" (reference "{ref}") (unit 1)))))'''
 
 
+def bus(x1, y1, x2, y2):
+    return f'(bus (pts (xy {x1} {y1}) (xy {x2} {y2})))'
+
+
+def bus_entry(x, y):
+    return f'(bus_entry (at {x} {y}) (size 2.54 2.54))'
+
+
+def multi_sheet(name, file, uid, pins):
+    blocks = ' '.join(f'(pin "{n}" bidirectional (at {x} {y} 0) (uuid "pin-{uid}-{i}"))'
+                      for i, (n, x, y) in enumerate(pins))
+    return f'''(sheet (at 0 0) (size 30 20)
+       (property "Sheetname" "{name}") (property "Sheetfile" "{file}")
+       {blocks}
+       (uuid "{uid}"))'''
+
+
+def bus_child(uid, path, refs, names):
+    """One child sheet of the bus fixture. Rules checked with a KiCad 10.0.8 netlist."""
+    alias_bus, vector, group, member, prefixed = names
+    rows = [
+        bus(10, 10, 40, 10), f'(hierarchical_label "{alias_bus}" (at 40 10 0))',
+        # A label with the member name joins the member; no bus entry needed.
+        component(refs[0], 100, 10, f'{refs[0]}-u', path), wire(100, 10, 110, 10),
+        '(label "SIG_A" (at 110 10 0))',
+        # A wire on a bus entry without a member label is not a member.
+        bus_entry(12.46, 10), wire(15, 12.54, 15, 20), component(refs[1], 15, 20, f'{refs[1]}-u', path),
+        bus(10, 40, 40, 40), f'(hierarchical_label "{vector}" (at 40 40 0))',
+        component(refs[2], 100, 40, f'{refs[2]}-u', path), wire(100, 40, 110, 40),
+        f'(label "{member}" (at 110 40 0))',
+        bus(10, 60, 40, 60), f'(hierarchical_label "{group}" (at 40 60 0))',
+        component(refs[3], 100, 60, f'{refs[3]}-u', path), wire(100, 60, 110, 60),
+        f'(label "{prefixed}" (at 110 60 0))',
+        bus(10, 80, 40, 80), '(global_label "{GX GY}" (at 40 80 0))',
+        component(refs[4], 100, 80, f'{refs[4]}-u', path), wire(100, 80, 110, 80),
+        '(label "GX" (at 110 80 0))',
+        bus(10, 100, 40, 100), '(global_label "{AL2}" (at 40 100 0))',
+        component(refs[5], 100, 100, f'{refs[5]}-u', path), wire(100, 100, 110, 100),
+        '(label "X1" (at 110 100 0))',
+        # A bare short name is not a member of a prefixed group.
+        component(refs[6], 100, 120, f'{refs[6]}-u', path), wire(100, 120, 110, 120),
+        '(label "X" (at 110 120 0))']
+    return content(uid, *rows)
+
+
 def content(uid, *blocks):
     return '(kicad_sch (version 20250114) (generator "test") (uuid "' + uid + '")\n' + lib_symbols() + '\n' + '\n'.join(blocks) + '\n)'
 
@@ -335,6 +380,7 @@ class QuerySchRegression(unittest.TestCase):
             'instances': ((), 'HIERARCHICAL_INSTANCE_DISCOVERY_ONLY'),
             'net': (('TEST_GLOBAL',), 'INSTANCE_AWARE_PROJECT_EVIDENCE_ONLY'),
             'components': ((), 'STRUCTURAL_DISCOVERY_ONLY'),
+            'bus': ((), 'INSTANCE_AWARE_PROJECT_EVIDENCE_ONLY'),
         }
         for mode, (args, verification) in expected.items():
             with self.subTest(mode=mode):
@@ -675,6 +721,258 @@ class QuerySchRegression(unittest.TestCase):
             with self.subTest(target=target):
                 self.assertEqual(self.call('sheet', target, project=root)['total_matches'], 1)
         self.assertEqual(self.call('components', '--sheet', 'child.kicad_sch', project=root)['warnings'], [])
+
+    def bus_project(self, alias_file=True):
+        root = self.dir / 'bus top.kicad_sch'
+        a, b = self.dir / 'bus a.kicad_sch', self.dir / 'bus b.kicad_sch'
+        sa, sb = '1aaaaaaa-0000-0000-0000-000000000000', '1bbbbbbb-0000-0000-0000-000000000000'
+        root.write_text(content(ROOT_ID,
+            multi_sheet('A', a.name, sa, [('{AL}', 50, 10), ('D[0..1]', 50, 20), ('P{X Y}', 50, 30)]),
+            multi_sheet('B', b.name, sb, [('{AL}', 80, 10), ('DATA[0..1]', 80, 20), ('Q{X Y}', 80, 30)]),
+            bus(50, 10, 80, 10), bus(50, 20, 80, 20), bus(50, 30, 80, 30)), encoding='utf-8')
+        a.write_text(bus_child('2aaaaaaa-0000-0000-0000-000000000000', f'/{ROOT_ID}/{sa}',
+                               ['U1', 'U2', 'U3', 'U4', 'U5', 'U6', 'U7'],
+                               ('{AL}', 'D[0..1]', 'P{X Y}', 'D1', 'P.X')
+                               ).replace('\n)', '\n(bus_alias "AL2" (members "X1" "X2")))'), encoding='utf-8')
+        b.write_text(bus_child('2bbbbbbb-0000-0000-0000-000000000000', f'/{ROOT_ID}/{sb}',
+                               ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7'],
+                               ('{AL}', 'DATA[0..1]', 'Q{X Y}', 'DATA1', 'Q.X')), encoding='utf-8')
+        files = [root, a, b]
+        if alias_file:
+            pro = root.with_suffix('.kicad_pro')
+            pro.write_text(json.dumps({'schematic': {'bus_aliases': {'AL': ['SIG_A', 'SIG_B']}}}), encoding='utf-8')
+            files.append(pro)
+        self.files.extend(files)
+        self.before.update({f: sha(f) for f in files})
+        return root
+
+    def pins_of(self, root, ref):
+        r = self.call('project-net', ref, '--pin', '1', project=root)
+        one = r['results'][0]
+        self.assertEqual(one['status'], 'PROJECT_CONNECTIVITY_EVIDENCE')
+        self.assertFalse(one['project_net_verified'])
+        return {p['reference'] for p in one['connected_component_pins']}, one
+
+    def test_39_bus_members_join_by_name_across_sheets(self):
+        # Each expectation matches a KiCad 10.0.8 netlist of the same layout.
+        root = self.bus_project()
+        cases = {'U1': {'U1', 'R1'},          # alias member, no bus entry
+                 'U2': {'U2'},                # bus entry without a member label
+                 'U3': {'U3', 'R3'},          # vector members match by index
+                 'U4': {'U4', 'R4'},          # P{X Y} and Q{X Y} match by short name
+                 'R7': {'R7'},                # bare X is not a member of Q{X Y}
+                 'U5': {'U5', 'R5'},          # global bus label
+                 'U6': {'U6', 'R6'}}          # legacy bus_alias in a sheet file
+        for ref, expected in cases.items():
+            with self.subTest(ref=ref):
+                self.assertEqual(self.pins_of(root, ref)[0], expected)
+        _, one = self.pins_of(root, 'U1')
+        self.assertTrue(one['bus_links'])
+        self.assertTrue(all(x['bus_names'] == ['{AL}'] for x in one['bus_links']))
+        self.assertFalse(one['bus_links_truncated'])
+        net = self.call('net', 'SIG_A', project=root)
+        self.assertEqual(net['total_matches'], 1, 'a bus joins the two SIG_A labels into one net')
+
+    def test_40_without_the_alias_the_bus_has_no_members(self):
+        root = self.bus_project(alias_file=False)
+        self.assertEqual(self.pins_of(root, 'U1')[0], {'U1'})
+        self.assertEqual(self.pins_of(root, 'U3')[0], {'U3', 'R3'})
+
+    def test_41_bus_command_traces_each_member(self):
+        root = self.bus_project()
+        for name in ('AL', '{AL}'):
+            with self.subTest(name=name):
+                r = self.call('bus', name, project=root)
+                self.assertEqual(r['verification'], 'INSTANCE_AWARE_PROJECT_EVIDENCE_ONLY')
+                self.assertEqual(r['total_matches'], 1)
+                one = r['results'][0]
+                self.assertEqual(one['status'], 'BUS_CONNECTIVITY_EVIDENCE')
+                self.assertFalse(one['project_net_verified'])
+                self.assertEqual(len(one['occurrences']), 3)
+                members = {m['member']: m for m in one['members']}
+                self.assertEqual(set(members), {'SIG_A', 'SIG_B'})
+                self.assertEqual({p['reference'] for p in members['SIG_A']['connected_component_pins']}, {'U1', 'R1'})
+                self.assertEqual(members['SIG_B']['connected_component_pins'], [])
+                self.assertFalse(any(x['member_net_on_sheet'] for x in members['SIG_B']['sheets']))
+        missing = self.call('bus', 'NOPE', project=root)
+        self.assertEqual(missing['results'][0]['status'], 'BUS_NAME_NOT_FOUND')
+        listing = self.call('bus', project=root, ok=True)
+        rows = {(x['kind'], x['name']): x for x in listing['results']}
+        self.assertEqual(rows[('alias', 'AL')]['used_by'], ['{AL}'])
+        self.assertIn(('alias', 'AL2'), rows)
+        self.assertEqual(rows[('bus_name', 'D[0..1]')]['members'], ['D0', 'D1'])
+        self.call('bus', '--pin', '1', project=root, ok=False)
+
+    def test_42_bus_names_are_parsed_as_kicad_does(self):
+        spec = importlib.util.spec_from_file_location('_query_sch_bus', SCRIPT)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        names = lambda text, aliases={}: [n for _, n in module.bus_members(text, aliases) or []]
+        self.assertIsNone(module.bus_members('SS{slash}TR', {}))
+        self.assertIsNone(module.bus_members('{slash}', {}))
+        self.assertIsNone(module.bus_members('PLAIN', {}))
+        self.assertEqual(names('D[3..1]'), ['D3', 'D2', 'D1'])
+        self.assertEqual(names('P{A B}'), ['P.A', 'P.B'])
+        self.assertEqual(names('{D[0..1] CLK}'), ['D0', 'D1', 'CLK'])
+        self.assertEqual(names('{AL}', {'AL': ['X', 'Y']}), ['X', 'Y'])
+        # A bare alias name is a plain net name in KiCad 10 (netlist check).
+        self.assertIsNone(module.bus_members('AL', {'AL': ['X', 'Y']}))
+        self.assertIsNone(module.bus_members('A{lt}B{gt}', {}))
+        # A self-referencing alias does not recurse.
+        self.assertEqual(names('{AL}', {'AL': ['X', '{AL}']}), ['X', 'AL'])
+        self.assertEqual(module.bus_members('D[1..2]', {})[0][0], ('v', 1))
+        self.assertEqual(module.bus_members('P{A}', {})[0][0], ('g', 'A'))
+
+    def test_43_malformed_project_aliases_return_json_error(self):
+        root = self.bus_project(alias_file=False)
+        pro = root.with_suffix('.kicad_pro')
+        pro.write_text('{broken', encoding='utf-8')
+        self.files.append(pro)
+        self.before[pro] = sha(pro)
+        completed = self.call('bus', 'AL', project=root, ok=False)
+        error = json.loads(completed.stderr)
+        self.assertEqual(error['verification'], 'NOT_VERIFIED')
+        self.assertIn('bus aliases', error['error'])
+
+    # Tests 44 to 49: each expectation matches a KiCad 10.0.8 netlist of the
+    # same layout.
+    def pins_on(self, root, ref, pin='1'):
+        r = self.call('project-net', ref, '--pin', pin, project=root)
+        return {(p['reference'], p['pin_number']) for p in r['results'][0]['connected_component_pins']}
+
+    def test_44_pins_and_wire_ends_join_a_wire_only_at_its_ends(self):
+        path = f'/{ROOT_ID}'
+        root = self.write_root('mid wire.kicad_sch', lib_symbols(),
+            # T without a junction: R2's wire ends on the middle of R1-R3.
+            wire(10, 10, 30, 10), wire(20, 10, 20, 20),
+            component('R1', 10, 10, 'r1', path), component('R2', 20, 20, 'r2', path),
+            component('R3', 30, 10, 'r3', path),
+            # Pin on the middle of a wire, no junction.
+            wire(10, 30, 30, 30), component('R4', 10, 30, 'r4', path), component('R5', 20, 30, 'r5', path),
+            # Pin on a junction on the middle of a wire.
+            wire(10, 40, 30, 40), component('R6', 10, 40, 'r6', path),
+            '(junction (at 20 40))', component('R7', 20, 40, 'r7', path),
+            # Label on the middle of a wire.
+            wire(10, 50, 30, 50), component('R8', 10, 50, 'r8', path), '(label "N2" (at 20 50 0))',
+            wire(10, 60, 20, 60), component('R9', 10, 60, 'r9', path), '(label "N2" (at 20 60 0))')
+        self.assertEqual(self.pins_on(root, 'R1'), {('R1', '1'), ('R3', '1')})
+        self.assertEqual(self.pins_on(root, 'R2'), {('R2', '1')})
+        self.assertEqual(self.pins_on(root, 'R4'), {('R4', '1')})
+        self.assertEqual(self.pins_on(root, 'R6'), {('R6', '1'), ('R7', '1')})
+        self.assertEqual(self.pins_on(root, 'R8'), {('R8', '1'), ('R9', '1')})
+        pins = self.call('local-net', 'R5', project=root)['results'][0]['pins'][0]
+        self.assertEqual(pins['local_wire_segments_at_pin'], 0)
+        self.assertNotEqual(pins['local_connection_status'], 'LOCAL_WIRE_PATH')
+
+    def test_45_labels_of_any_kind_with_one_name_join_on_a_sheet(self):
+        path = f'/{ROOT_ID}'
+        root = self.write_root('kinds.kicad_sch', lib_symbols(),
+            wire(10, 10, 15, 10), component('R1', 10, 10, 'r1', path), '(label "N1" (at 15 10 0))',
+            wire(10, 20, 15, 20), component('R2', 10, 20, 'r2', path), '(global_label "N1" (at 15 20 0))',
+            wire(10, 30, 15, 30), component('R3', 10, 30, 'r3', path), '(hierarchical_label "H1" (at 15 30 0))',
+            wire(10, 40, 15, 40), component('R4', 10, 40, 'r4', path), '(hierarchical_label "H1" (at 15 40 0))')
+        self.assertEqual(self.pins_on(root, 'R1'), {('R1', '1'), ('R2', '1')})
+        self.assertEqual(self.pins_on(root, 'R3'), {('R3', '1'), ('R4', '1')})
+
+    def test_46_a_local_power_symbol_is_one_net_per_sheet_instance(self):
+        child = self.dir / 'local power.kicad_sch'
+        sid = '3ccccccc-0000-0000-0000-000000000000'
+        lib = lib_symbols().replace('(symbol "power:VBUS" (power)', '(symbol "power:VBUS" (power local)')
+        root = self.write_root('local power top.kicad_sch', lib,
+            sheet('Child', child.name, sid, 'UNUSED', 50, 50),
+            component('#PWR1', 10, 10, 'p1', f'/{ROOT_ID}', 'VBUS', 'power:VBUS'),
+            component('R1', 10, 10, 'r1', f'/{ROOT_ID}'),
+            component('#PWR2', 10, 20, 'p2', f'/{ROOT_ID}', 'GND', 'power:GND'),
+            component('R2', 10, 20, 'r2', f'/{ROOT_ID}'))
+        child.write_text(content('3ddddddd-0000-0000-0000-000000000000',
+            component('#PWR3', 10, 10, 'p3', f'/{ROOT_ID}/{sid}', 'VBUS', 'power:VBUS'),
+            component('R3', 10, 10, 'r3', f'/{ROOT_ID}/{sid}'),
+            component('#PWR4', 10, 20, 'p4', f'/{ROOT_ID}/{sid}', 'GND', 'power:GND'),
+            component('R4', 10, 20, 'r4', f'/{ROOT_ID}/{sid}')).replace(
+                '(symbol "power:VBUS" (power)', '(symbol "power:VBUS" (power local)'), encoding='utf-8')
+        self.files.append(child)
+        self.before[child] = sha(child)
+        self.assertEqual(self.pins_on(root, 'R1'), {('R1', '1')})
+        self.assertEqual(self.pins_on(root, 'R2'), {('R2', '1'), ('R4', '1')})
+
+    def test_47_each_sheet_instance_uses_its_own_unit(self):
+        child = self.dir / 'units child.kicad_sch'
+        first, second = '4aaaaaaa-0000-0000-0000-000000000000', '4bbbbbbb-0000-0000-0000-000000000000'
+        dual = ('(symbol "TEST:Dual" (symbol "Dual_1_1" (pin passive line (at 0 0 0) (length 1) (name "A") (number "1")))'
+                ' (symbol "Dual_2_1" (pin passive line (at 0 0 0) (length 1) (name "B") (number "2"))))')
+        lib = lib_symbols()[:-1] + dual + ')'
+        root = self.write_root('units top.kicad_sch', lib,
+            sheet('First', child.name, first, 'UNUSED', 50, 50), sheet('Second', child.name, second, 'UNUSED2', 90, 50))
+        child.write_text('(kicad_sch (version 20250114) (generator "test") (uuid "4ccccccc-0000-0000-0000-000000000000")\n'
+            + lib + f'''
+            (symbol (lib_id "TEST:Dual") (at 10 10 0) (unit 1) (property "Reference" "UM1") (uuid "um1")
+              (instances (project "Test" (path "/{ROOT_ID}/{first}" (reference "UM1") (unit 1))
+                                         (path "/{ROOT_ID}/{second}" (reference "UM1") (unit 2)))))
+            (symbol (lib_id "TEST:OnePin") (at 20 10 0) (unit 1) (property "Reference" "RG1") (uuid "rg")
+              (instances (project "Test" (path "/{ROOT_ID}/{first}" (reference "RG1") (unit 1))
+                                         (path "/{ROOT_ID}/{second}" (reference "RG2") (unit 1)))))
+            {wire(10, 10, 20, 10)})''', encoding='utf-8')
+        self.files.append(child)
+        self.before[child] = sha(child)
+        self.assertEqual(self.pins_on(root, 'RG1'), {('RG1', '1'), ('UM1', '1')})
+        self.assertEqual(self.pins_on(root, 'RG2'), {('RG2', '1'), ('UM1', '2')})
+
+    def test_48_bus_members_of_one_name_and_global_bus_members(self):
+        a, b = self.dir / 'bm a.kicad_sch', self.dir / 'bm b.kicad_sch'
+        sa, sb = '5aaaaaaa-0000-0000-0000-000000000000', '5bbbbbbb-0000-0000-0000-000000000000'
+        root = self.write_root('bm top.kicad_sch', lib_symbols(),
+            multi_sheet('A', a.name, sa, [('D[0..1]', 50, 10)]),
+            multi_sheet('B', b.name, sb, [('D[0..3]', 80, 10)]),
+            # Two separate root buses; their D0 members are one net.
+            bus(50, 10, 60, 10), '(label "D[0..1]" (at 55 10 0))',
+            bus(70, 10, 80, 10), '(label "D[0..3]" (at 75 10 0))',
+            # A bus T without a junction does not join.
+            bus(10, 70, 60, 70), '(label "G[0..1]" (at 15 70 0))',
+            bus(40, 70, 40, 90), '(label "K[0..1]" (at 40 85 0))',
+            wire(10, 100, 20, 100), component('R3', 10, 100, 'r3', f'/{ROOT_ID}'), '(label "K0" (at 20 100 0))',
+            wire(10, 110, 20, 110), component('R4', 10, 110, 'r4', f'/{ROOT_ID}'), '(label "G0" (at 20 110 0))')
+        a.write_text(content('5ccccccc-0000-0000-0000-000000000000',
+            bus(10, 10, 40, 10), '(hierarchical_label "D[0..1]" (at 40 10 0))',
+            component('RA0', 100, 10, 'ra0', f'/{ROOT_ID}/{sa}'), wire(100, 10, 110, 10), '(label "D0" (at 110 10 0))',
+            bus(10, 30, 40, 30), '(global_label "{GX GY}" (at 40 30 0))',
+            component('RAX', 100, 30, 'rax', f'/{ROOT_ID}/{sa}'), wire(100, 30, 110, 30), '(label "GX" (at 110 30 0))'),
+            encoding='utf-8')
+        b.write_text(content('5ddddddd-0000-0000-0000-000000000000',
+            bus(10, 10, 40, 10), '(hierarchical_label "D[0..3]" (at 40 10 0))',
+            component('RB0', 100, 10, 'rb0', f'/{ROOT_ID}/{sb}'), wire(100, 10, 110, 10), '(label "D0" (at 110 10 0))',
+            component('RBX', 100, 30, 'rbx', f'/{ROOT_ID}/{sb}'), wire(100, 30, 110, 30), '(global_label "GX" (at 110 30 0))'),
+            encoding='utf-8')
+        self.files.extend([a, b])
+        self.before.update({a: sha(a), b: sha(b)})
+        self.assertEqual(self.pins_on(root, 'RA0'), {('RA0', '1'), ('RB0', '1')})
+        self.assertEqual(self.pins_on(root, 'RAX'), {('RAX', '1'), ('RBX', '1')})
+        self.assertEqual(self.pins_on(root, 'R3'), {('R3', '1')})
+        self.assertEqual(self.pins_on(root, 'R4'), {('R4', '1')})
+
+    def test_49_a_bus_with_a_plain_name_has_no_members(self):
+        child = self.dir / 'plain a.kicad_sch'
+        sid = '6aaaaaaa-0000-0000-0000-000000000000'
+        root = self.write_root('plain top.kicad_sch', lib_symbols(),
+            multi_sheet('A', child.name, sid, [('{AL}', 50, 10)]),
+            bus(50, 10, 80, 10), '(label "AL" (at 70 10 0))',
+            wire(10, 100, 20, 100), component('R2', 10, 100, 'r2', f'/{ROOT_ID}'), '(label "SIG_A" (at 20 100 0))')
+        child.write_text(content('6bbbbbbb-0000-0000-0000-000000000000',
+            bus(10, 10, 40, 10), '(hierarchical_label "{AL}" (at 40 10 0))',
+            component('RAS', 100, 10, 'ras', f'/{ROOT_ID}/{sid}'), wire(100, 10, 110, 10), '(label "SIG_A" (at 110 10 0))'),
+            encoding='utf-8')
+        pro = root.with_suffix('.kicad_pro')
+        pro.write_text(json.dumps({'schematic': {'bus_aliases': {'AL': ['SIG_A', 'SIG_B']}}}), encoding='utf-8')
+        self.files.extend([child, pro])
+        self.before.update({child: sha(child), pro: sha(pro)})
+        self.assertEqual(self.pins_on(root, 'R2'), {('R2', '1')})
+        warnings = self.call('bus', project=root)['warnings']
+        self.assertTrue(any(w['name'] == 'AL' for w in warnings), warnings)
+        # Odd project JSON gives a JSON error, not a traceback.
+        for text in ('{"schematic": null}', '{"schematic": {"bus_aliases": null}}', '[]'):
+            with self.subTest(project=text):
+                pro.write_text(text, encoding='utf-8')
+                self.before[pro] = sha(pro)
+                self.call('net', 'SIG_A', project=root)
 
 
 if __name__ == '__main__':

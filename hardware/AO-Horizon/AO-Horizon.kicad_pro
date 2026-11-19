@@ -519,7 +519,7 @@
       {
         "name": "+3V3",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 5,
+        "priority": 8,
         "schematic_color": "rgb(206, 107, 221)",
         "tuning_profile": "",
         "wire_width": 15
@@ -527,7 +527,7 @@
       {
         "name": "+3V3A",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 3,
+        "priority": 6,
         "schematic_color": "rgb(115, 125, 222)",
         "tuning_profile": "",
         "wire_width": 15
@@ -535,7 +535,7 @@
       {
         "name": "+5V",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 6,
+        "priority": 9,
         "schematic_color": "rgb(206, 163, 20)",
         "tuning_profile": "",
         "wire_width": 15
@@ -543,33 +543,58 @@
       {
         "name": "+6V",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 2,
+        "priority": 5,
         "schematic_color": "rgb(229, 106, 20)",
-        "tuning_profile": ""
+        "tuning_profile": "",
+        "wire_width": 20
       },
       {
         "name": "GND",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 4,
+        "priority": 7,
         "schematic_color": "rgb(46, 46, 69)",
         "tuning_profile": "",
         "wire_width": 15
       },
       {
-        "name": "SDMMC",
+        "name": "I2C4",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "priority": 1,
+        "schematic_color": "rgb(42, 186, 124)",
+        "tuning_profile": "",
+        "wire_width": 12
+      },
+      {
+        "name": "RNG_UART",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 0,
+        "schematic_color": "rgb(223, 147, 60)",
+        "tuning_profile": "",
+        "wire_width": 12
+      },
+      {
+        "name": "SDMMC",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 4,
         "schematic_color": "rgb(121, 176, 214)",
         "tuning_profile": "",
-        "wire_width": 15
+        "wire_width": 12
+      },
+      {
+        "name": "TEL_UART",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 2,
+        "schematic_color": "rgb(106, 76, 221)",
+        "tuning_profile": "",
+        "wire_width": 12
       },
       {
         "name": "USB_FS",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 0,
+        "priority": 3,
         "schematic_color": "rgb(33, 177, 226)",
         "tuning_profile": "",
-        "wire_width": 15
+        "wire_width": 12
       }
     ],
     "meta": {
@@ -577,6 +602,48 @@
     },
     "net_colors": {},
     "netclass_assignments": {
+      "/Top/Connector - Peripherals/EXT_I2C4_SCL": [
+        "I2C4"
+      ],
+      "/Top/Connector - Peripherals/EXT_I2C4_SDA": [
+        "I2C4"
+      ],
+      "/Top/Connector - Peripherals/RNG_RX": [
+        "RNG_UART"
+      ],
+      "/Top/Connector - Peripherals/RNG_TX": [
+        "RNG_UART"
+      ],
+      "/Top/Connector - Peripherals/RNG_UART8_RX": [
+        "RNG_UART"
+      ],
+      "/Top/Connector - Peripherals/RNG_UART8_TX": [
+        "RNG_UART"
+      ],
+      "/Top/Connector - Peripherals/TEL1_RX": [
+        "TEL_UART"
+      ],
+      "/Top/Connector - Peripherals/TEL1_TX": [
+        "TEL_UART"
+      ],
+      "/Top/Connector - Peripherals/TEL1_UART7_RX": [
+        "TEL_UART"
+      ],
+      "/Top/Connector - Peripherals/TEL1_UART7_TX": [
+        "TEL_UART"
+      ],
+      "/Top/Connector - Peripherals/TEL2_RX": [
+        "TEL_UART"
+      ],
+      "/Top/Connector - Peripherals/TEL2_TX": [
+        "TEL_UART"
+      ],
+      "/Top/Connector - Peripherals/TEL2_UART1_RX": [
+        "TEL_UART"
+      ],
+      "/Top/Connector - Peripherals/TEL2_UART1_TX": [
+        "TEL_UART"
+      ],
       "/Top/Connector - USB & Debug/USB_D_N": [
         "USB_FS"
       ],
@@ -589,22 +656,22 @@
       "/Top/Connector - USB & Debug/USB_FS_D_P": [
         "USB_FS"
       ],
-      "/Top/MCU - Main FC/SDMMC1_CLK": [
+      "/Top/MCU - Main FC/H7_SDMMC1_CLK": [
         "SDMMC"
       ],
-      "/Top/MCU - Main FC/SDMMC1_CMD": [
+      "/Top/MCU - Main FC/H7_SDMMC1_CMD": [
         "SDMMC"
       ],
-      "/Top/MCU - Main FC/SDMMC1_DAT0": [
+      "/Top/MCU - Main FC/H7_SDMMC1_DAT0": [
         "SDMMC"
       ],
-      "/Top/MCU - Main FC/SDMMC1_DAT1": [
+      "/Top/MCU - Main FC/H7_SDMMC1_DAT1": [
         "SDMMC"
       ],
-      "/Top/MCU - Main FC/SDMMC1_DAT2": [
+      "/Top/MCU - Main FC/H7_SDMMC1_DAT2": [
         "SDMMC"
       ],
-      "/Top/MCU - Main FC/SDMMC1_DAT3": [
+      "/Top/MCU - Main FC/H7_SDMMC1_DAT3": [
         "SDMMC"
       ],
       "/Top/Power Supplies/+5V_BUCK": [
@@ -640,6 +707,10 @@
       {
         "netclass": "+5V",
         "pattern": "+VIN"
+      },
+      {
+        "netclass": "+6V",
+        "pattern": "+6V"
       }
     ]
   },
@@ -746,12 +817,6 @@
         },
         {
           "group_by": false,
-          "label": "Description",
-          "name": "Description",
-          "show": true
-        },
-        {
-          "group_by": false,
           "label": "LCSC",
           "name": "LCSC",
           "show": true
@@ -785,6 +850,12 @@
           "label": "Type",
           "name": "Type",
           "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Description",
+          "name": "Description",
+          "show": true
         }
       ],
       "filter_string": "",
@@ -792,39 +863,64 @@
       "include_excluded_from_bom": true,
       "name": "",
       "sort_asc": true,
-      "sort_field": "Reference"
+      "sort_field": "Value"
     },
     "bus_aliases": {
+      "AUX_TIM5": [
+        "AUX1_TIM5_CH1",
+        "AUX2_TIM5_CH2",
+        "AUX3_TIM5_CH3",
+        "AUX4_TIM5_CH4"
+      ],
+      "DBG_UART3": [
+        "DBG_UART3_RX",
+        "DBG_UART3_TX"
+      ],
+      "ESC": [
+        "MAIN1_TIM2_CH1",
+        "MAIN2_TIM2_CH2",
+        "MAIN3_TIM4_CH3",
+        "MAIN4_TIM4_CH4"
+      ],
+      "EXT_I2C4": [
+        "EXT_I2C4_SDA",
+        "EXT_I2C4_SCL"
+      ],
       "F1_SWD": [
         "F1_SWDIO",
         "F1_SWCLK"
-      ],
-      "H7_LED": [
-        "H7_LED_RED",
-        "H7_LED_BLUE",
-        "H7_LED_GREEN"
       ],
       "H7_SWD": [
         "H7_SWDIO",
         "H7_SWCLK"
       ],
-      "H7_TIM5": [
-        "H7_TIM5_CH1",
-        "H7_TIM5_CH2",
-        "H7_TIM5_CH3",
-        "H7_TIM5_CH4"
+      "IMU1_SPI1": [
+        "IMU1_SPI1_CLK",
+        "IMU1_SPI1_SDI",
+        "IMU1_SPI1_SDO",
+        "IMU1_SPI1_CS"
       ],
-      "IMU1_SPI": [
-        "IMU1_SPI_CLK",
-        "IMU1_SPI_SDI",
-        "IMU1_SPI_SDO",
-        "IMU1_SPI_CS"
+      "IMU2_SPI4": [
+        "IMU2_SPI4_CLK",
+        "IMU2_SPI4_SDI",
+        "IMU2_SPI4_SDO",
+        "IMU2_SPI4_CS"
       ],
-      "IMU2_SPI": [
-        "IMU2_SPI_CLK",
-        "IMU2_SPI_SDI",
-        "IMU2_SPI_SDO",
-        "IMU2_SPI_CS"
+      "LED": [
+        "LED_RED_B",
+        "LED_BLUE_B",
+        "LED_GREEN_B"
+      ],
+      "SPARE_TIM": [
+        "SPARE2_TIM4_CH3",
+        "SPARE3_TIM4_CH4",
+        "SPARE1_TIM1_CH1"
+      ],
+      "SURFACE": [
+        "MAIN5_TIM3_CH1",
+        "MAIN6_TIM3_CH2",
+        "MAIN7_TIM3_CH3",
+        "MAIN8_TIM3_CH4"
       ],
       "USB_FS": [
         "USB_FS_D_P",
@@ -888,7 +984,7 @@
         "uuid": "76162bf1-0d95-48cb-b65a-4de551455d04"
       }
     ],
-    "used_designators": "#FLG1,#FLG101-106,#PWR1-20,#PWR101-120,#PWR201-217,#PWR301-311,#PWR401-410,#PWR501-522,#PWR601-617,C101-121,C201-209,C301-306,C401-404,C501-507,C601,CN101,CN601,D101-106,L101-102,R101-108,R115,R201-206,R301-305,R501-511,R601-603,SD201,U101-103,U201,U301,U401-402,U501-503,U601",
+    "used_designators": "#FLG1,#FLG101-106,#FLG201,#FLG301,#FLG801,#PWR1-20,#PWR101-120,#PWR201-218,#PWR301-317,#PWR401-410,#PWR501-522,#PWR601-617,#PWR701-723,#PWR801-811,#PWR901-906,B901,C101-121,C201-217,C301-311,C401-404,C501-507,C601-603,C701-706,C801-805,CN101,CN601-603,CN701-706,CN801-803,D101-106,D701-707,D801-807,D901-903,L101-102,Q901-903,R101-108,R115,R201-208,R301-312,R501-511,R601-612,R701-714,R801-814,R901-909,SD201,U101-103,U201,U301,U303,U401-402,U501-503,U601",
     "variants": []
   },
   "sheets": [
@@ -918,7 +1014,11 @@
     ],
     [
       "420855bf-aac0-4922-afb8-bf1515fae8da",
-      "Connector - External"
+      "Connector - Peripherals"
+    ],
+    [
+      "752a7d5d-6af8-4edd-90d9-991407e2c1d9",
+      "Connector - Actuator"
     ],
     [
       "61244771-3375-4ca0-9ad8-b7d5d30ff1b6",

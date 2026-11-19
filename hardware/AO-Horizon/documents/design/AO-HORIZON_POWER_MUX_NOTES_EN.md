@@ -1,8 +1,8 @@
 # AeroOptix-Horizon: TPS2121 Power Mux Notes
 
-**Revision:** 0.7
-**Updated:** 2026-11-14
-**Status:** Design note for reading and re-calculation. Not a requirement or verification record. Decisions live in the spec (DEC-029 to DEC-037, PWR-015; OPEN-024 closed; OPEN-025 open).
+**Revision:** 0.8
+**Updated:** 2026-11-19
+**Status:** Design note for reading and re-calculation. Not a requirement or verification record. Decisions live in the spec (DEC-029 to DEC-037, DEC-055, PWR-015; OPEN-024 closed; OPEN-025 open).
 **Source:** TI TPS212x datasheet SLVSEA3F (August 2020), NotebookLM notebook `TPS212x 2.8-V to 22-V Priority Power MUX with Seamless Switchover`, read as source fulltext. TI values are `VERIFIED`; calculated values are `ESTIMATED`, before resistor tolerance.
 
 ## 1. What the mux does on this board
@@ -74,7 +74,8 @@ Examples:
 | --------------- | -- | --------------------------- | ---------------- |
 | 13.7 kΩ / 5 kΩ | 3.74 | 3.70 / 3.89 / 4.08 V | 3.78 / 3.96 / 4.11 V |
 | 12.4 kΩ / 5 kΩ | 3.48 | 3.45 / 3.62 / 3.79 V | 3.51 / 3.69 / 3.83 V |
-| 12.1 kΩ / 5 kΩ (as drawn) | 3.42 | 3.39 / 3.56 / 3.73 V | 3.45 / 3.63 / 3.76 V |
+| 12.1 kΩ / 5 kΩ (before DEC-055) | 3.42 | 3.39 / 3.56 / 3.73 V | 3.45 / 3.63 / 3.76 V |
+| 12.1 kΩ / 5.1 kΩ (as drawn, DEC-055) | 3.37 | 3.34 / 3.51 / 3.68 V | 3.41 / 3.58 / 3.71 V |
 
 ### 5.3 XCOMP (PR1 divider from IN1, CP2 divider from IN2)
 
@@ -94,6 +95,8 @@ Here PR1 is compared with CP2, not with VREF. So the CP2 voltage sets the switch
    - It only matters on the bench: in flight there is no `VBUS`, so CP2 is 0 V.
 6. **Check the fallback.** If CP2 is not fitted, the same PR1 works in VREF mode (5.2): 3.39 to 3.76 V.
 
+**With the 5.1 kΩ bottom resistors (DEC-055, 2026-11-19, `ESTIMATED`):** k1 = 3.37, k2 = 4.24. CP2 1.12 / 1.18 / 1.24 V for `VBUS` 4.75 / 5.0 / 5.25 V; switch point 3.78 / 3.98 / 4.18 V. Worst case at 5.25 V: CP2 high `5.25 × 5.151 / 21.486 = 1.26 V`, PR1 ratio low `5.049 / 17.27 = 0.2924`, switch point 4.31 V plus 0.14 V offset, so **4.44 V**, unchanged, because both dividers move together. CP2 reaches 1.10 V at `VBUS` 4.66 V (4.73 V with 1 % resistors), so the weak point below eases. VREF-mode fallback: 3.34 to 3.71 V.
+
 Weak point: at `VBUS` 4.75 V, CP2 is about 1.10 V, the same as VREF max. A part may then stay in VREF mode. That is safe: the PM02D still has priority, only the switchover is slow.
 
 ### 5.4 XREF (PR1 divider, CP2 from a fixed reference)
@@ -112,7 +115,8 @@ Not used on this board: it needs a reference part. Not checked further.
 The channel turns off when its OV pin reaches VREF.
 
 - `Vov = 1.06 V × k`. With 23.2 kΩ / 5 kΩ (k = 5.64, DEC-036): 5.98 V typ, 5.70 to 6.20 V over the VREF range, 5.60 to 6.31 V with 1 % resistors. The channel turns back on below `1.04 V × k` = 5.87 V typ (VREF falling 0.99 / 1.04 / 1.09 V).
-- Window: the lowest trip must stay above the 5.5 V input maximum (PWR-010). `+5V` stays below 5.5 V in normal operation (PWR-015); the OV trip is a fault guard. 23.2 kΩ is the lowest E96 value that meets 5.5 V in the worst case (22.6 kΩ gives 5.48 V).
+- With 23.2 kΩ / 5.1 kΩ (k = 5.55, DEC-055, as drawn): 5.88 V typ, 5.61 to 6.10 V over the VREF range, 5.51 to 6.21 V with 1 % resistors; back on below 5.77 V typ (`ESTIMATED`). The lowest trip is 14 mV above 5.5 V; the human owner accepted that margin (spec OPEN-036, closed).
+- Window: the lowest trip must stay above the 5.5 V input maximum (PWR-010). `+5V` stays below 5.5 V in normal operation (PWR-015); the OV trip is a fault guard. 23.2 kΩ is the lowest E96 value that meets 5.5 V in the worst case (22.6 kΩ gives 5.48 V), both with the 5 kΩ bottom resistor.
 
 ### 5.6 Current limit (ILIM)
 
@@ -131,13 +135,13 @@ The spec DEC rows and 4.3 "Schematic state" own these values; this table maps th
 
 | Pin | Parts | Value | Decision |
 | --- | ----- | ----- | -------- |
-| PR1 | R101 from `PM02_5V`, R102 to `GND` | 12.1 kΩ / 5 kΩ | DEC-031, DEC-034 |
-| CP2 | R105 from `VBUS`, R106 to `GND` | 16.5 kΩ / 5 kΩ (R105 fitted) | DEC-032, DEC-033 |
-| OV1 | R103 from `PM02_5V`, R104 to `GND` | 23.2 kΩ / 5 kΩ | DEC-036 |
-| OV2 | R107 from `VBUS`, R108 to `GND` | 23.2 kΩ / 5 kΩ | DEC-036 |
+| PR1 | R101 from `PM02_5V`, R102 to `GND` | 12.1 kΩ / 5.1 kΩ | DEC-031, DEC-034, DEC-055 |
+| CP2 | R105 from `VBUS`, R106 to `GND` | 16.5 kΩ / 5.1 kΩ (R105 fitted) | DEC-032, DEC-033, DEC-055 |
+| OV1 | R103 from `PM02_5V`, R104 to `GND` | 23.2 kΩ / 5.1 kΩ | DEC-036, DEC-055 |
+| OV2 | R107 from `VBUS`, R108 to `GND` | 23.2 kΩ / 5.1 kΩ | DEC-036, DEC-055 |
 | ILIM | R112 to `GND` | 80.6 kΩ (1.5 A) | DEC-030 |
 | SS | C108 to `GND` | 10 nF | Drawn |
-| ST | R109 from `+5V`, R110 to `GND`; drives the Q101 gate (2SK3018W), which switches the D103 status LED (lit for IN1, off for IN2) | 10 kΩ / 10 kΩ: ST 2.23 to 3.19 V when high; R109 is the 6 to 20 kΩ pull-up TI asks for | DEC-035, DEC-036 |
+| ST | R109 from `+5V`, R110 to `GND`; drives the Q101 gate (2SK3018W), which switches the D103 status LED (lit for IN1, off for IN2) | 10 kΩ / 10 kΩ: ST 2.23 to 3.13 V when high (3.19 V before DEC-055); R109 is the 6 to 20 kΩ pull-up TI asks for | DEC-035, DEC-036 |
 
 **Switching between modes on the board:** fit R105 for XCOMP (5 µs). Leave R105 off for VREF mode (100 µs): R106 then pulls CP2 to `GND`. No other part changes. R105 is fitted in the saved file, so the default build is XCOMP (DEC-033).
 
@@ -146,6 +150,6 @@ The spec DEC rows and 4.3 "Schematic state" own these values; this table maps th
 - [ ] CP2 at or above 1.10 V at the lowest USB voltage (XCOMP).
 - [ ] Worst-case switch point below 4.5 V (PWR-010), with resistor tolerance and the 40 mV offset × k1 (5.3 step 5).
 - [ ] Use 1 % resistors in the PR1 and CP2 dividers.
-- [ ] Every pin below 5.5 V at the highest input (OV trip 6.31 V max: PR1 1.85 V, CP2 1.47 V, OV 1.10 V).
+- [ ] Every pin below 5.5 V at the highest input (OV trip 6.21 V max with DEC-055: PR1 1.84 V, CP2 1.47 V, OV 1.10 V).
 - [ ] RILM between 18 and 100 kΩ.
 - [ ] Update DEC-031 to DEC-034 and spec 4.7 if a value changes.

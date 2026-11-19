@@ -1509,7 +1509,7 @@
 		)
 		(uuid "fdf0c15e-b3e4-4fcc-9437-886609017c3a")
 	)
-	(label "IMU1_SPI_SDO"
+	(label "IMU1_SPI1_SDO"
 		(at 168.91 93.98 0)
 		(effects
 			(font
@@ -1519,7 +1519,7 @@
 		)
 		(uuid "0725cbfa-a6ac-4b27-9973-b1a2a90b5065")
 	)
-	(label "IMU2_SPI_CS"
+	(label "IMU2_SPI4_CS"
 		(at 168.91 193.04 0)
 		(effects
 			(font
@@ -1529,7 +1529,7 @@
 		)
 		(uuid "0a9e1f93-9feb-4bc2-b821-c2ed8cf8d329")
 	)
-	(label "IMU2_SPI_SDI"
+	(label "IMU2_SPI4_SDI"
 		(at 168.91 182.88 0)
 		(effects
 			(font
@@ -1539,7 +1539,7 @@
 		)
 		(uuid "307ef90c-a67f-44b5-8549-7e2fc038b9a0")
 	)
-	(label "IMU1_SPI_CS"
+	(label "IMU1_SPI1_CS"
 		(at 168.91 99.06 0)
 		(effects
 			(font
@@ -1549,7 +1549,7 @@
 		)
 		(uuid "49d113b5-1fb3-4579-b6ee-a8a2fd36f461")
 	)
-	(label "IMU1_SPI_SDI"
+	(label "IMU1_SPI1_SDI"
 		(at 168.91 88.9 0)
 		(effects
 			(font
@@ -1559,7 +1559,7 @@
 		)
 		(uuid "4a0191c4-85c7-41b7-aca4-9ef2bb98c0bb")
 	)
-	(label "IMU2_SPI_SDO"
+	(label "IMU2_SPI4_SDO"
 		(at 168.91 187.96 0)
 		(effects
 			(font
@@ -1569,7 +1569,7 @@
 		)
 		(uuid "8de43f0e-4e1a-4a3d-9983-39b36bb60d3c")
 	)
-	(label "IMU1_SPI_CLK"
+	(label "IMU1_SPI1_CLK"
 		(at 168.91 83.82 0)
 		(effects
 			(font
@@ -1579,7 +1579,7 @@
 		)
 		(uuid "d80b3d69-f4e7-4b00-98d7-aa6a70e2e332")
 	)
-	(label "IMU2_SPI_CLK"
+	(label "IMU2_SPI4_CLK"
 		(at 168.91 177.8 0)
 		(effects
 			(font
@@ -1589,7 +1589,7 @@
 		)
 		(uuid "ec87f0ca-1670-403a-a666-e8539900014b")
 	)
-	(hierarchical_label "{IMU1_SPI}"
+	(hierarchical_label "{IMU1_SPI1}"
 		(shape bidirectional)
 		(at 153.67 73.66 180)
 		(effects
@@ -1611,7 +1611,7 @@
 		)
 		(uuid "42114da3-3a5b-402a-bac6-77165b363dca")
 	)
-	(hierarchical_label "{IMU2_SPI}"
+	(hierarchical_label "{IMU2_SPI4}"
 		(shape bidirectional)
 		(at 153.67 167.64 180)
 		(effects

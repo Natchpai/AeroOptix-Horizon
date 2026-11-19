@@ -133,9 +133,10 @@ proven faults.
 
 ## Optional companions
 
-- `sch-inspect`: scoped structural evidence. Its `project-net` results are not
-  full KiCad netlist or ERC parity. Respect its limits on buses, inherited
-  symbols, hidden connectivity and ambiguous instances.
+- `sch-inspect`: scoped structural evidence. Its `project-net`, `net` and
+  `bus` results are not full KiCad netlist or ERC parity. Use `bus` to trace
+  bus members across sheets. Respect its limits on bus-to-bus entries,
+  inherited symbols, hidden connectivity and ambiguous instances.
 - `eng-calc`: auditable equations, units, tolerances and worst cases.
 - `component-check`: datasheet and physical mapping of a chosen device.
 - `component-select` and `stock-select`: alternatives and sourcing.
