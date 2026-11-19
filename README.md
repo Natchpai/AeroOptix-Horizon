@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.54, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.55, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -94,7 +94,7 @@ State of the saved KiCad files (2026-11-19 12:49 save, not committed). Sheets no
 | MCU sheets | In capture; one shared reset with one button decided, button drawn on `user-interface` and its part not checked (DEC-046, OPEN-026); board LEDs drawn, driven straight from the pins, active low, 220 Ω (OPEN-035); oscillator parts decided, data open (DEC-048, OPEN-028); VREF+ tied to VDDA (DEC-049); all allocated pins labelled with DEC-052 net names and every sheet pin matching its label; a few names open (OPEN-032); new 22 Ω and 10 nF on the ADC inputs, servo-rail divider drawn on `conn-actuator` (OPEN-033). |
 | Sensor sheets | In capture with all five sensors; IST8310 at 0x0C as strapped (DEC-047, closes OPEN-027). |
 | USB and debug sheet | In capture; parts drawn, not approved (OPEN-010); CN602 (H743) and CN603 (F100) JST-SH 6-pin in the Pixhawk Debug Mini order, no NRST (OPEN-029); USB-C CC resistors 5.1 kΩ. |
-| External connectors | Drawn, not decided (spec 4.2): `conn-peripherals` (TELEM 1 and 2, I2C4, rangefinder, GPS1) linked to the MCU sheets by sheet pins; `conn-actuator` with MAIN 1 to 4 ESC headers (no + pin), MAIN 5 to 8 and AUX 1 to 4 on `+6V`, the CN804 XT30 UBEC input, 6 V bulk capacitors, a TVS and the servo-rail divider. RC IN drawn (2026-11-19 15:25 save): D707 SP3031-01ETG ESD, R714 22 Ω and the U303 SN74LVC1G34DCKR buffer to F100 PA8 (DEC-056, DEC-057); the CN706 JST-GH connector and its pin order differ from DEC-053 and wait on a team decision (OPEN-034 item 6a, P2-023). Pinouts open (OPEN-023). |
+| External connectors | Drawn, not decided (spec 4.2): `conn-peripherals` (TELEM 1 and 2, I2C4, rangefinder, GPS1) linked to the MCU sheets by sheet pins; `conn-actuator` with MAIN 1 to 4 ESC headers (no + pin), MAIN 5 to 8 and AUX 1 to 4 on `+6V`, the CN804 XT30 UBEC input, 6 V bulk capacitors, a TVS and the servo-rail divider. Decided 2026-11-19: C803 68 µF 16 V tantalum (DEC-058) and D807 SMF7.5A unidirectional TVS (DEC-059). RC IN drawn (2026-11-19 15:25 save): D707 SP3031-01ETG ESD, R715 22 Ω (R714 before the 16:03 save) and the U303 SN74LVC1G34DCKR buffer to F100 PA8 (DEC-056, DEC-057); the CN706 JST-GH connector and its pin order differ from DEC-053 and wait on a team decision (OPEN-034 item 6a, P2-023). Pinouts open (OPEN-023). |
 | PCB | No footprints. The 80 × 80 mm `Edge.Cuts` rectangle is a working area, not the board outline (OPEN-009). |
 | Library | Project parts for the parts in use; sensor footprints not checked against the drawings (OPEN-013). New: Amass XT30PW-M symbol, footprint and 3D model. |
 
@@ -129,7 +129,7 @@ Interface allocations agreed with the software team (DEC-014, DEC-018) are in sp
 | Check | Result | Evidence |
 |---|---|---|
 | Schematic ERC | Whole schematic, 2026-11-19 12:49 save: 0 errors, 0 warnings | Run by the human owner; [`ERC.rpt`](hardware/AO-Horizon/documents/verification/ERC.rpt). An ERC pass is not a proof of correctness |
-| Schematic review | Power sheet (2026-11-03 save); connector and actuator sheets (2026-11-19 12:49 save) | `sch-review`, spec 4.3 and 4.2; findings open (OPEN-021, OPEN-037, OPEN-038) |
+| Schematic review | Power sheet (2026-11-03 save); connector and actuator sheets (2026-11-19 12:49 save) | `sch-review`, spec 4.3 and 4.2; findings open (OPEN-021, OPEN-037); OPEN-038 closed |
 | PCB DRC | `NOT_VERIFIED` | PCB is empty |
 | BOM / footprint review | `NOT_VERIFIED` | `TBD` |
 | Prototype functional test | `NOT_VERIFIED` | Bench tasks P4-012 to P4-015 open |
@@ -148,9 +148,8 @@ The specification tracks every open item in section 8.2 of the [specification](h
 - Servo rail sense: the 3:1 divider on F100 PA4 is drawn, not decided (OPEN-033)
 - Servo power: all 8 servos stalled draw about 13.2 A, over the 10 A UBEC continuous rating (OPEN-007); XT30 rating (OPEN-021)
 - Board LEDs: LED current and H743 sink current not checked (OPEN-035)
-- GPS1 port: Q701 buzzer FET accepted (DEC-057); D706 standoff on the 0~5 V buzzer line not checked; R312 pull-down on the safety switch input, switch wiring not checked; `+3V3` export on CN705 pin 8 (OPEN-037)
-- I2C4: board pull-ups R705 and R706 now fitted; total with any module pull-ups not checked (OPEN-038)
-- Servo bus: C803 is a 10 V tantalum at 60 to 74 % of its rating on a hot-plugged 10 A bus (OPEN-021)
+- GPS1 port: Q701 buzzer FET accepted (DEC-057); D706 standoff on the 0~5 V buzzer line not checked; buzzer type and flyback diode unknown; R711 0 Ω on the CN705 pin 8 `+3V3` export, short risk accepted (DEC-060) (OPEN-037)
+- Servo bus: C803 now 16 V (DEC-058); D807 SMF7.5A breakdown and leakage at 7.4 V not checked (DEC-059); XT30 rating, copper and GND join open (OPEN-021)
 
 ## How we work
 

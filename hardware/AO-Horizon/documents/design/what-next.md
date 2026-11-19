@@ -5,17 +5,17 @@
 
 The specification and the execution checklist stay the source of truth. This list only points to their IDs.
 
-## 0. Next up (2026-11-19, after commit `f594e29`)
+## 0. Next up (2026-11-19, after commit `db38177`)
 
-Spec rev 0.53, the 15:25 schematic and library changes (`1993716`) and the 80 × 80 mm PCB working area (`f594e29`) are committed and pushed. Spec rev 0.54 (PCB working area recorded, no new decisions) is not committed yet. Review findings with actions are in `todo.md`.
+Spec rev 0.54 is committed and pushed (`db38177`). Not committed yet: spec rev 0.55 (DEC-058 to DEC-060, OPEN-038 closed) and the 16:03 save of `conn-actuator` and `conn-peripherals` with the new footprint `0_Capacitor_SMD:CP_EIA-6032-28_Kemet-C`. Review findings with actions are in `todo.md`.
 
-- [ ] Re-run ERC: last run on the 12:49 save; since then Q701, R312, RC IN (CN706, D707, R714, U303) and the D706 changes (P2-022).
+- [ ] Run `/kicad-link-audit` for the new `CP_EIA-6032-28_Kemet-C` footprint, then commit the 16:03 save.
+- [ ] Re-run ERC: last run on the 12:49 save; since then Q701, R312, RC IN (CN706, D707, U303), the D706 changes, and the 16:03 save (C803, D807, R711 0 Ω, R712 to R715 re-annotated) (P2-022).
 - [ ] CN706 RC IN connector: decide with your partner (OPEN-034 item 6a): keep the JST-GH (pin 1 `+5V`, 2 signal) and amend DEC-053, or go back to the 2.54 mm servo header with PPM on pin 1 (section 7, P2-023).
-- [ ] C803 and C102 10 V tantalum (OPEN-021): see `todo.md`.
 - [ ] Next review: the MCU, sensor and USB sheets (P2-022).
 - [ ] Datasheet checks (NotebookLM source or your values; a new source needs your approval):
   - XT30PW-M current rating against the 13.2 A all-stall estimate (OPEN-021).
-  - D807 SMF7.5CA: breakdown voltage and leakage at 7.4 V (PWR-011, OPEN-021).
+  - D807 SMF7.5A (MDD, DEC-059): breakdown voltage and leakage at 7.4 V (PWR-011, OPEN-021).
   - D706 PESD4USB3BBTBR-QZ standoff against the 0~5 V buzzer line (OPEN-037).
   - LED forward voltage and current through 220 Ω, and the H743 pin sink current (OPEN-035).
 - [ ] Decide the drawn blocks (spec 4.2), then ask Claude to record them:
@@ -57,7 +57,7 @@ Done (2026-11-03). See spec 4.3 and DEC-029 to DEC-042. Resistor fields: section
 Drawn on `conn-actuator` (11:38 save), not decided. Servo current passes through the board (DEC-019).
 
 - [ ] Check the board-mount XT30 rating against PWR-011 and the 13.2 A all-stall estimate (OPEN-021, P2-016).
-- [ ] Size the 6 V and servo GND copper, pick where servo GND joins logic GND (away from the sensors). Bulk drawn: 2 × 10 µF, 47 µF tantalum and the D807 TVS (OPEN-021).
+- [ ] Size the 6 V and servo GND copper, pick where servo GND joins logic GND (away from the sensors). Bulk drawn: 2 × 10 µF, 68 µF 16 V tantalum (DEC-058) and the D807 SMF7.5A TVS (DEC-059) (OPEN-021).
 - [ ] Servo rail divider on F100 PA4 (IF-050): R813 46.4 kΩ / R814 23.2 kΩ with C804 100 nF, 3:1, drawn. Confirm it (OPEN-033).
 - [ ] Datasheet all-stall estimate: 13.2 A at 6 V (4 × DS3235 2.1 A + 4 × C507 1.2 A, OPEN-007), over the 10 A UBEC continuous rating. Wait for the team's bench current under load (P0-022) and their confirmation that the UBEC output plug is an XT30 (OPEN-021).
 
@@ -113,7 +113,7 @@ Parts decided (DEC-008, DEC-010, DEC-011). Current state: spec 4.2 "Schematic st
 
 ## 7. Zone Z6: External connectors and outputs
 
-Drawn on `conn-peripherals` and `conn-actuator`, not decided (spec 4.2). Actuator headers per DEC-051 (CN802 ESC headers without the + pin; CN801, CN803 on the 6 V bus): keep them apart at layout (IF-030 to IF-043, P2-018, OPEN-031). RC IN drawn (CN706, D707, R714 on `conn-peripherals`; U303, R310, R311, C311 on `mcu-io`); U303, R714 and D707 decided (DEC-057). I2C4 pins PD12 and PD13 are FT (OPEN-023).
+Drawn on `conn-peripherals` and `conn-actuator`, not decided (spec 4.2). Actuator headers per DEC-051 (CN802 ESC headers without the + pin; CN801, CN803 on the 6 V bus): keep them apart at layout (IF-030 to IF-043, P2-018, OPEN-031). RC IN drawn (CN706, D707, R715 on `conn-peripherals`; U303, R310, R311, C311 on `mcu-io`); U303, the 22 Ω (R714, now R715) and D707 decided (DEC-057). I2C4 pins PD12 and PD13 are FT (OPEN-023).
 
 - [ ] Connector pinouts against the Pixhawk standard DS-009: Telemetry 1 and 2, GPS1 10-pin, airspeed, TF-Luna (OPEN-023, P2-015). Signal levels done: all 3.3 V, GPS1 pin 9 `BUZZER-` 0~5 V (Holybro Pixhawk 6X page).
 - [ ] CN706 against DEC-053 (OPEN-034 item 6a, P2-023): JST-GH 1.25 mm with pin 1 `+5V` as drawn, against the 2.54 mm servo header with PPM on pin 1. You decide with your partner later.

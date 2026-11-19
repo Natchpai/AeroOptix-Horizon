@@ -88,6 +88,9 @@ Notable changes to this hardware project are documented here.
 - `documents/design/todo.md`: personal to-do list of review findings (MAJOR, MINOR, INFO) for the human owner, separate from `what-next.md`.
 - DEC-056 (specification rev 0.53, human owner, 2026-11-19): the RC IN input uses the team's 74LVC1G17 Schmitt-trigger buffer on `+3V3` (1 kΩ series in, 100 kΩ to `GND`, 22 Ω out to F100 PA8, 100 nF) instead of the DEC-053 6.2 kΩ / 10 kΩ divider. Buffer data (5.5 V input tolerance, V<sub>T+</sub>, I<sub>off</sub>), maker and package `NOT_VERIFIED` (OPEN-034).
 - DEC-057 (specification rev 0.53, human owner, 2026-11-19): U303 TI SN74LVC1G34DCKR (RC IN buffer, replaces the 74LVC1G17 of DEC-056), R714 22 Ω (RC IN series, replaces 1 kΩ), D707 Littelfuse SP3031-01ETG (RC IN ESD) and Q701 2SK3018W (GPS1 buzzer FET) accepted as drawn. Their datasheet values were not checked (`NOT_VERIFIED`). CN706 is not included (OPEN-034 item 6a).
+- DEC-058 (specification rev 0.55, human owner, 2026-11-19): C803 on `+6V` changes to Kyocera AVX T495C686M016ATE250, 68 µF 16 V tantalum (case C, LCSC C122319); C102 on the 5 V input keeps the 10 V TPSB476K010R0250. Datasheet values not checked (`NOT_VERIFIED`).
+- DEC-059 (specification rev 0.55, human owner, 2026-11-19): D807 is MDD SMF7.5A, unidirectional (LCSC C123796), replacing the drawn bidirectional SMF7.5CA. Breakdown and leakage at 7.4 V `NOT_VERIFIED`.
+- DEC-060 (specification rev 0.55, human owner, 2026-11-19): R711 0 Ω in series on the CN705 pin 8 `+3V3` export. It limits no current; the short risk is accepted.
 - Project library: `0_Logic_74x:SN74LVC1G34DCK` symbol, `0_Conn_Generic:Conn_01x03_MountingPin` symbol and the `JST_GH_SM03B-GHS-TB_1x03-1MP_P1.25mm_Horizontal` footprint (`0_Conn_JST`). Link audit not run.
 
 ### Changed
@@ -167,6 +170,8 @@ Notable changes to this hardware project are documented here.
 - Specification rev 0.53 and checklist rev 0.48 (2026-11-19): DEC-056, DEC-057 and the 15:03 to 15:25 saves recorded in the part-number boundary, IF-038, DEC-053 and DEC-056 (pointers), 4.2, OPEN-032, OPEN-034 items 4 to 6, OPEN-037 and the verdict; P2-023 in progress, CN706 left for a team decision. Pin allocation rev 0.16 (F-21), `todo.md`, `what-next.md` and the root README updated.
 - PCB (commit `f594e29`): the `Edge.Cuts` rectangle changed from 27 × 29 mm to 80 × 80 mm (110,60 to 190,140). It is a working area, not the board outline (human owner, 2026-11-19); the outline stays open (OPEN-009). Project text variables `SCH_DRAWING_DATE` 11-Nov-2026 and `RELEASE_DATE` Dec-2026. DRC not run (`NOT_VERIFIED`).
 - Specification rev 0.54 (2026-11-19): no new decisions. The PCB working area and drawing dates recorded in 4.2 and OPEN-009. `what-next.md` and the root README updated.
+- Schematic (2026-11-19 16:03 save): C803 now T495C686M016ATE250 68 µF 16 V on the new project footprint `0_Capacitor_SMD:CP_EIA-6032-28_Kemet-C` (not audited); D807 now SMF7.5A on `0_Protection_ESD:D_TVS-ESD_uni`; R711 0 Ω (0603, C100044) from `+3V3` to CN705 pin 8 (net `GPS1_3V3`); re-annotated: R712 and R713 GPS1 I2C1 pull-ups, R714 Q701 gate pull-down, R715 RC IN 22 Ω. ERC not re-run (`NOT_VERIFIED`).
+- Specification rev 0.55 and checklist rev 0.49 (2026-11-19): DEC-058 to DEC-060 and the 16:03 save recorded in the part-number boundary, IF-038, DEC-057 (pointer), 4.2, 4.3, OPEN-021, OPEN-034 and OPEN-037; the GPS module safety switch goes to 3.3 V, so R312 fits; OPEN-038 closed (no pull-ups on the MS4525DO or PM02D, human owner). Power budget rev 0.30, pin allocation rev 0.17 (F-21 to F-23), `todo.md`, `what-next.md` and the root README updated.
 
 ### Fixed
 
