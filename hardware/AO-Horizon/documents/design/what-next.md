@@ -24,7 +24,8 @@ The 12:30 save is committed and pushed (spec rev 0.47). Fixed in the 12:26 and 1
   - Servo rail divider R813, R814, C804 (OPEN-033).
   - Debug connectors CN602 and CN603, no NRST (OPEN-029).
   - Board LEDs D901 to D903 (OPEN-035).
-- [ ] RC IN: decide the buffer proposal, then draw CN706 (section 7, P2-023).
+- [x] RC IN buffer decided: 74LVC1G17 (DEC-056, "B, use the buffer").
+- [ ] CN706 RC IN connector: decide with your partner (OPEN-034 item 6a): keep the JST-GH (pin 1 `+5V`, 2 signal) and amend DEC-053, or go back to the 2.54 mm servo header with PPM on pin 1 (section 7, P2-023). U303, R714, D707 and Q701 accepted (DEC-057).
 - [ ] INFO | CN603 pin 3 / `DBG_F1_RX` | `ASSUMED` | Single-use label, so it likely reaches no MCU pin (OPEN-029).
 
 After design work: `/progress-update light`; before a commit: `/progress-update sync`.
@@ -40,7 +41,7 @@ The board is split into design zones. Each zone below has its own to-do list.
 | Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | `mcu-main-fc.kicad_sch`, `conn-usb-debug.kicad_sch`, `user-interface.kicad_sch` | In capture (spec 4.2 "Schematic state"); U201, U202 and passives annotated | P1-001, P1-006 to P1-008, P1-014, P2-022, OPEN-026, OPEN-028, OPEN-029 |
 | Z4 F100 IO MCU (px4io) | `mcu-io.kicad_sch` | In capture (spec 4.2 "Schematic state"); U301, U302 and passives annotated | P1-002, P1-014, P2-014, P2-022, OPEN-026, OPEN-028, OPEN-029 |
 | Z5 Sensors (2 × IMU, 2 × barometer, magnetometer) | `sensor-imu.kicad_sch`, `sensor-navigation.kicad_sch` | All five sensors drawn (U401, U402, U501, U502, U503; spec 4.2); rails per DEC-043; IST8310 at 0x0C (DEC-047) | DEC-043, OPEN-011, DEC-047, SEN-002, P1-003, P1-004, OPEN-004, OPEN-013, OPEN-019, P2-012 |
-| Z6 External connectors and outputs (telemetry, GPS, I2C, ESC and servo headers, spare outputs) | `conn-peripherals.kicad_sch` (CN701 to CN705), `conn-actuator.kicad_sch` (CN801 to CN803) | Drawn, not decided (spec 4.2); pinouts not checked; RC IN not drawn | OPEN-018, OPEN-023, OPEN-031, P2-013, P2-015, P2-018 |
+| Z6 External connectors and outputs (telemetry, GPS, I2C, ESC and servo headers, spare outputs) | `conn-peripherals.kicad_sch` (CN701 to CN705), `conn-actuator.kicad_sch` (CN801 to CN803) | Drawn, not decided (spec 4.2); pinouts not checked; RC IN drawn (15:03 save), differs from DEC-053 and DEC-056 | OPEN-018, OPEN-023, OPEN-031, P2-013, P2-015, P2-018 |
 | Z7 PCB and mechanical | `AO-Horizon.kicad_pcb` | 27 × 29 mm placeholder outline, no footprints | OPEN-009, P3-001 |
 
 ## 1. Git
@@ -123,12 +124,13 @@ To do:
 
 ## 7. Zone Z6: External connectors and outputs
 
-Drawn on `conn-peripherals` and `conn-actuator`, not decided (spec 4.2). RC IN not drawn.
+Drawn on `conn-peripherals` and `conn-actuator`, not decided (spec 4.2). RC IN drawn in the 2026-11-19 15:03 save (CN706, D707, R714 on `conn-peripherals`; U303, R310, R311, C311 on `mcu-io`).
 
 - [ ] Connector pinouts against the Pixhawk standard DS-009: Telemetry 1 and 2, GPS1 10-pin, airspeed, TF-Luna (OPEN-023, P2-015). Signal levels done: all 3.3 V, GPS1 pin 9 `BUZZER-` 0~5 V (Holybro Pixhawk 6X page).
 - [x] Telemetry 2 (USART1, PB14, PB15): JST-GH 6-pin, as Telemetry 1 (CN702).
-- [ ] Decide on the team RC IN proposal (OPEN-034 item 5): 74LVC1G17 buffer on `+3V3` (1 kΩ in, 100 kΩ to `GND`, 22 Ω out, 100 nF) instead of the 6.2 kΩ / 10 kΩ divider. If yes: amend DEC-053, IF-038, F-21, P2-023 and P4-016, and add the part with `kicad-part-start` (datasheet values `NOT_VERIFIED`, notebook upload needs your approval). If no: the team measures the FS-iA6B PPM level first.
-- [ ] RC IN per DEC-053 (or the buffer if accepted): CN706 1x3 header, input circuit, `RCIN_TIM1_CH1` to F100 PA8 (P2-023, OPEN-034).
+- [x] Team RC IN proposal decided: 74LVC1G17 buffer instead of the divider (DEC-056, 2026-11-19).
+- [ ] CN706 against DEC-053 (OPEN-034 item 6a, P2-023): JST-GH 1.25 mm with pin 1 `+5V` as drawn, against the 2.54 mm servo header with PPM on pin 1. You decide with your partner later. U303 SN74LVC1G34, R714 22 Ω and D707 SP3031-01ETG accepted (DEC-057).
+- [ ] RC IN part data, only if you want evidence for DEC-057 (NotebookLM source needs your approval, or your values): U303 5.5 V input tolerance and I<sub>off</sub>; D707 working voltage against a 5 V PPM high (OPEN-034).
 - [ ] I2C4 (PD12, PD13): check 5 V tolerance in case a module pulls up to 5 V (OPEN-023).
 - [x] Actuator headers per DEC-051 drawn: CN802 MAIN 1 to 4 ESC headers (+ pin removed), CN803 MAIN 5 to 8 and CN801 AUX 1 to 4 on the 6 V bus. Keep them apart at layout (IF-030 to IF-043, P2-018, OPEN-031).
 - [ ] PWM pull-downs: pick the value (P2-013, OPEN-018; no DShot since DEC-050).

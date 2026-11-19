@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.52, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.53, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -94,7 +94,7 @@ State of the saved KiCad files (2026-11-19 12:49 save, not committed). Sheets no
 | MCU sheets | In capture; one shared reset with one button decided, button drawn on `user-interface` and its part not checked (DEC-046, OPEN-026); board LEDs drawn, driven straight from the pins, active low, 220 Ω (OPEN-035); oscillator parts decided, data open (DEC-048, OPEN-028); VREF+ tied to VDDA (DEC-049); all allocated pins labelled with DEC-052 net names and every sheet pin matching its label; a few names open (OPEN-032); new 22 Ω and 10 nF on the ADC inputs, servo-rail divider drawn on `conn-actuator` (OPEN-033). |
 | Sensor sheets | In capture with all five sensors; IST8310 at 0x0C as strapped (DEC-047, closes OPEN-027). |
 | USB and debug sheet | In capture; parts drawn, not approved (OPEN-010); CN602 (H743) and CN603 (F100) JST-SH 6-pin in the Pixhawk Debug Mini order, no NRST (OPEN-029); USB-C CC resistors 5.1 kΩ. |
-| External connectors | Drawn, not decided (spec 4.2): `conn-peripherals` (TELEM 1 and 2, I2C4, rangefinder, GPS1) linked to the MCU sheets by sheet pins; `conn-actuator` with MAIN 1 to 4 ESC headers (no + pin), MAIN 5 to 8 and AUX 1 to 4 on `+6V`, the CN804 XT30 UBEC input, 6 V bulk capacitors, a TVS and the servo-rail divider. RC IN not drawn (DEC-053, P2-023). Pinouts open (OPEN-023). |
+| External connectors | Drawn, not decided (spec 4.2): `conn-peripherals` (TELEM 1 and 2, I2C4, rangefinder, GPS1) linked to the MCU sheets by sheet pins; `conn-actuator` with MAIN 1 to 4 ESC headers (no + pin), MAIN 5 to 8 and AUX 1 to 4 on `+6V`, the CN804 XT30 UBEC input, 6 V bulk capacitors, a TVS and the servo-rail divider. RC IN drawn (2026-11-19 15:25 save): D707 SP3031-01ETG ESD, R714 22 Ω and the U303 SN74LVC1G34DCKR buffer to F100 PA8 (DEC-056, DEC-057); the CN706 JST-GH connector and its pin order differ from DEC-053 and wait on a team decision (OPEN-034 item 6a, P2-023). Pinouts open (OPEN-023). |
 | PCB | No footprints, placeholder outline only (OPEN-009). |
 | Library | Project parts for the parts in use; sensor footprints not checked against the drawings (OPEN-013). New: Amass XT30PW-M symbol, footprint and 3D model. |
 
@@ -107,7 +107,7 @@ State of the saved KiCad files (2026-11-19 12:49 save, not committed). Sheets no
 | H743 main controller | Flight stack and interface host; 4 tilt servo outputs (AUX 1 to 4) |
 | F100 IO controller | px4io: 4 ESC and 4 control-surface outputs (MAIN 1 to 8), safety switch and LED, servo rail sense, output failsafe (DEC-051) |
 | Sensors | 2 IMU on SPI1 and SPI4; 2 barometers and the magnetometer on I2C2 |
-| External I/O | SiK telemetry radio, RC receiver (PPM, F100), GPS and compass, air-data sensor, rangefinder, power module, motors (one 4in1 ESC), spare outputs, microSD, buzzer, LEDs (DEC-053, DEC-054) |
+| External I/O | SiK telemetry radio, RC receiver (PPM, F100), GPS and compass, air-data sensor, rangefinder, power module, motors (one 4in1 ESC), spare outputs, microSD, buzzer, LEDs (DEC-053, DEC-054, DEC-056, DEC-057) |
 | USB / debug | USB FS; H743 debug connector (target: console + SWD, IF-045; as drawn: OPEN-029); F100 SWD pads |
 | Power | 5 V input, 3.3 V buck, sensor LDO, 6 V servo rail |
 
@@ -139,7 +139,7 @@ Interface allocations agreed with the software team (DEC-014, DEC-018) are in sp
 The specification tracks every open item in section 8.2 of the [specification](hardware/AO-Horizon/documents/design/AO-HORIZON_SPEC_EN.md). Top items now:
 
 - ESC stop on the F100 failsafe pulse, now the Tekko32 with AM32 (OPEN-017)
-- RC IN not drawn; FS-iA6B PPM level and RC-loss behavior, Tekko32 pinout (OPEN-034)
+- RC IN: buffer and parts decided (DEC-056, DEC-057); CN706 connector type and pin order against DEC-053 to decide with the team; FS-iA6B PPM level and RC-loss behavior, Tekko32 pinout (OPEN-034)
 - Reset: the button's LCSC part is not checked (B901 pad pairs confirmed), and an H743 internal reset may also reset the F100 (OPEN-026)
 - Debug access: CN602 and CN603 drawn in the Pixhawk Debug Mini order, no NRST (OPEN-029)
 - H743 VDDA capacitor drawn 2.2 µF where DEC-049 says 4.7 µF (OPEN-030)
@@ -148,7 +148,7 @@ The specification tracks every open item in section 8.2 of the [specification](h
 - Servo rail sense: the 3:1 divider on F100 PA4 is drawn, not decided (OPEN-033)
 - Servo power: all 8 servos stalled draw about 13.2 A, over the 10 A UBEC continuous rating (OPEN-007); XT30 rating (OPEN-021)
 - Board LEDs: LED current and H743 sink current not checked (OPEN-035)
-- GPS1 port: Q701 buzzer driver drawn, its pinout and the D706 standoff on the 0~5 V line not checked; safety switch input with no pull (OPEN-037)
+- GPS1 port: Q701 buzzer FET accepted (DEC-057); D706 standoff on the 0~5 V buzzer line not checked; R312 pull-down on the safety switch input, switch wiring not checked; `+3V3` export on CN705 pin 8 (OPEN-037)
 - I2C4: board pull-ups R705 and R706 now fitted; total with any module pull-ups not checked (OPEN-038)
 - Servo bus: C803 is a 10 V tantalum at 60 to 74 % of its rating on a hot-plugged 10 A bus (OPEN-021)
 
