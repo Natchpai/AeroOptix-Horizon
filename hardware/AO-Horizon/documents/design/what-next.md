@@ -56,11 +56,11 @@ Done (2026-11-03). See spec 4.3 and DEC-029 to DEC-042. Resistor fields: section
 
 Not drawn. Servo current passes through the board (DEC-019).
 
-- [ ] Check the board-mount XT30 rating against PWR-011 (OPEN-021, P2-016).
+- [ ] Check the board-mount XT30 rating against PWR-011 and the 13.2 A all-stall estimate (OPEN-021, P2-016).
 - [ ] Size the 6 V and servo GND copper, pick where servo GND joins logic GND (away from the sensors), and add bulk capacitors (OPEN-021).
 - [ ] 8 × 3-pin servo headers (signal, +6 V, GND) on the bussed 6 V rail (DEC-019).
 - [ ] Servo rail divider on F100 PA4: match the px4io 3:1 scaling (IF-050). Drawn so far: 22 Ω and 10 nF only (OPEN-033).
-- [ ] Wait for the team's servo stall current (OPEN-007, P0-022).
+- [ ] Datasheet all-stall estimate: 13.2 A at 6 V (4 × DS3235 2.1 A + 4 × C507 1.2 A, OPEN-007), over the 10 A UBEC continuous rating. Wait for the team's bench current under load (P0-022) and their confirmation that the UBEC output plug is an XT30 (OPEN-021).
 
 ## 4. Zone Z3: H743 main MCU
 

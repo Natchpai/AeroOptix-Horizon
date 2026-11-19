@@ -1,6 +1,6 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.24
+**Revision:** 0.25
 **Updated:** 2026-11-19
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012), the 5 V input is a TPS2121 power mux with a 1.5 A limit (DEC-029, DEC-030) and the `+3V3A` LDO is TPS73533DRBR (DEC-027). No other rail, regulator or protection part is approved. Not a verification record.
 **Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006 (closed), OPEN-007, OPEN-011, OPEN-021, OPEN-024 (closed), OPEN-025, OPEN-028. Decisions: DEC-007, DEC-010, DEC-011, DEC-012, DEC-018, DEC-019, DEC-053, DEC-054, DEC-025, DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-039, DEC-040, DEC-043, DEC-044, DEC-048. Checklist task: P0-017.
@@ -95,11 +95,13 @@ All of this current passes through the XT30 input and the on-board 6 V and servo
 
 | Load | Ref | Qty | Current each | Stall / peak | Label |
 | ---- | --- | --- | ------------ | ------------ | ----- |
-| Tilt servos, RDS3235 (team design) | IF-034 to IF-037 | 4 | TBD; team bench target: all 4 at or below 10 A while tilting 0 to 90° at hover thrust | TBD (team bench test) | `TBD` |
-| Flaperon and ruddervator servos, Kingmax C507 and DS-843MG (positions TBD, team) | IF-030 to IF-033 | 4 | TBD | TBD (team bench test) | `TBD` |
+| Tilt servos, RDS3235 (team design) | IF-034 to IF-037 | 4 | Idle 5 mA; running under load TBD (team bench target: all 4 at or below 10 A while tilting 0 to 90° at hover thrust) | Stall 2.1 A at 6 V (DS3235 sheet; RDS3235 match `ASSUMED`) | `VERIFIED` (sheet values); load current `TBD` |
+| Flaperon and ruddervator servos, Kingmax C507 V2 (human owner, 2026-11-19) | IF-030 to IF-033 | 4 | Idle 10 mA, no-load 130 mA, rated working 0.65 A at 2.0 kg·cm | Stall 1.2 A at 6 V (C507 sheet; V2 match `ASSUMED`) | `VERIFIED` (sheet values) |
 | Spare outputs on the H743 | IF-017 to IF-019 | 0 planned (DEC-018); pads only | - | - | - |
 
 All 8 servos can move at the same time (team): the tilt servos move all the time in hover, and the 4 surface servos move together in cruise.
+
+All 8 stalled at 6 V: 4 × 2.1 A + 4 × 1.2 A = 13.2 A (`ESTIMATED`), 32 % over the 10 A UBEC continuous rating and 12 % under the 15 A peak. Surfaces at rated load (4 × 0.65 A = 2.6 A) plus the tilt servos at the team's 10 A target give up to 12.6 A (`ESTIMATED`). Datasheet values via NotebookLM, notebook `Servos` (section 10).
 
 The 4 motor outputs (IF-040 to IF-043) carry only the signal and GND to one Tekko32 F4 4in1 50A ESC through an adapter cable (DEC-054); motor power does not pass through the board (`ASSUMED`). The ESC headers have the + pin removed, so no ESC supply reaches the board; the ESC's VBAT, current and telemetry wires stay in the cable.
 
@@ -175,8 +177,8 @@ All `TBD`. Items to decide:
 | Severity | Ref | Label | Finding | Source |
 | -------- | --- | ----- | ------- | ------ |
 | MINOR | PWR-012 | `ESTIMATED` | 5 V budget closed on 2026-11-03 (see spec OPEN-006) with the human owner's external load estimates: about 880 mA hot worst case against the 1.0 A minimum mux limit, about 120 mA margin. Barometer currents and the external device models are still estimates; check on the bench (P4-014). | Section 4 |
-| MAJOR | IF-030 to IF-037 / UBEC | `NOT_VERIFIED` | All 8 servos can move at once and stall current is not known. The 10 A team target covers only the 4 tilt servos (OPEN-007). | Section 3 |
-| MAJOR | XT30 input / 6 V bus | `NOT_VERIFIED` | The XT30 input carries the total servo current, up to 10 A continuous and 15 A peak. Its rating is not checked. (OPEN-021). | DEC-019, PWR-011 |
+| MAJOR | IF-030 to IF-037 / UBEC | `ESTIMATED` | All 8 servos can move at once. The 6 V datasheet stall currents add to 13.2 A, over the 10 A UBEC continuous rating; the 15 A peak duration is not known. Running current under load not known (OPEN-007). | Section 3; DS3235 and C507 sheets |
+| MAJOR | XT30 input / 6 V bus | `NOT_VERIFIED` | The XT30 input carries the total servo current, up to 10 A continuous and 15 A peak, and about 13.2 A with all 8 servos stalled (section 3). Its rating is not checked. (OPEN-021). | DEC-019, PWR-011 |
 | MINOR | DEC-030 / 5 V | `VERIFIED` | The power mux limit with 80.6 kΩ is 1.0 to 2.0 A (1.5 A typ). The board plus all external 5 V loads must fit under 1.0 A for a worst-case part, with the load currents still unknown. | Section 4; TI mux |
 | MINOR | IST8310 / 3.3 V | `VERIFIED` | IST8310 absolute maximum supply is 3.6 V, so the 3.3 V rail must never overshoot by more than 0.3 V (9 %), including start-up and load steps. | IST8310 DS V1.2, 4.1 |
 | INFO | IF-022 / 5 V | `VERIFIED` (team answer) | USB VBUS powers the board on the bench. It joins the PM02D 5 V through the power mux IN2 (DEC-029). | Section 2 |
@@ -186,7 +188,7 @@ All `TBD`. Items to decide:
 
 - [x] GPS about 100 mA (human owner estimate, 2026-11-03). SiK radio 100 mA transmit (Holybro, `VERIFIED`; replaces ELRS 100 mA, DEC-053). Model still from the team (P0-022). Telemetry 2: no device planned.
 - [ ] FS-iA6B supply current (50 mA placeholder, OPEN-034).
-- [ ] Servo stall current (team bench test, P0-022). Servo power passes through the board (DEC-019), so it also sizes the board input and bus.
+- [ ] Servo current under load and measured stall current (team bench test, P0-022); datasheet stall values are in section 3. Servo power passes through the board (DEC-019), so it also sizes the board input and bus.
 - [x] 3.3 V_IMU rail structure: `+3V3A` from its own LDO, sensor VDD pins (DEC-043, 2026-11-12; was IMUs only, DEC-025). LDO TPS73533DRBR (DEC-027, 2026-10-31).
 - [x] USB VBUS as a board power source: yes, on the bench (team). It feeds all external 5 V ports (human owner, 2026-10-24).
 - [x] TPS2121 values from TI: done 2026-11-01 (section 7, TI mux).
@@ -208,4 +210,6 @@ All `TBD`. Items to decide:
 - TI TPS212x (TPS2121): SLVSEA3F, https://www.ti.com/product/TPS2121 (ACTIVE, fetched 2026-11-01), in NotebookLM notebook `TPS212x 2.8-V to 22-V Priority Power MUX with Seamless Switchover` (added by the human owner; not opened by Claude)
 - ST STM32H743VI: DS12110 Rev 11, NotebookLM notebook `STM32H743VI` (not opened by Claude)
 - ICM-45686: see `AO-HORIZON_IMU_SELECTION_EN.md`
+- DS3235 servo: DS SERVO sheet for DS3235 / DS3235-180 / DS3235-270, no revision or date, copy at https://hajim.rochester.edu/me/sites/kelley/me240/DS3235-270_datasheet.pdf, NotebookLM notebook `Servos` (added 2026-11-19 with the human owner's approval; not opened by Claude)
+- Kingmax C507 servo: Kingmax spec sheet, French translation, no version, https://www.intermodel.fr/fichiers/C507KINGMAX.pdf, NotebookLM notebook `Servos` (added 2026-11-19 with the human owner's approval; not opened by Claude)
 - Requirements: `AO-HORIZON_SPEC_EN.md` sections on power, safety and interfaces
