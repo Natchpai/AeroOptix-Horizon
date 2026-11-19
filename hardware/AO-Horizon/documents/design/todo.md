@@ -18,7 +18,6 @@ Sources: `sch-review` of `conn-actuator` and `conn-peripherals` (2026-11-19, com
 ## MINOR
 
 - [ ] MINOR | D706 pins 5 and 6 / `GPS1_BUZZER_B` | `NOT_VERIFIED` | Pin 9 swings 0 to 5 V when Q701 is off, but the PESD4USB3BBTBR-QZ standoff voltage is unknown. Below 5 V, the ESD channel leaks or conducts. | Get the D706 standoff voltage; if it is below 5 V, use a 5 V part on this line. (OPEN-023)
-- [ ] MINOR | IST8310, BMP581 footprints | `ESTIMATED` / `NOT_VERIFIED` | IST8310 uses the stock LGA-16 3x3 footprint with an estimated fit; the BMP581 pads were read from an image. | Check both against the datasheet drawings before placement (P2-012). The team offered to help if you send the datasheet pages.
 - [ ] MINOR | MCU, sensor and USB sheets | `NOT_VERIFIED` | Not reviewed yet; the connector sheets are done. | Run `sch-review` on these sheets before layout (P2-009).
 
 ## INFO
