@@ -156,6 +156,7 @@ Notable changes to this hardware project are documented here.
 - Schematic (2026-11-19 12:49 save; drawn, not decided): spare outputs routed to `conn-peripherals` through `{SPARE_TIM}`, with no pads yet; `PWR_FLAG` on `+6V`, `H7_VDDA` and `F1_VDDA`; B901 on a new `SW_Tactile_PTS815SJM250` symbol, with `RESET_B` on pins 1 and 2 (PTS815 pad pairs `NOT_VERIFIED`, OPEN-026). Library: Footprint field and filter on `SW_Tactile_PTS815SJM250`, footprint filter on `ASDDV`.
 - Specification rev 0.49 and checklist rev 0.45 (2026-11-19): B901 pad pairs from the human owner recorded in 4.2 and OPEN-026.
 - Specification rev 0.50 and checklist rev 0.46 (2026-11-19): `sch-review` of the connector and actuator sheets recorded in 4.2; OPEN-021 (C803, D807), OPEN-023 (PD12 and PD13 are FT) and OPEN-032 (`GPS1_SAFETY_LED_B`) updated. Synced: pin allocation rev 0.14 (F-22, F-23), power budget rev 0.27, `what-next.md`, the design README index and the root README.
+- Specification rev 0.51 (2026-11-19): C803 rating from its `Rate` field (10 V Kyocera AVX TPSB476K010R0250, 60 to 74 % of rating on the servo bus) in 4.2 and OPEN-021; C102 on the 5 V input is the same part. Power budget rev 0.28, `todo.md`, `what-next.md` and the root README updated.
 
 ### Fixed
 

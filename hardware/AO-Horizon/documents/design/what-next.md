@@ -16,7 +16,7 @@ The 12:30 save is committed and pushed (spec rev 0.47). Fixed in the 12:26 and 1
 - [ ] Datasheet checks (NotebookLM source or your values; a new source needs your approval):
   - XT30PW-M current rating against the 13.2 A all-stall estimate (OPEN-021).
   - D807 SMF7.0A clamping voltage against the 7.4 V servo limit (PWR-011, OPEN-021).
-  - C803 47 µF tantalum voltage rating, LCSC C308881 (OPEN-021).
+  - C803 47 µF tantalum: `Rate` field says 10 V (Kyocera AVX TPSB476K010R0250), 60 to 74 % of rating; see `todo.md` (OPEN-021).
   - LED forward voltage and current through 220 Ω, and the H743 pin sink current (OPEN-035).
 - [ ] Decide the drawn blocks (spec 4.2), then ask Claude to record them:
   - Peripheral connectors CN701 to CN705 (OPEN-023).
