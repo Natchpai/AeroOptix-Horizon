@@ -67,7 +67,7 @@ By: Jakarin
 |---|---|---|---|
 | RC receiver | Current draw; PPM signal level (3.3 V or 5 V); what the PPM output does on link loss (stops, holds, or sends failsafe values) and how you set its failsafe | FlySky FS-iA6B, PPM mode, RC IN (DEC-053) | |
 | Telemetry radio | Confirm the 100 mW model; setup for 920 to 925 MHz | Holybro SiK V3 on TELEM1 (DEC-053) | |
-| GPS module | Confirm Holybro M9N, photo of the plug | | |
+| GPS module | Confirm Holybro M9N, photo of the plug | V1, with onboard buzzer and safety switch (human owner, 2026-11-19; spec DEC-070). Model and plug photo still open | |
 | Airspeed | Link or photo; 3.3 V or 5 V version | MS4525DO | |
 | PM02D | Chip on the label (INA228 or INA226), photo of the plug | | |
 | ESC | Pinout of the 8-pin 1.0 mm connector (photo or Holybro pin map); BEC on it or not; adapter cable to MAIN 1 to 4 (signal and GND only) | One Tekko32 F4 4in1 50A AM32, no PDB (DEC-054) | |
