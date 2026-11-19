@@ -7,7 +7,7 @@ The specification and the execution checklist stay the source of truth. This lis
 
 ## 0. Next up (2026-11-19, after commit `fe46bcf`)
 
-Spec rev 0.55 and the 16:03 save are committed and pushed (`bdb398d`, `fe46bcf`); the link audit was clean. ERC on the 16:03 save is clean (human owner) and the `{ESC}`, `{SURFACE}`, `{AUX_TIM5}`, `{EXT_I2C4}` bus links are traced. Not committed yet: spec rev 0.56 and `ERC.rpt`. Review findings with actions are in `todo.md`.
+Spec rev 0.55 and the 16:03 save are committed and pushed (`bdb398d`, `fe46bcf`); the link audit was clean. ERC on the 16:03 save is clean (human owner) and the `{ESC}`, `{SURFACE}`, `{AUX_TIM5}`, `{EXT_I2C4}` bus links are traced; spec rev 0.56 is committed (`0cb73b5`). The other eight bus links are traced too (spec rev 0.57, not committed); `sch-inspect` 1.2.0 follows buses (`17af47b`). Review findings with actions are in `todo.md`.
 
 - [ ] Re-run ERC after the next schematic change (P2-022); last clean run on the 16:03 save.
 - [ ] CN706 RC IN connector: decide with your partner (OPEN-034 item 6a): keep the JST-GH (pin 1 `+5V`, 2 signal) and amend DEC-053, or go back to the 2.54 mm servo header with PPM on pin 1 (section 7, P2-023).
@@ -70,7 +70,7 @@ H743 values below are from ST DS12110 Rev 11 via NotebookLM (2026-11-12).
 - [ ] 16 MHz clock: CMOS oscillator U202 (DEC-044), part decided (DEC-048). Check its data against the HSE external-clock limits (OPEN-028). Firmware side: P1-017.
 - [ ] Reset (DEC-046: one shared `RESET_B` for H743 and F100 NRST, one button): check the drawn button B901 PTS815SJM250SMTRLFS (LCSC C2689510) and its `B` reference prefix. Check in NotebookLM whether an internal reset (IWDG, software, debugger) drives NRST low on the H743 and F100; if so, an H743 reset also resets the F100 (OPEN-026, SAF-001). `3V3_PG` stays local (DEC-039). Neither debug connector (CN602, CN603) carries NRST (OPEN-029).
 - [ ] BOOT0: the DNP pull-up gives selection by rework only. Decide if that meets FUN-006 and TST-003 ("selectable and observable"), or add a pad, jumper or button (P1-007).
-- [ ] Net names (OPEN-032, DEC-052): choose for `OSC_16M00_OUT` and `OSC_24M00_OUT` (add `H7_`/`F1_`, or amend DEC-052); set the spare output order and update the pin allocation; add `DBG_UART3_*` members on `conn-usb-debug` with the debug pin set; info: `SS{slash}TR`, `3V3_LED_A`, `USB_FS_VBUS` carried twice. Then run ERC.
+- [ ] Net names (OPEN-032, DEC-052): choose for `OSC_16M00_OUT` and `OSC_24M00_OUT` (add `H7_`/`F1_`, or amend DEC-052); set the spare output order and update the pin allocation; `DBG_UART3_*` members on `conn-usb-debug` are drawn (16:03 save, CN602 pins 2 and 3); info: `SS{slash}TR`, `3V3_LED_A`, `USB_FS_VBUS` carried twice. Then run ERC.
 - [ ] Replace the remaining `H7_<pin>` stub labels with function names from the pin allocation, and carry the signals that leave the sheet through sheet pins.
 - [ ] Mark unused pins with no-connect flags once the allocation is final (PA10, PA15, PB3, PB4 and the other free pins).
 - [ ] Debug: CN602 JST-SH 6-pin in the Pixhawk Debug Mini order (1 VREF, 2 TX, 3 RX, 4 SWDIO, 5 SWCLK, 6 GND; 16:52 save). IF-045 and TST-001 also ask for an NRST pad, not drawn. Decide (OPEN-029, P1-008).

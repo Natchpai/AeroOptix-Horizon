@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.56, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.57, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -129,7 +129,7 @@ Interface allocations agreed with the software team (DEC-014, DEC-018) are in sp
 | Check | Result | Evidence |
 |---|---|---|
 | Schematic ERC | Whole schematic, 2026-11-19 16:03 save: 0 errors, 0 warnings | Run by the human owner; [`ERC.rpt`](hardware/AO-Horizon/documents/verification/ERC.rpt). An ERC pass is not a proof of correctness |
-| Schematic review | Power sheet (2026-11-03 save); connector and actuator sheets (2026-11-19 12:49 save) | `sch-review`, spec 4.3 and 4.2; findings open (OPEN-021, OPEN-037); OPEN-038 closed. Bus links `{ESC}`, `{SURFACE}`, `{AUX_TIM5}`, `{EXT_I2C4}` traced with the KiCad netlist (16:03 save): every member reaches its allocated pin |
+| Schematic review | Power sheet (2026-11-03 save); connector and actuator sheets (2026-11-19 12:49 save) | `sch-review`, spec 4.3 and 4.2; findings open (OPEN-021, OPEN-037); OPEN-038 closed. All 12 bus links traced with the KiCad netlist (16:03 save): every member reaches its allocated pin; the spare outputs reach no pad yet |
 | PCB DRC | `NOT_VERIFIED` | PCB is empty |
 | BOM / footprint review | `NOT_VERIFIED` | `TBD` |
 | Prototype functional test | `NOT_VERIFIED` | Bench tasks P4-012 to P4-015 open |
