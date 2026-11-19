@@ -7623,7 +7623,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.lcsc.com/datasheet/C122319.pdf"
 			(at 106.68 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -7656,7 +7656,7 @@
 				)
 			)
 		)
-		(property "MFR" "Kyocera AVX"
+		(property "MFR" "KEMET"
 			(at 106.68 83.82 0)
 			(hide yes)
 			(show_name no)

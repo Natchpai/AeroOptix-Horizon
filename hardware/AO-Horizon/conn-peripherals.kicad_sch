@@ -1193,7 +1193,7 @@
 					(justify left)
 				)
 			)
-			(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PESD4USB5BTBR-Q.pdf"
+			(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PESD4USB3BBTBR-Q.pdf"
 				(at 3.175 -12.065 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -3188,12 +3188,6 @@
 		(uuid "20476eb4-d39b-4e67-a8a9-d8b82eefe948")
 	)
 	(junction
-		(at 307.34 146.05)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "246e47af-86b9-41bd-9f38-72e966004590")
-	)
-	(junction
 		(at 307.34 213.36)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3362,6 +3356,12 @@
 		(uuid "ad00caa6-7433-4636-9f94-6d2fd89b674b")
 	)
 	(junction
+		(at 313.69 160.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "b0f655dc-71c3-45e7-9fae-b68894dbb621")
+	)
+	(junction
 		(at 327.66 60.96)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3396,6 +3396,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e75a1dfa-6f4f-4654-8ec4-124515e19abf")
+	)
+	(junction
+		(at 313.69 146.05)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e7f47327-a011-4659-932d-bfad02669834")
 	)
 	(junction
 		(at 292.1 133.35)
@@ -4024,16 +4030,6 @@
 	)
 	(wire
 		(pts
-			(xy 307.34 146.05) (xy 307.34 148.59)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4e51871f-6932-4a16-ba5e-ddfc10192088")
-	)
-	(wire
-		(pts
 			(xy 254 69.85) (xy 273.05 69.85)
 		)
 		(stroke
@@ -4111,6 +4107,16 @@
 			(type default)
 		)
 		(uuid "57eb8143-3c71-4efe-8a5b-9a0b13fd64cf")
+	)
+	(wire
+		(pts
+			(xy 313.69 157.48) (xy 313.69 160.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "59d3f6ee-c76c-4386-86b8-4164577fbce1")
 	)
 	(wire
 		(pts
@@ -4284,7 +4290,7 @@
 	)
 	(wire
 		(pts
-			(xy 262.89 146.05) (xy 307.34 146.05)
+			(xy 262.89 146.05) (xy 313.69 146.05)
 		)
 		(stroke
 			(width 0)
@@ -4441,16 +4447,6 @@
 			(type default)
 		)
 		(uuid "8cd546cd-418f-4995-b664-b2c2cc1904c9")
-	)
-	(wire
-		(pts
-			(xy 307.34 146.05) (xy 330.2 146.05)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8ecc309d-9722-4e35-a6bf-4d6c3403c5a2")
 	)
 	(wire
 		(pts
@@ -4714,6 +4710,16 @@
 	)
 	(wire
 		(pts
+			(xy 313.69 146.05) (xy 313.69 149.86)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c3f0be2f-8391-4647-a64c-147cd20d5f6e")
+	)
+	(wire
+		(pts
 			(xy 336.55 78.74) (xy 336.55 80.01)
 		)
 		(stroke
@@ -4791,6 +4797,16 @@
 			(type default)
 		)
 		(uuid "ceb24721-0245-4103-b9bc-305a060dc089")
+	)
+	(wire
+		(pts
+			(xy 313.69 160.02) (xy 336.55 160.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d0ab9e2d-df7e-46e3-98bb-a3fb560dddbb")
 	)
 	(wire
 		(pts
@@ -4954,7 +4970,7 @@
 	)
 	(wire
 		(pts
-			(xy 287.02 160.02) (xy 336.55 160.02)
+			(xy 287.02 160.02) (xy 313.69 160.02)
 		)
 		(stroke
 			(width 0)
@@ -5021,6 +5037,16 @@
 			(type default)
 		)
 		(uuid "f76229d2-1ff7-4d03-a1ac-02021266a709")
+	)
+	(wire
+		(pts
+			(xy 313.69 146.05) (xy 330.2 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f778ff1f-a86a-4806-9f7a-259b2d277acd")
 	)
 	(wire
 		(pts
@@ -6272,7 +6298,7 @@
 				(justify left)
 			)
 		)
-		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PESD4USB5BTBR-Q.pdf"
+		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PESD4USB3BBTBR-Q.pdf"
 			(at 290.195 165.735 0)
 			(hide yes)
 			(show_name no)
@@ -6490,7 +6516,7 @@
 				(justify left)
 			)
 		)
-		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PESD4USB5BTBR-Q.pdf"
+		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PESD4USB3BBTBR-Q.pdf"
 			(at 306.705 165.735 0)
 			(hide yes)
 			(show_name no)
@@ -6706,7 +6732,7 @@
 				(justify left)
 			)
 		)
-		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PESD4USB5BTBR-Q.pdf"
+		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PESD4USB3BBTBR-Q.pdf"
 			(at 313.055 90.805 0)
 			(hide yes)
 			(show_name no)
@@ -7663,6 +7689,121 @@
 		)
 	)
 	(symbol
+		(lib_id "0_Protection_ESD:SP3031-01E")
+		(at 313.69 153.67 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "56343249-fd12-4e87-9f95-0b2334bdc4df")
+		(property "Reference" "D707"
+			(at 316.23 152.4 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "SP3031-01ETG"
+			(at 316.23 154.94 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "0_Diode_SMD:D_SOD-882"
+			(at 313.69 153.67 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.littelfuse.com/assetdocs/tvs-diode-arrays-sp3031-datasheet?assetguid=2f63a461-bb1a-458d-97ab-119532f3b1f4"
+			(at 323.85 153.67 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "5V(Vswr) ESD Protection Diode 0.8pF"
+			(at 322.58 153.67 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C207283"
+			(at 313.69 153.67 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "Littelfuse"
+			(at 313.69 153.67 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "SP3031-01ETG"
+			(at 313.69 153.67 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "2"
+			(uuid "aeb65e84-4674-4ac2-8171-ab98e60454fe")
+		)
+		(pin "1"
+			(uuid "38f2d365-0754-42d5-8f75-37a9fc52fdc3")
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/420855bf-aac0-4922-afb8-bf1515fae8da"
+					(reference "D707")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 336.55 162.56 0)
 		(unit 1)
@@ -8578,7 +8719,7 @@
 				(justify left)
 			)
 		)
-		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PESD4USB5BTBR-Q.pdf"
+		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PESD4USB3BBTBR-Q.pdf"
 			(at 155.575 146.685 0)
 			(hide yes)
 			(show_name no)
@@ -10266,7 +10407,7 @@
 				(justify left)
 			)
 		)
-		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PESD4USB5BTBR-Q.pdf"
+		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PESD4USB3BBTBR-Q.pdf"
 			(at 155.575 213.995 0)
 			(hide yes)
 			(show_name no)
@@ -10604,7 +10745,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "df52b8f3-387f-4472-9c49-390d1caa2603")
-		(property "Reference" "D707"
+		(property "Reference" "D708"
 			(at 285.75 207.01 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10701,7 +10842,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/420855bf-aac0-4922-afb8-bf1515fae8da"
-					(reference "D707")
+					(reference "D708")
 					(unit 1)
 				)
 			)
@@ -11134,7 +11275,7 @@
 				(justify left)
 			)
 		)
-		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PESD4USB5BTBR-Q.pdf"
+		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PESD4USB3BBTBR-Q.pdf"
 			(at 155.575 89.535 0)
 			(hide yes)
 			(show_name no)
