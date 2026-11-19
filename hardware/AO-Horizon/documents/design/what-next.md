@@ -15,7 +15,7 @@ The 12:30 save is committed and pushed (spec rev 0.47). Fixed in the 12:26 and 1
 - [ ] Next review: the MCU, sensor and USB sheets (P2-022).
 - [ ] Datasheet checks (NotebookLM source or your values; a new source needs your approval):
   - XT30PW-M current rating against the 13.2 A all-stall estimate (OPEN-021).
-  - D807 SMF7.0A clamping voltage against the 7.4 V servo limit (PWR-011, OPEN-021).
+  - D807 SMF7.5CA (13:57 save, 7.5 V standoff, 12.9 V clamp): breakdown voltage and leakage at 7.4 V (PWR-011, OPEN-021).
   - C803 47 µF tantalum: `Rate` field says 10 V (Kyocera AVX TPSB476K010R0250), 60 to 74 % of rating; see `todo.md` (OPEN-021).
   - LED forward voltage and current through 220 Ω, and the H743 pin sink current (OPEN-035).
 - [ ] Decide the drawn blocks (spec 4.2), then ask Claude to record them:
@@ -85,7 +85,7 @@ H743 values below are from ST DS12110 Rev 11 via NotebookLM (2026-11-12).
 - [x] R601, R602 / CC1, CC2: now 5.1 kΩ, the usual USB-C sink Rd (12:26 save).
 - [ ] INFO | Library `0_Conn_Card:Micro_SD_Card_Det1`, `0_Conn_USB:USB_C_Receptacle_USB2.0_16P` | `VERIFIED` (preflight, 2026-11-14) | The library symbols have an empty Footprint field; the placed SD? and CN601 have footprints. Fill the library field or leave it generic, then run `/kicad-link-audit`.
 - [ ] microSD: socket drawn; DET reaches no MCU pin; add CMD and DAT pull-ups and ESD (P2-022).
-- [ ] Board LEDs drawn: direct drive, active low, 220 Ω from `+3V3`; check LED current (OPEN-035). No board buzzer: `BUZZER_TIM3_CH3` goes to GPS1 pin 9 (`GPS1_BUZZER_B`).
+- [ ] Board LEDs drawn: direct drive, active low, 220 Ω from `+3V3`; check LED current (OPEN-035). No board buzzer: `BUZZER_TIM3_CH3` drives Q701, which switches GPS1 pin 9 (`GPS1_BUZZER_B`, 13:33 save; OPEN-037).
 
 ## 5. Zone Z4: F100 IO MCU (px4io)
 
@@ -125,7 +125,7 @@ To do:
 
 Drawn on `conn-peripherals` and `conn-actuator`, not decided (spec 4.2). RC IN not drawn.
 
-- [ ] Connector pinouts against the Pixhawk standard DS-009: Telemetry 1 and 2, GPS1 10-pin (3.3 V and buzzer pins), airspeed, TF-Luna (OPEN-023, P2-015).
+- [ ] Connector pinouts against the Pixhawk standard DS-009: Telemetry 1 and 2, GPS1 10-pin, airspeed, TF-Luna (OPEN-023, P2-015). Signal levels done: all 3.3 V, GPS1 pin 9 `BUZZER-` 0~5 V (Holybro Pixhawk 6X page).
 - [x] Telemetry 2 (USART1, PB14, PB15): JST-GH 6-pin, as Telemetry 1 (CN702).
 - [ ] Decide on the team RC IN proposal (OPEN-034 item 5): 74LVC1G17 buffer on `+3V3` (1 kΩ in, 100 kΩ to `GND`, 22 Ω out, 100 nF) instead of the 6.2 kΩ / 10 kΩ divider. If yes: amend DEC-053, IF-038, F-21, P2-023 and P4-016, and add the part with `kicad-part-start` (datasheet values `NOT_VERIFIED`, notebook upload needs your approval). If no: the team measures the FS-iA6B PPM level first.
 - [ ] RC IN per DEC-053 (or the buffer if accepted): CN706 1x3 header, input circuit, `RCIN_TIM1_CH1` to F100 PA8 (P2-023, OPEN-034).

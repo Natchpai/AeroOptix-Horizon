@@ -157,6 +157,8 @@ Notable changes to this hardware project are documented here.
 - Specification rev 0.49 and checklist rev 0.45 (2026-11-19): B901 pad pairs from the human owner recorded in 4.2 and OPEN-026.
 - Specification rev 0.50 and checklist rev 0.46 (2026-11-19): `sch-review` of the connector and actuator sheets recorded in 4.2; OPEN-021 (C803, D807), OPEN-023 (PD12 and PD13 are FT) and OPEN-032 (`GPS1_SAFETY_LED_B`) updated. Synced: pin allocation rev 0.14 (F-22, F-23), power budget rev 0.27, `what-next.md`, the design README index and the root README.
 - Specification rev 0.51 (2026-11-19): C803 rating from its `Rate` field (10 V Kyocera AVX TPSB476K010R0250, 60 to 74 % of rating on the servo bus) in 4.2 and OPEN-021; C102 on the 5 V input is the same part. Power budget rev 0.28, `todo.md`, `what-next.md` and the root README updated.
+- Schematic (2026-11-19 13:33, 13:44 and 13:57 saves; drawn, not decided): GPS1 buzzer low-side driver Q701 2SK3018W on `conn-peripherals`, with R711 changed from 22 Ω series to 10 kΩ gate pull-down; I2C4 pull-ups R705 and R706 fitted; R708, R711 and R713 re-annotated; net class flags `TEL_UART`, `RNG_UART`, `I2C4`; D807 changed from SMF7.0A to SMF7.5CA (bidirectional, new project symbol `0_Protection_ESD:D_TVS-ESD_bi`). KiCad reset 73 capacitor Description fields to "Unpolarized capacitor". ERC not re-run on these saves (`NOT_VERIFIED`).
+- Specification rev 0.52 and checklist rev 0.47 (2026-11-19): these saves recorded in 4.2, OPEN-021, OPEN-037 and OPEN-038; Holybro Pixhawk 6X signal levels (3.3 V, GPS1 pin 9 `BUZZER-` 0~5 V) recorded in OPEN-023. Pin allocation rev 0.15 (F-22, F-23), power budget rev 0.29, `todo.md`, `what-next.md` and the root README updated.
 
 ### Fixed
 

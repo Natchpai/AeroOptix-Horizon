@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Execution Checklist
 
-**Revision:** 0.46
+**Revision:** 0.47
 **Updated:** 2026-11-19
 **Status:** Active execution tracker; not an approval or verification record
-**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.50
+**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.52
 
 Use the specification for confirmed requirements and decisions. This checklist records the sequence of work and the evidence needed to close each gate. Diagram content is reference material. User-confirmed requirements take precedence. All sensor parts are chosen (DEC-008, DEC-010, DEC-011); their lifecycle and sourcing risks are open.
 
@@ -188,9 +188,9 @@ Descriptions are in the specification (section 8.2). Status and owner below are 
 | OI-020 | OPEN-018 | PWM pull-down value (no DShot since DEC-050) | Value TBD. | Hardware / P2 (P2-013), P4 (P4-011) |
 | OI-021 | OPEN-019 | BMP384 fallback fit against the BMP581 | Not checked. | Hardware / P1 (P1-015) |
 | OI-022 | OPEN-020 | STM32F100 datasheet values | Closed 2026-10-24: HSE 4 to 24 MHz, VDD 2 to 3.6 V, POR/PDR and PVD, 5 V tolerance checked (DocID16455 Rev 9). | Closed |
-| OI-023 | OPEN-021 | On-board servo bus and UBEC input rating | Headers chosen (DEC-019); UBEC input on a board-mount XT30. XT30 rating against PWR-011 `NOT_VERIFIED`. CN804 XT30PW-M, 6 V bulk capacitors and D807 TVS drawn (11:38 save), not decided. Copper and GND join open. | Hardware / P2 (P2-016) |
+| OI-023 | OPEN-021 | On-board servo bus and UBEC input rating | Headers chosen (DEC-019); UBEC input on a board-mount XT30. XT30 rating against PWR-011 `NOT_VERIFIED`. CN804 XT30PW-M, 6 V bulk capacitors and D807 TVS drawn (11:38 save), not decided. D807 now SMF7.5CA, 7.5 V standoff (13:57 save); C803 10 V open. Copper and GND join open. | Hardware / P2 (P2-016) |
 | OI-024 | OPEN-022 | ESC current sense and telemetry pins | Closed 2026-10-24: dropped (IF-052, IF-053 removed). PC1 stays reserved (DEC-023). | Closed |
-| OI-025 | OPEN-023 | External connector pinouts and the PM02D connector | DS-009 not read. GPS1 10-pin extra pins and I2C4 5 V tolerance open. PM02D: CN101 CLIK-Mate drawn (DEC-042); pin order against the cable open. | Hardware / P2 (P2-015) |
+| OI-025 | OPEN-023 | External connector pinouts and the PM02D connector | DS-009 not read. Signal levels from the Holybro Pixhawk 6X page: all 3.3 V, GPS1 pin 8 `VDD_3V3`, pin 9 `BUZZER-` 0~5 V. PD12 and PD13 are FT. Pin order open. PM02D: CN101 CLIK-Mate drawn (DEC-042); pin order against the cable open. | Hardware / P2 (P2-015) |
 | OI-026 | OPEN-024 | Power mux source priority and switchover | Closed 2026-11-02: PM02D priority with the XCOMP fast switchover, R105 fitted (DEC-031 to DEC-034). | Closed |
 | OI-027 | OPEN-025 | Power mux status LED (Q101, D103) | Kept (DEC-035); ST and OV dividers set (DEC-036); D103 and D104 fields fixed. Open: ST low level against the Q101 minimum threshold (TI gives no ST VOL), LED currents. | Hardware / P4 (P4-012) |
 | OI-028 | OPEN-026 | Reset: button and internal-reset behavior | Decided 2026-11-14: one shared NRST net with one reset button (DEC-046). Drawn, not decided: button B? on `user-interface` (22:19 save, LCSC C2689510 not checked). Open: whether an MCU's internal reset drives NRST low is `NOT_VERIFIED`. 2026-11-19 12:49 save: B901 on the new `SW_Tactile_PTS815SJM250` symbol, `RESET_B` on pins 1 and 2; the PTS815SJM250SMTRLFS joins pins 1 and 2, and 3 and 4 (human owner), so the map is right. | Hardware / P1 (P1-014), P2 (P2-022) |
@@ -204,14 +204,14 @@ Descriptions are in the specification (section 8.2). Status and owner below are 
 | OI-036 | OPEN-034 | RC IN and ESC data after DEC-053 and DEC-054 | RC IN not drawn (P2-023); team proposal to use a 74LVC1G17 buffer instead of the divider waits for the human decision (OPEN-034 item 5). FS-iA6B PPM level, pin order, current and link-loss output; Tekko32 8-pin pinout, BEC and PWM level; SiK set to 920 to 925 MHz (team). | Team + Hardware / P2 (P2-023), P4 (P4-016) |
 | OI-037 | OPEN-035 | Board LEDs | Drawn, not decided (11:38 save): direct drive from the H743 pins, active low, 220 Ω from `+3V3`. LED current and H743 sink current `NOT_VERIFIED`. | Hardware / P2 (P2-022) |
 | OI-038 | OPEN-036 | Power mux OV trip margin | Closed 2026-11-19: 5.1 kΩ kept (DEC-055); the 14 mV OV margin (worst-case trip 5.51 V) accepted by the human owner. | Closed |
-| OI-039 | OPEN-037 | GPS1 buzzer drive, safety switch input, `+3V3` export | `sch-review` 2026-11-19: buzzer pin driven straight from PB0 (MAJOR); PB5 has no board pull (MINOR); `+3V3` on CN705 pin 8 unprotected (MINOR). DS-009 and px4io PB5 setup `NOT_VERIFIED`. | Hardware / P2 (P2-015, P2-022) |
-| OI-040 | OPEN-038 | I2C4 pull-ups | `sch-review` 2026-11-19: R705 and R706 DNP, no other pull-up on I2C4 (MAJOR). Check the MS4525DO and PM02D boards or fit R705 and R706. | Hardware + Team / P2 (P2-015) |
+| OI-039 | OPEN-037 | GPS1 buzzer drive, safety switch input, `+3V3` export | `sch-review` 2026-11-19: buzzer pin driven straight from PB0 (MAJOR); PB5 has no board pull (MINOR); `+3V3` on CN705 pin 8 unprotected (MINOR). DS-009 and px4io PB5 setup `NOT_VERIFIED`. 13:33 save: buzzer MAJOR fixed with Q701 low-side FET and R711 10 kΩ; Q701 pinout and R<sub>DS(on)</sub>, D706 standoff on the 0~5 V line (MINOR) open. | Hardware / P2 (P2-015, P2-022) |
+| OI-040 | OPEN-038 | I2C4 pull-ups | `sch-review` 2026-11-19: R705 and R706 DNP, no other pull-up on I2C4 (MAJOR). 13:57 save: R705 and R706 fitted. Open: total pull-up with the MS4525DO and PM02D boards. | Hardware + Team / P2 (P2-015) |
 
 ## Current next action
 
 - Decide on the team RC IN buffer proposal (OPEN-034 item 5), then draw RC IN (P2-023); get the FS-iA6B and Tekko32 data from the team (OPEN-034, P0-022).
 - Choose for `OSC_*` (rename to `H7_`/`F1_` or amend DEC-052) and set the spare output order (OPEN-032). Confirm the drawn servo-rail divider (OPEN-033) and the debug connectors drawn in the Pixhawk Debug Mini order (OPEN-029). Re-run ERC after each change (P2-022).
-- ERC is clean on the 2026-11-19 12:49 save (human owner). B901 pad pairs confirmed by the human owner (OPEN-026). `sch-review` of `conn-actuator` and `conn-peripherals` done 2026-11-19 (spec 4.2): settle the buzzer drive (OPEN-037), the I2C4 pull-ups (OPEN-038) and the C803 rating (OPEN-021), then review the MCU, sensor and USB sheets (P2-022).
+- ERC is clean on the 2026-11-19 12:49 save (human owner). B901 pad pairs confirmed by the human owner (OPEN-026). `sch-review` of `conn-actuator` and `conn-peripherals` done 2026-11-19 (spec 4.2): buzzer driver (OPEN-037) and I2C4 pull-ups (OPEN-038) drawn in the 13:33 and 13:57 saves; check Q701 and the D706 standoff (OPEN-037), settle the C803 rating (OPEN-021), re-run ERC on the 13:57 save, then review the MCU, sensor and USB sheets (P2-022).
 - Confirm the reset button part (B?, DEC-046, OPEN-026), confirm the drawn board LEDs (OPEN-035), decide the debug pin set (OPEN-029, P1-008) and confirm the H743 VDDA capacitor against DEC-049 (OPEN-030).
 - Check the oscillator data and the HSE external-clock limits before layout (OPEN-028, CMP-010); the software team sets HSE bypass and the IST8310 address (P1-017, P1-018).
 - Collect the remaining team inputs: parts table, team tests and the ESC PWM rate (P0-022, OPEN-017, OPEN-031).

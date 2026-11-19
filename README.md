@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.51, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.52, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -148,8 +148,8 @@ The specification tracks every open item in section 8.2 of the [specification](h
 - Servo rail sense: the 3:1 divider on F100 PA4 is drawn, not decided (OPEN-033)
 - Servo power: all 8 servos stalled draw about 13.2 A, over the 10 A UBEC continuous rating (OPEN-007); XT30 rating (OPEN-021)
 - Board LEDs: LED current and H743 sink current not checked (OPEN-035)
-- GPS1 port: buzzer pin driven straight from H743 PB0, safety switch input with no pull (OPEN-037)
-- I2C4: no pull-ups fitted on the board (OPEN-038)
+- GPS1 port: Q701 buzzer driver drawn, its pinout and the D706 standoff on the 0~5 V line not checked; safety switch input with no pull (OPEN-037)
+- I2C4: board pull-ups R705 and R706 now fitted; total with any module pull-ups not checked (OPEN-038)
 - Servo bus: C803 is a 10 V tantalum at 60 to 74 % of its rating on a hot-plugged 10 A bus (OPEN-021)
 
 ## How we work
