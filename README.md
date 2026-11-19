@@ -2,12 +2,14 @@
   <img src="assets/AO-Horizon-v2.png" alt="AO-Horizon title" width="100%" >
 </p>
 
+**Flight controller for the AeroOptix Club aircraft, STM32H743 with an STM32F100 IO MCU**
+
 > **Status:** `DRAFT`
 > **Board revision:** `A`
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.57, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.58, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
