@@ -321,7 +321,7 @@ function ProgressCard() {
                   >
                     {g.id}
                   </a>
-                  <span className='min-w-0 truncate font-medium' title={g.exit}>
+                  <span className='min-w-0 font-medium' title={g.exit}>
                     {g.name}
                   </span>
                   <span className='ms-auto flex shrink-0 items-center gap-2 text-xs text-muted-foreground'>
