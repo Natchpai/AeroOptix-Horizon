@@ -4134,6 +4134,16 @@
 	)
 	(wire
 		(pts
+			(xy 275.59 143.51) (xy 330.2 143.51)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5d21c8ef-f942-41d1-81ff-7cd2ced8ea3c")
+	)
+	(wire
+		(pts
 			(xy 154.94 118.11) (xy 158.75 118.11)
 		)
 		(stroke
@@ -4834,7 +4844,7 @@
 	)
 	(wire
 		(pts
-			(xy 326.39 143.51) (xy 330.2 143.51)
+			(xy 261.62 143.51) (xy 267.97 143.51)
 		)
 		(stroke
 			(width 0)
@@ -5091,6 +5101,16 @@
 			(justify left bottom)
 		)
 		(uuid "0b5a4bd3-bd2a-44b3-b252-38002053cbb8")
+	)
+	(label "GPS1_3V3"
+		(at 307.34 143.51 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "1466ba97-15fe-4c12-85f9-04a21413ee8a")
 	)
 	(label "TEL2_RX"
 		(at 133.35 127 0)
@@ -7567,7 +7587,7 @@
 	)
 	(symbol
 		(lib_id "power:+3V3")
-		(at 326.39 143.51 90)
+		(at 261.62 143.51 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -7577,7 +7597,7 @@
 		(dnp no)
 		(uuid "43b6ebc5-7b8b-46f8-80cf-d85767fcd539")
 		(property "Reference" "#PWR0714"
-			(at 330.2 143.51 0)
+			(at 265.43 143.51 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7588,7 +7608,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 321.31 143.51 90)
+			(at 256.54 143.51 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -7598,7 +7618,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 326.39 143.51 0)
+			(at 261.62 143.51 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7609,7 +7629,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 326.39 143.51 0)
+			(at 261.62 143.51 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7620,7 +7640,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 326.39 143.51 0)
+			(at 261.62 143.51 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7923,7 +7943,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "665f6a12-703f-4faa-9ef8-e6f5f5f9f948")
-		(property "Reference" "R714"
+		(property "Reference" "R715"
 			(at 270.51 200.66 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8018,7 +8038,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/420855bf-aac0-4922-afb8-bf1515fae8da"
-					(reference "R714")
+					(reference "R715")
 					(unit 1)
 				)
 			)
@@ -9055,7 +9075,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "a2f21522-cb3a-40f6-b115-dc398f071161")
-		(property "Reference" "R712"
+		(property "Reference" "R713"
 			(at 301.244 122.174 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9152,7 +9172,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/420855bf-aac0-4922-afb8-bf1515fae8da"
-					(reference "R712")
+					(reference "R713")
 					(unit 1)
 				)
 			)
@@ -9169,7 +9189,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "a84b98b9-31ab-48a6-833d-db5682e42d57")
-		(property "Reference" "R713"
+		(property "Reference" "R714"
 			(at 245.11 157.48 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9266,7 +9286,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/420855bf-aac0-4922-afb8-bf1515fae8da"
-					(reference "R713")
+					(reference "R714")
 					(unit 1)
 				)
 			)
@@ -9795,7 +9815,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "bf1ba6f0-8cd3-4431-9308-e05317a7e835")
-		(property "Reference" "R711"
+		(property "Reference" "R712"
 			(at 293.624 122.174 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9892,7 +9912,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/420855bf-aac0-4922-afb8-bf1515fae8da"
-					(reference "R711")
+					(reference "R712")
 					(unit 1)
 				)
 			)
@@ -10952,6 +10972,118 @@
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/420855bf-aac0-4922-afb8-bf1515fae8da"
 					(reference "#PWR0709")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 271.78 143.51 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "e52ae107-eff8-4d08-a470-aa93615f715a")
+		(property "Reference" "R711"
+			(at 276.86 142.24 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0R"
+			(at 271.78 143.51 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "0_Resistor_SMD:R_0603_1608Metric_NomDensity"
+			(at 271.78 141.732 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 271.78 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 271.78 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C100044"
+			(at 271.78 143.51 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "YAGEO"
+			(at 271.78 143.51 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "RC0603FR-070RL"
+			(at 271.78 143.51 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "2"
+			(uuid "8b1db51b-c7fc-447a-bbfc-a523c8896a51")
+		)
+		(pin "1"
+			(uuid "29d79922-8ec0-428c-b344-3bf2496065b4")
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/420855bf-aac0-4922-afb8-bf1515fae8da"
+					(reference "R711")
 					(unit 1)
 				)
 			)

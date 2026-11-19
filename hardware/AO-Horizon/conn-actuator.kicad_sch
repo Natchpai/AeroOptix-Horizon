@@ -539,7 +539,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "0_Protection_ESD:D_TVS-ESD_bi"
+		(symbol "0_Protection_ESD:D_TVS-ESD_uni"
 			(pin_numbers
 				(hide yes)
 			)
@@ -562,7 +562,7 @@
 					)
 				)
 			)
-			(property "Value" "D_TVS-ESD_bi"
+			(property "Value" "D_TVS-ESD_Unidirectional"
 				(at 0 -2.54 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -573,7 +573,7 @@
 				)
 			)
 			(property "Footprint" ""
-				(at 0 -5.08 0)
+				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -595,6 +595,17 @@
 				)
 			)
 			(property "Description" ""
+				(at 0 -5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "TVS ESD Unidirectional"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -605,7 +616,7 @@
 					)
 				)
 			)
-			(property "ki_keywords" "transient voltage suppressor thyrector transil"
+			(property "ki_fp_filters" "TO-???* *_Diode_* *SingleDiode* D_*"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -616,21 +627,10 @@
 					)
 				)
 			)
-			(property "ki_fp_filters" "*_Diode_* *_*SingleDiode* *_D_* D_*"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "D_TVS-ESD_bi_0_1"
+			(symbol "D_TVS-ESD_uni_0_1"
 				(polyline
 					(pts
-						(xy -2.54 -1.27) (xy 0 0) (xy -2.54 1.27) (xy -2.54 -1.27)
+						(xy -1.27 -1.27) (xy -1.27 1.27) (xy -0.762 1.27)
 					)
 					(stroke
 						(width 0.254)
@@ -642,31 +642,7 @@
 				)
 				(polyline
 					(pts
-						(xy 0.508 1.27) (xy 0 1.27) (xy 0 -1.27) (xy -0.508 -1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 2.54 1.27) (xy 2.54 -1.27) (xy 0 0) (xy 2.54 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 2.54 0) (xy -2.54 0)
+						(xy 1.27 0) (xy -1.27 0)
 					)
 					(stroke
 						(width 0)
@@ -676,12 +652,24 @@
 						(type none)
 					)
 				)
+				(polyline
+					(pts
+						(xy 1.27 -1.27) (xy 1.27 1.27) (xy -1.27 0) (xy 1.27 -1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
 			)
-			(symbol "D_TVS-ESD_bi_1_1"
+			(symbol "D_TVS-ESD_uni_1_1"
 				(pin passive line
 					(at -3.81 0 0)
-					(length 1.27)
-					(name "A1"
+					(length 2.54)
+					(name "K"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -698,8 +686,8 @@
 				)
 				(pin passive line
 					(at 3.81 0 180)
-					(length 1.27)
-					(name "A2"
+					(length 2.54)
+					(name "A"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -5709,120 +5697,6 @@
 		)
 	)
 	(symbol
-		(lib_id "0_Protection_ESD:D_TVS-ESD_bi")
-		(at 90.17 83.82 90)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "491b321e-3f7d-4ea5-9e6f-bdfe91274996")
-		(property "Reference" "D807"
-			(at 92.71 82.55 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "SMF7.5CA"
-			(at 92.71 85.09 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" "0_Diode_SMD:D_SOD-123FL"
-			(at 95.25 83.82 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 90.17 83.82 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "12.9VC Clamp 15.5A Ipp TVS DIODE SOD-123FL"
-			(at 90.17 83.82 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C2980404"
-			(at 90.17 83.82 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "MFR" "GOODWORK"
-			(at 90.17 83.82 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "MFR.P/N" "SMF7.5CA"
-			(at 90.17 83.82 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "619024ec-1032-4e31-9ab5-e61b28827669")
-		)
-		(pin "2"
-			(uuid "f3a405fe-2704-4bed-89ba-3db1f9cd92b9")
-		)
-		(instances
-			(project "AO-Horizon"
-				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/752a7d5d-6af8-4edd-90d9-991407e2c1d9"
-					(reference "D807")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 318.77 203.2 0)
 		(unit 1)
@@ -7727,7 +7601,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "47u"
+		(property "Value" "68u"
 			(at 110.49 84.201 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7738,7 +7612,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "0_Capacitor_SMD:CP_EIA-3528-21_Kemet-B"
+		(property "Footprint" "0_Capacitor_SMD:CP_EIA-6032-28_Kemet-C"
 			(at 107.6452 87.63 0)
 			(hide yes)
 			(show_name no)
@@ -7760,7 +7634,7 @@
 				)
 			)
 		)
-		(property "Description" "Polarized capacitor"
+		(property "Description" "CAP TANT 68uF ±20% 16V CASE-C-6032"
 			(at 106.68 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -7771,7 +7645,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C308881"
+		(property "LCSC" "C122319"
 			(at 106.68 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -7793,7 +7667,7 @@
 				)
 			)
 		)
-		(property "MFR.P/N" "TPSB476K010R0250"
+		(property "MFR.P/N" "T495C686M016ATE250"
 			(at 106.68 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -7804,7 +7678,7 @@
 				)
 			)
 		)
-		(property "Rate" "10V"
+		(property "Rate" "16V"
 			(at 111.76 86.36 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8164,6 +8038,121 @@
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/752a7d5d-6af8-4edd-90d9-991407e2c1d9"
 					(reference "C802")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "0_Protection_ESD:D_TVS-ESD_uni")
+		(at 90.17 83.82 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ea2b2078-52c1-480c-b943-bef7b48cd7f8")
+		(property "Reference" "D807"
+			(at 92.71 82.55 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "SMF7.5A"
+			(at 92.71 85.09 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "0_Diode_SMD:D_SOD-123FL"
+			(at 90.17 83.82 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.lcsc.com/datasheet/C123796.pdf"
+			(at 90.17 83.82 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "12.9VC Clamp 15.5A@10/1000us Ipp TVS DIODE SOD-123FL"
+			(at 85.09 83.82 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C123796"
+			(at 90.17 83.82 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "MDD"
+			(at 90.17 83.82 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "SMF7.5A"
+			(at 90.17 83.82 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "2"
+			(uuid "baade6dc-06fe-4eab-9a58-d9b2b5918d54")
+		)
+		(pin "1"
+			(uuid "bd08236d-a833-43db-9a7f-527dd9914c73")
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/752a7d5d-6af8-4edd-90d9-991407e2c1d9"
+					(reference "D807")
 					(unit 1)
 				)
 			)
