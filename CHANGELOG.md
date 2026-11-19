@@ -152,6 +152,7 @@ Notable changes to this hardware project are documented here.
 - Schematic (2026-11-19 11:38 to 12:30 saves; drawn, not decided except DEC-055; ERC not run): CN804 Amass XT30PW-M as the UBEC input and the only `+6V` source; 6 V bulk now C801 and C802 10 µF plus C803 47 µF tantalum, with a D807 SMF7.0A TVS; board LEDs driven straight from the H743 pins, active low, through 220 Ω; D103 and D104 now 19-21/GHC-YR1S2/4T; I2C pull-ups, USB-C CC resistors and power mux bottom resistors 5.1 kΩ; footprints on C201, C208, C214, C215, C301, C307 and C507; LCSC codes on most parts; U201 and U301 Values set to the full part numbers.
 - Specification rev 0.48 and checklist rev 0.44 (2026-11-19): 4.2 for the 12:49 save and the ERC result, OPEN-026 (B901 pin map) and OPEN-032 (spare outputs) updated; pin allocation rev 0.13 (F-19), `what-next.md` and the root README.
 - Schematic (2026-11-19 12:49 save; drawn, not decided): spare outputs routed to `conn-peripherals` through `{SPARE_TIM}`, with no pads yet; `PWR_FLAG` on `+6V`, `H7_VDDA` and `F1_VDDA`; B901 on a new `SW_Tactile_PTS815SJM250` symbol, with `RESET_B` on pins 1 and 2 (PTS815 pad pairs `NOT_VERIFIED`, OPEN-026). Library: Footprint field and filter on `SW_Tactile_PTS815SJM250`, footprint filter on `ASDDV`.
+- Specification rev 0.49 and checklist rev 0.45 (2026-11-19): B901 pad pairs from the human owner recorded in 4.2 and OPEN-026.
 
 ### Fixed
 
@@ -167,6 +168,7 @@ Notable changes to this hardware project are documented here.
 - CN802 and CN803 `+6V` rows were swapped in the 2026-11-18 16:52 save. Since the 11:38 save the ESC header CN802 has no + pin and CN803 (surface servos) is on `+6V`.
 - The `Connector - Peripherals` sheet symbol had no sheet pins; it has all 14 since the 11:38 save. The `MCU - IO` safety sheet pins now match their child labels, and `GPS1_SAFTY_LED` is renamed `GPS1_SAFETY_LED` on both sheets and both sheet symbols (12:30 save).
 - The board LEDs were switched by N-FETs, so they were active high against IF-047; since the 11:38 save they are active low.
+- B901 reset button: the old `SW_Tactile_4SMD` pin map put `RESET_B` on pin 2 and `GND` on pin 1, which the PTS815SJM250SMTRLFS joins inside, so `RESET_B` was tied to `GND`. The 2026-11-19 12:49 save (`SW_Tactile_PTS815SJM250`, `RESET_B` on pins 1 and 2, `GND` on 3 and 4) fixes it; pad pairs from the human owner.
 
 ### Removed
 

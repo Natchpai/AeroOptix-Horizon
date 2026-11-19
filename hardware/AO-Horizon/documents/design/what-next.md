@@ -10,7 +10,7 @@ The specification and the execution checklist stay the source of truth. This lis
 The 12:30 save is committed and pushed (spec rev 0.47). Fixed in the 12:26 and 12:30 saves: footprints on C201, C208, C214, C215, C301, C307 and C507; the CN804 `MP` pin (no-connect flag); `GPS1_SAFETY_LED` on both sheets and both sheet symbols; 5.1 kΩ parts (power mux dividers decided in DEC-055, 14 mV OV margin accepted).
 
 - [x] ERC run on the 2026-11-19 12:49 save: 0 errors, 0 warnings (`documents/verification/ERC.rpt`).
-- [ ] MAJOR | B901 / `RESET_B` | `NOT_VERIFIED` | The 12:49 save moved B901 to `SW_Tactile_PTS815SJM250`: `RESET_B` on pins 1 and 2, `GND` on 3 and 4 (were 2 and 3, and 1 and 4). Check which pads the PTS815 joins inside; a wrong pair ties `RESET_B` to `GND` (OPEN-026).
+- [x] B901 / `RESET_B`: the PTS815SJM250SMTRLFS joins pins 1 and 2, and 3 and 4 (human owner), so the 12:49 map (`RESET_B` on 1 and 2, `GND` on 3 and 4) is right. The old symbol shorted `RESET_B` to `GND` (OPEN-026).
 - [ ] Then ask for a `sch-review` of `conn-actuator` and `conn-peripherals` (P2-022).
 - [ ] Datasheet checks (NotebookLM source or your values; a new source needs your approval):
   - XT30PW-M current rating against the 13.2 A all-stall estimate (OPEN-021).

@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.48, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.49, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -140,7 +140,7 @@ The specification tracks every open item in section 8.2 of the [specification](h
 
 - ESC stop on the F100 failsafe pulse, now the Tekko32 with AM32 (OPEN-017)
 - RC IN not drawn; FS-iA6B PPM level and RC-loss behavior, Tekko32 pinout (OPEN-034)
-- Reset: the button part and the B901 pad pairs on the new PTS815 symbol are not checked, and an H743 internal reset may also reset the F100 (OPEN-026)
+- Reset: the button's LCSC part is not checked (B901 pad pairs confirmed), and an H743 internal reset may also reset the F100 (OPEN-026)
 - Debug access: CN602 and CN603 drawn in the Pixhawk Debug Mini order, no NRST (OPEN-029)
 - H743 VDDA capacitor drawn 2.2 µF where DEC-049 says 4.7 µF (OPEN-030)
 - Actuator headers: keep the ESC headers (no + pin) apart from the +6 V servo headers; ESC PWM rate (OPEN-031)

@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Execution Checklist
 
-**Revision:** 0.44
+**Revision:** 0.45
 **Updated:** 2026-11-19
 **Status:** Active execution tracker; not an approval or verification record
-**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.48
+**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.49
 
 Use the specification for confirmed requirements and decisions. This checklist records the sequence of work and the evidence needed to close each gate. Diagram content is reference material. User-confirmed requirements take precedence. All sensor parts are chosen (DEC-008, DEC-010, DEC-011); their lifecycle and sourcing risks are open.
 
@@ -193,7 +193,7 @@ Descriptions are in the specification (section 8.2). Status and owner below are 
 | OI-025 | OPEN-023 | External connector pinouts and the PM02D connector | DS-009 not read. GPS1 10-pin extra pins and I2C4 5 V tolerance open. PM02D: CN101 CLIK-Mate drawn (DEC-042); pin order against the cable open. | Hardware / P2 (P2-015) |
 | OI-026 | OPEN-024 | Power mux source priority and switchover | Closed 2026-11-02: PM02D priority with the XCOMP fast switchover, R105 fitted (DEC-031 to DEC-034). | Closed |
 | OI-027 | OPEN-025 | Power mux status LED (Q101, D103) | Kept (DEC-035); ST and OV dividers set (DEC-036); D103 and D104 fields fixed. Open: ST low level against the Q101 minimum threshold (TI gives no ST VOL), LED currents. | Hardware / P4 (P4-012) |
-| OI-028 | OPEN-026 | Reset: button and internal-reset behavior | Decided 2026-11-14: one shared NRST net with one reset button (DEC-046). Drawn, not decided: button B? on `user-interface` (22:19 save, LCSC C2689510 not checked). Open: whether an MCU's internal reset drives NRST low is `NOT_VERIFIED`. 2026-11-19 12:49 save: B901 on the new `SW_Tactile_PTS815SJM250` symbol, `RESET_B` on pins 1 and 2; PTS815 pad pairs `NOT_VERIFIED`. | Hardware / P1 (P1-014), P2 (P2-022) |
+| OI-028 | OPEN-026 | Reset: button and internal-reset behavior | Decided 2026-11-14: one shared NRST net with one reset button (DEC-046). Drawn, not decided: button B? on `user-interface` (22:19 save, LCSC C2689510 not checked). Open: whether an MCU's internal reset drives NRST low is `NOT_VERIFIED`. 2026-11-19 12:49 save: B901 on the new `SW_Tactile_PTS815SJM250` symbol, `RESET_B` on pins 1 and 2; the PTS815SJM250SMTRLFS joins pins 1 and 2, and 3 and 4 (human owner), so the map is right. | Hardware / P1 (P1-014), P2 (P2-022) |
 | OI-029 | OPEN-027 | IST8310 I2C address straps | Closed 2026-11-14: 0x0C as strapped (DEC-047); PX4 start at 0x0C (P1-018). | Closed |
 | OI-030 | OPEN-028 | Clock sources: oscillator parts and data | Type decided: CMOS oscillators (DEC-044), HSE bypass in firmware (DEC-045). Drawn: U202 16 MHz into PH0, U302 24 MHz into PD0, each through 22 Ω; part numbers decided 2026-11-14 (DEC-048). Oscillator data and the HSE external-clock limits `NOT_VERIFIED`. | Hardware / P1 (P1-014), P2 (P2-022); software team (P1-017) |
 | OI-031 | OPEN-029 | Debug connector and pads: no console, no F100 NRST | Drawn, not decided: H743 6-pin connector with VREF, SWDIO, SWCLK on pins 1 to 3, pins 4 and 5 open, GND on pin 6, no `RESET_B` (15:41 save; the Pixhawk Debug Mini has SWD on pins 4 and 5) and F100 4 pads with VREF, SWDIO, SWCLK, GND; IF-045, IF-051 and TST-001 ask for the console and an NRST pad too. | Human owner / P1 (P1-008), P2 (P2-022) |
@@ -209,7 +209,7 @@ Descriptions are in the specification (section 8.2). Status and owner below are 
 
 - Decide on the team RC IN buffer proposal (OPEN-034 item 5), then draw RC IN (P2-023); get the FS-iA6B and Tekko32 data from the team (OPEN-034, P0-022).
 - Choose for `OSC_*` (rename to `H7_`/`F1_` or amend DEC-052) and set the spare output order (OPEN-032). Confirm the drawn servo-rail divider (OPEN-033) and the debug connectors drawn in the Pixhawk Debug Mini order (OPEN-029). Then run ERC (P2-022).
-- ERC is clean on the 2026-11-19 12:49 save (human owner). Check the B901 PTS815 pad pairs against the datasheet (OPEN-026), then ask for a `sch-review` (P2-022).
+- ERC is clean on the 2026-11-19 12:49 save (human owner). B901 pad pairs confirmed by the human owner (OPEN-026). Next: a `sch-review` (P2-022).
 - Confirm the reset button part (B?, DEC-046, OPEN-026), confirm the drawn board LEDs (OPEN-035), decide the debug pin set (OPEN-029, P1-008) and confirm the H743 VDDA capacitor against DEC-049 (OPEN-030).
 - Check the oscillator data and the HSE external-clock limits before layout (OPEN-028, CMP-010); the software team sets HSE bypass and the IST8310 address (P1-017, P1-018).
 - Collect the remaining team inputs: parts table, team tests and the ESC PWM rate (P0-022, OPEN-017, OPEN-031).
