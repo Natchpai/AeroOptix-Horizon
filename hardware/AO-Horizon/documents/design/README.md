@@ -19,3 +19,4 @@ Status: `live` records are kept up to date; `closed, historical` records are ans
 | `AO-HORIZON_PINMAP_REVIEW_EN.md` | closed, historical | H743 and IO MCU pinmap review 0.3, answered by the software team on 2026-10-24 (0.2 answers kept). Current pins are in the pin allocation record and the spec. |
 | `AO-HORIZON_PINMAP_DECISIONS_EN.md` | closed, historical | Spec changes, team decisions and software answers after pinmap review 0.2, answered on 2026-10-24. Later decisions (DEC-017, DEC-044, DEC-045) change its S7 clock answer, and DEC-053 replaces its ELRS answers (D6, S5). |
 | `what-next.md` | live | Personal reminder list of next steps. Points to spec and checklist IDs; not a record. |
+| `todo.md` | live | Personal to-do list of review findings (MAJOR, MINOR, INFO) for the human owner. Points to spec IDs; not a record. |

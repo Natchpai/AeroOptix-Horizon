@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.49, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.50, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -129,7 +129,7 @@ Interface allocations agreed with the software team (DEC-014, DEC-018) are in sp
 | Check | Result | Evidence |
 |---|---|---|
 | Schematic ERC | Whole schematic, 2026-11-19 12:49 save: 0 errors, 0 warnings | Run by the human owner; [`ERC.rpt`](hardware/AO-Horizon/documents/verification/ERC.rpt). An ERC pass is not a proof of correctness |
-| Schematic review | Power sheet, 2026-11-03 save only | `sch-review`, spec 4.3 |
+| Schematic review | Power sheet (2026-11-03 save); connector and actuator sheets (2026-11-19 12:49 save) | `sch-review`, spec 4.3 and 4.2; findings open (OPEN-021, OPEN-037, OPEN-038) |
 | PCB DRC | `NOT_VERIFIED` | PCB is empty |
 | BOM / footprint review | `NOT_VERIFIED` | `TBD` |
 | Prototype functional test | `NOT_VERIFIED` | Bench tasks P4-012 to P4-015 open |
@@ -148,6 +148,9 @@ The specification tracks every open item in section 8.2 of the [specification](h
 - Servo rail sense: the 3:1 divider on F100 PA4 is drawn, not decided (OPEN-033)
 - Servo power: all 8 servos stalled draw about 13.2 A, over the 10 A UBEC continuous rating (OPEN-007); XT30 rating (OPEN-021)
 - Board LEDs: LED current and H743 sink current not checked (OPEN-035)
+- GPS1 port: buzzer pin driven straight from H743 PB0, safety switch input with no pull (OPEN-037)
+- I2C4: no pull-ups fitted on the board (OPEN-038)
+- Servo bus: C803 tantalum voltage rating unknown on a hot-plugged 10 A bus (OPEN-021)
 
 ## How we work
 

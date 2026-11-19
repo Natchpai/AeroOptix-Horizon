@@ -11,7 +11,8 @@ The 12:30 save is committed and pushed (spec rev 0.47). Fixed in the 12:26 and 1
 
 - [x] ERC run on the 2026-11-19 12:49 save: 0 errors, 0 warnings (`documents/verification/ERC.rpt`).
 - [x] B901 / `RESET_B`: the PTS815SJM250SMTRLFS joins pins 1 and 2, and 3 and 4 (human owner), so the 12:49 map (`RESET_B` on 1 and 2, `GND` on 3 and 4) is right. The old symbol shorted `RESET_B` to `GND` (OPEN-026).
-- [ ] Then ask for a `sch-review` of `conn-actuator` and `conn-peripherals` (P2-022).
+- [x] `sch-review` of `conn-actuator` and `conn-peripherals` done 2026-11-19 (spec 4.2). Findings with actions are in `todo.md` (OPEN-037, OPEN-038, OPEN-021, OPEN-032).
+- [ ] Next review: the MCU, sensor and USB sheets (P2-022).
 - [ ] Datasheet checks (NotebookLM source or your values; a new source needs your approval):
   - XT30PW-M current rating against the 13.2 A all-stall estimate (OPEN-021).
   - D807 SMF7.0A clamping voltage against the 7.4 V servo limit (PWR-011, OPEN-021).

@@ -1,6 +1,6 @@
 # AeroOptix-Horizon: MCU Pin Allocation
 
-**Revision:** 0.13
+**Revision:** 0.14
 **Updated:** 2026-11-19
 **Status:** Draft. The software team's answers (pinmap review 0.2 and 0.3, decisions file) are applied. The IO MCU is the STM32F100C8T6B (DEC-002). Partly drawn in the schematic (spec 4.2 "Schematic state"); the drawn labels match this allocation (F-19). HSE from CMOS oscillators (DEC-044, DEC-045). Actuator outputs per DEC-050 and DEC-051 (F100 MAIN 1 to 8, H743 AUX 1 to 4); no pin changed. DMA, interrupt priority and timer clock checks (P1-010) are not done by hardware. Not a verification record.
 **Requirement refs:** IF-010 to IF-024, IF-030 to IF-037, IF-040 to IF-051, SEN-001 to SEN-003, DEC-002, DEC-014 to DEC-018, DEC-043 to DEC-047, DEC-050, DEC-051, DEC-053, DEC-054. Checklist tasks: P1-001, P1-002, P1-003 to P1-005 (partial), P1-009 (partial).
@@ -159,6 +159,8 @@ Closed findings stay listed with their outcome.
 | ID | Severity | Ref | Label | Finding | Source |
 | -- | -------- | --- | ----- | ------- | ------ |
 | F-21 | MAJOR | IF-038, PA8 | `VERIFIED` | PA8 is FT, but an FT pin above VDD + 0.3 V needs its internal pull-up off, and px4io turns the PA8 pull-up on (`GPIO_PPM_IN`). A 5 V PPM signal straight onto PA8 would break that rule. DEC-053 adds a 6.2 kΩ series and 10 kΩ to `GND` divider: worst-case margin about 0.23 V to VDD + 0.3 V and 0.25 V above VIH min (`ESTIMATED`, spec DEC-053). FS-iA6B PPM level `NOT_VERIFIED` (OPEN-034). | F100 DS16455 Rev 9 Tables 4, 5 and 34 via NotebookLM; PX4 v1.16.2 `boards/px4/io-v2/src/board_config.h` |
+| F-22 | MAJOR | H743 PB0 (buzzer), F100 PB5 (safety button) | `VERIFIED` (CAD) | `sch-review` 2026-11-19: PB0 drives GPS1 pin 9 (`GPS1_BUZZER_B`) through 22 Ω with no transistor; if the GPS module puts its buzzer between 5 V and pin 9 (`ASSUMED`, DS-009 not read), PB0 exceeds its 20 mA sink limit (DS12110 Table 12 via NotebookLM, `VERIFIED`) and sees about 5 V. PB5 has no board pull resistor; the px4io pin setup is `NOT_VERIFIED`. (spec OPEN-037) | Net trace; DS12110 Table 12 |
+| F-23 | INFO | H743 PD12, PD13 (I2C4) | `VERIFIED` | `FT_fh`, so 5 V pull-ups from the MS4525DO or PM02D are allowed; the internal pull-ups must be off above 4 V. No board pull-ups are fitted (R705, R706 DNP; spec OPEN-038). | DS12110 Table 9 and Table 11 note via NotebookLM |
 | F-15 | MAJOR | IF-040 to IF-043 | `NOT_VERIFIED` | Motor stop on an H743 hang: since DEC-050 the ESCs run PWM from the F100, which sets the disarmed value 0.5 s after H743 data stops (DEC-051). Whether the Tekko32 F4 4in1 with AM32 (DEC-054; was the Skywalker 80A V2) stops on that pulse is not checked (spec OPEN-017, SAF-015). | Decisions file S1; spec DEC-051 |
 | F-16 | MINOR | IF-030 to IF-043 | `NOT_VERIFIED` | Every PWM line gets a weak pull-down (Q10). Since DEC-050 no line carries DShot. Pick the pull-down and any series resistor for PWM and the boot-time output state (spec OPEN-018). | Pinmap review Q10, decisions file S3 |
 | F-18 | INFO | IO MCU | `VERIFIED` | STM32F100C(8-B)Tx and STM32F103C(8-B)Tx LQFP48: all 48 pin names and types match, and every signal in section 2 is on the same pin. The F103 adds USB, CAN and ADC2; the F100 adds DAC, CEC and TIM6, TIM7, TIM15 to TIM17. None of these is used. | ST XML, compared by script 2026-10-24 |

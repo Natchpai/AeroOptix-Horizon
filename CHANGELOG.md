@@ -84,6 +84,8 @@ Notable changes to this hardware project are documented here.
 - OPEN-035 (tracker OI-037): board LEDs as drawn; LED current and H743 sink current not checked.
 - Project library: Amass XT30PW-M symbol (`0_Conn:XT30PW-M`), footprint (`0_Conn_AMASS:AMASS_XT30PW-M`) and 3D model, with the `0_Conn_AMASS` entry in `fp-lib-table`.
 - `documents/verification/ERC.rpt`: the first record in the verification folder (ERC of the 2026-11-19 12:49 save).
+- OPEN-037 (tracker OI-039): GPS1 buzzer drive, safety switch input and `+3V3` export. OPEN-038 (tracker OI-040): I2C4 pull-ups.
+- `documents/design/todo.md`: personal to-do list of review findings (MAJOR, MINOR, INFO) for the human owner, separate from `what-next.md`.
 
 ### Changed
 
@@ -153,6 +155,7 @@ Notable changes to this hardware project are documented here.
 - Specification rev 0.48 and checklist rev 0.44 (2026-11-19): 4.2 for the 12:49 save and the ERC result, OPEN-026 (B901 pin map) and OPEN-032 (spare outputs) updated; pin allocation rev 0.13 (F-19), `what-next.md` and the root README.
 - Schematic (2026-11-19 12:49 save; drawn, not decided): spare outputs routed to `conn-peripherals` through `{SPARE_TIM}`, with no pads yet; `PWR_FLAG` on `+6V`, `H7_VDDA` and `F1_VDDA`; B901 on a new `SW_Tactile_PTS815SJM250` symbol, with `RESET_B` on pins 1 and 2 (PTS815 pad pairs `NOT_VERIFIED`, OPEN-026). Library: Footprint field and filter on `SW_Tactile_PTS815SJM250`, footprint filter on `ASDDV`.
 - Specification rev 0.49 and checklist rev 0.45 (2026-11-19): B901 pad pairs from the human owner recorded in 4.2 and OPEN-026.
+- Specification rev 0.50 and checklist rev 0.46 (2026-11-19): `sch-review` of the connector and actuator sheets recorded in 4.2; OPEN-021 (C803, D807), OPEN-023 (PD12 and PD13 are FT) and OPEN-032 (`GPS1_SAFETY_LED_B`) updated. Synced: pin allocation rev 0.14 (F-22, F-23), power budget rev 0.27, `what-next.md`, the design README index and the root README.
 
 ### Fixed
 
@@ -204,3 +207,4 @@ Notable changes to this hardware project are documented here.
 
 - Read-only checks run by Claude on 2026-11-19 against the 2026-11-18 16:52 save (KiCad closed): `progress-update` preflight, a part and label diff of every changed sheet against `HEAD`, `sch-inspect` connected-pins and net traces of CN701 to CN705, CN801 to CN803, CN602, CN603, the LED drivers, B901, D102 and `+6V`, and a sheet-pin audit of `top_hierarchical`. STM32F100 DS16455 Rev 9 Tables 4, 5 and 34 through NotebookLM (PA8 FT, pull-up rule, cited). PX4 v1.16.2 px4io PPM source read on GitHub. SiK V3 and FS-iA6B values from the Holybro and FlySky product pages. The Tekko32 product page was not reachable. Not ERC, DRC or a human review.
 - ERC of the whole schematic, run by the human owner on the 2026-11-19 12:49 save: 0 errors, 0 warnings, only the SPICE model check ignored (`hardware/AO-Horizon/documents/verification/ERC.rpt`). Not a review and not a proof of correctness.
+- `sch-review` by Claude of `conn-actuator` and `conn-peripherals`, 2026-11-19, on commit `10a0782` (12:49 save): 3 MAJOR (GPS1 buzzer drive, no I2C4 pull-ups, C803 tantalum rating), 4 MINOR and 3 INFO findings, all open (spec 4.2). A targeted review, not a PASS.
