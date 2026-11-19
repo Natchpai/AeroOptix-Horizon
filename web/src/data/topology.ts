@@ -74,7 +74,7 @@ export const systemBlocks: Block[] = [
     label: '8 × servo',
     sub: 'Flaperon, ruddervator, tilt',
     refs: range('IF', 30, 37),
-    open: ['OPEN-007'],
+    open: ['OPEN-021'],
   },
   {
     id: 'sik',
@@ -178,7 +178,7 @@ export const systemBlocks: Block[] = [
     label: 'Servo headers × 8',
     sub: 'MAIN 5 to 8, AUX 1 to 4',
     refs: [...range('IF', 30, 37), 'DEC-019', 'DEC-051'],
-    open: ['OPEN-007', 'OPEN-021'],
+    open: ['OPEN-021'],
   },
   {
     id: 'o-tel1',
@@ -266,7 +266,7 @@ export const systemBlocks: Block[] = [
     label: 'ESC headers × 4',
     sub: 'MAIN 1 to 4, + removed',
     refs: [...range('IF', 40, 43), 'DEC-051', 'DEC-054'],
-    open: ['OPEN-017', 'OPEN-018'],
+    open: ['OPEN-017', 'OPEN-031'],
   },
 ]
 
@@ -340,7 +340,7 @@ export const systemLinks: Link[] = [
     bus: 'pwm',
     label: 'PWM × 4',
     refs: [...range('IF', 40, 43), 'DEC-051'],
-    open: ['OPEN-017', 'OPEN-018'],
+    open: ['OPEN-017', 'OPEN-031'],
     pins: [{ mcu: 'f100', refs: range('IF', 40, 43) }],
   },
   {
@@ -364,7 +364,7 @@ export const systemLinks: Link[] = [
     bus: 'v6',
     label: '6 V servo bus',
     refs: ['DEC-019'],
-    open: ['OPEN-007', 'OPEN-021'],
+    open: ['OPEN-021'],
   },
   {
     id: 's-fc-sik',
@@ -498,7 +498,7 @@ export const boardBlocks: Block[] = [
     label: 'IMU 1',
     sub: 'ICM-45686',
     refs: ['SEN-001', 'DEC-008'],
-    open: ['OPEN-013'],
+    open: ['OPEN-004'],
   },
   {
     id: 'imu2',
@@ -507,7 +507,7 @@ export const boardBlocks: Block[] = [
     label: 'IMU 2',
     sub: 'ICM-45686',
     refs: ['SEN-001', 'DEC-008'],
-    open: ['OPEN-013'],
+    open: ['OPEN-004'],
   },
   {
     id: 'baro1',
@@ -516,7 +516,7 @@ export const boardBlocks: Block[] = [
     label: 'Baro 1',
     sub: 'ICP-20100',
     refs: ['SEN-002', 'DEC-010'],
-    open: ['OPEN-013'],
+    open: ['OPEN-004'],
   },
   {
     id: 'baro2',
@@ -525,7 +525,7 @@ export const boardBlocks: Block[] = [
     label: 'Baro 2',
     sub: 'BMP581',
     refs: ['SEN-002', 'DEC-010'],
-    open: ['OPEN-013', 'OPEN-019'],
+    open: ['OPEN-004'],
   },
   {
     id: 'mag',
@@ -534,7 +534,7 @@ export const boardBlocks: Block[] = [
     label: 'Magnetometer',
     sub: 'IST8310',
     refs: ['SEN-003', 'DEC-011'],
-    open: ['OPEN-013'],
+    open: ['OPEN-004'],
   },
   // I2C2: one bus out of the H743, then a tap per sensor
   {
@@ -653,7 +653,7 @@ export const boardBlocks: Block[] = [
     label: 'ESC headers × 4',
     sub: 'MAIN 1 to 4, + removed',
     refs: [...range('IF', 40, 43), 'DEC-051', 'DEC-054'],
-    open: ['OPEN-017', 'OPEN-018', 'OPEN-031'],
+    open: ['OPEN-017', 'OPEN-031'],
   },
   {
     id: 'j-servo',
@@ -662,7 +662,7 @@ export const boardBlocks: Block[] = [
     label: 'Surface servo headers × 4',
     sub: 'MAIN 5 to 8, +6 V',
     refs: [...range('IF', 30, 33), 'DEC-019', 'DEC-051'],
-    open: ['OPEN-007', 'OPEN-021'],
+    open: ['OPEN-021'],
   },
   {
     id: 'j-aux',
@@ -1146,7 +1146,7 @@ export const powerBlocks: Block[] = [
     label: '6 V UBEC',
     sub: '10 A continuous',
     refs: ['PWR-002', 'PWR-011', 'DEC-019'],
-    open: ['OPEN-007'],
+    open: ['OPEN-021'],
   },
   {
     id: 'pw-xt30',
@@ -1165,7 +1165,7 @@ export const powerBlocks: Block[] = [
     label: '8 × servo',
     sub: '6 V bus on the board',
     refs: [...range('IF', 30, 37), 'DEC-019'],
-    open: ['OPEN-007', 'OPEN-021'],
+    open: ['OPEN-021'],
   },
   {
     id: 'pw-esc',
@@ -1270,7 +1270,7 @@ export const powerLinks: Link[] = [
     }
   ),
   pw('pw-xt30-servo', 'pw-xt30', 'pw-servos', 'v6', '6 V bus', ['DEC-019'], {
-    open: ['OPEN-007', 'OPEN-021'],
+    open: ['OPEN-021'],
   }),
 ]
 

@@ -15,7 +15,7 @@ Spec rev 0.55 and the 16:03 save are committed and pushed (`bdb398d`, `fe46bcf`)
 - [ ] Datasheet checks (NotebookLM source or your values; a new source needs your approval):
   - XT30PW-M current rating against the 13.2 A all-stall estimate (OPEN-021).
   - D807 SMF7.5A (MDD, DEC-059): breakdown voltage and leakage at 7.4 V (PWR-011, OPEN-021).
-  - D706 PESD4USB3BBTBR-QZ standoff against the 0~5 V buzzer line (OPEN-037).
+  - D706 PESD4USB3BBTBR-QZ standoff against the 0~5 V buzzer line (OPEN-023).
   - LED forward voltage and current through 220 Ω, and the H743 pin sink current (OPEN-035).
 - [ ] Decide the drawn blocks (spec 4.2), then ask Claude to record them:
   - Peripheral connectors CN701 to CN705 (OPEN-023).
@@ -34,11 +34,11 @@ The board is split into design zones. Each zone below has its own to-do list.
 | Zone | Sheet | State | Main open items |
 | ---- | ----- | ----- | --------------- |
 | Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, P2-019) | P2-020, P2-021, OPEN-025 |
-| Z2 Servo power rail (6 V bus, XT30) | `conn-actuator.kicad_sch` | Drawn, not decided (spec 4.2): CN804 XT30, bulk capacitors, D807 TVS, rail divider | OPEN-007, OPEN-021, OPEN-033, P2-016 |
+| Z2 Servo power rail (6 V bus, XT30) | `conn-actuator.kicad_sch` | Drawn, not decided (spec 4.2): CN804 XT30, bulk capacitors, D807 TVS, rail divider | OPEN-021, OPEN-033, P2-016 |
 | Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | `mcu-main-fc.kicad_sch`, `conn-usb-debug.kicad_sch`, `user-interface.kicad_sch` | In capture (spec 4.2 "Schematic state"); U201, U202 and passives annotated | P1-001, P1-006 to P1-008, P1-014, P2-022, OPEN-026, OPEN-028, OPEN-029 |
-| Z4 F100 IO MCU (px4io) | `mcu-io.kicad_sch` | In capture (spec 4.2 "Schematic state"); U301, U302 and passives annotated | P1-002, P1-014, P2-014, P2-022, OPEN-026, OPEN-028, OPEN-029 |
-| Z5 Sensors (2 × IMU, 2 × barometer, magnetometer) | `sensor-imu.kicad_sch`, `sensor-navigation.kicad_sch` | All five sensors drawn (U401, U402, U501, U502, U503; spec 4.2); rails per DEC-043; IST8310 at 0x0C (DEC-047) | DEC-043, OPEN-011, DEC-047, SEN-002, P1-003, P1-004, OPEN-004, OPEN-013, OPEN-019, P2-012 |
-| Z6 External connectors and outputs (telemetry, GPS, I2C, ESC and servo headers, spare outputs) | `conn-peripherals.kicad_sch` (CN701 to CN706), `conn-actuator.kicad_sch` (CN801 to CN804) | Drawn, not decided (spec 4.2); pinouts not checked; RC IN parts decided (DEC-056, DEC-057), CN706 connector open | OPEN-018, OPEN-023, OPEN-031, OPEN-034, OPEN-037, P2-013, P2-015, P2-018, P2-023 |
+| Z4 F100 IO MCU (px4io) | `mcu-io.kicad_sch` | In capture (spec 4.2 "Schematic state"); U301, U302 and passives annotated | P1-001, P1-014, P2-022, OPEN-026, OPEN-028, OPEN-029 |
+| Z5 Sensors (2 × IMU, 2 × barometer, magnetometer) | `sensor-imu.kicad_sch`, `sensor-navigation.kicad_sch` | All five sensors drawn (U401, U402, U501, U502, U503; spec 4.2); rails per DEC-043; IST8310 at 0x0C (DEC-047) | DEC-043, OPEN-011, DEC-047, SEN-002, P1-003, OPEN-004, P2-012 |
+| Z6 External connectors and outputs (telemetry, GPS, I2C, ESC and servo headers, spare outputs) | `conn-peripherals.kicad_sch` (CN701 to CN706), `conn-actuator.kicad_sch` (CN801 to CN804) | Drawn, not decided (spec 4.2); pinouts not checked; RC IN parts decided (DEC-056, DEC-057), CN706 connector open | OPEN-031, OPEN-023, OPEN-034, P2-015, P2-018, P2-023 |
 | Z7 PCB and mechanical | `AO-Horizon.kicad_pcb` | 80 × 80 mm working area on `Edge.Cuts` (not the outline), no footprints | OPEN-009, P3-001 |
 
 ## 1. Git
@@ -58,7 +58,7 @@ Drawn on `conn-actuator` (11:38 save), not decided. Servo current passes through
 - [ ] Check the board-mount XT30 rating against PWR-011 and the 13.2 A all-stall estimate (OPEN-021, P2-016).
 - [ ] Size the 6 V and servo GND copper, pick where servo GND joins logic GND (away from the sensors). Bulk drawn: 2 × 10 µF, 68 µF 16 V tantalum (DEC-058) and the D807 SMF7.5A TVS (DEC-059) (OPEN-021).
 - [ ] Servo rail divider on F100 PA4 (IF-050): R813 46.4 kΩ / R814 23.2 kΩ with C804 100 nF, 3:1, drawn. Confirm it (OPEN-033).
-- [ ] Datasheet all-stall estimate: 13.2 A at 6 V (4 × DS3235 2.1 A + 4 × C507 1.2 A, OPEN-007), over the 10 A UBEC continuous rating. Wait for the team's bench current under load (P0-022) and their confirmation that the UBEC output plug is an XT30 (OPEN-021).
+- [ ] Datasheet all-stall estimate: 13.2 A at 6 V (4 × DS3235 2.1 A + 4 × C507 1.2 A, OPEN-021), over the 10 A UBEC continuous rating. Wait for the team's bench current under load (P0-022) and their confirmation that the UBEC output plug is an XT30 (OPEN-021).
 
 ## 4. Zone Z3: H743 main MCU
 
@@ -79,13 +79,12 @@ H743 values below are from ST DS12110 Rev 11 via NotebookLM (2026-11-12).
 - [ ] INFO | U601 / USB D+, D- | `NOT_VERIFIED` | On `conn-usb-debug` the data lines pass through U601 USBLC6-2SC6 (connector side on pins 1 and 3, MCU side on pins 6 and 4), so they depend on the internal link between pins 1-6 and 3-4. Check in the ST datasheet that those pin pairs are joined inside, or route D+ and D- past the pins on one net.
 - [ ] INFO | Library `0_Conn_Card:Micro_SD_Card_Det1`, `0_Conn_USB:USB_C_Receptacle_USB2.0_16P` | `VERIFIED` (preflight, 2026-11-14) | The library symbols have an empty Footprint field; the placed SD? and CN601 have footprints. Fill the library field or leave it generic, then run `/kicad-link-audit`.
 - [ ] microSD: socket drawn; DET reaches no MCU pin; add CMD and DAT pull-ups and ESD (P2-022).
-- [ ] Board LEDs drawn: direct drive, active low, 220 Ω from `+3V3`; check LED current (OPEN-035). No board buzzer: `BUZZER_TIM3_CH3` drives Q701, which switches GPS1 pin 9 (`GPS1_BUZZER_B`, 13:33 save; OPEN-037).
+- [ ] Board LEDs drawn: direct drive, active low, 220 Ω from `+3V3`; check LED current (OPEN-035). No board buzzer: `BUZZER_TIM3_CH3` drives Q701, which switches GPS1 pin 9 (`GPS1_BUZZER_B`, 13:33 save; OPEN-023).
 
 ## 5. Zone Z4: F100 IO MCU (px4io)
 
-Pins from `px4/io-v2` (P1-002). Current state: spec 4.2 "Schematic state".
+Pins from `px4/io-v2` (P1-001). Current state: spec 4.2 "Schematic state".
 
-- [ ] F100 library part from stock `MCU_ST_STM32F1:STM32F100C8Tx`, and the block diagram text (P2-014).
 - [ ] 24 MHz clock: CMOS oscillator U302 (DEC-044), part decided (DEC-048). Check its data against the HSE external-clock limits (OPEN-028). Custom px4io build: P1-017.
 - [ ] VDDA (`F1_VDDA`): 22 Ω from `+3V3` with C307 2.2 µF and 100 nF (spec 4.2). Confirm the value against Fig. 35 (Fig. 35 shows 1 µF // 10 nF; DocID16455 Rev 9 via NotebookLM, `VERIFIED`). Table 8 says VDDA "must be the same potential as VDD" (`VERIFIED`); the note allowing up to 300 mV of difference is `NOT_VERIFIED` (not in the cited text). Expected drop about 20 mV with the ADC on (0.8 mA, `ESTIMATED`).
 - [ ] px4io LEDs (blue PB14, amber PB15, green PA11): pick the resistors.
@@ -105,9 +104,9 @@ Parts decided (DEC-008, DEC-010, DEC-011). Current state: spec 4.2 "Schematic st
 - [ ] BMP581: Fig. 32 pad sizes and the pin 1 corner (Fig. 29, 30) on `Bosch_LGA-10_2x2mm_P0.5mm_LayoutBorder3x2y`; no solder mask under it, 20 µm clearance (DS004-13 §8.2) (P2-012).
 - [ ] ICP-20100: land pattern (AN-000140) and pin 1 corner (P2-012).
 - [ ] IST8310: check the stock `LGA-16_3x3mm_P0.5mm` footprint and pin 1 corner against the package drawing (P2-012).
-- [ ] BMP384 fallback: compare footprint and pinout with the BMP581 (P1-015, OPEN-019). Address per SEN-002.
+- [ ] BMP384 fallback: compare footprint and pinout with the BMP581 (P1-015, OPEN-004). Address per SEN-002.
 - [ ] ICM-45686 pin 9 unused: drawn with a no-connect flag. Confirm NC or tie to VDDIO in the datasheet (the IMU record note is `NOT_VERIFIED`).
-- [ ] SPI chip-selects (P1-003); I2C2 pull-ups are covered above (P1-004, P1-005).
+- [ ] SPI chip-selects (P1-003); I2C2 pull-ups are covered above (P1-003).
 - [ ] Buy BMP581 early: DigiKey showed 0 in stock on 2026-10-08 (team note, not checked).
 
 ## 7. Zone Z6: External connectors and outputs
@@ -117,7 +116,7 @@ Drawn on `conn-peripherals` and `conn-actuator`, not decided (spec 4.2). Actuato
 - [ ] Connector pinouts against the Pixhawk standard DS-009: Telemetry 1 and 2, GPS1 10-pin, airspeed, TF-Luna (OPEN-023, P2-015). Signal levels done: all 3.3 V, GPS1 pin 9 `BUZZER-` 0~5 V (Holybro Pixhawk 6X page).
 - [ ] CN706 against DEC-053 (OPEN-034 item 6a, P2-023): JST-GH 1.25 mm with pin 1 `+5V` as drawn, against the 2.54 mm servo header with PPM on pin 1. You decide with your partner later.
 - [ ] RC IN part data, only if you want evidence for DEC-057 (NotebookLM source needs your approval, or your values): U303 5.5 V input tolerance and I<sub>off</sub>; D707 working voltage against a 5 V PPM high (OPEN-034).
-- [ ] PWM pull-downs: pick the value (P2-013, OPEN-018; no DShot since DEC-050).
+- [ ] PWM pull-downs: pick the value (P2-018, OPEN-031; no DShot since DEC-050).
 - [ ] Spare outputs PD14, PD15, PE9: routed to `conn-peripherals` through `{SPARE_TIM}` (12:49 save); pads not drawn.
 - [ ] PM02D monitor chip and address: asked in the integration questions parts table (P0-022; pin allocation F-09).
 - [ ] CN101 CLIK-Mate pin order (1-2 5 V, 3 SCL, 4 SDA, 5-6 GND) against the PM02D cable and DS-009 (OPEN-023).
@@ -134,7 +133,7 @@ Pinmap review 0.3 and the integration answers are applied (spec rev 0.12 to 0.14
 - [ ] Collect the rest of `AO-HORIZON_INTEGRATION_QUESTIONS_EN.md` rev 0.6 from the team (P0-022): the parts table, test results and the ESC PWM rate (OPEN-031). D13 to D16 are answered (DEC-050, DEC-051).
 - [ ] After the reply: ask Claude to apply it to the spec, power budget and checklist.
 - [ ] Team inputs for DEC-053 and DEC-054: FS-iA6B current, PPM level and failsafe; Tekko32 8-pin pinout and the adapter cable (OPEN-034).
-- [ ] Team bench tests, not hardware work: RC loss with the FS-iA6B in PPM mode (P4-016, replaces S5); ESC stop on the F100 failsafe pulse and the surface failsafe position (OPEN-017, P4-011); servo current and stall current (OPEN-007).
+- [ ] Team bench tests, not hardware work: RC loss with the FS-iA6B in PPM mode (P4-016, replaces S5); ESC stop on the F100 failsafe pulse and the surface failsafe position (OPEN-017, P4-011); servo current and stall current (OPEN-021).
 
 ## 10. Before the BOM
 
