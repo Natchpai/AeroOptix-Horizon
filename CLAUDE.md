@@ -29,6 +29,7 @@ AeroOptix-Horizon is a KiCad 10 hardware design for a dual-MCU flight controller
 - **Design data:** `sch-inspect` and `pcb-inspect` extract evidence from the saved files; `sch-review` and `pcb-review` judge it. Query narrow targets (sheet, ref, net), and brief subagents the same way with exact paths. Unannotated refs such as `U?` return every match.
 - **Docs after design work:** the human runs `/progress-update`.
 - **Datasheets:** each sensor and MCU has a NotebookLM notebook (`notebooklm list --json`). JLCPCB stock and price are JavaScript-rendered and Mouser often times out, so supplier values from search snippets stay `NOT_VERIFIED`; spot-check key values before writing them into a `design/` record.
+- **Open checks:** when an item is `NOT_VERIFIED` or "not checked" and Claude can check it with an allowed source (saved design files, an existing NotebookLM notebook, official manufacturer or LCSC product pages), run the check instead of only reporting it as open, then offer to record the result. Still ask first where a rule needs approval (adding a NotebookLM source, a design change) and leave design choices, such as accepting a margin, to the human.
 
 ## Compact Instructions
 

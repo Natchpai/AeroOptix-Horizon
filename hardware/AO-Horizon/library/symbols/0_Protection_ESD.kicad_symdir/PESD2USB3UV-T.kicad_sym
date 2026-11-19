@@ -45,7 +45,7 @@
 				(justify left)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/PESD2USB3UV-T.pdf"
 			(at 3.175 -12.065 0)
 			(show_name no)
 			(do_not_autoplace no)
