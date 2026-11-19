@@ -12,7 +12,7 @@ Spec rev 0.55 and the 16:03 save are committed and pushed (`bdb398d`, `fe46bcf`)
 - [ ] Re-run ERC after the next schematic change (P2-022); last clean run on the 16:03 save.
 - [ ] CN706 RC IN connector: decide with your partner (OPEN-034 item 6a): keep the JST-GH (pin 1 `+5V`, 2 signal) and amend DEC-053, or go back to the 2.54 mm servo header with PPM on pin 1 (section 7, P2-023).
 - [ ] Next review: the MCU, sensor and USB sheets (P2-022).
-- [ ] D706 on CN705 pin 9: the 5 V buzzer line exceeds the PESD4USB3BBTBR-Q ±3.3 V VRWM limit (MAJOR). Pick a 5 V rated channel or part (OPEN-023, P2-015).
+- [x] D706 on CN705 pin 9: the 5 V buzzer line exceeded the PESD4USB3BBTBR-Q ±3.3 V VRWM limit (MAJOR). Pin 9 is now on D707 SP3031-01ETG (DEC-071, CMP-012).
 - [ ] Decide the drawn blocks (spec 4.2), then ask Claude to record them:
   - Peripheral connectors CN701 to CN705 (OPEN-023).
   - Actuator headers CN801 to CN803 and the XT30 input CN804 with its bulk capacitors and TVS (OPEN-021, OPEN-031, P2-016, P2-018).
@@ -102,7 +102,7 @@ Parts decided (DEC-008, DEC-010, DEC-011). Current state: spec 4.2 "Schematic st
 
 ## 7. Zone Z6: External connectors and outputs
 
-Drawn on `conn-peripherals` and `conn-actuator`, not decided (spec 4.2). Actuator headers per DEC-051 (CN802 ESC headers without the + pin; CN801, CN803 on the 6 V bus): keep them apart at layout (IF-030 to IF-043, P2-018, OPEN-031). RC IN drawn (CN706, D707, R715 on `conn-peripherals`; U303, R310, R311, C311 on `mcu-io`); U303, the 22 Ω (R714, now R715) and D707 decided (DEC-057). I2C4 pins PD12 and PD13 are FT (OPEN-023).
+Drawn on `conn-peripherals` and `conn-actuator`, not decided (spec 4.2). Actuator headers per DEC-051 (CN802 ESC headers without the + pin; CN801, CN803 on the 6 V bus): keep them apart at layout (IF-030 to IF-043, P2-018, OPEN-031). RC IN drawn (CN706, D708, R715 on `conn-peripherals`; U303, R310, R311, C311 on `mcu-io`); U303, the 22 Ω (R714, now R715) and the SP3031-01ETG ESD diode decided (DEC-057, DEC-071; D707 until the 23:17 save). I2C4 pins PD12 and PD13 are FT (OPEN-023).
 
 - [ ] I2C4 pull-ups: DS-009 asks for 1.5 kΩ on the autopilot; R705 and R706 are 5.1 kΩ. Decide (OPEN-023, P2-015). Pin order of CN701 to CN703 and CN705 matches DS-009 (2026-11-19).
 - [ ] CN706 against DEC-053 (OPEN-034 item 6a, P2-023): JST-GH 1.25 mm with pin 1 `+5V` as drawn, against the 2.54 mm servo header with PPM on pin 1. You decide with your partner later.
