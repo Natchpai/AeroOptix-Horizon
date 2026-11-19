@@ -326,7 +326,12 @@ function ProgressCard() {
                   </span>
                   <span className='ms-auto flex shrink-0 items-center gap-2 text-xs text-muted-foreground'>
                     {g.counts.DONE ?? 0} of {total} done
-                    <Pill className='px-2 py-0.5 text-[11px]'>{g.status}</Pill>
+                    <Pill
+                      className='px-2 py-0.5 text-[11px]'
+                      title={g.note || undefined}
+                    >
+                      {g.status}
+                    </Pill>
                   </span>
                 </div>
                 <div
@@ -490,12 +495,15 @@ function BuildStamp() {
 function Pill({
   children,
   className,
+  title,
 }: {
   children: React.ReactNode
   className?: string
+  title?: string
 }) {
   return (
     <span
+      title={title}
       className={cn(
         'rounded-full border bg-background/40 px-2.5 py-1 font-medium backdrop-blur',
         className
