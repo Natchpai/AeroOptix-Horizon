@@ -1,6 +1,6 @@
 # AeroOptix-Horizon: MCU Pin Allocation
 
-**Revision:** 0.20
+**Revision:** 0.21
 **Updated:** 2026-11-19
 **Status:** Draft. The software team's answers (pinmap review 0.2 and 0.3, decisions file) are applied. The IO MCU is the STM32F100C8T6B (DEC-002). Partly drawn in the schematic (spec 4.2 "Schematic state"); the drawn labels match this allocation (F-19). HSE from CMOS oscillators (DEC-044, DEC-045). Actuator outputs per DEC-050 and DEC-051 (F100 MAIN 1 to 8, H743 AUX 1 to 4); no pin changed. DMA and interrupt priority checks are firmware work (P2-005); timer clocks are part of the pin review (P1-001). Not a verification record.
 **Requirement refs:** IF-010 to IF-024, IF-030 to IF-037, IF-040 to IF-051, SEN-001 to SEN-003, DEC-002, DEC-014 to DEC-018, DEC-043 to DEC-047, DEC-050, DEC-051, DEC-053, DEC-054, DEC-056, DEC-057, DEC-060. Checklist tasks: P1-001 (partial), P1-003 (partial).
@@ -46,9 +46,9 @@ Script inputs and outputs are not kept in the repo.
 | AUX 2, tilt servo | IF-034, IF-035, IF-036, IF-037 | TIM5_CH2 (AF2) | PA1 | 23 | not checked |
 | AUX 3, tilt servo | IF-034, IF-035, IF-036, IF-037 | TIM5_CH3 (AF2) | PA2 | 24 | not checked |
 | AUX 4, tilt servo | IF-034, IF-035, IF-036, IF-037 | TIM5_CH4 (AF2) | PA3 | 25 | not checked |
-| Spare output 1 | IF-017 | TIM4_CH3 | PD14 | 61 | match |
-| Spare output 2 | IF-018 | TIM4_CH4 | PD15 | 62 | match |
-| Spare output 3 | IF-019 | TIM1_CH1 | PE9 | 39 | match |
+| Spare output 1 | IF-017 | TIM1_CH1 | PE9 | 39 | match |
+| Spare output 2 | IF-018 | TIM4_CH3 | PD14 | 61 | match |
+| Spare output 3 | IF-019 | TIM4_CH4 | PD15 | 62 | match |
 | USB FS | IF-022 | OTG_FS_DM | PA11 | 70 | match |
 | USB FS | IF-022 | OTG_FS_DP | PA12 | 71 | match |
 | USB VBUS sense | IF-022 | OTG_FS_VBUS | PA9 | 68 | match |
@@ -102,7 +102,7 @@ Free I/O after this allocation (25 pins): PA8, PA10, PB1, PB2, PB5, PB6, PB7, PB
 
 PH1 (H743) and PD1 (F100) are OSC_OUT pins, unused in HSE bypass (DEC-045). They are not in any free I/O list or count: their use as GPIO is `NOT_VERIFIED`.
 
-Debug console (USART3), SWD and NRST: the drawn H743 debug connector has SWD and NRST (`RESET_B` on pin 4) but no console (spec OPEN-029).
+Debug console (USART3), SWD and NRST: the drawn H743 debug connector has SWD and NRST (`RESET_B` on pin 4) but no console (spec OPEN-029). Since the 2026-11-18 16:52 save CN602 is in the Debug Mini order with the console; no NRST, reset by B901 (spec DEC-065, 2026-11-19).
 
 ## 2. STM32F100C8T6B (LQFP48)
 
@@ -148,7 +148,7 @@ Reserved for px4io-v2 functions (F-13). Not used for anything else. The LEDs are
 | PB10, PB11, PB4 | SBUS | Unconnected; weak pull-up to 3.3 V on PB11 (team, review 0.3) |
 | PC14, PC15 | Board sense, read at boot | Unconnected (team, Q6) |
 
-Console (PA9) and NRST: the drawn F100 debug pads have neither (spec OPEN-029).
+Console (PA9) and NRST: the drawn F100 debug pads have neither (spec OPEN-029). Since the 2026-11-18 16:52 save CN603 carries the console; no NRST, reset by B901 (spec DEC-065, 2026-11-19).
 
 Free I/O after this allocation (4 pins): PB3, PB6, PB7, PB12. PB3 is a JTAG pin after reset and needs the SWJ remap (SWD only) before use as GPIO (`ASSUMED`, F1 reference manual not checked).
 
@@ -164,9 +164,9 @@ Closed findings stay listed with their outcome.
 | F-15 | MAJOR | IF-040 to IF-043 | `NOT_VERIFIED` | Motor stop on an H743 hang: since DEC-050 the ESCs run PWM from the F100, which sets the disarmed value 0.5 s after H743 data stops (DEC-051). Whether the Tekko32 F4 4in1 with AM32 (DEC-054; was the Skywalker 80A V2) stops on that pulse is not checked (spec OPEN-017, SAF-015). | Decisions file S1; spec DEC-051 |
 | F-16 | MINOR | IF-030 to IF-043 | `NOT_VERIFIED` | Every PWM line gets a weak pull-down (Q10). Since DEC-050 no line carries DShot. Pick the pull-down and any series resistor for PWM and the boot-time output state (spec OPEN-031, was OPEN-018). | Pinmap review Q10, decisions file S3 |
 | F-18 | INFO | IO MCU | `VERIFIED` | STM32F100C(8-B)Tx and STM32F103C(8-B)Tx LQFP48: all 48 pin names and types match, and every signal in section 2 is on the same pin. The F103 adds USB, CAN and ADC2; the F100 adds DAC, CEC and TIM6, TIM7, TIM15 to TIM17. None of these is used. | ST XML, compared by script 2026-10-24 |
-| F-17 | INFO | IF-045 | `VERIFIED` | The Pixhawk Debug Mini connector has no NRST pin (1 VREF, 2 Console TX, 3 Console RX, 4 SWDIO, 5 SWCLK, 6 GND). Add an NRST pad next to it. As drawn (2026-11-17 16:40 save): 6-pin with VREF on pin 1, SWDIO on pin 2, SWCLK on pin 3, pins 4 and 5 open, GND on pin 6; no console and no NRST, so SWD sits on the Debug Mini console pins (spec OPEN-029). 2026-11-18 16:52 save: CN602 (H743) and CN603 (F100), JST-SH 6-pin, both in the Debug Mini order; still no NRST (spec 4.2, OPEN-029). | `https://docs.px4.io/main/en/debug/swd_debug.html` (read 2026-10-24; DS-009 not read) |
+| F-17 | INFO | IF-045 | `VERIFIED` | The Pixhawk Debug Mini connector has no NRST pin (1 VREF, 2 Console TX, 3 Console RX, 4 SWDIO, 5 SWCLK, 6 GND). Add an NRST pad next to it. As drawn (2026-11-17 16:40 save): 6-pin with VREF on pin 1, SWDIO on pin 2, SWCLK on pin 3, pins 4 and 5 open, GND on pin 6; no console and no NRST, so SWD sits on the Debug Mini console pins (spec OPEN-029). 2026-11-18 16:52 save: CN602 (H743) and CN603 (F100), JST-SH 6-pin, both in the Debug Mini order; still no NRST (spec 4.2, OPEN-029). Decided 2026-11-19: no NRST pin or pad, reset by B901 (spec DEC-065). | `https://docs.px4.io/main/en/debug/swd_debug.html` (read 2026-10-24; DS-009 not read) |
 | F-19 | INFO | H743, F100 | `VERIFIED` | Saved 2026-11-17 16:40 schematic (not committed): every H743 and F100 pin with a function label carries the signal this allocation gives it. Net names follow spec DEC-052 (for example `GPS1_UART2_TX`, `AUX1_TIM5_CH1`, `MAIN1_TIM2_CH1`, `BATT_V_INP10`, `SAFETY_SW`). One numbering differs: the schematic names PE9 `SPARE1_TIM1_CH1`, PD14 `SPARE2_TIM4_CH3` and PD15 `SPARE3_TIM4_CH4`, while section 1 has spare output 1 = TIM4_CH3 (IF-017), 2 = TIM4_CH4, 3 = TIM1_CH1. DEC-052 lets the designer set the numbering; this table follows once the connector labels are set (spec OPEN-032). Since the 2026-11-19 12:30 save the safety lines are `GPS1_SAFETY_SWITCH` and `GPS1_SAFETY_LED` (were `SAFETY_SW`, `SAFETY_LED_B`) and the board LED nets `LED_RED_B`, `LED_BLUE_B`, `LED_GREEN_B` (active low, spec 4.2). 2026-11-19 12:49 save: the spare outputs reach `conn-peripherals` through `{SPARE_TIM}`, with no pads yet. 2026-11-19 16:03 save (commit `fe46bcf`): MAIN 1 to 8 (F100 PA0, PA1, PB8, PB9, PA6, PA7, PB0, PB1), AUX 1 to 4 (H743 PA0 to PA3) and I2C4 (H743 PD12, PD13) reach their actuator header and connector pins through `{ESC}`, `{SURFACE}`, `{AUX_TIM5}` and `{EXT_I2C4}` (KiCad 10.0.8 netlist, `VERIFIED`; spec 4.2). Same save, traced later on 2026-11-19: USB FS (PA12, PA11, PA9), H743 SWD and USART3 console (PA13, PA14, PD8, PD9 to CN602 pins 4, 5, 2, 3), F100 SWD (PA13, PA14 to CN603 pins 4, 5), SPI1 and SPI4 with their CS lines (PA4 to PA7, PE11 to PE14 to U401 and U402), the board LEDs (PE2 to PE4) and the spare outputs (PE9, PD14, PD15, no pad yet) reach their ends through the other eight buses (`VERIFIED`; spec 4.2 "Bus links" row). | `sch-inspect` `local-net U201`, `local-net U301`; label audit; KiCad netlist (16:03 save) |
-| F-20 | MINOR | H743 PC0, PC1; F100 PA4 | `VERIFIED` | Drawn 2026-11-17 (16:14 save): each pin has a 22 Ω series resistor and 10 nF to `GND`. The servo rail sense row asks for a 3:1 divider on PA4 (IF-050), which is not drawn; PA4 is not 5 V tolerant (F-03). Values not decided (spec OPEN-033). The 3:1 divider is drawn since the 2026-11-18 16:52 save: R813 46.4 kΩ, R814 23.2 kΩ, C804 100 nF (spec 4.2, OPEN-033). | `sch-inspect` `net`; spec 4.2 |
+| F-20 | MINOR | H743 PC0, PC1; F100 PA4 | `VERIFIED` | Drawn 2026-11-17 (16:14 save): each pin has a 22 Ω series resistor and 10 nF to `GND`. The servo rail sense row asks for a 3:1 divider on PA4 (IF-050), which is not drawn; PA4 is not 5 V tolerant (F-03). Values not decided (spec OPEN-033). The 3:1 divider is drawn since the 2026-11-18 16:52 save: R813 46.4 kΩ, R814 23.2 kΩ, C804 100 nF (spec 4.2, OPEN-033). Accepted as drawn 2026-11-19 (spec DEC-066). | `sch-inspect` `net`; spec 4.2 |
 | F-06 | INFO | H743 PA9 | `NOT_VERIFIED` | PA9 (OTG_FS_VBUS) is FT_u. Whether VBUS can connect directly, or needs a divider when VDD is off, is not checked. | H7 DS Table 9 |
 | F-05 | INFO | H743 PC4 | `VERIFIED` | PC4 (IMU1 INT1) is TT_a, so it is 3.3 V tolerant only, not 5 V. This is fine for a 3.3 V IMU. | H7 DS Table 9 |
 | F-03 | INFO | F100 PA0 to PA7, PB0, PB1, PB5 | `VERIFIED` | These pins are not 5 V tolerant (no FT in the type column). They carry the ESC and servo outputs, the 3.3 V px4io link, the servo rail sense and the safety button (PA5 is unconnected). Keep 5 V off them: the servo rail sense goes through its divider, and the safety button switches to 3.3 V or GND. | F100 DS Table 4 (was F1 DS Table 5 for the F103) |

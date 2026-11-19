@@ -16,14 +16,10 @@ Spec rev 0.55 and the 16:03 save are committed and pushed (`bdb398d`, `fe46bcf`)
   - XT30PW-M current rating against the 13.2 A all-stall estimate (OPEN-021).
   - D807 SMF7.5A (MDD, DEC-059): breakdown voltage and leakage at 7.4 V (PWR-011, OPEN-021).
   - D706 PESD4USB3BBTBR-QZ standoff against the 0~5 V buzzer line (OPEN-023).
-  - LED forward voltage and current through 220 Ω, and the H743 pin sink current (OPEN-035).
 - [ ] Decide the drawn blocks (spec 4.2), then ask Claude to record them:
   - Peripheral connectors CN701 to CN705 (OPEN-023).
   - Actuator headers CN801 to CN803 and the XT30 input CN804 with its bulk capacitors and TVS (OPEN-021, OPEN-031, P2-016, P2-018).
-  - Servo rail divider R813, R814, C804 (OPEN-033).
-  - Debug connectors CN602 and CN603, no NRST (OPEN-029).
-  - Board LEDs D901 to D903 (OPEN-035).
-- [ ] INFO | CN603 pin 3 / `DBG_F1_RX` | `ASSUMED` | Single-use label, so it likely reaches no MCU pin (OPEN-029).
+- [ ] INFO | CN603 pin 3 / `DBG_F1_RX` | `ASSUMED` | Single-use label, so it likely reaches no MCU pin (DEC-065).
 
 After design work: `/progress-update light`; before a commit: `/progress-update sync`.
 
@@ -34,9 +30,9 @@ The board is split into design zones. Each zone below has its own to-do list.
 | Zone | Sheet | State | Main open items |
 | ---- | ----- | ----- | --------------- |
 | Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, P2-019) | P2-020, P2-021, OPEN-025 |
-| Z2 Servo power rail (6 V bus, XT30) | `conn-actuator.kicad_sch` | Drawn, not decided (spec 4.2): CN804 XT30, bulk capacitors, D807 TVS, rail divider | OPEN-021, OPEN-033, P2-016 |
-| Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | `mcu-main-fc.kicad_sch`, `conn-usb-debug.kicad_sch`, `user-interface.kicad_sch` | In capture (spec 4.2 "Schematic state"); U201, U202 and passives annotated | P1-001, P1-006 to P1-008, P1-014, P2-022, OPEN-026, OPEN-028, OPEN-029 |
-| Z4 F100 IO MCU (px4io) | `mcu-io.kicad_sch` | In capture (spec 4.2 "Schematic state"); U301, U302 and passives annotated | P1-001, P1-014, P2-022, OPEN-026, OPEN-028, OPEN-029 |
+| Z2 Servo power rail (6 V bus, XT30) | `conn-actuator.kicad_sch` | Drawn, not decided (spec 4.2): CN804 XT30, bulk capacitors, D807 TVS, rail divider (DEC-066) | OPEN-021, P2-016 |
+| Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | `mcu-main-fc.kicad_sch`, `conn-usb-debug.kicad_sch`, `user-interface.kicad_sch` | In capture (spec 4.2 "Schematic state"); U201, U202 and passives annotated | P1-001, P1-006 to P1-008, P1-014, P2-022, OPEN-026, OPEN-028 |
+| Z4 F100 IO MCU (px4io) | `mcu-io.kicad_sch` | In capture (spec 4.2 "Schematic state"); U301, U302 and passives annotated | P1-001, P1-014, P2-022, OPEN-026, OPEN-028 |
 | Z5 Sensors (2 × IMU, 2 × barometer, magnetometer) | `sensor-imu.kicad_sch`, `sensor-navigation.kicad_sch` | All five sensors drawn (U401, U402, U501, U502, U503; spec 4.2); rails per DEC-043; IST8310 at 0x0C (DEC-047) | DEC-043, OPEN-011, DEC-047, SEN-002, P1-003, OPEN-004, P2-012 |
 | Z6 External connectors and outputs (telemetry, GPS, I2C, ESC and servo headers, spare outputs) | `conn-peripherals.kicad_sch` (CN701 to CN706), `conn-actuator.kicad_sch` (CN801 to CN804) | Drawn, not decided (spec 4.2); pinouts not checked; RC IN parts decided (DEC-056, DEC-057), CN706 connector open | OPEN-031, OPEN-023, OPEN-034, P2-015, P2-018, P2-023 |
 | Z7 PCB and mechanical | `AO-Horizon.kicad_pcb` | 80 × 80 mm working area on `Edge.Cuts` (not the outline), no footprints | OPEN-009, P3-001 |
@@ -57,7 +53,6 @@ Drawn on `conn-actuator` (11:38 save), not decided. Servo current passes through
 
 - [ ] Check the board-mount XT30 rating against PWR-011 and the 13.2 A all-stall estimate (OPEN-021, P2-016).
 - [ ] Size the 6 V and servo GND copper, pick where servo GND joins logic GND (away from the sensors). Bulk drawn: 2 × 10 µF, 68 µF 16 V tantalum (DEC-058) and the D807 SMF7.5A TVS (DEC-059) (OPEN-021).
-- [ ] Servo rail divider on F100 PA4 (IF-050): R813 46.4 kΩ / R814 23.2 kΩ with C804 100 nF, 3:1, drawn. Confirm it (OPEN-033).
 - [ ] Datasheet all-stall estimate: 13.2 A at 6 V (4 × DS3235 2.1 A + 4 × C507 1.2 A, OPEN-021), over the 10 A UBEC continuous rating. Wait for the team's bench current under load (P0-022) and their confirmation that the UBEC output plug is an XT30 (OPEN-021).
 
 ## 4. Zone Z3: H743 main MCU
@@ -70,16 +65,15 @@ H743 values below are from ST DS12110 Rev 11 via NotebookLM (2026-11-12).
 - [ ] 16 MHz clock: CMOS oscillator U202 (DEC-044), part decided (DEC-048). Check its data against the HSE external-clock limits (OPEN-028). Firmware side: P1-017.
 - [ ] Reset (DEC-046: one shared `RESET_B` for H743 and F100 NRST, one button): check the drawn button B901 PTS815SJM250SMTRLFS (LCSC C2689510) and its `B` reference prefix. Check in NotebookLM whether an internal reset (IWDG, software, debugger) drives NRST low on the H743 and F100; if so, an H743 reset also resets the F100 (OPEN-026, SAF-001). `3V3_PG` stays local (DEC-039). Neither debug connector (CN602, CN603) carries NRST (OPEN-029).
 - [ ] BOOT0: the DNP pull-up gives selection by rework only. Decide if that meets FUN-006 and TST-003 ("selectable and observable"), or add a pad, jumper or button (P1-007).
-- [ ] Net names (OPEN-032, DEC-052): choose for `OSC_16M00_OUT` and `OSC_24M00_OUT` (add `H7_`/`F1_`, or amend DEC-052); set the spare output order and update the pin allocation; `DBG_UART3_*` members on `conn-usb-debug` are drawn (16:03 save, CN602 pins 2 and 3); info: `SS{slash}TR`, `3V3_LED_A`, `USB_FS_VBUS` carried twice. Then run ERC.
+- [ ] Net names (OPEN-032): `OSC_*` names and the spare order are decided (DEC-064); left: info `SS{slash}TR`, `3V3_LED_A`, `USB_FS_VBUS` carried twice. Then run ERC.
 - [ ] Replace the remaining `H7_<pin>` stub labels with function names from the pin allocation, and carry the signals that leave the sheet through sheet pins.
 - [ ] Mark unused pins with no-connect flags once the allocation is final (PA10, PA15, PB3, PB4 and the other free pins).
-- [ ] Debug: CN602 JST-SH 6-pin in the Pixhawk Debug Mini order (1 VREF, 2 TX, 3 RX, 4 SWDIO, 5 SWCLK, 6 GND; 16:52 save). IF-045 and TST-001 also ask for an NRST pad, not drawn. Decide (OPEN-029, P1-008).
 - [ ] `3V3_PG` reaches no MCU pin now (local net, DEC-039). Decide if the H743 should read it; the pin allocation gives it no pin (OPEN-026).
 - [ ] USB: VBUS reaches PA9 through 0 Ω with no divider; settle the PA9 FT_u question (pin allocation F-06, P1-006). Then remove the temporary `PWR_FLAG` on `VBUS` from the power sheet if ERC allows (P2-022).
 - [ ] INFO | U601 / USB D+, D- | `NOT_VERIFIED` | On `conn-usb-debug` the data lines pass through U601 USBLC6-2SC6 (connector side on pins 1 and 3, MCU side on pins 6 and 4), so they depend on the internal link between pins 1-6 and 3-4. Check in the ST datasheet that those pin pairs are joined inside, or route D+ and D- past the pins on one net.
 - [ ] INFO | Library `0_Conn_Card:Micro_SD_Card_Det1`, `0_Conn_USB:USB_C_Receptacle_USB2.0_16P` | `VERIFIED` (preflight, 2026-11-14) | The library symbols have an empty Footprint field; the placed SD? and CN601 have footprints. Fill the library field or leave it generic, then run `/kicad-link-audit`.
 - [ ] microSD: socket drawn; DET reaches no MCU pin; add CMD and DAT pull-ups and ESD (P2-022).
-- [ ] Board LEDs drawn: direct drive, active low, 220 Ω from `+3V3`; check LED current (OPEN-035). No board buzzer: `BUZZER_TIM3_CH3` drives Q701, which switches GPS1 pin 9 (`GPS1_BUZZER_B`, 13:33 save; OPEN-023).
+- [ ] Board LEDs decided as drawn (DEC-067); check brightness on the bench. No board buzzer: `BUZZER_TIM3_CH3` drives Q701, which switches GPS1 pin 9 (`GPS1_BUZZER_B`, 13:33 save; OPEN-023).
 
 ## 5. Zone Z4: F100 IO MCU (px4io)
 
@@ -90,7 +84,7 @@ Pins from `px4/io-v2` (P1-001). Current state: spec 4.2 "Schematic state".
 - [ ] px4io LEDs (blue PB14, amber PB15, green PA11): pick the resistors.
 - [ ] PA10 and PB11: weak pull-up to 3.3 V; pick the value.
 - [ ] NRST (pin 7) on the shared `RESET_B` (DEC-046); the internal-reset check is in Z3 (OPEN-026).
-- [ ] Debug: CN603 JST-SH 6-pin in the Debug Mini order replaces the pads (16:52 save); no NRST; pin 3 `DBG_F1_RX` likely reaches no MCU pin. Decide (OPEN-029, P1-008).
+- [ ] Debug: CN603 decided as drawn, no NRST (DEC-065); pin 3 `DBG_F1_RX` likely reaches no MCU pin (INFO).
 
 ## 6. Zone Z5: Sensors
 
@@ -117,7 +111,7 @@ Drawn on `conn-peripherals` and `conn-actuator`, not decided (spec 4.2). Actuato
 - [ ] CN706 against DEC-053 (OPEN-034 item 6a, P2-023): JST-GH 1.25 mm with pin 1 `+5V` as drawn, against the 2.54 mm servo header with PPM on pin 1. You decide with your partner later.
 - [ ] RC IN part data, only if you want evidence for DEC-057 (NotebookLM source needs your approval, or your values): U303 5.5 V input tolerance and I<sub>off</sub>; D707 working voltage against a 5 V PPM high (OPEN-034).
 - [ ] PWM pull-downs: pick the value (P2-018, OPEN-031; no DShot since DEC-050).
-- [ ] Spare outputs PD14, PD15, PE9: routed to `conn-peripherals` through `{SPARE_TIM}` (12:49 save); pads not drawn.
+- [ ] Spare outputs PE9, PD14, PD15 (SPARE1 to SPARE3, DEC-064): routed to `conn-peripherals` through `{SPARE_TIM}` (12:49 save); pads not drawn.
 - [ ] PM02D monitor chip and address: asked in the integration questions parts table (P0-022; pin allocation F-09).
 - [ ] CN101 CLIK-Mate pin order (1-2 5 V, 3 SCL, 4 SDA, 5-6 GND) against the PM02D cable and DS-009 (OPEN-023).
 

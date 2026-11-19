@@ -29,7 +29,7 @@ Sources: `sch-review` of `conn-actuator` and `conn-peripherals` (2026-11-19, com
 - [ ] INFO | Q701 drain / `GPS1_BUZZER_B` | `ASSUMED` | No flyback diode on the board. If the GPS buzzer is magnetic and the module has no diode, the drain sees a spike at turn-off. | Check the GPS module, or add a diode from the drain to `+5V`. (OPEN-023)
 - [x] INFO | R312 / `GPS1_SAFETY_SWITCH` | `NOT_VERIFIED` | The 10 kΩ pull-down suits a safety switch that connects to 3.3 V; the GPS module wiring and the px4io `io-v2` PB5 setup are not checked. | Check the switch side in DS-009 or the GPS module. (OPEN-023) Done 2026-11-19: the switch goes to 3.3 V (human owner); px4io PB5 setup still open.
 - [x] INFO | D706 pins 2 and 9 | `VERIFIED` (CAD) | Unused channel with no wire and no no-connect flag. | Re-run ERC; add no-connect flags if it warns. Done 2026-11-19: ERC on the 16:03 save gives no warning (human owner).
-- [ ] INFO | `{SPARE_TIM}` / SPARE1 to SPARE3 | `VERIFIED` | The spare outputs reach `conn-peripherals` with no pads. | Add pads, or leave them unrouted. (OPEN-032)
+- [ ] INFO | `{SPARE_TIM}` / SPARE1 to SPARE3 | `VERIFIED` | The spare outputs reach `conn-peripherals` with no pads. | Add pads, or leave them unrouted. Order decided (DEC-064).
 - [ ] INFO | New library parts | `NOT_VERIFIED` | `0_Logic_74x:SN74LVC1G34DCK`, `Conn_01x03_MountingPin` and the JST-GH SM03B footprint are untracked and not audited. | Run `/kicad-link-audit`; check the U303 pin map against the datasheet (`/component-check`). 2026-11-19: committed (`1993716`) and the link audit is clean; the U303 pin map check is still open.
 
 ## Not checked yet (need data)
