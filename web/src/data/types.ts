@@ -152,6 +152,8 @@ export type Progress = {
     name: string
     exit: string
     status: string
+    /** Text in brackets after the status in the record, or '' */
+    note: string
     /** Task count per status (DONE, IN_PROGRESS, OPEN, BLOCKED ...) */
     counts: Record<string, number>
     line: number

@@ -224,11 +224,15 @@ const gates = gateTable.rows.map((r) => {
   const counts: Record<string, number> = {}
   for (const t of tasks.filter((x) => x.id.startsWith(`${id}-`)))
     counts[t.status] = (counts[t.status] ?? 0) + 1
+  // "DONE (closed by ..., 2026-11-19; ...)" -> status "DONE", note "closed by ..."
+  const cell = r.cells[3].replace(/`/g, '').trim()
+  const m = /^(\S+)\s*\((.*)\)\s*$/.exec(cell)
   return {
     id,
     name: r.cells[1],
     exit: r.cells[2],
-    status: r.cells[3].replace(/`/g, ''),
+    status: m ? m[1] : cell,
+    note: m ? m[2] : '',
     counts,
     line: r.line,
   }
