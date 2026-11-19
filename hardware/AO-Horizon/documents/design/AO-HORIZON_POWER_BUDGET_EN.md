@@ -87,7 +87,7 @@ Since DEC-043 (2026-11-12), this rail feeds the VDD pins of all sensors. VDDIO (
 | GPS1 + compass | IF-012 | about 100 mA (Holybro M9N, to be confirmed) | - | Human owner, 2026-11-03 | `ASSUMED` |
 | MS4525DO | IF-014 | about 5 mA (5 V Pixhawk layout if the module has a regulator; 3.3 V or 5 V version TBD, team) | - | Snippet | `NOT_VERIFIED` |
 | TF-Luna | IF-015 | 70 mA or less average (3.7 to 5.2 V supply); budgeted at 150 mA (human owner) | 150 mA | Snippet (third-party PDF); human owner, 2026-11-03 | `NOT_VERIFIED` |
-| Buzzer (TIM3_CH3) | IF-047 | about 30 mA | - | Human owner, 2026-11-03 | `ASSUMED` |
+| Buzzer (TIM3_CH3) | IF-046 | about 30 mA | - | Human owner, 2026-11-03 | `ASSUMED` |
 | 3.3 V regulator input | - | Sum of section 3.3 V loads | TBD | - | `TBD` |
 
 ### 6 V servo rail (on the board, DEC-019)
