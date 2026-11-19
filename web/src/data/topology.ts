@@ -48,17 +48,6 @@ export const systemBlocks: Block[] = [
     open: ['OPEN-023'],
   },
   {
-    id: 'pdb',
-    level: 'system',
-    kind: 'external',
-    rail: 'batt',
-    label: 'PDB',
-    sub: 'CRIUS PDB v1.0',
-    refs: ['PWR-013'],
-    status: 'candidate',
-    note: 'From the spec diagram (4.3). Candidate only.',
-  },
-  {
     id: 'ubec',
     level: 'system',
     kind: 'external',
@@ -76,7 +65,7 @@ export const systemBlocks: Block[] = [
     sub: 'Holybro Tekko32 F4 50A, AM32',
     refs: [...range('IF', 40, 43), 'DEC-054'],
     open: ['OPEN-017', 'OPEN-034'],
-    note: 'One 4in1 ESC, no PDB (DEC-054). A team adapter cable takes its 8-pin 1.0 mm connector to MAIN 1 to 4, signal and GND only.',
+    note: 'One 4in1 ESC, no PDB (DEC-054). The PM02D battery output feeds its battery pads, and the 6 V UBEC is soldered to the same pads (spec 4.3). A team adapter cable takes its 8-pin 1.0 mm connector to MAIN 1 to 4, signal and GND only.',
   },
   {
     id: 'servos',
@@ -293,13 +282,13 @@ export const systemLinks: Link[] = [
     status: 'candidate',
   },
   {
-    id: 's-pm-pdb',
+    id: 's-pm-esc',
     level: 'system',
     from: 'pm02d',
-    to: 'pdb',
+    to: 'esc',
     bus: 'batt',
     label: 'Battery',
-    refs: ['PWR-013'],
+    refs: ['PWR-013', 'DEC-054'],
     status: 'candidate',
   },
   {
@@ -324,13 +313,13 @@ export const systemLinks: Link[] = [
     pins: [{ mcu: 'h743', refs: ['IF-048'], signal: '^I2C4' }],
   },
   {
-    id: 's-pdb-ubec',
+    id: 's-esc-ubec',
     level: 'system',
-    from: 'pdb',
+    from: 'esc',
     to: 'ubec',
     bus: 'batt',
     label: 'Battery',
-    refs: ['PWR-013'],
+    refs: ['PWR-013', 'DEC-054'],
     status: 'candidate',
   },
   {
@@ -342,16 +331,6 @@ export const systemLinks: Link[] = [
     label: '6 V, XT30',
     refs: ['PWR-011', 'DEC-019'],
     open: ['OPEN-021'],
-  },
-  {
-    id: 's-pdb-esc',
-    level: 'system',
-    from: 'pdb',
-    to: 'esc',
-    bus: 'batt',
-    label: 'Battery',
-    refs: ['PWR-013'],
-    status: 'candidate',
   },
   {
     id: 's-fc-esc',
@@ -1036,7 +1015,7 @@ export const powerBlocks: Block[] = [
     sub: 'Holybro PM02D',
     refs: ['IF-048', 'PWR-001'],
     open: ['OPEN-023'],
-    note: 'Passes the battery on to the PDB and gives the board 5 V (PM02_5V).',
+    note: 'Passes the battery on to the 4in1 ESC pads (no PDB, DEC-054) and gives the board 5 V (PM02_5V).',
   },
   {
     id: 'pw-pmux',
@@ -1160,17 +1139,6 @@ export const powerBlocks: Block[] = [
     note: 'USB also feeds these ports on the bench (IF-022).',
   },
   {
-    id: 'pw-pdb',
-    level: 'power',
-    kind: 'external',
-    rail: 'batt',
-    label: 'PDB',
-    sub: 'CRIUS PDB v1.0',
-    refs: ['PWR-013'],
-    status: 'candidate',
-    note: 'From the spec diagram (4.3). Candidate only.',
-  },
-  {
     id: 'pw-ubec',
     level: 'power',
     kind: 'external',
@@ -1207,7 +1175,7 @@ export const powerBlocks: Block[] = [
     sub: 'Holybro Tekko32 F4 50A, AM32',
     refs: [...range('IF', 40, 43), 'DEC-054'],
     open: ['OPEN-017'],
-    note: 'ESC headers have the + pin removed, so the ESC BEC 5 V does not reach the board (IF-040).',
+    note: 'No PDB (DEC-054): the PM02D battery output feeds the ESC battery pads, and the 6 V UBEC is soldered to the same pads (spec 4.3). ESC headers have the + pin removed, so no ESC 5 V reaches the board (IF-040).',
   },
 ]
 
@@ -1272,15 +1240,24 @@ export const powerLinks: Link[] = [
   pw('pw-ldo-imu', 'pw-ldo', 'pw-imu', 'v3v3a', '+3V3A', ['DEC-043'], {
     open: ['OPEN-011'],
   }),
-  pw('pw-pm-pdb', 'pw-pm02d', 'pw-pdb', 'batt', 'Battery', ['PWR-013'], {
-    status: 'candidate',
-  }),
-  pw('pw-pdb-ubec', 'pw-pdb', 'pw-ubec', 'batt', 'Battery', ['PWR-013'], {
-    status: 'candidate',
-  }),
-  pw('pw-pdb-esc', 'pw-pdb', 'pw-esc', 'batt', 'Battery', ['PWR-013'], {
-    status: 'candidate',
-  }),
+  pw(
+    'pw-pm-esc',
+    'pw-pm02d',
+    'pw-esc',
+    'batt',
+    'Battery',
+    ['PWR-013', 'DEC-054'],
+    { status: 'candidate' }
+  ),
+  pw(
+    'pw-esc-ubec',
+    'pw-esc',
+    'pw-ubec',
+    'batt',
+    'Battery, ESC pads',
+    ['PWR-013', 'DEC-054'],
+    { status: 'candidate' }
+  ),
   pw(
     'pw-ubec-xt30',
     'pw-ubec',
