@@ -53,6 +53,16 @@
 	)
 	(wire
 		(pts
+			(xy 228.6 193.04) (xy 241.3 193.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0347cd0f-aae9-499e-8bef-d5353b935313")
+	)
+	(wire
+		(pts
 			(xy 181.61 184.15) (xy 190.5 184.15)
 		)
 		(stroke
@@ -83,7 +93,7 @@
 	)
 	(wire
 		(pts
-			(xy 237.49 148.59) (xy 237.49 186.69)
+			(xy 236.22 148.59) (xy 236.22 186.69)
 		)
 		(stroke
 			(width 0)
@@ -103,7 +113,7 @@
 	)
 	(bus
 		(pts
-			(xy 228.6 160.02) (xy 246.38 160.02)
+			(xy 228.6 162.56) (xy 246.38 162.56)
 		)
 		(stroke
 			(width 0)
@@ -113,7 +123,7 @@
 	)
 	(wire
 		(pts
-			(xy 240.03 151.13) (xy 240.03 189.23)
+			(xy 238.76 151.13) (xy 238.76 189.23)
 		)
 		(stroke
 			(width 0)
@@ -163,7 +173,17 @@
 	)
 	(wire
 		(pts
-			(xy 228.6 186.69) (xy 237.49 186.69)
+			(xy 241.3 154.94) (xy 241.3 193.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "405711f5-2516-4d9b-9c6f-e30fd07b5a7a")
+	)
+	(wire
+		(pts
+			(xy 228.6 186.69) (xy 236.22 186.69)
 		)
 		(stroke
 			(width 0)
@@ -213,7 +233,7 @@
 	)
 	(wire
 		(pts
-			(xy 240.03 151.13) (xy 254 151.13)
+			(xy 238.76 151.13) (xy 254 151.13)
 		)
 		(stroke
 			(width 0)
@@ -273,7 +293,7 @@
 	)
 	(wire
 		(pts
-			(xy 237.49 148.59) (xy 254 148.59)
+			(xy 236.22 148.59) (xy 254 148.59)
 		)
 		(stroke
 			(width 0)
@@ -323,7 +343,7 @@
 	)
 	(wire
 		(pts
-			(xy 228.6 189.23) (xy 240.03 189.23)
+			(xy 228.6 189.23) (xy 238.76 189.23)
 		)
 		(stroke
 			(width 0)
@@ -360,6 +380,16 @@
 			(type default)
 		)
 		(uuid "b6c87846-87cc-4121-983e-87dfd6c5bc25")
+	)
+	(wire
+		(pts
+			(xy 241.3 154.94) (xy 254 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b856139f-5165-4905-bcc2-f774117809c6")
 	)
 	(wire
 		(pts
@@ -523,7 +553,7 @@
 	)
 	(bus
 		(pts
-			(xy 246.38 160.02) (xy 246.38 181.61)
+			(xy 246.38 162.56) (xy 246.38 181.61)
 		)
 		(stroke
 			(width 0)
@@ -533,7 +563,7 @@
 	)
 	(bus
 		(pts
-			(xy 228.6 156.21) (xy 254 156.21)
+			(xy 228.6 160.02) (xy 254 160.02)
 		)
 		(stroke
 			(width 0)
@@ -771,7 +801,7 @@
 			)
 		)
 		(pin "{AUX_TIM5}" output
-			(at 228.6 160.02 0)
+			(at 228.6 162.56 0)
 			(uuid "77a3e9e0-6720-446b-94fa-3a6157339d79")
 			(effects
 				(font
@@ -931,7 +961,7 @@
 			)
 		)
 		(pin "{SPARE_TIM}" bidirectional
-			(at 228.6 156.21 0)
+			(at 228.6 160.02 0)
 			(uuid "3af8f7a1-d23a-415e-a3b2-2ad0c36ad328")
 			(effects
 				(font
@@ -970,7 +1000,7 @@
 	)
 	(sheet
 		(at 254 105.41)
-		(size 38.1 54.61)
+		(size 38.1 60.96)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -998,7 +1028,7 @@
 			)
 		)
 		(property "Sheetfile" "conn-peripherals.kicad_sch"
-			(at 254 160.6046 0)
+			(at 254 166.9546 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1138,7 +1168,7 @@
 				(justify left)
 			)
 		)
-		(pin "GPS1_SAFETY_LED" input
+		(pin "GPS1_SAFETY_LED_B" input
 			(at 254 148.59 180)
 			(uuid "f4bdcced-e043-4cc8-a127-cac5db834cac")
 			(effects
@@ -1149,8 +1179,18 @@
 			)
 		)
 		(pin "{SPARE_TIM}" bidirectional
-			(at 254 156.21 180)
+			(at 254 160.02 180)
 			(uuid "8c767257-af17-4207-8d68-b075cbc043b9")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "RC_IN" output
+			(at 254 154.94 180)
+			(uuid "cf9fd1e1-7454-4f75-9705-552023e5e0f0")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1510,9 +1550,19 @@
 				(justify right)
 			)
 		)
-		(pin "GPS1_SAFETY_LED" output
+		(pin "GPS1_SAFETY_LED_B" output
 			(at 228.6 186.69 0)
 			(uuid "668efa82-11b6-4ec6-8c6f-bd01751f4935")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "RC_IN" input
+			(at 228.6 193.04 0)
+			(uuid "1e04e5cc-9e1f-46ec-a797-a2a48f86e97e")
 			(effects
 				(font
 					(size 1.27 1.27)

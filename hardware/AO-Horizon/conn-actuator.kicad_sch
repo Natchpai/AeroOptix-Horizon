@@ -539,7 +539,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "0_Protection_ESD:D_TVS-ESD_uni"
+		(symbol "0_Protection_ESD:D_TVS-ESD_bi"
 			(pin_numbers
 				(hide yes)
 			)
@@ -562,7 +562,7 @@
 					)
 				)
 			)
-			(property "Value" "D_TVS-ESD_Unidirectional"
+			(property "Value" "D_TVS-ESD_bi"
 				(at 0 -2.54 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -573,7 +573,7 @@
 				)
 			)
 			(property "Footprint" ""
-				(at 0 0 0)
+				(at 0 -5.08 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -595,17 +595,6 @@
 				)
 			)
 			(property "Description" ""
-				(at 0 -5.08 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "TVS ESD Unidirectional"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -616,7 +605,7 @@
 					)
 				)
 			)
-			(property "ki_fp_filters" "TO-???* *_Diode_* *SingleDiode* D_*"
+			(property "ki_keywords" "transient voltage suppressor thyrector transil"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -627,10 +616,21 @@
 					)
 				)
 			)
-			(symbol "D_TVS-ESD_uni_0_1"
+			(property "ki_fp_filters" "*_Diode_* *_*SingleDiode* *_D_* D_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "D_TVS-ESD_bi_0_1"
 				(polyline
 					(pts
-						(xy -1.27 -1.27) (xy -1.27 1.27) (xy -0.762 1.27)
+						(xy -2.54 -1.27) (xy 0 0) (xy -2.54 1.27) (xy -2.54 -1.27)
 					)
 					(stroke
 						(width 0.254)
@@ -642,7 +642,31 @@
 				)
 				(polyline
 					(pts
-						(xy 1.27 0) (xy -1.27 0)
+						(xy 0.508 1.27) (xy 0 1.27) (xy 0 -1.27) (xy -0.508 -1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 1.27) (xy 2.54 -1.27) (xy 0 0) (xy 2.54 1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 0) (xy -2.54 0)
 					)
 					(stroke
 						(width 0)
@@ -652,24 +676,12 @@
 						(type none)
 					)
 				)
-				(polyline
-					(pts
-						(xy 1.27 -1.27) (xy 1.27 1.27) (xy -1.27 0) (xy 1.27 -1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
 			)
-			(symbol "D_TVS-ESD_uni_1_1"
+			(symbol "D_TVS-ESD_bi_1_1"
 				(pin passive line
 					(at -3.81 0 0)
-					(length 2.54)
-					(name "K"
+					(length 1.27)
+					(name "A1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -686,8 +698,8 @@
 				)
 				(pin passive line
 					(at 3.81 0 180)
-					(length 2.54)
-					(name "A"
+					(length 1.27)
+					(name "A2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2140,7 +2152,7 @@
 		(uuid "9ebc24b6-075c-4ca2-9934-c0542b31c2bd")
 	)
 	(junction
-		(at 91.44 72.39)
+		(at 90.17 72.39)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "a385702b-9b1f-4599-8f86-6d5f1f8b062f")
@@ -2182,7 +2194,7 @@
 		(uuid "c2729b32-779a-4bef-ad71-c04210af35f0")
 	)
 	(junction
-		(at 91.44 93.98)
+		(at 90.17 93.98)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "c34cd7be-15f0-4ba5-ad05-af66b7daadc5")
@@ -2433,7 +2445,7 @@
 	)
 	(wire
 		(pts
-			(xy 91.44 72.39) (xy 91.44 80.01)
+			(xy 90.17 72.39) (xy 90.17 80.01)
 		)
 		(stroke
 			(width 0)
@@ -3503,16 +3515,6 @@
 	)
 	(wire
 		(pts
-			(xy 91.44 93.98) (xy 106.68 93.98)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d19282f5-03ce-44a9-acec-8d75d1e7508b")
-	)
-	(wire
-		(pts
 			(xy 303.53 196.85) (xy 303.53 203.2)
 		)
 		(stroke
@@ -3613,7 +3615,7 @@
 	)
 	(wire
 		(pts
-			(xy 81.28 93.98) (xy 91.44 93.98)
+			(xy 81.28 93.98) (xy 106.68 93.98)
 		)
 		(stroke
 			(width 0)
@@ -3703,7 +3705,7 @@
 	)
 	(wire
 		(pts
-			(xy 91.44 87.63) (xy 91.44 93.98)
+			(xy 90.17 87.63) (xy 90.17 93.98)
 		)
 		(stroke
 			(width 0)
@@ -5647,7 +5649,7 @@
 				)
 			)
 		)
-		(property "Description" "CAP CER 100nF 50V X7R 0402"
+		(property "Description" "Unpolarized capacitor"
 			(at 144.78 113.03 0)
 			(hide yes)
 			(show_name no)
@@ -5707,8 +5709,8 @@
 		)
 	)
 	(symbol
-		(lib_id "0_Protection_ESD:D_TVS-ESD_uni")
-		(at 91.44 83.82 270)
+		(lib_id "0_Protection_ESD:D_TVS-ESD_bi")
+		(at 90.17 83.82 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -5716,32 +5718,31 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "4a5c400a-2a01-45a7-892a-3518cca0e157")
+		(uuid "491b321e-3f7d-4ea5-9e6f-bdfe91274996")
 		(property "Reference" "D807"
-			(at 93.98 82.55 90)
+			(at 92.71 82.55 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
+				(justify right)
 			)
 		)
-		(property "Value" "SMF7.0A"
-			(at 93.98 85.09 90)
+		(property "Value" "SMF7.5CA"
+			(at 92.71 85.09 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
+				(justify right)
 			)
 		)
 		(property "Footprint" "0_Diode_SMD:D_SOD-123FL"
-			(at 91.44 83.82 0)
+			(at 95.25 83.82 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5751,8 +5752,8 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://www.lcsc.com/datasheet/C41376088.pdf"
-			(at 91.44 83.82 0)
+		(property "Datasheet" ""
+			(at 90.17 83.82 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5762,8 +5763,8 @@
 				)
 			)
 		)
-		(property "Description" "TVS DIODE 7VWM 12VC SOD-123FL"
-			(at 86.36 83.82 0)
+		(property "Description" "12.9VC Clamp 15.5A Ipp TVS DIODE SOD-123FL"
+			(at 90.17 83.82 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5773,8 +5774,8 @@
 				)
 			)
 		)
-		(property "LCSC" "C41376088"
-			(at 91.44 83.82 0)
+		(property "LCSC" "C2980404"
+			(at 90.17 83.82 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5784,8 +5785,8 @@
 				)
 			)
 		)
-		(property "MFR" "R+O"
-			(at 91.44 83.82 0)
+		(property "MFR" "GOODWORK"
+			(at 90.17 83.82 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5795,8 +5796,8 @@
 				)
 			)
 		)
-		(property "MFR.P/N" "SMF7.0A"
-			(at 91.44 83.82 0)
+		(property "MFR.P/N" "SMF7.5CA"
+			(at 90.17 83.82 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5807,10 +5808,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "d0d39158-6ff3-475b-99ba-94cec5ee60db")
+			(uuid "619024ec-1032-4e31-9ab5-e61b28827669")
 		)
 		(pin "2"
-			(uuid "1870caa7-93ff-48f6-9bbc-95031b75fc93")
+			(uuid "f3a405fe-2704-4bed-89ba-3db1f9cd92b9")
 		)
 		(instances
 			(project "AO-Horizon"
@@ -6895,7 +6896,7 @@
 				)
 			)
 		)
-		(property "Description" "CAP CER 10uF 16V X7R 0805"
+		(property "Description" "Unpolarized capacitor"
 			(at 318.77 76.2 0)
 			(hide yes)
 			(show_name no)
@@ -7759,7 +7760,7 @@
 				)
 			)
 		)
-		(property "Description" "47uF, 10V Tantalum"
+		(property "Description" "Polarized capacitor"
 			(at 106.68 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -8089,7 +8090,7 @@
 				)
 			)
 		)
-		(property "Description" "CAP CER 10uF 16V X7R 0805"
+		(property "Description" "Unpolarized capacitor"
 			(at 318.77 195.58 0)
 			(hide yes)
 			(show_name no)

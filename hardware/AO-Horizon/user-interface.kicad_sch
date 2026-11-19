@@ -843,8 +843,8 @@
 		)
 	)
 	(rectangle
-		(start 173.99 66.04)
-		(end 337.82 130.81)
+		(start 179.07 105.41)
+		(end 342.9 170.18)
 		(stroke
 			(width 0)
 			(type default)
@@ -855,8 +855,8 @@
 		(uuid "20a0850c-1aac-4a68-a0f7-67dc299e7e58")
 	)
 	(rectangle
-		(start 95.25 66.04)
-		(end 156.21 99.06)
+		(start 100.33 105.41)
+		(end 161.29 138.43)
 		(stroke
 			(width 0)
 			(type default)
@@ -867,7 +867,7 @@
 		(uuid "2962dcc2-9d9d-47f9-8bd4-3eb30dc3d918")
 	)
 	(circle
-		(center 314.96 93.98)
+		(center 320.04 133.35)
 		(radius 2.2895)
 		(stroke
 			(width 0)
@@ -881,7 +881,7 @@
 		(uuid "51c792fc-8ca2-42aa-b655-02177ea50b17")
 	)
 	(circle
-		(center 267.97 93.98)
+		(center 273.05 133.35)
 		(radius 2.2895)
 		(stroke
 			(width 0)
@@ -895,7 +895,7 @@
 		(uuid "c26b1363-a8f7-4e8c-8511-285b50d5dd08")
 	)
 	(circle
-		(center 220.98 93.98)
+		(center 226.06 133.35)
 		(radius 2.2895)
 		(stroke
 			(width 0)
@@ -922,7 +922,7 @@
 	)
 	(text "Status LEDs"
 		(exclude_from_sim no)
-		(at 173.99 64.77 0)
+		(at 179.07 104.14 0)
 		(effects
 			(font
 				(face "Century Gothic")
@@ -935,7 +935,7 @@
 	)
 	(text "Vf = 2V \nIV = 180mcd @20mA\n50mcd @ 5.5mA"
 		(exclude_from_sim no)
-		(at 224.79 102.87 0)
+		(at 229.87 142.24 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -946,7 +946,7 @@
 	)
 	(text "Vf = 2.7V \nIV = 285mcd @20mA\n50mcd @ 3.5mA"
 		(exclude_from_sim no)
-		(at 318.77 102.87 0)
+		(at 323.85 142.24 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -957,7 +957,7 @@
 	)
 	(text "Reset Botton"
 		(exclude_from_sim no)
-		(at 95.25 64.77 0)
+		(at 100.33 104.14 0)
 		(effects
 			(font
 				(face "Century Gothic")
@@ -970,7 +970,7 @@
 	)
 	(text "Vf = 3V \nIV = 180mcd @20mA\n50mcd @ 5.5mA"
 		(exclude_from_sim no)
-		(at 271.78 102.87 0)
+		(at 276.86 142.24 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -980,31 +980,31 @@
 		(uuid "fd0a2c72-3d21-4721-85b9-d83bad66644b")
 	)
 	(junction
-		(at 115.57 87.63)
+		(at 120.65 127)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "0d552593-625d-4c94-89cd-b554c7a6be25")
 	)
 	(junction
-		(at 118.11 74.93)
+		(at 123.19 114.3)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "2176c335-98af-4c88-a17a-24b6c6e2a6cd")
 	)
 	(junction
-		(at 220.98 76.2)
+		(at 226.06 115.57)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "3fa3c218-640c-4735-b1b7-f1c48f06cac6")
 	)
 	(junction
-		(at 267.97 76.2)
+		(at 273.05 115.57)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "cf30211c-bd7d-4e6e-b892-0575254d32a5")
 	)
 	(bus_entry
-		(at 196.85 118.11)
+		(at 201.93 157.48)
 		(size 2.54 2.54)
 		(stroke
 			(width 0)
@@ -1013,7 +1013,7 @@
 		(uuid "41b33719-8e98-4bb6-997e-e4122ac677ce")
 	)
 	(bus_entry
-		(at 196.85 102.87)
+		(at 201.93 142.24)
 		(size 2.54 2.54)
 		(stroke
 			(width 0)
@@ -1022,7 +1022,7 @@
 		(uuid "9286521f-1e68-4ae8-aa40-6b5578530e39")
 	)
 	(bus_entry
-		(at 196.85 110.49)
+		(at 201.93 149.86)
 		(size 2.54 2.54)
 		(stroke
 			(width 0)
@@ -1032,7 +1032,7 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 86.36) (xy 220.98 90.17)
+			(xy 226.06 125.73) (xy 226.06 129.54)
 		)
 		(stroke
 			(width 0)
@@ -1042,7 +1042,7 @@
 	)
 	(wire
 		(pts
-			(xy 314.96 97.79) (xy 314.96 120.65)
+			(xy 320.04 137.16) (xy 320.04 160.02)
 		)
 		(stroke
 			(width 0)
@@ -1052,7 +1052,7 @@
 	)
 	(bus
 		(pts
-			(xy 194.31 96.52) (xy 189.23 96.52)
+			(xy 199.39 135.89) (xy 194.31 135.89)
 		)
 		(stroke
 			(width 0)
@@ -1062,7 +1062,7 @@
 	)
 	(wire
 		(pts
-			(xy 118.11 74.93) (xy 140.97 74.93)
+			(xy 123.19 114.3) (xy 146.05 114.3)
 		)
 		(stroke
 			(width 0)
@@ -1072,7 +1072,7 @@
 	)
 	(wire
 		(pts
-			(xy 115.57 87.63) (xy 118.11 87.63)
+			(xy 120.65 127) (xy 123.19 127)
 		)
 		(stroke
 			(width 0)
@@ -1082,7 +1082,7 @@
 	)
 	(wire
 		(pts
-			(xy 115.57 87.63) (xy 115.57 90.17)
+			(xy 120.65 127) (xy 120.65 129.54)
 		)
 		(stroke
 			(width 0)
@@ -1092,7 +1092,7 @@
 	)
 	(wire
 		(pts
-			(xy 199.39 105.41) (xy 220.98 105.41)
+			(xy 204.47 144.78) (xy 226.06 144.78)
 		)
 		(stroke
 			(width 0)
@@ -1102,7 +1102,7 @@
 	)
 	(wire
 		(pts
-			(xy 118.11 86.36) (xy 118.11 87.63)
+			(xy 123.19 125.73) (xy 123.19 127)
 		)
 		(stroke
 			(width 0)
@@ -1112,7 +1112,7 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 76.2) (xy 267.97 76.2)
+			(xy 226.06 115.57) (xy 273.05 115.57)
 		)
 		(stroke
 			(width 0)
@@ -1122,7 +1122,7 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 74.93) (xy 220.98 76.2)
+			(xy 226.06 114.3) (xy 226.06 115.57)
 		)
 		(stroke
 			(width 0)
@@ -1132,7 +1132,7 @@
 	)
 	(wire
 		(pts
-			(xy 314.96 86.36) (xy 314.96 90.17)
+			(xy 320.04 125.73) (xy 320.04 129.54)
 		)
 		(stroke
 			(width 0)
@@ -1142,7 +1142,7 @@
 	)
 	(wire
 		(pts
-			(xy 267.97 97.79) (xy 267.97 113.03)
+			(xy 273.05 137.16) (xy 273.05 152.4)
 		)
 		(stroke
 			(width 0)
@@ -1152,7 +1152,7 @@
 	)
 	(wire
 		(pts
-			(xy 267.97 76.2) (xy 267.97 78.74)
+			(xy 273.05 115.57) (xy 273.05 118.11)
 		)
 		(stroke
 			(width 0)
@@ -1162,7 +1162,7 @@
 	)
 	(wire
 		(pts
-			(xy 199.39 113.03) (xy 267.97 113.03)
+			(xy 204.47 152.4) (xy 273.05 152.4)
 		)
 		(stroke
 			(width 0)
@@ -1172,7 +1172,7 @@
 	)
 	(wire
 		(pts
-			(xy 267.97 86.36) (xy 267.97 90.17)
+			(xy 273.05 125.73) (xy 273.05 129.54)
 		)
 		(stroke
 			(width 0)
@@ -1182,7 +1182,7 @@
 	)
 	(wire
 		(pts
-			(xy 118.11 74.93) (xy 118.11 76.2)
+			(xy 123.19 114.3) (xy 123.19 115.57)
 		)
 		(stroke
 			(width 0)
@@ -1192,7 +1192,7 @@
 	)
 	(wire
 		(pts
-			(xy 267.97 76.2) (xy 314.96 76.2)
+			(xy 273.05 115.57) (xy 320.04 115.57)
 		)
 		(stroke
 			(width 0)
@@ -1202,7 +1202,7 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 76.2) (xy 220.98 78.74)
+			(xy 226.06 115.57) (xy 226.06 118.11)
 		)
 		(stroke
 			(width 0)
@@ -1212,7 +1212,7 @@
 	)
 	(wire
 		(pts
-			(xy 314.96 76.2) (xy 314.96 78.74)
+			(xy 320.04 115.57) (xy 320.04 118.11)
 		)
 		(stroke
 			(width 0)
@@ -1222,7 +1222,7 @@
 	)
 	(bus
 		(pts
-			(xy 194.31 96.52) (xy 196.85 99.06)
+			(xy 199.39 135.89) (xy 201.93 138.43)
 		)
 		(stroke
 			(width 0)
@@ -1232,7 +1232,7 @@
 	)
 	(wire
 		(pts
-			(xy 115.57 74.93) (xy 115.57 76.2)
+			(xy 120.65 114.3) (xy 120.65 115.57)
 		)
 		(stroke
 			(width 0)
@@ -1242,7 +1242,7 @@
 	)
 	(wire
 		(pts
-			(xy 115.57 74.93) (xy 118.11 74.93)
+			(xy 120.65 114.3) (xy 123.19 114.3)
 		)
 		(stroke
 			(width 0)
@@ -1252,7 +1252,7 @@
 	)
 	(wire
 		(pts
-			(xy 199.39 120.65) (xy 314.96 120.65)
+			(xy 204.47 160.02) (xy 320.04 160.02)
 		)
 		(stroke
 			(width 0)
@@ -1262,7 +1262,7 @@
 	)
 	(wire
 		(pts
-			(xy 115.57 86.36) (xy 115.57 87.63)
+			(xy 120.65 125.73) (xy 120.65 127)
 		)
 		(stroke
 			(width 0)
@@ -1272,7 +1272,7 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 97.79) (xy 220.98 105.41)
+			(xy 226.06 137.16) (xy 226.06 144.78)
 		)
 		(stroke
 			(width 0)
@@ -1282,7 +1282,7 @@
 	)
 	(bus
 		(pts
-			(xy 196.85 99.06) (xy 196.85 118.11)
+			(xy 201.93 138.43) (xy 201.93 157.48)
 		)
 		(stroke
 			(width 0)
@@ -1291,7 +1291,7 @@
 		(uuid "eef1c9c4-41d5-46f8-839c-0457e3cb7f37")
 	)
 	(label "RESET_B"
-		(at 138.43 74.93 180)
+		(at 143.51 114.3 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1301,7 +1301,7 @@
 		(uuid "55095ae7-241f-439f-b67e-ab4dc9164c91")
 	)
 	(label "LED_GREEN_B"
-		(at 214.63 120.65 180)
+		(at 219.71 160.02 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1311,7 +1311,7 @@
 		(uuid "9265cf1e-556c-43dd-950b-9481a8b3cc9b")
 	)
 	(label "LED_BLUE_B"
-		(at 214.63 113.03 180)
+		(at 219.71 152.4 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1321,7 +1321,7 @@
 		(uuid "f4d5c152-9a01-4bbc-9bdc-7c66f503f7fb")
 	)
 	(label "LED_RED_B"
-		(at 214.63 105.41 180)
+		(at 219.71 144.78 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1332,7 +1332,7 @@
 	)
 	(hierarchical_label "{LED}"
 		(shape input)
-		(at 189.23 96.52 180)
+		(at 194.31 135.89 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1343,7 +1343,7 @@
 	)
 	(hierarchical_label "RESET_B"
 		(shape output)
-		(at 140.97 74.93 0)
+		(at 146.05 114.3 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1354,7 +1354,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 267.97 82.55 180)
+		(at 273.05 121.92 180)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -1364,7 +1364,7 @@
 		(dnp no)
 		(uuid "05d1cfb4-ba41-49c8-8c0f-5b5b52bc9c69")
 		(property "Reference" "R902"
-			(at 270.51 81.28 0)
+			(at 275.59 120.65 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1375,7 +1375,7 @@
 			)
 		)
 		(property "Value" "220R"
-			(at 270.51 83.82 0)
+			(at 275.59 123.19 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1386,7 +1386,7 @@
 			)
 		)
 		(property "Footprint" "0_Resistor_SMD:R_0402_1005Metric_NomDensity"
-			(at 269.748 82.55 90)
+			(at 274.828 121.92 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1397,7 +1397,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 267.97 82.55 0)
+			(at 273.05 121.92 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1408,7 +1408,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 267.97 82.55 0)
+			(at 273.05 121.92 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1419,7 +1419,7 @@
 			)
 		)
 		(property "LCSC" "C112291"
-			(at 267.97 82.55 0)
+			(at 273.05 121.92 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1430,7 +1430,7 @@
 			)
 		)
 		(property "MFR" "YAGEO"
-			(at 267.97 82.55 0)
+			(at 273.05 121.92 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1441,7 +1441,7 @@
 			)
 		)
 		(property "MFR.P/N" "RC0402FR-07220RL"
-			(at 267.97 82.55 0)
+			(at 273.05 121.92 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1468,7 +1468,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 115.57 90.17 0)
+		(at 120.65 129.54 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -1479,7 +1479,7 @@
 		(fields_autoplaced yes)
 		(uuid "53b03898-72af-4be7-828a-3e590872ac1c")
 		(property "Reference" "#PWR0202"
-			(at 115.57 96.52 0)
+			(at 120.65 135.89 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1490,7 +1490,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 115.57 95.25 0)
+			(at 120.65 134.62 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1501,7 +1501,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 115.57 90.17 0)
+			(at 120.65 129.54 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1512,7 +1512,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 115.57 90.17 0)
+			(at 120.65 129.54 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1523,7 +1523,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 115.57 90.17 0)
+			(at 120.65 129.54 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1547,7 +1547,7 @@
 	)
 	(symbol
 		(lib_id "Device:LED")
-		(at 267.97 93.98 90)
+		(at 273.05 133.35 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -1557,7 +1557,7 @@
 		(dnp no)
 		(uuid "7b277a71-f4ee-4435-b42b-89e6396bd647")
 		(property "Reference" "D902"
-			(at 271.78 92.71 90)
+			(at 276.86 132.08 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1568,7 +1568,7 @@
 			)
 		)
 		(property "Value" "LTST-C191TBKT"
-			(at 271.78 95.25 90)
+			(at 276.86 134.62 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1579,7 +1579,7 @@
 			)
 		)
 		(property "Footprint" "0_LED_SMD:LED_0603_1608Metric"
-			(at 267.97 93.98 0)
+			(at 273.05 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1590,7 +1590,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 267.97 93.98 0)
+			(at 273.05 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1601,7 +1601,7 @@
 			)
 		)
 		(property "Description" "Light emitting diode"
-			(at 267.97 93.98 0)
+			(at 273.05 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1612,7 +1612,7 @@
 			)
 		)
 		(property "Sim.Pins" "1=K 2=A"
-			(at 267.97 93.98 0)
+			(at 273.05 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1623,7 +1623,7 @@
 			)
 		)
 		(property "LCSC" "C99290"
-			(at 267.97 93.98 0)
+			(at 273.05 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1634,7 +1634,7 @@
 			)
 		)
 		(property "MFR" "LITEON"
-			(at 267.97 93.98 0)
+			(at 273.05 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1645,7 +1645,7 @@
 			)
 		)
 		(property "MFR.P/N" "LTST-C191TBKT"
-			(at 267.97 93.98 90)
+			(at 273.05 133.35 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1672,7 +1672,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 314.96 82.55 180)
+		(at 320.04 121.92 180)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -1682,7 +1682,7 @@
 		(dnp no)
 		(uuid "9a8af9d3-6f8f-4fc6-a9d6-528950e5b617")
 		(property "Reference" "R903"
-			(at 317.5 81.28 0)
+			(at 322.58 120.65 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1693,7 +1693,7 @@
 			)
 		)
 		(property "Value" "220R"
-			(at 317.5 83.82 0)
+			(at 322.58 123.19 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1704,7 +1704,7 @@
 			)
 		)
 		(property "Footprint" "0_Resistor_SMD:R_0402_1005Metric_NomDensity"
-			(at 316.738 82.55 90)
+			(at 321.818 121.92 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1715,7 +1715,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 314.96 82.55 0)
+			(at 320.04 121.92 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1726,7 +1726,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 314.96 82.55 0)
+			(at 320.04 121.92 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1737,7 +1737,7 @@
 			)
 		)
 		(property "LCSC" "C112291"
-			(at 314.96 82.55 0)
+			(at 320.04 121.92 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1748,7 +1748,7 @@
 			)
 		)
 		(property "MFR" "YAGEO"
-			(at 314.96 82.55 0)
+			(at 320.04 121.92 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1759,7 +1759,7 @@
 			)
 		)
 		(property "MFR.P/N" "RC0402FR-07220RL"
-			(at 314.96 82.55 0)
+			(at 320.04 121.92 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1786,7 +1786,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 220.98 82.55 180)
+		(at 226.06 121.92 180)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -1796,7 +1796,7 @@
 		(dnp no)
 		(uuid "a38d71e6-cf03-48a6-bd8e-251f16280081")
 		(property "Reference" "R901"
-			(at 223.52 81.28 0)
+			(at 228.6 120.65 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1807,7 +1807,7 @@
 			)
 		)
 		(property "Value" "220R"
-			(at 223.52 83.82 0)
+			(at 228.6 123.19 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1818,7 +1818,7 @@
 			)
 		)
 		(property "Footprint" "0_Resistor_SMD:R_0402_1005Metric_NomDensity"
-			(at 222.758 82.55 90)
+			(at 227.838 121.92 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1829,7 +1829,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 220.98 82.55 0)
+			(at 226.06 121.92 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1840,7 +1840,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 220.98 82.55 0)
+			(at 226.06 121.92 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1851,7 +1851,7 @@
 			)
 		)
 		(property "LCSC" "C112291"
-			(at 220.98 82.55 0)
+			(at 226.06 121.92 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1862,7 +1862,7 @@
 			)
 		)
 		(property "MFR" "YAGEO"
-			(at 220.98 82.55 0)
+			(at 226.06 121.92 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1873,7 +1873,7 @@
 			)
 		)
 		(property "MFR.P/N" "RC0402FR-07220RL"
-			(at 220.98 82.55 0)
+			(at 226.06 121.92 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1900,7 +1900,7 @@
 	)
 	(symbol
 		(lib_id "Device:LED")
-		(at 220.98 93.98 90)
+		(at 226.06 133.35 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -1910,7 +1910,7 @@
 		(dnp no)
 		(uuid "cefb189f-e383-4157-bd76-544a9b6f042a")
 		(property "Reference" "D901"
-			(at 224.79 92.71 90)
+			(at 229.87 132.08 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1921,7 +1921,7 @@
 			)
 		)
 		(property "Value" "LTST-C191KRKT"
-			(at 224.79 95.25 90)
+			(at 229.87 134.62 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1932,7 +1932,7 @@
 			)
 		)
 		(property "Footprint" "0_LED_SMD:LED_0603_1608Metric"
-			(at 220.98 93.98 0)
+			(at 226.06 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1943,7 +1943,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.lcsc.com/datasheet/C125099.pdf"
-			(at 220.98 93.98 0)
+			(at 226.06 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1954,7 +1954,7 @@
 			)
 		)
 		(property "Description" "Light emitting diode"
-			(at 220.98 93.98 0)
+			(at 226.06 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1965,7 +1965,7 @@
 			)
 		)
 		(property "Sim.Pins" "1=K 2=A"
-			(at 220.98 93.98 0)
+			(at 226.06 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1976,7 +1976,7 @@
 			)
 		)
 		(property "LCSC" "C125099"
-			(at 220.98 93.98 0)
+			(at 226.06 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1987,7 +1987,7 @@
 			)
 		)
 		(property "MFR" "LITEON"
-			(at 220.98 93.98 0)
+			(at 226.06 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1998,7 +1998,7 @@
 			)
 		)
 		(property "MFR.P/N" "LTST-C191KRKT"
-			(at 220.98 93.98 90)
+			(at 226.06 133.35 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2025,7 +2025,7 @@
 	)
 	(symbol
 		(lib_id "0_Switch:SW_Tactile_PTS815SJM250")
-		(at 118.11 81.28 90)
+		(at 123.19 120.65 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -2036,7 +2036,7 @@
 		(fields_autoplaced yes)
 		(uuid "e10fbcab-4822-498c-a198-5896e3751bfb")
 		(property "Reference" "B901"
-			(at 119.38 80.01 90)
+			(at 124.46 119.38 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2047,7 +2047,7 @@
 			)
 		)
 		(property "Value" "PTS815SJM250SMTRLFS"
-			(at 119.38 82.55 90)
+			(at 124.46 121.92 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2058,7 +2058,7 @@
 			)
 		)
 		(property "Footprint" "0_Switch:SW_Push_SPST_NO_CK_PTS815_4.2x3.2mm_H2.5mm"
-			(at 110.49 81.28 0)
+			(at 115.57 120.65 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2069,7 +2069,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 110.49 81.28 0)
+			(at 115.57 120.65 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2080,7 +2080,7 @@
 			)
 		)
 		(property "Description" "single pole normally-open tactile switch"
-			(at 124.46 81.28 0)
+			(at 129.54 120.65 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2091,7 +2091,7 @@
 			)
 		)
 		(property "LCSC" "C2689510"
-			(at 118.11 81.28 0)
+			(at 123.19 120.65 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2102,7 +2102,7 @@
 			)
 		)
 		(property "MFR" "C&K"
-			(at 118.11 81.28 0)
+			(at 123.19 120.65 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2113,7 +2113,7 @@
 			)
 		)
 		(property "MFR.P/N" "PTS815SJM250SMTRLFS"
-			(at 118.11 81.28 0)
+			(at 123.19 120.65 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2146,7 +2146,7 @@
 	)
 	(symbol
 		(lib_id "Device:LED")
-		(at 314.96 93.98 90)
+		(at 320.04 133.35 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -2156,7 +2156,7 @@
 		(dnp no)
 		(uuid "e34b8f1c-2f00-48e3-8afc-748b1a2d2450")
 		(property "Reference" "D903"
-			(at 318.77 92.71 90)
+			(at 323.85 132.08 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2167,7 +2167,7 @@
 			)
 		)
 		(property "Value" "19-21/GHC-YR1S2/4T"
-			(at 318.77 95.25 90)
+			(at 323.85 134.62 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2178,7 +2178,7 @@
 			)
 		)
 		(property "Footprint" "0_LED_SMD:LED_0603_1608Metric"
-			(at 314.96 93.98 0)
+			(at 320.04 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2189,7 +2189,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 314.96 93.98 0)
+			(at 320.04 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2200,7 +2200,7 @@
 			)
 		)
 		(property "Description" "Light emitting diode"
-			(at 314.96 93.98 0)
+			(at 320.04 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2211,7 +2211,7 @@
 			)
 		)
 		(property "Sim.Pins" "1=K 2=A"
-			(at 314.96 93.98 0)
+			(at 320.04 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2222,7 +2222,7 @@
 			)
 		)
 		(property "LCSC" "C2986048"
-			(at 314.96 93.98 0)
+			(at 320.04 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2233,7 +2233,7 @@
 			)
 		)
 		(property "MFR" "EVERLIGHT"
-			(at 314.96 93.98 0)
+			(at 320.04 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2244,7 +2244,7 @@
 			)
 		)
 		(property "MFR.P/N" "19-21/GHC-YR1S2/4T"
-			(at 314.96 93.98 90)
+			(at 320.04 133.35 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2271,7 +2271,7 @@
 	)
 	(symbol
 		(lib_id "power:+3V3")
-		(at 220.98 74.93 0)
+		(at 226.06 114.3 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -2281,7 +2281,7 @@
 		(dnp no)
 		(uuid "f94b85ad-8a18-4fae-9a5d-3eb62bfd5a97")
 		(property "Reference" "#PWR0905"
-			(at 220.98 78.74 0)
+			(at 226.06 118.11 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2292,7 +2292,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 220.98 71.12 0)
+			(at 226.06 110.49 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -2302,7 +2302,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 220.98 74.93 0)
+			(at 226.06 114.3 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2313,7 +2313,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 220.98 74.93 0)
+			(at 226.06 114.3 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2324,7 +2324,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 220.98 74.93 0)
+			(at 226.06 114.3 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
