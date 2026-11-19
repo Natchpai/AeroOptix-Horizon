@@ -9,7 +9,9 @@ The specification and the execution checklist stay the source of truth. This lis
 
 The 12:30 save is committed and pushed (spec rev 0.47). Fixed in the 12:26 and 12:30 saves: footprints on C201, C208, C214, C215, C301, C307 and C507; the CN804 `MP` pin (no-connect flag); `GPS1_SAFETY_LED` on both sheets and both sheet symbols; 5.1 kΩ parts (power mux dividers decided in DEC-055, 14 mV OV margin accepted).
 
-- [ ] Run ERC in KiCad and send the report. `sch-inspect` does not trace bus links (`{LED}`, `{USB_FS}`, `{EXT_I2C4}`, `{H7_SWD}`, `{F1_SWD}`). Then ask for a `sch-review` of `conn-actuator` and `conn-peripherals` (P2-022).
+- [x] ERC run on the 2026-11-19 12:49 save: 0 errors, 0 warnings (`documents/verification/ERC.rpt`).
+- [ ] MAJOR | B901 / `RESET_B` | `NOT_VERIFIED` | The 12:49 save moved B901 to `SW_Tactile_PTS815SJM250`: `RESET_B` on pins 1 and 2, `GND` on 3 and 4 (were 2 and 3, and 1 and 4). Check which pads the PTS815 joins inside; a wrong pair ties `RESET_B` to `GND` (OPEN-026).
+- [ ] Then ask for a `sch-review` of `conn-actuator` and `conn-peripherals` (P2-022).
 - [ ] Datasheet checks (NotebookLM source or your values; a new source needs your approval):
   - XT30PW-M current rating against the 13.2 A all-stall estimate (OPEN-021).
   - D807 SMF7.0A clamping voltage against the 7.4 V servo limit (PWR-011, OPEN-021).
@@ -23,7 +25,6 @@ The 12:30 save is committed and pushed (spec rev 0.47). Fixed in the 12:26 and 1
   - Board LEDs D901 to D903 (OPEN-035).
 - [ ] RC IN: decide the buffer proposal, then draw CN706 (section 7, P2-023).
 - [ ] INFO | CN603 pin 3 / `DBG_F1_RX` | `ASSUMED` | Single-use label, so it likely reaches no MCU pin (OPEN-029).
-- [ ] Checklist P2-022 still asks to annotate the `mcu-main-fc`, `mcu-io` and `conn-usb-debug` passives; they are annotated since the 16:52 save. Update the task.
 
 After design work: `/progress-update light`; before a commit: `/progress-update sync`.
 
@@ -130,7 +131,7 @@ Drawn on `conn-peripherals` and `conn-actuator`, not decided (spec 4.2). RC IN n
 - [ ] I2C4 (PD12, PD13): check 5 V tolerance in case a module pulls up to 5 V (OPEN-023).
 - [x] Actuator headers per DEC-051 drawn: CN802 MAIN 1 to 4 ESC headers (+ pin removed), CN803 MAIN 5 to 8 and CN801 AUX 1 to 4 on the 6 V bus. Keep them apart at layout (IF-030 to IF-043, P2-018, OPEN-031).
 - [ ] PWM pull-downs: pick the value (P2-013, OPEN-018; no DShot since DEC-050).
-- [ ] Spare outputs PD14, PD15, PE9: pads only.
+- [ ] Spare outputs PD14, PD15, PE9: routed to `conn-peripherals` through `{SPARE_TIM}` (12:49 save); pads not drawn.
 - [ ] PM02D monitor chip and address: asked in the integration questions parts table (P0-022; pin allocation F-09).
 - [ ] CN101 CLIK-Mate pin order (1-2 5 V, 3 SCL, 4 SDA, 5-6 GND) against the PM02D cable and DS-009 (OPEN-023).
 

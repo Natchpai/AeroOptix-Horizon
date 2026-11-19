@@ -34,8 +34,12 @@
 		(uuid "22639e10-36e4-4312-a13b-1aa181a41098")
 	)
 	(no_connect
-		(at 228.6 156.21)
-		(uuid "3ef19faa-87b4-4688-b776-a659fb12a4d5")
+		(at 190.5 78.74)
+		(uuid "a3eeca16-c66c-44cd-a526-14b9518af074")
+	)
+	(no_connect
+		(at 190.5 76.2)
+		(uuid "dfba1307-e376-4203-95e4-7483fec1e215")
 	)
 	(wire
 		(pts
@@ -87,16 +91,6 @@
 		)
 		(uuid "189f9880-8ba6-43a0-8fd5-d55148e2626d")
 	)
-	(bus
-		(pts
-			(xy 228.6 162.56) (xy 254 162.56)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1c7cd436-dbc2-47e5-99dc-7b98fc19fb95")
-	)
 	(wire
 		(pts
 			(xy 153.67 96.52) (xy 190.5 96.52)
@@ -106,6 +100,16 @@
 			(type default)
 		)
 		(uuid "1e905048-dc02-4f33-9f18-9f485804ba16")
+	)
+	(bus
+		(pts
+			(xy 228.6 160.02) (xy 246.38 160.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1eef2815-fb7e-436e-ac4b-fc0c43572ce3")
 	)
 	(wire
 		(pts
@@ -487,6 +491,16 @@
 		)
 		(uuid "e1df3160-6c83-454a-a636-471522d8a8b4")
 	)
+	(bus
+		(pts
+			(xy 246.38 181.61) (xy 254 181.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ec54b443-ef95-4266-acaf-dcae8f827859")
+	)
 	(wire
 		(pts
 			(xy 228.6 134.62) (xy 254 134.62)
@@ -506,6 +520,26 @@
 			(type default)
 		)
 		(uuid "f3d9a11a-abc4-444e-a42e-288b284ebb2e")
+	)
+	(bus
+		(pts
+			(xy 246.38 160.02) (xy 246.38 181.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f45ab8df-d526-402d-ab62-7f8929291e49")
+	)
+	(bus
+		(pts
+			(xy 228.6 156.21) (xy 254 156.21)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f8a7b65b-8e23-47fe-9134-b3a4e33fdbc3")
 	)
 	(wire
 		(pts
@@ -737,7 +771,7 @@
 			)
 		)
 		(pin "{AUX_TIM5}" output
-			(at 228.6 162.56 0)
+			(at 228.6 160.02 0)
 			(uuid "77a3e9e0-6720-446b-94fa-3a6157339d79")
 			(effects
 				(font
@@ -936,7 +970,7 @@
 	)
 	(sheet
 		(at 254 105.41)
-		(size 38.1 48.26)
+		(size 38.1 54.61)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -964,7 +998,7 @@
 			)
 		)
 		(property "Sheetfile" "conn-peripherals.kicad_sch"
-			(at 254 154.2546 0)
+			(at 254 160.6046 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1114,6 +1148,16 @@
 				(justify left)
 			)
 		)
+		(pin "{SPARE_TIM}" bidirectional
+			(at 254 156.21 180)
+			(uuid "8c767257-af17-4207-8d68-b075cbc043b9")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a"
@@ -1249,8 +1293,8 @@
 		)
 	)
 	(sheet
-		(at 254 160.02)
-		(size 38.1 49.53)
+		(at 254 177.8)
+		(size 38.1 31.75)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -1265,7 +1309,7 @@
 		)
 		(uuid "752a7d5d-6af8-4edd-90d9-991407e2c1d9")
 		(property "Sheetname" "Connector - Actuator"
-			(at 254 159.0544 0)
+			(at 254 176.8344 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1299,7 +1343,7 @@
 			)
 		)
 		(pin "{AUX_TIM5}" input
-			(at 254 162.56 180)
+			(at 254 181.61 180)
 			(uuid "9921868e-daff-4c62-b074-efe5a3da6492")
 			(effects
 				(font

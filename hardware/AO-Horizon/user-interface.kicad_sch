@@ -8,7 +8,7 @@
 		(comment 1 "User - Interface")
 	)
 	(lib_symbols
-		(symbol "0_Switch:SW_Tactile_4SMD"
+		(symbol "0_Switch:SW_Tactile_PTS815SJM250"
 			(pin_names
 				(offset 1.016)
 				(hide yes)
@@ -19,8 +19,8 @@
 			(in_pos_files yes)
 			(duplicate_pin_numbers_are_jumpers no)
 			(jumper_pin_groups
-				("1" "4")
-				("2" "3")
+				("1" "2")
+				("3" "4")
 			)
 			(property "Reference" "B"
 				(at 0.635 5.715 0)
@@ -33,7 +33,7 @@
 					(justify left)
 				)
 			)
-			(property "Value" "SW_Tactile_4SMD"
+			(property "Value" "SW_Tactile_PTS815SJM250"
 				(at 0 -3.175 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -43,7 +43,7 @@
 					)
 				)
 			)
-			(property "Footprint" ""
+			(property "Footprint" "0_Switch:SW_Push_SPST_NO_CK_PTS815_4.2x3.2mm_H2.5mm"
 				(at 0 7.62 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -54,7 +54,7 @@
 					)
 				)
 			)
-			(property "Datasheet" "https://www.apem.com/medias/download/MEC_switches_serie_MULTIMEC5E.pdf"
+			(property "Datasheet" ""
 				(at 0 7.62 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -87,7 +87,7 @@
 					)
 				)
 			)
-			(property "ki_fp_filters" "SW*MEC*5G*"
+			(property "ki_fp_filters" "*PTS815*"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -98,7 +98,7 @@
 					)
 				)
 			)
-			(symbol "SW_Tactile_4SMD_0_1"
+			(symbol "SW_Tactile_PTS815SJM250_0_1"
 				(polyline
 					(pts
 						(xy -2.54 0) (xy -2.54 2.54) (xy -2.286 2.54)
@@ -170,7 +170,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 2.54 0)
+					(at 5.08 2.54 180)
 					(length 2.54)
 					(name "1"
 						(effects
@@ -188,9 +188,9 @@
 					)
 				)
 			)
-			(symbol "SW_Tactile_4SMD_1_1"
+			(symbol "SW_Tactile_PTS815SJM250_1_1"
 				(pin passive line
-					(at 5.08 2.54 180)
+					(at 5.08 0 180)
 					(length 2.54)
 					(name "2"
 						(effects
@@ -208,7 +208,7 @@
 					)
 				)
 				(pin passive line
-					(at 5.08 0 180)
+					(at -5.08 2.54 0)
 					(length 2.54)
 					(name "3"
 						(effects
@@ -1899,127 +1899,6 @@
 		)
 	)
 	(symbol
-		(lib_id "0_Switch:SW_Tactile_4SMD")
-		(at 118.11 81.28 90)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "cc24e566-a1b5-4612-b0eb-e569eb9f437b")
-		(property "Reference" "B901"
-			(at 119.38 80.01 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "PTS815SJM250SMTRLFS"
-			(at 119.38 82.55 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" "0_Switch:SW_Push_SPST_NO_CK_PTS815_4.2x3.2mm_H2.5mm"
-			(at 110.49 81.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "https://www.apem.com/medias/download/MEC_switches_serie_MULTIMEC5E.pdf"
-			(at 110.49 81.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "single pole normally-open tactile switch"
-			(at 124.46 81.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C2689510"
-			(at 118.11 81.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "MFR" "C&K"
-			(at 118.11 81.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "MFR.P/N" "PTS815SJM250SMTRLFS"
-			(at 118.11 81.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "2"
-			(uuid "8428aae5-27a5-4ca3-8ea8-326a9af99246")
-		)
-		(pin "1"
-			(uuid "a9e108b9-a5ea-4aa1-a6c2-ecaa3e25f771")
-		)
-		(pin "3"
-			(uuid "ba394d85-32ba-4a43-8fc0-89238751b024")
-		)
-		(pin "4"
-			(uuid "ab80605c-4ae4-40b3-acb4-96012f1e3664")
-		)
-		(instances
-			(project "AO-Horizon"
-				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/61244771-3375-4ca0-9ad8-b7d5d30ff1b6"
-					(reference "B901")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:LED")
 		(at 220.98 93.98 90)
 		(unit 1)
@@ -2139,6 +2018,127 @@
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/61244771-3375-4ca0-9ad8-b7d5d30ff1b6"
 					(reference "D901")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "0_Switch:SW_Tactile_PTS815SJM250")
+		(at 118.11 81.28 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e10fbcab-4822-498c-a198-5896e3751bfb")
+		(property "Reference" "B901"
+			(at 119.38 80.01 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "PTS815SJM250SMTRLFS"
+			(at 119.38 82.55 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "0_Switch:SW_Push_SPST_NO_CK_PTS815_4.2x3.2mm_H2.5mm"
+			(at 110.49 81.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 110.49 81.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "single pole normally-open tactile switch"
+			(at 124.46 81.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C2689510"
+			(at 118.11 81.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "C&K"
+			(at 118.11 81.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "PTS815SJM250SMTRLFS"
+			(at 118.11 81.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "3"
+			(uuid "eb75cf3c-ea6c-4e52-a777-7fe3f6acb7e5")
+		)
+		(pin "2"
+			(uuid "97bf81eb-1498-4610-8ca7-c6d5aa8a4f61")
+		)
+		(pin "1"
+			(uuid "7dfb08c8-658d-4474-809f-18e5198848fe")
+		)
+		(pin "4"
+			(uuid "6eed9023-6b0a-4d56-820e-4094b9efd612")
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/61244771-3375-4ca0-9ad8-b7d5d30ff1b6"
+					(reference "B901")
 					(unit 1)
 				)
 			)

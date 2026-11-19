@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.47, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.48, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -86,7 +86,7 @@ The diagram is for reference only. It does not enforce gates or approve releases
 
 ### Design progress
 
-State of the saved KiCad files (2026-11-19 12:30 save, not committed). Sheets not listed have no parts. Part lists, references and save dates are in specification 4.2 "Schematic state", 4.3 and 4.6.
+State of the saved KiCad files (2026-11-19 12:49 save, not committed). Sheets not listed have no parts. Part lists, references and save dates are in specification 4.2 "Schematic state", 4.3 and 4.6.
 
 | Area | State |
 |---|---|
@@ -128,7 +128,7 @@ Interface allocations agreed with the software team (DEC-014, DEC-018) are in sp
 
 | Check | Result | Evidence |
 |---|---|---|
-| Schematic ERC | Power sheet, 2026-11-03 save only | Run by the human owner; only sheet pins to other sheets left. Later saves and other sheets not checked |
+| Schematic ERC | Whole schematic, 2026-11-19 12:49 save: 0 errors, 0 warnings | Run by the human owner; [`ERC.rpt`](hardware/AO-Horizon/documents/verification/ERC.rpt). An ERC pass is not a proof of correctness |
 | Schematic review | Power sheet, 2026-11-03 save only | `sch-review`, spec 4.3 |
 | PCB DRC | `NOT_VERIFIED` | PCB is empty |
 | BOM / footprint review | `NOT_VERIFIED` | `TBD` |
@@ -140,7 +140,7 @@ The specification tracks every open item in section 8.2 of the [specification](h
 
 - ESC stop on the F100 failsafe pulse, now the Tekko32 with AM32 (OPEN-017)
 - RC IN not drawn; FS-iA6B PPM level and RC-loss behavior, Tekko32 pinout (OPEN-034)
-- Reset: the button part is not checked, and an H743 internal reset may also reset the F100 (OPEN-026)
+- Reset: the button part and the B901 pad pairs on the new PTS815 symbol are not checked, and an H743 internal reset may also reset the F100 (OPEN-026)
 - Debug access: CN602 and CN603 drawn in the Pixhawk Debug Mini order, no NRST (OPEN-029)
 - H743 VDDA capacitor drawn 2.2 µF where DEC-049 says 4.7 µF (OPEN-030)
 - Actuator headers: keep the ESC headers (no + pin) apart from the +6 V servo headers; ESC PWM rate (OPEN-031)

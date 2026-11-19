@@ -1,0 +1,33 @@
+ERC report (2026-11-19T12:49:22, Encoding UTF8)
+Report includes: Errors, Warnings
+
+***** Sheet /Top/Power Supplies/
+
+***** Sheet /Top/MCU - Main FC/
+
+***** Sheet /Top/MCU - IO/
+
+***** Sheet /Top/Sensor - IMU/
+
+***** Sheet /Top/Sensor - Navigation/
+
+***** Sheet /Top/Connector - USB & Debug/
+
+***** Sheet /Top/Connector - Peripherals/
+
+***** Sheet /Top/Connector - Actuator/
+
+***** Sheet /Top/User - Interface/
+
+***** Sheet /
+
+***** Sheet /Block Diagram/
+
+***** Sheet /Top/
+
+***** Sheet /Revision History/
+
+ ** ERC messages: 0  Errors 0  Warnings 0
+
+ ** Ignored checks:
+    - SPICE model issue

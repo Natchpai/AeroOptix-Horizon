@@ -2579,12 +2579,33 @@
 		(uuid "22aa9042-c1b1-432e-acbd-83adadfaa2f9")
 	)
 	(no_connect
+		(at 274.32 207.01)
+		(uuid "750aa4b3-0c8a-4e19-9328-0000667e832f")
+	)
+	(no_connect
+		(at 274.32 201.93)
+		(uuid "9df8aaa2-551b-49f2-9b4a-fcb4a75b4088")
+	)
+	(no_connect
+		(at 274.32 204.47)
+		(uuid "ac873b73-9782-456d-a2aa-fb44785718f2")
+	)
+	(no_connect
 		(at 172.72 132.08)
 		(uuid "da54d718-27c2-4c5e-8fa4-08e8d3a0e463")
 	)
 	(no_connect
 		(at 172.72 72.39)
 		(uuid "dfb71813-e1f0-47fd-8ef4-2d16e8b90678")
+	)
+	(bus_entry
+		(at 257.81 204.47)
+		(size -2.54 -2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1e432f19-8d85-427d-9b2f-318ebf98efe3")
 	)
 	(bus_entry
 		(at 104.14 193.04)
@@ -2603,6 +2624,24 @@
 			(type default)
 		)
 		(uuid "789c018d-b46a-4993-92ab-0ed3fe8a60c8")
+	)
+	(bus_entry
+		(at 257.81 201.93)
+		(size -2.54 -2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "821aaf18-c32a-4226-b520-0e789ee035d9")
+	)
+	(bus_entry
+		(at 257.81 207.01)
+		(size -2.54 -2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a9e051e3-0c69-49f1-af1a-b986a9b8d89a")
 	)
 	(wire
 		(pts
@@ -2813,6 +2852,16 @@
 			(type default)
 		)
 		(uuid "25f232ca-7480-4724-abf7-6d6ce1cf30db")
+	)
+	(bus
+		(pts
+			(xy 255.27 198.12) (xy 255.27 204.47)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2823dd64-c59a-4e40-97db-c6c72fb86fb4")
 	)
 	(wire
 		(pts
@@ -3176,6 +3225,16 @@
 	)
 	(wire
 		(pts
+			(xy 274.32 201.93) (xy 257.81 201.93)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6c7fd6a3-a7b5-4e8e-8b1e-a97796a6efb3")
+	)
+	(wire
+		(pts
 			(xy 179.07 140.97) (xy 179.07 142.24)
 		)
 		(stroke
@@ -3304,6 +3363,16 @@
 		)
 		(uuid "870c7d99-252a-45a6-8845-994e1f27f0ff")
 	)
+	(bus
+		(pts
+			(xy 255.27 198.12) (xy 254 196.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8792f92e-3a6a-4852-af16-7f0f4b7419b4")
+	)
 	(wire
 		(pts
 			(xy 327.66 58.42) (xy 327.66 60.96)
@@ -3373,6 +3442,16 @@
 			(type default)
 		)
 		(uuid "9b0ed9e1-7ded-4505-8165-6237bf9ef861")
+	)
+	(wire
+		(pts
+			(xy 274.32 204.47) (xy 257.81 204.47)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9d5498c6-3a8c-45ed-86fe-ca9070aeb15b")
 	)
 	(wire
 		(pts
@@ -3473,6 +3552,16 @@
 			(type default)
 		)
 		(uuid "b7d8b3fd-ffb3-492a-aa54-f2141cbe1a67")
+	)
+	(bus
+		(pts
+			(xy 254 196.85) (xy 251.46 196.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b88b72ed-d4d2-46e4-bb77-961157a063a1")
 	)
 	(wire
 		(pts
@@ -3796,6 +3885,16 @@
 	)
 	(wire
 		(pts
+			(xy 274.32 207.01) (xy 257.81 207.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f127052e-e8b2-4ba0-be22-11b11c517fb4")
+	)
+	(wire
+		(pts
 			(xy 275.59 128.27) (xy 330.2 128.27)
 		)
 		(stroke
@@ -3914,6 +4013,16 @@
 		)
 		(uuid "17742468-8987-47ec-a9a5-54bf2e8fc2c1")
 	)
+	(label "SPARE1_TIM1_CH1"
+		(at 274.32 201.93 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "35d14dd9-47bf-49b0-a7d7-12efa4b0cc28")
+	)
 	(label "GPS1_BUZZER_B"
 		(at 307.34 146.05 0)
 		(effects
@@ -3963,6 +4072,16 @@
 			(justify left bottom)
 		)
 		(uuid "5be66147-c13a-467b-b518-1b911481973e")
+	)
+	(label "SPARE3_TIM4_CH4"
+		(at 274.32 207.01 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "5da14d6b-fc00-4572-8488-c5d434631483")
 	)
 	(label "RNG_TX"
 		(at 287.02 67.31 0)
@@ -4063,6 +4182,16 @@
 			(justify left bottom)
 		)
 		(uuid "d5bd9c56-5390-49a0-b370-0c70a7110cee")
+	)
+	(label "SPARE2_TIM4_CH3"
+		(at 274.32 204.47 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "df45d0d3-09b6-4a0e-9ec2-df13f9654c1d")
 	)
 	(label "RNG_UART8_RX"
 		(at 257.81 69.85 0)
@@ -4168,6 +4297,17 @@
 			(justify right)
 		)
 		(uuid "2a818baa-0a73-4260-b484-0e1873814539")
+	)
+	(hierarchical_label "{SPARE_TIM}"
+		(shape bidirectional)
+		(at 251.46 196.85 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "37cc7b34-8906-48ff-9900-a55135b97699")
 	)
 	(hierarchical_label "GPS1_SAFETY_SWITCH"
 		(shape input)
