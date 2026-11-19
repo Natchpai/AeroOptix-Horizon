@@ -80,7 +80,9 @@ covers. Options:
 - `--id-prefixes DEC,OPEN,...` when the spec's ID prefixes are not found right
   (default: short or zero-padded IDs in the first column of table rows).
   `--open-prefix` (default `OPEN`) and `--tracker-prefix` (default `OI`) set
-  the open-item and checklist tracker IDs.
+  the open-item and checklist tracker IDs. With no tracker rows in the
+  checklist, the spec's open-item table is the register, and preflight checks
+  that each open row names an active checklist task (`open_without_task`).
 - `--pin-text SYMBOL=<fulltext.txt>` (for example a NotebookLM
   `source fulltext` dump) to match a new symbol's pins against its datasheet.
 
@@ -164,13 +166,15 @@ fitting row or table and mention it in the report.
 
 1. **Spec:** revision and date (open-revision rule in Modes); the confirmed part-number list; decision
    rows; component-constraint rows for decided parts; a "Schematic state"
-   table under the matching architecture section; open-item rows; change-note
-   row; verdict or status summary line.
+   table under the matching architecture section; open-item rows, each with
+   its owner and the checklist task that closes it; change-note row; verdict
+   or status summary line.
 2. **Checklist:** follow `hardware-checklist` update rules. Revision and date
    (open-revision rule);
    task status (`DONE` needs an evidence record and the human's
-   confirmation); tasks for new work; a tracker row for each new open item;
-   the next-action line.
+   confirmation); tasks for new work, including one for each new open item
+   that no task covers yet; a tracker row for each new open item only if the
+   checklist keeps a tracker table; the next-action line.
 3. **Design records:** edit only the ones the change touches (power budget for
    regulators and rails, selection records for part choices, pin allocation
    for MCU pins). Change rows; keep their labels.
@@ -185,7 +189,8 @@ checklist, the README and the CHANGELOG (for each doc that exists).
 **`light`:** do items 1 and 2 only, using the open-revision rule in Modes:
 the revision and date change only when a new revision starts; otherwise add
 to the open change-note row. Skip items 3 to 5. Done when every decision and
-open item added to the spec has its checklist task or tracker row.
+open item added to the spec names its checklist task (and has a tracker row,
+if the checklist keeps a tracker table).
 
 **`sync`:** read `git diff HEAD` of the spec and checklist and treat every
 added or changed DEC and OPEN row as input. Do items 3 to 5 for them, and set
@@ -198,7 +203,7 @@ design record that owns an affected value is updated.
 ### 7. Check
 Run preflight again with `--findings-only` and the same `--since`. It reads
 the working tree, so it sees your edits. No `em_dash`, `undefined_id`,
-`no_tracker_row` or `broken_link` row may be new. Then:
+`no_tracker_row`, `open_without_task` or `broken_link` row may be new. Then:
 ```bash
 git diff --stat
 ```
@@ -206,7 +211,8 @@ By hand, if preflight failed:
 ```bash
 git diff -U0 | grep -cP '^\+.*\x{2014}'     # em dashes added: must be 0
 ```
-and confirm that every new open item has a checklist tracker row, and every
+and confirm that every new open item names an active checklist task (and has
+a tracker row, if the checklist keeps a tracker table), and every
 decision and open-item ID you cite exists in the spec.
 
 ### 8. Report

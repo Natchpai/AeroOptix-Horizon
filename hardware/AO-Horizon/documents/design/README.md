@@ -9,8 +9,8 @@ Status: `live` records are kept up to date; `closed, historical` records are ans
 | `AO-HORIZON_SPEC_EN.md` | live | Hardware requirements, decisions (DEC-xxx) and open items (OPEN-xxx). |
 | `AO-HORIZON_EXECUTION_CHECKLIST_EN.md` | live | P0 to P4 work plan and evidence tracker. |
 | `AO-HORIZON_IMU_SELECTION_EN.md` | live | ICM-45686 selection, key data and sourcing (DEC-008, DEC-009, DEC-043). |
-| `AO-HORIZON_BARO_MAG_SELECTION_EN.md` | live | ICP-20100, BMP581 (BMP384 fallback) and IST8310 selection (BMM150 replaced, BMP390 removed): key data and sourcing (DEC-010, DEC-011, DEC-043, OPEN-019). |
-| `AO-HORIZON_POWER_BUDGET_EN.md` | live | Draft rail loads, tolerances, brownout and protection needs (P0-017). |
+| `AO-HORIZON_BARO_MAG_SELECTION_EN.md` | live | ICP-20100, BMP581 (BMP384 fallback) and IST8310 selection (BMM150 replaced, BMP390 removed): key data and sourcing (DEC-010, DEC-011, DEC-043, OPEN-004). |
+| `AO-HORIZON_POWER_BUDGET_EN.md` | live | Draft rail loads, tolerances, brownout and protection needs (P0-017 done; P2-010). |
 | `AO-HORIZON_PIN_ALLOCATION_EN.md` | live | Draft STM32H743 and STM32F100 pin allocation (P1). |
 | `AO-HORIZON_POWER_MUX_NOTES_EN.md` | live | TPS2121 power mux: the four modes and how to calculate the PR1, CP2, OV, ILIM and SS parts, with the values as drawn (DEC-029 to DEC-034). Design note, not a record. |
 | `AO-HORIZON_INTEGRATION_QUESTIONS_EN.md` | live | Integration questions for the team, rev 0.6: D13 to D16 answered (DEC-050, DEC-051, P0-023); parts and team tests still open (P0-022), updated for the RC, telemetry and ESC changes (DEC-053, DEC-054). Earlier answers are in the spec (DEC-019 to DEC-023, MEC-002 to MEC-004) and in Git history. |
