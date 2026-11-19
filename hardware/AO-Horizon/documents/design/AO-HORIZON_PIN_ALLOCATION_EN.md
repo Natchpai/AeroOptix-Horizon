@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: MCU Pin Allocation
 
-**Revision:** 0.21
+**Revision:** 0.22
 **Updated:** 2026-11-19
 **Status:** Draft. The software team's answers (pinmap review 0.2 and 0.3, decisions file) are applied. The IO MCU is the STM32F100C8T6B (DEC-002). Partly drawn in the schematic (spec 4.2 "Schematic state"); the drawn labels match this allocation (F-19). HSE from CMOS oscillators (DEC-044, DEC-045). Actuator outputs per DEC-050 and DEC-051 (F100 MAIN 1 to 8, H743 AUX 1 to 4); no pin changed. DMA and interrupt priority checks are firmware work (P2-005); timer clocks are part of the pin review (P1-001). Not a verification record.
-**Requirement refs:** IF-010 to IF-024, IF-030 to IF-037, IF-040 to IF-051, SEN-001 to SEN-003, DEC-002, DEC-014 to DEC-018, DEC-043 to DEC-047, DEC-050, DEC-051, DEC-053, DEC-054, DEC-056, DEC-057, DEC-060. Checklist tasks: P1-001 (partial), P1-003 (partial).
+**Requirement refs:** IF-010 to IF-024, IF-030 to IF-037, IF-040 to IF-051, SEN-001 to SEN-003, DEC-002, DEC-014 to DEC-018, DEC-043 to DEC-047, DEC-050, DEC-051, DEC-053, DEC-054, DEC-056, DEC-057, DEC-060, DEC-068, DEC-069. Checklist tasks: P1-001 (partial), P1-003 (partial).
 **Decision owner:** Hardware
 
 Single record for the STM32H743VIT6 (LQFP100) and STM32F100C8T6B (LQFP48) pin allocation.
@@ -93,7 +93,8 @@ Design choices behind the table (`ASSUMED`, for review):
 - USART6 for the F100 link, same as `px4/fmu-v6c`.
 - TIM5 (PA0 to PA3) drives the 4 tilt servos as AUX 1 to 4 (spec DEC-050, DEC-051); the team sets which tilt servo is on which AUX output in PX4. No DShot. Before DEC-050 TIM5 drove the motors with bidirectional DShot (team, S3).
 - microSD on SDMMC1, because the `px4/fmu-v6c` SDMMC2 pins clash with GPS1 RX and Telemetry 2 (F-14).
-- Buzzer on TIM3_CH3, PB0, same as `px4/fmu-v6c` (decisions file H2).
+- Buzzer on TIM3_CH3, PB0, same as `px4/fmu-v6c` (decisions file H2). No board buzzer: PB0 drives the GPS module buzzer on GPS1 through Q701 (spec DEC-068). No pin changed.
+- Spare outputs PE9, PD14, PD15 go to one row of 4 pads (SPARE1 to SPARE3, GND), each with 22 Ω series and the PWM pull-down (spec DEC-069; not drawn yet). No pin changed.
 - TIM4 on PD14/PD15 rather than PB8/PB9, which leaves PB8/PB9 for I2C1.
 - USB device only: PA10 (OTG_FS_ID) is not used (team, Q19).
 - PA15, PB3 and PB4 (JTAG-only pins) are left free, since only SWD is used.

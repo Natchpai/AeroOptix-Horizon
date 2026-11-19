@@ -95,9 +95,9 @@ Parts decided (DEC-008, DEC-010, DEC-011). Current state: spec 4.2 "Schematic st
 - [ ] Power-up order (OPEN-011): with DEC-039, VDDIO (`+3V3`) comes up before VDD (`+3V3A`). Check in NotebookLM that each sensor allows this (ICM-45686, ICP-20100, BMP581, IST8310).
 - [ ] `+3V3A` load: add ICP-20100, BMP581 and IST8310 VDD currents to the power budget (3.3 V_IMU rows are `TBD`).
 - [ ] IST8310 AVDD on the LDO: check the TPS73533DRBR output tolerance against the 3.6 V absolute maximum (OPEN-004).
-- [ ] BMP581: Fig. 32 pad sizes and the pin 1 corner (Fig. 29, 30) on `Bosch_LGA-10_2x2mm_P0.5mm_LayoutBorder3x2y`; no solder mask under it, 20 µm clearance (DS004-13 §8.2) (P2-012).
+- [x] BMP581 and IST8310 footprints confirmed by you on 2026-11-19 (spec 0.62), with a 30 µm solder mask margin on purpose (P2-012).
 - [ ] ICP-20100: land pattern (AN-000140) and pin 1 corner (P2-012).
-- [ ] IST8310: check the stock `LGA-16_3x3mm_P0.5mm` footprint and pin 1 corner against the package drawing (P2-012).
+- [ ] ICM-45686: pad size and pin 1 corner against TDK AN-000393 (P2-012).
 - [ ] BMP384 fallback: compare footprint and pinout with the BMP581 (P1-015, OPEN-004). Address per SEN-002.
 - [ ] ICM-45686 pin 9 unused: drawn with a no-connect flag. Confirm NC or tie to VDDIO in the datasheet (the IMU record note is `NOT_VERIFIED`).
 - [ ] SPI chip-selects (P1-003); I2C2 pull-ups are covered above (P1-003).
@@ -110,8 +110,9 @@ Drawn on `conn-peripherals` and `conn-actuator`, not decided (spec 4.2). Actuato
 - [ ] Connector pinouts against the Pixhawk standard DS-009: Telemetry 1 and 2, GPS1 10-pin, airspeed, TF-Luna (OPEN-023, P2-015). Signal levels done: all 3.3 V, GPS1 pin 9 `BUZZER-` 0~5 V (Holybro Pixhawk 6X page).
 - [ ] CN706 against DEC-053 (OPEN-034 item 6a, P2-023): JST-GH 1.25 mm with pin 1 `+5V` as drawn, against the 2.54 mm servo header with PPM on pin 1. You decide with your partner later.
 - [ ] RC IN part data, only if you want evidence for DEC-057 (NotebookLM source needs your approval, or your values): U303 5.5 V input tolerance and I<sub>off</sub>; D707 working voltage against a 5 V PPM high (OPEN-034).
-- [ ] PWM pull-downs: pick the value (P2-018, OPEN-031; no DShot since DEC-050).
-- [ ] Spare outputs PE9, PD14, PD15 (SPARE1 to SPARE3, DEC-064): routed to `conn-peripherals` through `{SPARE_TIM}` (12:49 save); pads not drawn.
+- [ ] PWM pull-downs: pick the value for all 15 lines, spares included (P2-018, OPEN-031, DEC-069; no DShot since DEC-050).
+- [ ] Spare outputs PE9, PD14, PD15 (SPARE1 to SPARE3, DEC-064): routed to `conn-peripherals` through `{SPARE_TIM}` (12:49 save). Draw the 4-pad row with GND, 22 Ω series and pull-downs (DEC-069, P2-018); pick the pad footprint.
+- [ ] GPS module buzzer: no board buzzer (DEC-068). Confirm that the chosen GPS module has one; a team review says the Holybro M10/M9N V2 has none (P2-015).
 - [ ] PM02D monitor chip and address: asked in the integration questions parts table (P0-022; pin allocation F-09).
 - [ ] CN101 CLIK-Mate pin order (1-2 5 V, 3 SCL, 4 SDA, 5-6 GND) against the PM02D cable and DS-009 (OPEN-023).
 
