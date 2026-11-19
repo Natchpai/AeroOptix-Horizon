@@ -79,6 +79,10 @@ Notable changes to this hardware project are documented here.
 - DEC-053 (specification rev 0.44, team change passed on by the human owner, 2026-11-19): RC from a FlySky FS-iA6B in PPM mode on a new RC IN header (CN706, 1x3 2.54 mm) wired to F100 PA8, the px4io PPM input, through a 6.2 kΩ / 10 kΩ divider; Holybro SiK telemetry radio (920 to 925 MHz) on TELEM1, CTS/RTS unconnected; ELRS dropped; TELEM2 stays free. Amends DEC-018. RC IN not drawn yet (P2-023).
 - DEC-054 (specification rev 0.44, 2026-11-19): one Holybro Tekko32 F4 4in1 50A with AM32, no PDB, replaces the 4 Skywalker 80A V2 ESCs; it reaches MAIN 1 to 4 through a team adapter cable (signal and GND only), so the board is unchanged.
 - OPEN-034 (tracker OI-036), checklist tasks P2-023 (draw RC IN) and P4-016 (PPM RC-loss bench test, replaces team test S5).
+- DEC-055 (specification rev 0.47, human owner, 2026-11-19): power mux divider bottom resistors R102, R104, R106 and R108 are 5.1 kΩ (5 kΩ in DEC-031, DEC-032, DEC-034 and DEC-036). The spec 4.7 check was re-run (`ESTIMATED`): OV trip 5.51 to 6.21 V with 1 % resistors, 14 mV above the 5.5 V input maximum, a margin the human owner accepted (OPEN-036, tracker OI-038, opened and closed in rev 0.47); the XCOMP worst-case switch point stays 4.44 V.
+- PWR-011 servo supply maximum 7.4 V, the servo rating limit (DS3235 5 to 7.4 V, Kingmax C507 3.5 to 8.4 V; specification rev 0.47).
+- OPEN-035 (tracker OI-037): board LEDs as drawn; LED current and H743 sink current not checked.
+- Project library: Amass XT30PW-M symbol (`0_Conn:XT30PW-M`), footprint (`0_Conn_AMASS:AMASS_XT30PW-M`) and 3D model, with the `0_Conn_AMASS` entry in `fp-lib-table`.
 
 ### Changed
 
@@ -141,6 +145,10 @@ Notable changes to this hardware project are documented here.
 - Design records synced to specification rev 0.43: pin allocation rev 0.10 (F-17 as drawn, F-19 drawn labels match the allocation and the spare order differs, F-20 ADC input circuits) and `what-next.md`; root README spec revision, design progress, design considerations and open items.
 - Specification rev 0.44 and checklist rev 0.40 (2026-11-19): IF-010, IF-038, IF-040, IF-052, IF-053, FUN-003, DEC-018 notes, OPEN-006, OPEN-017, OPEN-031 and the verdict updated for DEC-053 and DEC-054. Power budget rev 0.24 (5 V external loads about 435 mA, hot worst case about 930 mA, `ESTIMATED`), pin allocation rev 0.11 (PA8 RC IN, F-21), integration questions rev 0.6, design `README.md` and `what-next.md` synced.
 - Schematic (2026-11-18 16:52 save, committed here, not yet recorded in the spec): `conn-external` replaced by `conn-peripherals` and `conn-actuator`; board LEDs with FET drivers on `user-interface`; JST-SH 6-pin debug connectors for both MCUs; D102 changed to PESD5V0U2BT; passives annotated on the MCU sheets; updated JST-GH, microSD and USB-C footprints, ESD symbols and new 3D models in the project library. Issues found in this save are listed in `what-next.md` section 0. ERC not run.
+- Specification rev 0.45 and checklist rev 0.41 (2026-11-19): the team proposal to replace the DEC-053 RC IN divider with a 74LVC1G17 buffer recorded as OPEN-034 item 5; not decided.
+- Specification rev 0.46, checklist rev 0.42 and power budget rev 0.25 (2026-11-19): the 4 surface servos are Kingmax C507 V2 (DS-843MG dropped). DS3235 and C507 6 V datasheet currents (NotebookLM notebook `Servos`) added to OPEN-007, 4.7 and the power budget: all 8 servos stalled draw about 13.2 A (`ESTIMATED`), over the 10 A UBEC continuous rating. The team is to confirm that the UBEC output plug is an XT30 (OPEN-021, P0-022).
+- Specification rev 0.47 and checklist rev 0.43 (2026-11-19): 4.2 "Schematic state" for the 2026-11-18 16:52 save and the 2026-11-19 11:38 to 12:30 saves (sheet links, debug, peripheral and actuator connectors, user interface, part fields); 4.3 for D102 to D106, CN804 and the 5.1 kΩ dividers; 4.7 power mux re-run; OPEN-021, OPEN-023, OPEN-029, OPEN-031, OPEN-032 and OPEN-033 updated. Synced: power budget rev 0.26, power mux notes rev 0.8, pin allocation rev 0.12 (F-17, F-19, F-20), and the root README spec revision, specifications, design progress and open items.
+- Schematic (2026-11-19 11:38 to 12:30 saves; drawn, not decided except DEC-055; ERC not run): CN804 Amass XT30PW-M as the UBEC input and the only `+6V` source; 6 V bulk now C801 and C802 10 µF plus C803 47 µF tantalum, with a D807 SMF7.0A TVS; board LEDs driven straight from the H743 pins, active low, through 220 Ω; D103 and D104 now 19-21/GHC-YR1S2/4T; I2C pull-ups, USB-C CC resistors and power mux bottom resistors 5.1 kΩ; footprints on C201, C208, C214, C215, C301, C307 and C507; LCSC codes on most parts; U201 and U301 Values set to the full part numbers.
 
 ### Fixed
 
@@ -153,6 +161,9 @@ Notable changes to this hardware project are documented here.
 - The power budget record (rev 0.2) no longer says that no regulator is approved; it cites DEC-012.
 - Specification rev 0.20 corrects rev 0.19, which was written before the human owner's last save of `power_supplies.kicad_sch`: as committed in `895c26a`, the TPS62142 PG net has local label `3V3_PG` and hierarchical label `3V3_DONE` (not `5V_PG`), and C111 is 0402 with empty MFR.P/N and LCSC (no 3.3 nF part number).
 - Specification rev 0.29 corrects rev 0.27 and 0.28, which described the 15:59 save; the committed sheet (`4d55a7e`) was re-annotated: input capacitors C102 to C104, old C102 to C121 now C105 to C125, parked diodes D105 and D106. The records now use the 16:55 references. C120 is GRM1555C1H103JE01D, LCSC C22400107 (16:59 save). ERC not run (`NOT_VERIFIED`).
+- CN802 and CN803 `+6V` rows were swapped in the 2026-11-18 16:52 save. Since the 11:38 save the ESC header CN802 has no + pin and CN803 (surface servos) is on `+6V`.
+- The `Connector - Peripherals` sheet symbol had no sheet pins; it has all 14 since the 11:38 save. The `MCU - IO` safety sheet pins now match their child labels, and `GPS1_SAFTY_LED` is renamed `GPS1_SAFETY_LED` on both sheets and both sheet symbols (12:30 save).
+- The board LEDs were switched by N-FETs, so they were active high against IF-047; since the 11:38 save they are active low.
 
 ### Removed
 
@@ -164,6 +175,7 @@ Notable changes to this hardware project are documented here.
 - Unused library items: JST EH and JST ZH 2-pin footprints (`82f5669`). Later: the Panasonic OS-CON and Wuerth WCAP-ASLI capacitor footprints, the Abracon AOTA-B252010S inductor footprint, their 3D models and the JST ZH 3D model.
 - ESC current sense and ESC telemetry (IF-052, IF-053) removed from the specification: the separate Skywalker ESCs have neither wire (human owner). OPEN-022 closed.
 - Stale rows in the design records: GPS2 and FlySky loads and the "barometer 2 not chosen" row in the power budget, the BMP390 and BMM150 columns in the barometer sourcing table (kept as one history line), and done items in `what-next.md` and the barometer record.
+- Q901 to Q903 LED driver FETs and their resistors, and the parked DNP TVS diodes D105 and D106 (2026-11-19 11:38 save).
 
 ### Verification
 

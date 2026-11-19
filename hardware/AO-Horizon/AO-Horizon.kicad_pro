@@ -666,7 +666,7 @@
     "annotate_start_num": 0,
     "annotation": {
       "method": 1,
-      "sort_order": 0
+      "sort_order": 1
     },
     "bom_export_filename": "documents\\manufacturing\\Assembly\\BOM\\${PROJECTNAME}.csv",
     "bom_fmt_presets": [],
@@ -751,12 +751,6 @@
         },
         {
           "group_by": false,
-          "label": "Description",
-          "name": "Description",
-          "show": true
-        },
-        {
-          "group_by": false,
           "label": "LCSC",
           "name": "LCSC",
           "show": true
@@ -790,6 +784,12 @@
           "label": "Type",
           "name": "Type",
           "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Description",
+          "name": "Description",
+          "show": true
         }
       ],
       "filter_string": "",
@@ -797,7 +797,7 @@
       "include_excluded_from_bom": true,
       "name": "",
       "sort_asc": true,
-      "sort_field": "Reference"
+      "sort_field": "Value"
     },
     "bus_aliases": {
       "AUX_TIM5": [
@@ -841,9 +841,9 @@
         "IMU2_SPI4_CS"
       ],
       "LED": [
-        "LED_RED",
-        "LED_BLUE",
-        "LED_GREEN"
+        "LED_RED_B",
+        "LED_BLUE_B",
+        "LED_GREEN_B"
       ],
       "SPARE_TIM": [
         "SPARE2_TIM4_CH3",
@@ -918,7 +918,7 @@
         "uuid": "76162bf1-0d95-48cb-b65a-4de551455d04"
       }
     ],
-    "used_designators": "#FLG1,#FLG101-106,#PWR1-20,#PWR101-120,#PWR201-218,#PWR301-312,#PWR401-410,#PWR501-522,#PWR601-617,#PWR701-718,#PWR801-809,#PWR901-906,B901,C101-121,C201-217,C301-310,C401-404,C501-507,C601-603,C701-705,C801-805,CN101,CN601-603,CN701-705,CN801-803,D101-106,D701-706,D801-806,D901-903,L101-102,Q901-903,R101-108,R115,R201-208,R301-309,R501-511,R601-612,R701-713,R801-814,R901-909,SD201,U101-103,U201,U301,U401-402,U501-503,U601",
+    "used_designators": "#FLG1,#FLG101-106,#PWR1-20,#PWR101-120,#PWR201-218,#PWR301-312,#PWR401-410,#PWR501-522,#PWR601-617,#PWR701-718,#PWR801-811,#PWR901-906,B901,C101-121,C201-217,C301-310,C401-404,C501-507,C601-603,C701-705,C801-805,CN101,CN601-603,CN701-705,CN801-803,D101-106,D701-706,D801-807,D901-903,L101-102,Q901-903,R101-108,R115,R201-208,R301-309,R501-511,R601-612,R701-713,R801-814,R901-909,SD201,U101-103,U201,U301,U401-402,U501-503,U601",
     "variants": []
   },
   "sheets": [

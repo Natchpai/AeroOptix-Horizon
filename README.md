@@ -7,7 +7,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.46, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.47, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -34,9 +34,9 @@ The team website, [natchpai.github.io/AeroOptix-Horizon](https://natchpai.github
 | Clocks | H743 16 MHz, F100 24 MHz, both from CMOS oscillators (DEC-017, DEC-044) |
 | Outputs | F100 MAIN 1 to 4: 4 ESCs (PWM, 1000 to 2000 µs); F100 MAIN 5 to 8: 4 control surfaces (50 Hz PWM); H743 AUX 1 to 4: 4 tilt servos; 3 spare (H743) (DEC-050, DEC-051, FUN-002, FUN-003, IF-017 to IF-019) |
 | Sensors | 2× ICM-45686, ICP-20100 + BMP581 (BMP384 fallback), IST8310 (DEC-008, DEC-010, DEC-011) |
-| Board input | 5 V, 4.5 to 5.5 V, 2 A source; power mux limit 1.5 A; overvoltage cut-off 5.6 to 6.3 V (PWR-010, DEC-029, DEC-030, DEC-036) |
+| Board input | 5 V, 4.5 to 5.5 V, 2 A source; power mux limit 1.5 A; overvoltage cut-off 5.5 to 6.2 V (PWR-010, DEC-029, DEC-030, DEC-036, DEC-055) |
 | 3.3 V rails | `+3V3` buck, design current about 0.6 A (DEC-012, DEC-040); `+3V3A` LDO for the sensor VDD pins; sensor VDDIO on `+3V3` (DEC-043, DEC-027) |
-| Servo supply | 6 V UBEC into an XT30, 10 A continuous, 15 A peak (PWR-011, DEC-019; XT30 rating `TBD`, OPEN-021) |
+| Servo supply | 6 V UBEC into a board-mount XT30, 7.4 V maximum (servo rating), 10 A continuous, 15 A peak; all 8 servos stalled about 13.2 A, `ESTIMATED` (PWR-011, DEC-019, OPEN-007; XT30 rating `TBD`, OPEN-021) |
 | Board outline | Under 80 mm each side; exact outline `TBD` (MEC-001, OPEN-009) |
 | Mounting | M3, 3.2 mm holes, soft mount; pattern `TBD` (MEC-002, OPEN-009) |
 | Layers / stackup | `TBD` (PCB-001, PCB-002) |
@@ -86,17 +86,17 @@ The diagram is for reference only. It does not enforce gates or approve releases
 
 ### Design progress
 
-State of the saved KiCad files (2026-11-17 16:40 save; last committed in `7e593b3`). Sheets not listed have no parts. Part lists, references and save dates are in specification 4.2 "Schematic state", 4.3 and 4.6.
+State of the saved KiCad files (2026-11-19 12:30 save, not committed). Sheets not listed have no parts. Part lists, references and save dates are in specification 4.2 "Schematic state", 4.3 and 4.6.
 
 | Area | State |
 |---|---|
-| Power sheet | Drawn; human ERC and a `sch-review` of the 2026-11-03 save are under Verification; resistor part numbers open (P2-021). |
-| MCU sheets | In capture; one shared reset with one button decided, button drawn on `user-interface` and its part not checked (DEC-046, OPEN-026); board LEDs on `{LED}` not drawn (IF-047); oscillator parts decided, data open (DEC-048, OPEN-028); VREF+ tied to VDDA (DEC-049); all allocated pins labelled with DEC-052 net names and every sheet pin matching its label; a few names open (OPEN-032); new 22 Ω and 10 nF on the ADC inputs, servo-rail divider not drawn (OPEN-033). |
+| Power sheet | Drawn; human ERC and a `sch-review` of the 2026-11-03 save are under Verification; LCSC codes on all resistors; PR1, CP2 and OV bottom resistors 5.1 kΩ, OV trip 5.51 to 6.21 V (DEC-055); MFR fields open (P2-021). |
+| MCU sheets | In capture; one shared reset with one button decided, button drawn on `user-interface` and its part not checked (DEC-046, OPEN-026); board LEDs drawn, driven straight from the pins, active low, 220 Ω (OPEN-035); oscillator parts decided, data open (DEC-048, OPEN-028); VREF+ tied to VDDA (DEC-049); all allocated pins labelled with DEC-052 net names and every sheet pin matching its label; a few names open (OPEN-032); new 22 Ω and 10 nF on the ADC inputs, servo-rail divider drawn on `conn-actuator` (OPEN-033). |
 | Sensor sheets | In capture with all five sensors; IST8310 at 0x0C as strapped (DEC-047, closes OPEN-027). |
-| USB and debug sheet | In capture; parts drawn, not approved (OPEN-010); the H743 debug connector is 6-pin with SWD on pins 2 and 3 (the Pixhawk Debug Mini uses 4 and 5), no console and no NRST; the F100 pads have no NRST (OPEN-029). |
-| External connectors | 2026-11-18 save, not yet in the spec: `conn-peripherals` (TELEM 1 and 2, I2C4, rangefinder, GPS1) and `conn-actuator` (MAIN 1 to 8, AUX 1 to 4) drawn and wired on their sheets; the peripherals sheet has no sheet pins yet, and the + rows of the MAIN 1 to 4 and MAIN 5 to 8 headers are swapped (`what-next.md`). RC IN not drawn (DEC-053, P2-023). Pinouts open (OPEN-023). |
+| USB and debug sheet | In capture; parts drawn, not approved (OPEN-010); CN602 (H743) and CN603 (F100) JST-SH 6-pin in the Pixhawk Debug Mini order, no NRST (OPEN-029); USB-C CC resistors 5.1 kΩ. |
+| External connectors | Drawn, not decided (spec 4.2): `conn-peripherals` (TELEM 1 and 2, I2C4, rangefinder, GPS1) linked to the MCU sheets by sheet pins; `conn-actuator` with MAIN 1 to 4 ESC headers (no + pin), MAIN 5 to 8 and AUX 1 to 4 on `+6V`, the CN804 XT30 UBEC input, 6 V bulk capacitors, a TVS and the servo-rail divider. RC IN not drawn (DEC-053, P2-023). Pinouts open (OPEN-023). |
 | PCB | No footprints, placeholder outline only (OPEN-009). |
-| Library | Project parts for the parts in use; sensor footprints not checked against the drawings (OPEN-013). |
+| Library | Project parts for the parts in use; sensor footprints not checked against the drawings (OPEN-013). New: Amass XT30PW-M symbol, footprint and 3D model. |
 
 ## Hardware Design
 
@@ -141,11 +141,13 @@ The specification tracks every open item in section 8.2 of the [specification](h
 - ESC stop on the F100 failsafe pulse, now the Tekko32 with AM32 (OPEN-017)
 - RC IN not drawn; FS-iA6B PPM level and RC-loss behavior, Tekko32 pinout (OPEN-034)
 - Reset: the button part is not checked, and an H743 internal reset may also reset the F100 (OPEN-026)
-- Debug access: H743 connector pin order differs from the Pixhawk Debug Mini, no console, no NRST (OPEN-029)
+- Debug access: CN602 and CN603 drawn in the Pixhawk Debug Mini order, no NRST (OPEN-029)
 - H743 VDDA capacitor drawn 2.2 µF where DEC-049 says 4.7 µF (OPEN-030)
 - Actuator headers: keep the ESC headers (no + pin) apart from the +6 V servo headers; ESC PWM rate (OPEN-031)
 - Net names: `OSC_*` prefix choice, spare output order against the pin allocation (OPEN-032)
-- Servo rail sense: the 3:1 divider on F100 PA4 is not drawn (OPEN-033)
+- Servo rail sense: the 3:1 divider on F100 PA4 is drawn, not decided (OPEN-033)
+- Servo power: all 8 servos stalled draw about 13.2 A, over the 10 A UBEC continuous rating (OPEN-007); XT30 rating (OPEN-021)
+- Board LEDs: LED current and H743 sink current not checked (OPEN-035)
 
 ## How we work
 

@@ -5,28 +5,29 @@
 
 The specification and the execution checklist stay the source of truth. This list only points to their IDs.
 
-## 0. To do later: found on 2026-11-19 (not yet in the spec)
+## 0. Open from the 2026-11-19 11:38 save
 
-Found by `/progress-update` on the saved files (2026-11-18 16:52 save, KiCad closed, not committed before this run), with `sch-inspect` and the preflight. The spec 4.2 "Schematic state" still describes the 2026-11-17 16:40 save. Decide each item, then ask Claude to record it.
+Read by `/progress-update light` (KiCad closed, not committed) and recorded in spec rev 0.47 as drawn, not decided. Fixed since the 16:52 save: the CN802 and CN803 + rows, the `Connector - Peripherals` sheet pins, the `MCU - IO` sheet pin names, the board LED polarity (direct drive, active low) and the `+6V` source (CN804 XT30).
 
 Drawing issues:
-- [ ] MAJOR | CN802, CN803 / `+6V` | `VERIFIED` | The + rows are swapped. CN802 (MAIN 1 to 4, ESCs, via R805 to R808) has `+6V` on pins 1b to 4b, but IF-040 says the ESC headers drop the + pin. CN803 (MAIN 5 to 8, control surfaces, via R809 to R812) has no-connect flags on pins 1b to 4b, so the surface servos get no power (DEC-019). CN801 (AUX 1 to 4, tilt servos) is on `+6V` as expected. With the DEC-054 adapter cable (signal and GND only) no ESC BEC reaches `+6V`, but IF-040 and OPEN-031 (1) still need the + pin removed.
-- [ ] MAJOR | `Connector - Peripherals` sheet symbol | `VERIFIED` | The sheet symbol on `top_hierarchical` has no sheet pins, so none of the 14 hierarchical labels on `conn-peripherals` (TEL1, TEL2, GPS1 UART and I2C, RNG, `{EXT_I2C4}`, buzzer, safety) reach the MCU sheets. Add the sheet pins (P2-022, OPEN-032).
-- [ ] MINOR | `mcu-io` sheet pins | `VERIFIED` | The `MCU - IO` sheet symbol still has `SAFETY_SW` and `SAFETY_LED_B`; the child labels are now `GPS1_SAFETY_SWITCH` and `GPS1_SAFTY_LED`. ERC will flag the mismatch. `SAFTY` also breaks the DEC-052 full-word rule (OPEN-032).
-- [ ] MINOR | Q901 to Q903, D901 to D903 / `LED_RED`, `LED_BLUE`, `LED_GREEN` | `VERIFIED` | Each board LED is switched low-side by a 2SK3018W N-FET (22 Ω gate resistor, 10 kΩ gate pull-down), so the LED is on when the H743 pin is high. IF-047 and the `px4/fmu-v6c` LEDs are active low. Choose: set the LEDs active high in the board config, or drive the LEDs straight from the pins. R903, R906, R909 and D901, D902 have value `?`.
-- [ ] INFO | `+6V` | `VERIFIED` | `+6V` has no source: only C801 to C804, the CN801 and CN802 + rows and R813 are on it. The XT30 UBEC input is not drawn (P2-016).
+- [ ] MAJOR | CN804 XT30PW-M | `VERIFIED` (preflight) | The footprint pad `MP` has no symbol pin. MP is a mechanical pad and KLC allows it without a pin. Confirm, or add an MP pin on `GND`.
 - [ ] MINOR | C208, C214, C215, C301, C307, C507 | `VERIFIED` (preflight) | No footprint.
+- [ ] MINOR | D807 / `+6V` | `NOT_VERIFIED` | SMF7.0A clamping voltage against the 7.4 V servo limit (PWR-011, OPEN-021).
+- [ ] MINOR | C803 / `+6V` | `NOT_VERIFIED` | The 47 µF tantalum voltage rating is not in the fields (OPEN-021).
+- [ ] MINOR | `GPS1_SAFTY_LED` | `VERIFIED` | `SAFTY` breaks the DEC-052 full-word rule. Rename it on `conn-peripherals`, `mcu-io` and both sheet symbols (OPEN-032).
+- [ ] MINOR | D901 to D903, R901 to R903 | `NOT_VERIFIED` | LED current through 255 Ω from `+3V3`, and the H743 pin sink current (OPEN-035).
+- [ ] INFO | CN603 pin 3 / `DBG_F1_RX` | `ASSUMED` | Single-use label, so it likely reaches no MCU pin (OPEN-029).
 
-Drawn, not decided (record in the spec when you agree):
-- [ ] `conn-external` removed; `conn-peripherals` has CN701 and CN702 (TELEM 1 and 2, JST-GH 6-pin, pins 4 and 5 with no-connect flags, so CTS/RTS are unconnected as DEC-053 needs), CN703 (I2C4 airspeed, 4-pin), CN704 (rangefinder, 4-pin) and CN705 (GPS1, 10-pin: 5 V, TX, RX, SCL, SDA, safety switch, safety LED, 3.3 V, buzzer, GND), each signal through PESD4USB3BBTBR-Q ESD (D701 to D706) and 22 Ω, I2C pull-ups 5 kΩ to `+3V3` (R705, R706, R712, R713), 100 nF on `+5V` (C701 to C705). Pinouts against DS-009 still open (OPEN-023).
-- [ ] `conn-actuator`: CN801 to CN803 Samtec TSW-104-08-F-T-RA (3-row right-angle, 4 positions each), 22 Ω (R801 to R812) and PESD5V0U2BT (D801 to D806) on each signal, 4 × 10 µF on `+6V`. Servo rail divider R813 46.4 kΩ / R814 23.2 kΩ with C805 100 nF (3:1, about 2.0 V at 6 V, `ESTIMATED`), which answers the missing divider in OPEN-033.
-- [ ] `conn-usb-debug`: CN602 (H743) and CN603 (F100), JST-SH 6-pin `SM06B-SRSS-TB`, both in the Pixhawk Debug Mini order (1 VREF, 2 TX, 3 RX, 4 SWDIO, 5 SWCLK, 6 GND) with 22 Ω on each signal. H743 console on USART3 (PD8, PD9), F100 TX on PA9; CN603 pin 3 (`DBG_F1_RX`) reaches nothing. Still no NRST pad (OPEN-029). IF-051 said pads for the F100; now a connector.
-- [ ] `user-interface`: reset button annotated B901; LEDs D901 to D903 with Q901 to Q903 (see the LED item above).
-- [ ] `power_supplies`: D102 changed from PESD2USB3UV-T to PESD5V0U2BT (LCSC C85399) on the PM02D I2C lines at CN101.
-- [ ] `mcu-main-fc`, `mcu-io`: passives annotated (C201 to C217, R201 to R208, C301 to C310, R301 to R309).
-- [ ] RC IN (DEC-053) not drawn yet (P2-023). Waits for the buffer decision below.
+Decide (drawn, recorded as not decided in spec 4.2):
+- [ ] Peripheral connectors CN701 to CN705 (OPEN-023).
+- [ ] Actuator connectors CN801 to CN803 and the XT30 input CN804 with its bulk capacitors and TVS (OPEN-021, OPEN-031, P2-016, P2-018).
+- [ ] Servo rail divider R813, R814, C804 (OPEN-033).
+- [ ] Debug connectors CN602 and CN603 (OPEN-029).
+- [ ] Board LEDs D901 to D903 (OPEN-035).
+- [ ] `mcu-main-fc`, `mcu-io` passives annotated in the 16:52 save; spec 4.2 not updated for that yet (P2-022).
+- [ ] RC IN (DEC-053) not drawn yet (P2-023). Waits for the buffer decision in section 7.
 
-Docs to catch up after the decisions: spec 4.2 and 4.3 for the 16:52 save, OPEN-023, OPEN-029, OPEN-031, OPEN-032, OPEN-033, and the checklist trackers. Then run `/progress-update`.
+Before committing: `/progress-update sync` (README, CHANGELOG, design records).
 
 ## Zone list
 
@@ -35,11 +36,11 @@ The board is split into design zones. Each zone below has its own to-do list.
 | Zone | Sheet | State | Main open items |
 | ---- | ----- | ----- | --------------- |
 | Z1 Power supply | `power_supplies.kicad_sch` | Capture done (P2-011, P2-019) | P2-020, P2-021, OPEN-025 |
-| Z2 Servo power rail (6 V bus, XT30) | Not drawn | Not started | OPEN-007, OPEN-021, P2-016 |
-| Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | `mcu-main-fc.kicad_sch`, `conn-usb-debug.kicad_sch`, `user-interface.kicad_sch` | In capture (spec 4.2 "Schematic state"); U201, U202 annotated, passives not | P1-001, P1-006 to P1-008, P1-014, P2-022, OPEN-026, OPEN-028, OPEN-029 |
-| Z4 F100 IO MCU (px4io) | `mcu-io.kicad_sch` | In capture (spec 4.2 "Schematic state"); U301, U302 annotated, passives not | P1-002, P1-014, P2-014, P2-022, OPEN-026, OPEN-028, OPEN-029 |
+| Z2 Servo power rail (6 V bus, XT30) | `conn-actuator.kicad_sch` | Drawn, not decided (spec 4.2): CN804 XT30, bulk capacitors, D807 TVS, rail divider | OPEN-007, OPEN-021, OPEN-033, P2-016 |
+| Z3 H743 main MCU (core, clock, reset, BOOT0, debug, USB, microSD) | `mcu-main-fc.kicad_sch`, `conn-usb-debug.kicad_sch`, `user-interface.kicad_sch` | In capture (spec 4.2 "Schematic state"); U201, U202 and passives annotated | P1-001, P1-006 to P1-008, P1-014, P2-022, OPEN-026, OPEN-028, OPEN-029 |
+| Z4 F100 IO MCU (px4io) | `mcu-io.kicad_sch` | In capture (spec 4.2 "Schematic state"); U301, U302 and passives annotated | P1-002, P1-014, P2-014, P2-022, OPEN-026, OPEN-028, OPEN-029 |
 | Z5 Sensors (2 × IMU, 2 × barometer, magnetometer) | `sensor-imu.kicad_sch`, `sensor-navigation.kicad_sch` | All five sensors drawn (U401, U402, U501, U502, U503; spec 4.2); rails per DEC-043; IST8310 at 0x0C (DEC-047) | DEC-043, OPEN-011, DEC-047, SEN-002, P1-003, P1-004, OPEN-004, OPEN-013, OPEN-019, P2-012 |
-| Z6 External connectors and outputs (telemetry, GPS, I2C, ESC and servo headers, spare outputs) | `conn-external.kicad_sch` (5 JST-GH, not wired); actuator headers not drawn | Pinouts not checked; outputs per DEC-051 (MAIN 1 to 8, AUX 1 to 4) | OPEN-018, OPEN-023, OPEN-031, P2-013, P2-015, P2-018 |
+| Z6 External connectors and outputs (telemetry, GPS, I2C, ESC and servo headers, spare outputs) | `conn-peripherals.kicad_sch` (CN701 to CN705), `conn-actuator.kicad_sch` (CN801 to CN803) | Drawn, not decided (spec 4.2); pinouts not checked; RC IN not drawn | OPEN-018, OPEN-023, OPEN-031, P2-013, P2-015, P2-018 |
 | Z7 PCB and mechanical | `AO-Horizon.kicad_pcb` | 27 × 29 mm placeholder outline, no footprints | OPEN-009, P3-001 |
 
 ## 1. Git
@@ -54,12 +55,12 @@ Done (2026-11-03). See spec 4.3 and DEC-029 to DEC-042. Resistor fields: section
 
 ## 3. Zone Z2: Servo power rail
 
-Not drawn. Servo current passes through the board (DEC-019).
+Drawn on `conn-actuator` (11:38 save), not decided. Servo current passes through the board (DEC-019).
 
 - [ ] Check the board-mount XT30 rating against PWR-011 and the 13.2 A all-stall estimate (OPEN-021, P2-016).
-- [ ] Size the 6 V and servo GND copper, pick where servo GND joins logic GND (away from the sensors), and add bulk capacitors (OPEN-021).
-- [ ] 8 × 3-pin servo headers (signal, +6 V, GND) on the bussed 6 V rail (DEC-019).
-- [ ] Servo rail divider on F100 PA4: match the px4io 3:1 scaling (IF-050). Drawn so far: 22 Ω and 10 nF only (OPEN-033).
+- [ ] Size the 6 V and servo GND copper, pick where servo GND joins logic GND (away from the sensors). Bulk drawn: 2 × 10 µF, 47 µF tantalum and the D807 TVS (OPEN-021).
+- [x] 8 × 3-pin servo headers (signal, +6 V, GND) on the bussed 6 V rail (DEC-019): CN801 and CN803 drawn; CN802 (ESCs) without the + pin.
+- [ ] Servo rail divider on F100 PA4 (IF-050): R813 46.4 kΩ / R814 23.2 kΩ with C804 100 nF, 3:1, drawn. Confirm it (OPEN-033).
 - [ ] Datasheet all-stall estimate: 13.2 A at 6 V (4 × DS3235 2.1 A + 4 × C507 1.2 A, OPEN-007), over the 10 A UBEC continuous rating. Wait for the team's bench current under load (P0-022) and their confirmation that the UBEC output plug is an XT30 (OPEN-021).
 
 ## 4. Zone Z3: H743 main MCU
@@ -84,7 +85,7 @@ H743 values below are from ST DS12110 Rev 11 via NotebookLM (2026-11-12).
 - [ ] INFO | R601, R602 / CC1, CC2 | `NOT_VERIFIED` | The CC pull-downs are 5 kΩ; the usual USB-C sink Rd is 5.1 kΩ. Check the allowed Rd range in the USB Type-C specification, or change to 5.1 kΩ.
 - [ ] INFO | Library `0_Conn_Card:Micro_SD_Card_Det1`, `0_Conn_USB:USB_C_Receptacle_USB2.0_16P` | `VERIFIED` (preflight, 2026-11-14) | The library symbols have an empty Footprint field; the placed SD? and CN601 have footprints. Fill the library field or leave it generic, then run `/kicad-link-audit`.
 - [ ] microSD: socket drawn; DET reaches no MCU pin; add CMD and DAT pull-ups and ESD (P2-022).
-- [ ] Buzzer (TIM3_CH3, PB0) and the 3 board LEDs (PE2 to PE4, active low): pick the drive parts and resistors. Only stubs drawn.
+- [ ] Board LEDs drawn: direct drive, active low, 255 Ω from `+3V3` (OPEN-035). No board buzzer: `BUZZER_TIM3_CH3` goes to GPS1 pin 9 (`GPS1_BUZZER_B`).
 
 ## 5. Zone Z4: F100 IO MCU (px4io)
 
@@ -122,14 +123,14 @@ To do:
 
 ## 7. Zone Z6: External connectors and outputs
 
-Not drawn.
+Drawn on `conn-peripherals` and `conn-actuator`, not decided (spec 4.2). RC IN not drawn.
 
 - [ ] Connector pinouts against the Pixhawk standard DS-009: Telemetry 1 and 2, GPS1 10-pin (3.3 V and buzzer pins), airspeed, TF-Luna (OPEN-023, P2-015).
-- [ ] Telemetry 2 (USART1, PB14, PB15): JST-GH 6-pin, as Telemetry 1.
+- [x] Telemetry 2 (USART1, PB14, PB15): JST-GH 6-pin, as Telemetry 1 (CN702).
 - [ ] Decide on the team RC IN proposal (OPEN-034 item 5): 74LVC1G17 buffer on `+3V3` (1 kΩ in, 100 kΩ to `GND`, 22 Ω out, 100 nF) instead of the 6.2 kΩ / 10 kΩ divider. If yes: amend DEC-053, IF-038, F-21, P2-023 and P4-016, and add the part with `kicad-part-start` (datasheet values `NOT_VERIFIED`, notebook upload needs your approval). If no: the team measures the FS-iA6B PPM level first.
 - [ ] RC IN per DEC-053 (or the buffer if accepted): CN706 1x3 header, input circuit, `RCIN_TIM1_CH1` to F100 PA8 (P2-023, OPEN-034).
 - [ ] I2C4 (PD12, PD13): check 5 V tolerance in case a module pulls up to 5 V (OPEN-023).
-- [ ] Actuator headers per DEC-051: MAIN 1 to 4 ESC headers (3-pin, + pin removed), MAIN 5 to 8 and AUX 1 to 4 servo headers on the 6 V bus; keep them apart (IF-030 to IF-043, P2-018, OPEN-031).
+- [x] Actuator headers per DEC-051 drawn: CN802 MAIN 1 to 4 ESC headers (+ pin removed), CN803 MAIN 5 to 8 and CN801 AUX 1 to 4 on the 6 V bus. Keep them apart at layout (IF-030 to IF-043, P2-018, OPEN-031).
 - [ ] PWM pull-downs: pick the value (P2-013, OPEN-018; no DShot since DEC-050).
 - [ ] Spare outputs PD14, PD15, PE9: pads only.
 - [ ] PM02D monitor chip and address: asked in the integration questions parts table (P0-022; pin allocation F-09).

@@ -1925,7 +1925,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 195.58 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -2339,7 +2339,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 226.06 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -2563,7 +2563,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 195.58 160.02 0)
 			(hide yes)
 			(show_name no)
@@ -3022,7 +3022,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 226.06 160.02 0)
 			(hide yes)
 			(show_name no)

@@ -3262,6 +3262,39 @@
 				)
 			)
 		)
+		(property "LCSC" "C144807"
+			(at 267.97 212.09 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "YAGEO"
+			(at 267.97 212.09 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "AC0402FR-0710KL"
+			(at 267.97 212.09 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "62fef911-10b8-469e-8305-76a192a89148")
 		)
@@ -3644,7 +3677,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 199.39 50.8 0)
 			(hide yes)
 			(show_name no)
@@ -3759,6 +3792,39 @@
 			)
 		)
 		(property "Description" "Resistor"
+			(at 290.83 199.39 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C144807"
+			(at 290.83 199.39 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "YAGEO"
+			(at 290.83 199.39 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "AC0402FR-0710KL"
 			(at 290.83 199.39 0)
 			(hide yes)
 			(show_name no)
@@ -4024,7 +4090,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "5k"
+		(property "Value" "5k1"
 			(at 125.984 57.404 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4058,6 +4124,39 @@
 			)
 		)
 		(property "Description" "Resistor"
+			(at 124.46 55.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C105872"
+			(at 124.46 55.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "YAGEO"
+			(at 124.46 55.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "RC0402FR-075K1L"
 			(at 124.46 55.88 0)
 			(hide yes)
 			(show_name no)
@@ -4149,6 +4248,39 @@
 				)
 			)
 		)
+		(property "LCSC" "C144807"
+			(at 267.97 199.39 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "YAGEO"
+			(at 267.97 199.39 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "AC0402FR-0710KL"
+			(at 267.97 199.39 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "9d3fbd97-8678-495f-a459-a1c65b57b1ba")
 		)
@@ -4220,6 +4352,39 @@
 		)
 		(property "Description" "Resistor"
 			(at 180.34 147.32 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C60491"
+			(at 180.34 147.32 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "YAGEO"
+			(at 180.34 147.32 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "RC0402FR-07100KL"
+			(at 180.34 147.32 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4417,7 +4582,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "0_Capacitor_SMD:C_0603_1608Metric_NomDensity"
 			(at 239.7252 231.14 0)
 			(hide yes)
 			(show_name no)
@@ -4439,7 +4604,40 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 4.7uF 16V X7R 0603"
+			(at 238.76 227.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C389010"
+			(at 238.76 227.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "muRata"
+			(at 238.76 227.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "GRM188Z71C475KE21D"
 			(at 238.76 227.33 0)
 			(hide yes)
 			(show_name no)
@@ -4630,7 +4828,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 199.39 116.84 0)
 			(hide yes)
 			(show_name no)
@@ -4900,7 +5098,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 231.14 116.84 0)
 			(hide yes)
 			(show_name no)
@@ -5179,6 +5377,39 @@
 				)
 			)
 		)
+		(property "LCSC" "C144807"
+			(at 146.05 157.48 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "YAGEO"
+			(at 146.05 157.48 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "AC0402FR-0710KL"
+			(at 146.05 157.48 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "f76f3f72-9eb1-48ef-b7e5-81b25b2060d7")
 		)
@@ -5260,6 +5491,39 @@
 				)
 			)
 		)
+		(property "LCSC" "C144807"
+			(at 161.29 90.17 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "YAGEO"
+			(at 161.29 90.17 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "AC0402FR-0710KL"
+			(at 161.29 90.17 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "76f14e20-f869-47bd-8191-f3eea82c136f")
 		)
@@ -5330,7 +5594,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 231.14 50.8 0)
 			(hide yes)
 			(show_name no)
@@ -5523,7 +5787,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 231.14 189.23 0)
 			(hide yes)
 			(show_name no)
@@ -6059,7 +6323,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 199.39 189.23 0)
 			(hide yes)
 			(show_name no)
@@ -6845,6 +7109,39 @@
 				)
 			)
 		)
+		(property "LCSC" "C144807"
+			(at 146.05 170.18 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "YAGEO"
+			(at 146.05 170.18 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "AC0402FR-0710KL"
+			(at 146.05 170.18 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "a2591135-fb7e-4665-804f-f0c17fd3e761")
 		)
@@ -7082,6 +7379,39 @@
 				)
 			)
 		)
+		(property "LCSC" "C144807"
+			(at 290.83 212.09 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "YAGEO"
+			(at 290.83 212.09 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "AC0402FR-0710KL"
+			(at 290.83 212.09 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "ff30f7e6-fa84-4004-80ed-2e9d92136b8b")
 		)
@@ -7119,7 +7449,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "5k"
+		(property "Value" "5k1"
 			(at 118.364 57.404 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7153,6 +7483,39 @@
 			)
 		)
 		(property "Description" "Resistor"
+			(at 116.84 55.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C105872"
+			(at 116.84 55.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "YAGEO"
+			(at 116.84 55.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "RC0402FR-075K1L"
 			(at 116.84 55.88 0)
 			(hide yes)
 			(show_name no)
@@ -7311,6 +7674,39 @@
 			)
 		)
 		(property "Description" "Resistor"
+			(at 161.29 102.87 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C144807"
+			(at 161.29 102.87 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "YAGEO"
+			(at 161.29 102.87 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "AC0402FR-0710KL"
 			(at 161.29 102.87 0)
 			(hide yes)
 			(show_name no)

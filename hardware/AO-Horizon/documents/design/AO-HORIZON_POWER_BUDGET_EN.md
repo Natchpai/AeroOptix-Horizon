@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.25
+**Revision:** 0.26
 **Updated:** 2026-11-19
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012), the 5 V input is a TPS2121 power mux with a 1.5 A limit (DEC-029, DEC-030) and the `+3V3A` LDO is TPS73533DRBR (DEC-027). No other rail, regulator or protection part is approved. Not a verification record.
-**Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006 (closed), OPEN-007, OPEN-011, OPEN-021, OPEN-024 (closed), OPEN-025, OPEN-028. Decisions: DEC-007, DEC-010, DEC-011, DEC-012, DEC-018, DEC-019, DEC-053, DEC-054, DEC-025, DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-039, DEC-040, DEC-043, DEC-044, DEC-048. Checklist task: P0-017.
+**Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006 (closed), OPEN-007, OPEN-011, OPEN-021, OPEN-024 (closed), OPEN-025, OPEN-028. Decisions: DEC-007, DEC-010, DEC-011, DEC-012, DEC-018, DEC-019, DEC-053, DEC-054, DEC-025, DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-039, DEC-040, DEC-043, DEC-044, DEC-048, DEC-055. Checklist task: P0-017.
 **Decision owner:** Hardware
 
 Single record for rail loads, rail tolerances, brownout thresholds and power protection requirements.
@@ -25,7 +25,7 @@ Fetches to st.com, invensense.tdk.com, te.com and en.benewake.com failed on 2026
 | Item | Value | Source | Label |
 | ---- | ----- | ------ | ----- |
 | Board input (PWR-010) | 4.5 / 5 / 5.5 V min/nom/max, ±10 %, source capacity 2 A | Spec, DEC-007 | `VERIFIED` (requirement) |
-| Servo supply (PWR-011) | 6 V nominal, min/max TBD; 10 A continuous, 15 A instantaneous (UBEC-10A reference, not an approved part). UBEC into a board-mount XT30, 8 headers on a shared 6 V bus (DEC-019) | Spec, DEC-007, DEC-019 | `VERIFIED` (requirement) |
+| Servo supply (PWR-011) | 6 V nominal, 7.4 V maximum (servo rating limit: DS3235 5 to 7.4 V, C507 3.5 to 8.4 V), min TBD; 10 A continuous, 15 A instantaneous (UBEC-10A reference, not an approved part). UBEC into a board-mount XT30, 8 headers on a shared 6 V bus (DEC-019) | Spec, DEC-007, DEC-019 | `VERIFIED` (requirement) |
 
 ## 2. Candidate power tree
 
@@ -134,7 +134,7 @@ With the loads in section 3 (SiK radio 100, FS-iA6B 50 placeholder, GPS 100, MS4
 | 5 V input | 5 V | 4.5 V | 5.5 V | TBD | TBD | `VERIFIED` (PWR-010) for min/max |
 | 3.3 V | 3.3 V | TBD | TBD, at most 3.6 V | TBD | TBD | `TBD` |
 | 3.3 V_IMU | 3.3 V | TBD | TBD, at most 3.6 V | TBD | TBD | `TBD` |
-| 6 V servo | 6 V | TBD | TBD | TBD | TBD | `TBD` |
+| 6 V servo | 6 V | TBD | 7.4 V (servo rating, PWR-011) | TBD | TBD | `VERIFIED` (PWR-011) for max |
 
 Known upper bounds for the 3.3 V rails:
 - ICM-45686 VDD and VDDIO max 3.6 V recommended, 4 V absolute maximum (IMU rec, `NOT_VERIFIED`).
@@ -153,7 +153,7 @@ Known upper bounds for the 3.3 V rails:
 | 5 V input undervoltage detect | TBD (does the board monitor 5 V?) | Not defined | `TBD` |
 | 5 V power mux input UV (U101) | Rising 2.5 / 2.65 / 2.8 V, falling 2.4 / 2.55 / 2.7 V | TI mux, Electrical Characteristics | `VERIFIED` |
 | 5 V source priority (U101 PR1, CP2; DEC-031 to DEC-034) | XCOMP (R105 fitted, DEC-033): to USB at 3.78 / 3.98 / 4.18 V for `VBUS` 4.75 / 5.0 / 5.25 V; worst case 4.44 V at `VBUS` 5.25 V with 1 % resistors and the 40 mV comparator offset, below the 4.5 V minimum (DEC-034). VREF mode (R105 removed): to USB at 3.39 / 3.56 / 3.73 V, back at 3.45 / 3.63 / 3.76 V. Divider values in the spec DEC rows; method in the power mux notes | TI mux equations 5 and 12 form, VREF (spec 4.7) | `ESTIMATED` |
-| 5 V input overvoltage (U101 OV1, OV2; DEC-036) | 5.98 V typ, 5.60 to 6.31 V with 1 % resistors; the channel turns off, back on below 5.87 V typ. `+5V` stays below 5.5 V in normal operation (PWR-015) | TI mux 10.2.4.2, equation 6, VREF rising and falling (spec 4.7) | `ESTIMATED` (VREF values `VERIFIED`) |
+| 5 V input overvoltage (U101 OV1, OV2; DEC-036, DEC-055) | 5.88 V typ, 5.51 to 6.21 V with 1 % resistors and the 5.1 kΩ bottom resistors (DEC-055; the 14 mV margin above 5.5 V is accepted, OPEN-036 closed); the channel turns off, back on below 5.77 V typ. `+5V` stays below 5.5 V in normal operation (PWR-015) | TI mux 10.2.4.2, equation 6, VREF rising and falling (spec 4.7) | `ESTIMATED` (VREF values `VERIFIED`) |
 | 3.3 V buck soft-start (U102) | 10 nF SS/TR (DEC-028): about 5 ms | TI SLVSAJ0F equation 10 (spec 4.7) | `ESTIMATED` |
 | 3.3 V buck PG (U102) | Open drain, pulled up by R113 100 kΩ to `+3V3`; local net `3V3_PG` to U103 EN through R115 (DEC-039); reaches no MCU pin and no sheet pin | Saved schematic; spec 4.3, OPEN-026 | `VERIFIED` (as drawn) |
 | 6 V servo rail monitor | Read by the F100 through the 3:1 divider (IF-050); threshold TBD | px4io-v2 | `TBD` |
@@ -165,7 +165,7 @@ All `TBD`. Items to decide:
 - [x] 5 V power mux values (P2-020), TI mux, `VERIFIED` unless marked: TPS2121, 80.6 kΩ ILIM gives 1.0 / 1.5 / 2.0 A (DEC-030); OV trip per DEC-036 (section 6); IN and OUT 24 V absolute maximum; input UV 2.65 V typ; 10 nF SS gives about 0.65 ms ramp and about 0.47 A inrush into about 60 µF (`ESTIMATED`, outside TI Table 9-1); fast-trip at about 2.4 × ILM, then off for about 25 ms; thermal shutdown auto-recovers. Priority and switchover: DEC-031 to DEC-034.
 - [ ] 5 V input, still open: reverse polarity; D101 SZSMF5.0A TVS: breakdown voltage 6.4 V, fine at the 5.5 V input (human owner, 2026-11-03); hot-plug peak on the PM02D cable (TI mux section 11 suggests a large capacitance near the input for long cables; since 2026-11-03 IN1 has 2 × 10 µF and a 47 µF 10 V tantalum with 0.25 Ω ESR, DEC-037; bench check P4-013).
 - [x] USB VBUS and PM02D 5 V OR-ing: TPS2121 power mux (DEC-029), reverse current blocking on both channels (TI mux 9.3.6, `VERIFIED`). Source priority: PM02D first, XCOMP switchover (DEC-031 to DEC-034).
-- [ ] 6 V servo bus on the board (DEC-019): board-mount XT30 input, rating against 10 A continuous and 15 A peak `NOT_VERIFIED`; 6 V and servo GND copper; servo GND joined to logic GND at one point away from the sensors; no back-feed from the 6 V bus into the 5 V side (OPEN-021).
+- [ ] 6 V servo bus on the board (DEC-019): board-mount XT30 input, rating against 10 A continuous and 15 A peak `NOT_VERIFIED`; 6 V and servo GND copper; servo GND joined to logic GND at one point away from the sensors; no back-feed from the 6 V bus into the 5 V side (OPEN-021). Drawn (2026-11-19 11:38 save, not decided): CN804 XT30PW-M, C801 and C802 10 µF, C803 47 µF tantalum and D807 SMF7.0A TVS on `+6V` (spec 4.2); D807 clamping voltage against the 7.4 V servo limit and the C803 voltage rating `NOT_VERIFIED`.
 - [ ] 6 V servo rail: overcurrent behavior, pulse duration of the 15 A rating, bulk capacitance.
 - [x] USB-only power: the bench USB-C port shall supply more than 1 A; brown-out of the external devices on a weaker port is accepted (DEC-038, 2026-11-03). The power mux 1.0 A minimum limit also applies on USB. USB-C CC resistors and the current advertisement are open in P1-006.
 - [ ] External 5 V connectors: short-circuit protection per connector or per group.
