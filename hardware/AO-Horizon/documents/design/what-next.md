@@ -12,10 +12,7 @@ Spec rev 0.55 and the 16:03 save are committed and pushed (`bdb398d`, `fe46bcf`)
 - [ ] Re-run ERC after the next schematic change (P2-022); last clean run on the 16:03 save.
 - [ ] CN706 RC IN connector: decide with your partner (OPEN-034 item 6a): keep the JST-GH (pin 1 `+5V`, 2 signal) and amend DEC-053, or go back to the 2.54 mm servo header with PPM on pin 1 (section 7, P2-023).
 - [ ] Next review: the MCU, sensor and USB sheets (P2-022).
-- [ ] Datasheet checks (NotebookLM source or your values; a new source needs your approval):
-  - XT30PW-M current rating against the 13.2 A all-stall estimate (OPEN-021).
-  - D807 SMF7.5A (MDD, DEC-059): breakdown voltage and leakage at 7.4 V (PWR-011, OPEN-021).
-  - D706 PESD4USB3BBTBR-QZ standoff against the 0~5 V buzzer line (OPEN-023).
+- [ ] D706 on CN705 pin 9: the 5 V buzzer line exceeds the PESD4USB3BBTBR-Q ±3.3 V VRWM limit (MAJOR). Pick a 5 V rated channel or part (OPEN-023, P2-015).
 - [ ] Decide the drawn blocks (spec 4.2), then ask Claude to record them:
   - Peripheral connectors CN701 to CN705 (OPEN-023).
   - Actuator headers CN801 to CN803 and the XT30 input CN804 with its bulk capacitors and TVS (OPEN-021, OPEN-031, P2-016, P2-018).
@@ -62,7 +59,7 @@ Pins in the pin allocation (P1-001). Current state: spec 4.2 "Schematic state" (
 H743 values below are from ST DS12110 Rev 11 via NotebookLM (2026-11-12).
 
 - [ ] Human review of the pin choices (P1-001).
-- [ ] 16 MHz clock: CMOS oscillator U202 (DEC-044), part decided (DEC-048). Check its data against the HSE external-clock limits (OPEN-028). Firmware side: P1-017.
+- [ ] 16 MHz clock: CMOS oscillator U202 (DEC-044), part decided (DEC-048). Data meets the H743 HSE bypass limits (CMP-010). Firmware side: P1-017.
 - [ ] Reset (DEC-046: one shared `RESET_B` for H743 and F100 NRST, one button): check the drawn button B901 PTS815SJM250SMTRLFS (LCSC C2689510) and its `B` reference prefix. Check in NotebookLM whether an internal reset (IWDG, software, debugger) drives NRST low on the H743 and F100; if so, an H743 reset also resets the F100 (OPEN-026, SAF-001). `3V3_PG` stays local (DEC-039). Neither debug connector (CN602, CN603) carries NRST (OPEN-029).
 - [ ] BOOT0: the DNP pull-up gives selection by rework only. Decide if that meets FUN-006 and TST-003 ("selectable and observable"), or add a pad, jumper or button (P1-007).
 - [ ] Net names (OPEN-032): `OSC_*` names and the spare order are decided (DEC-064); left: info `SS{slash}TR`, `3V3_LED_A`, `USB_FS_VBUS` carried twice. Then run ERC.
@@ -79,7 +76,7 @@ H743 values below are from ST DS12110 Rev 11 via NotebookLM (2026-11-12).
 
 Pins from `px4/io-v2` (P1-001). Current state: spec 4.2 "Schematic state".
 
-- [ ] 24 MHz clock: CMOS oscillator U302 (DEC-044), part decided (DEC-048). Check its data against the HSE external-clock limits (OPEN-028). Custom px4io build: P1-017.
+- [ ] 24 MHz clock: CMOS oscillator U302 (DEC-044), part decided (DEC-048). Data meets the F100 HSE bypass limits, with zero duty-cycle margin (CMP-010, OPEN-028). Custom px4io build: P1-017.
 - [ ] VDDA (`F1_VDDA`): 22 Ω from `+3V3` with C307 2.2 µF and 100 nF (spec 4.2). Confirm the value against Fig. 35 (Fig. 35 shows 1 µF // 10 nF; DocID16455 Rev 9 via NotebookLM, `VERIFIED`). Table 8 says VDDA "must be the same potential as VDD" (`VERIFIED`); the note allowing up to 300 mV of difference is `NOT_VERIFIED` (not in the cited text). Expected drop about 20 mV with the ADC on (0.8 mA, `ESTIMATED`).
 - [ ] px4io LEDs (blue PB14, amber PB15, green PA11): pick the resistors.
 - [ ] PA10 and PB11: weak pull-up to 3.3 V; pick the value.
@@ -95,9 +92,9 @@ Parts decided (DEC-008, DEC-010, DEC-011). Current state: spec 4.2 "Schematic st
 - [ ] Power-up order (OPEN-011): with DEC-039, VDDIO (`+3V3`) comes up before VDD (`+3V3A`). Check in NotebookLM that each sensor allows this (ICM-45686, ICP-20100, BMP581, IST8310).
 - [ ] `+3V3A` load: add ICP-20100, BMP581 and IST8310 VDD currents to the power budget (3.3 V_IMU rows are `TBD`).
 - [ ] IST8310 AVDD on the LDO: check the TPS73533DRBR output tolerance against the 3.6 V absolute maximum (OPEN-004).
-- [ ] BMP581: Fig. 32 pad sizes and the pin 1 corner (Fig. 29, 30) on `Bosch_LGA-10_2x2mm_P0.5mm_LayoutBorder3x2y`; no solder mask under it, 20 µm clearance (DS004-13 §8.2) (P2-012).
+- [x] BMP581 and IST8310 footprints confirmed by you on 2026-11-19 (spec 0.62), with a 30 µm solder mask margin on purpose (P2-012).
 - [ ] ICP-20100: land pattern (AN-000140) and pin 1 corner (P2-012).
-- [ ] IST8310: check the stock `LGA-16_3x3mm_P0.5mm` footprint and pin 1 corner against the package drawing (P2-012).
+- [ ] ICM-45686: pad size and pin 1 corner against TDK AN-000393 (P2-012).
 - [ ] BMP384 fallback: compare footprint and pinout with the BMP581 (P1-015, OPEN-004). Address per SEN-002.
 - [ ] ICM-45686 pin 9 unused: drawn with a no-connect flag. Confirm NC or tie to VDDIO in the datasheet (the IMU record note is `NOT_VERIFIED`).
 - [ ] SPI chip-selects (P1-003); I2C2 pull-ups are covered above (P1-003).
@@ -107,13 +104,13 @@ Parts decided (DEC-008, DEC-010, DEC-011). Current state: spec 4.2 "Schematic st
 
 Drawn on `conn-peripherals` and `conn-actuator`, not decided (spec 4.2). Actuator headers per DEC-051 (CN802 ESC headers without the + pin; CN801, CN803 on the 6 V bus): keep them apart at layout (IF-030 to IF-043, P2-018, OPEN-031). RC IN drawn (CN706, D707, R715 on `conn-peripherals`; U303, R310, R311, C311 on `mcu-io`); U303, the 22 Ω (R714, now R715) and D707 decided (DEC-057). I2C4 pins PD12 and PD13 are FT (OPEN-023).
 
-- [ ] Connector pinouts against the Pixhawk standard DS-009: Telemetry 1 and 2, GPS1 10-pin, airspeed, TF-Luna (OPEN-023, P2-015). Signal levels done: all 3.3 V, GPS1 pin 9 `BUZZER-` 0~5 V (Holybro Pixhawk 6X page).
+- [ ] I2C4 pull-ups: DS-009 asks for 1.5 kΩ on the autopilot; R705 and R706 are 5.1 kΩ. Decide (OPEN-023, P2-015). Pin order of CN701 to CN703 and CN705 matches DS-009 (2026-11-19).
 - [ ] CN706 against DEC-053 (OPEN-034 item 6a, P2-023): JST-GH 1.25 mm with pin 1 `+5V` as drawn, against the 2.54 mm servo header with PPM on pin 1. You decide with your partner later.
 - [ ] RC IN part data, only if you want evidence for DEC-057 (NotebookLM source needs your approval, or your values): U303 5.5 V input tolerance and I<sub>off</sub>; D707 working voltage against a 5 V PPM high (OPEN-034).
-- [ ] PWM pull-downs: pick the value (P2-018, OPEN-031; no DShot since DEC-050).
-- [ ] Spare outputs PE9, PD14, PD15 (SPARE1 to SPARE3, DEC-064): routed to `conn-peripherals` through `{SPARE_TIM}` (12:49 save); pads not drawn.
+- [ ] PWM pull-downs: pick the value for all 15 lines, spares included (P2-018, OPEN-031, DEC-069; no DShot since DEC-050).
+- [ ] Spare outputs PE9, PD14, PD15 (SPARE1 to SPARE3, DEC-064): routed to `conn-peripherals` through `{SPARE_TIM}` (12:49 save). Draw the 4-pad row with GND, 22 Ω series and pull-downs (DEC-069, P2-018); pick the pad footprint.
 - [ ] PM02D monitor chip and address: asked in the integration questions parts table (P0-022; pin allocation F-09).
-- [ ] CN101 CLIK-Mate pin order (1-2 5 V, 3 SCL, 4 SDA, 5-6 GND) against the PM02D cable and DS-009 (OPEN-023).
+- [ ] CN101 CLIK-Mate pin order (1-2 5 V, 3 SCL, 4 SDA, 5-6 GND) against the PM02D cable (DS-009 has no digital power port; OPEN-023).
 
 ## 8. Zone Z7: PCB and mechanical
 
