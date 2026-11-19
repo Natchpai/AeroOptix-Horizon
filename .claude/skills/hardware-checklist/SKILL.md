@@ -24,7 +24,7 @@ Human engineers keep authority over decisions, approvals, and gate closure.
   - requirement IDs with no task
   - tasks with no requirement or reason
   - `DONE` rows without evidence
-  - open items without an owner or gate
+  - open items without an owner, or without an active checklist task (not `DONE` or `N/A`)
   - rows that conflict with the specification
   - status cells that do not use the defined task states
   - open-item IDs that do not match the specification
@@ -39,7 +39,7 @@ Report ID coverage and topic coverage separately. ID coverage is a script or exa
    |---|---|
    | Spec requirement IDs linked from the checklist | N of M |
    | Spec decision IDs linked | N of M |
-   | Spec open-item IDs linked | N of M |
+   | Open spec items that name an active checklist task | N of M |
    | Task rows with an owner | N of M |
    | `DONE` rows with a named evidence record | N of M |
 
@@ -62,7 +62,7 @@ Report ID coverage and topic coverage separately. ID coverage is a script or exa
 5. **Owner.** Every row has an owner role (Human owner, Hardware, Software, Fabricator, and so on). Approval and gate-closure rows are owned by the human.
 6. **Evidence required.** Say what record closes the row: a table, a log, a review, a measurement. Be specific. Do not invent results.
 7. **Deferred work.** Mark non-hardware or later work `DEFERRED` and say who owns it. Say if it does not block the gate.
-8. **Open items.** Keep one short register that points to the specification's open-item IDs. Do not copy their descriptions.
+8. **Open items.** The specification's open-item table is the register. Each open row there names its owner and the checklist task that closes it. The checklist does not keep a second register: one line that points to the spec section is enough. A new open item that no task covers gets a new task. If the specification has no open-item table, keep one short register in the checklist that points to the spec's open-item IDs, without copying their descriptions.
 9. **Unknowns.** Use `TBD`. Do not guess owners, dates, or evidence.
 
 ## Keep it short
@@ -71,7 +71,8 @@ Report ID coverage and topic coverage separately. ID coverage is a script or exa
 - One task per row. Keep the task to one sentence.
 - Table format: pad the first column of every table to the width of its longest cell (header included), so the source lines up. Match the dashes in the separator row to that width. Leave the other columns unpadded.
 - Use tables. Remove a column only if it is empty in every row.
-- Do not repeat the same fact in the checkpoint, the gate rows, and the register. State it once.
+- Do not repeat the same fact in the checkpoint, the gate rows, and the specification. State it once.
+- Merge tasks that cover the same work. Keep a retired ID as a one-line `N/A` row that names the task it moved to, so links from other records still work. Never reuse it.
 - Prefer a few specific tasks over many vague ones.
 
 ## Writing style

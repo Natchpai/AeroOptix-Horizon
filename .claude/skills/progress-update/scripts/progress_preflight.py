@@ -5,7 +5,8 @@ Read-only. Python 3.10+ standard library only. Works on any git repo with a
 KiCad 6 or later project. Covers the steps whose inputs decide the output:
 baseline since a ref, schematic part checks, library symbol, footprint and 3D
 checks, an optional datasheet pin-text check, and doc checks (em dashes, spec
-IDs, tracker rows, relative links). Judgement (what changed, DECISION vs
+IDs, tracker rows or, with no tracker table, a checklist task named in each
+open spec row, relative links). Judgement (what changed, DECISION vs
 DRAWN, doc text) stays with the model. Connectivity is out of scope: use
 sch-inspect for nets and power sources.
 
@@ -340,8 +341,30 @@ def check_docs(repo: Path, since: str, mds: list[str], untracked: set, spec: Pat
             no_tracker = [o for o in opens if not any(re.search(rf"\b{o}\b", r) for r in rows)]
             for o in no_tracker:
                 finds.append(["MINOR", "no_tracker_row", o, f"open item has no checklist {tracker_prefix} row"])
+        elif spec and spec.exists():
+            # No tracker table: the spec's open-item table is the register, and
+            # each open row must name a checklist task (first-column ID there).
+            cl_text = checklist.read_text(encoding="utf-8")
+            # Only active tasks count: a DONE or N/A (merged, retired) row closes nothing.
+            tasks = set()
+            for m in re.finditer(r"(?m)^\|\s*([A-Z][A-Z0-9]*-\d+)\s*\|(.*)$", cl_text):
+                if not {c.strip() for c in m.group(2).split("|")} & {"DONE", "N/A"}:
+                    tasks.add(m.group(1))
+            open_rows = 0
+            for m in re.finditer(rf"(?m)^\|\s*({re.escape(open_prefix)}-\d+)\s*\|(.*)$",
+                                 spec.read_text(encoding="utf-8")):
+                cells = [c.strip() for c in m.group(2).rstrip().rstrip("|").split("|")]
+                if cells and (cells[0].startswith("Closed") or cells[-1].startswith("Closed")):
+                    continue
+                open_rows += 1
+                if not any(re.search(rf"\b{re.escape(t)}\b", m.group(2)) for t in tasks):
+                    no_tracker.append(m.group(1))
+                    finds.append(["MINOR", "open_without_task", m.group(1),
+                                  "open item names no checklist task, and the checklist has no "
+                                  f"{tracker_prefix} table"])
+            tracker = f"no {tracker_prefix} table; {open_rows} open spec rows checked for a checklist task"
         else:
-            tracker = f"skipped: no {tracker_prefix}-n rows in the checklist"
+            tracker = f"skipped: no {tracker_prefix}-n rows in the checklist and no spec"
     return {"md_files": len(mds), "em_dash_lines": em, "spec_ids": len(defined), "id_prefixes": prefixes,
             "undefined_ids": len(undefined), "broken_links": len(broken), "tracker_check": tracker,
             "open_without_tracker": no_tracker}

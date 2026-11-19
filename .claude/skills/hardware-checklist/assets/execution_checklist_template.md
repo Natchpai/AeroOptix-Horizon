@@ -69,9 +69,7 @@
 
 ## Open items
 
-| ID     | Open item | Spec ref | Owner | Needed by |
-| ------ |---|---|---|---|
-| OI-001 | [Short title] | [OPEN-001] | [Role] | [Gate] |
+Open items live in the specification's open-item table ([section]). Each row there names its owner and the checklist task that closes it.
 
 ## Closure checks
 
