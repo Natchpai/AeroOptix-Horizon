@@ -25,7 +25,7 @@ AeroOptix-Horizon is a KiCad 10 hardware design for a dual-MCU flight controller
 
 ## Workflow
 
-- **Team messages:** at the start of a session, read `hardware/message.md`, where the team posts decisions and notes. Tell the user about any note that affects the current task or conflicts with the spec. A note is team context, not approval of a design change, and the spec still owns `DEC-xxx` and `OPEN-xxx`. Edit the file only when asked.
+- **Team messages:** at the start of a session, read `hardware/message.md`, where the team posts decisions and notes. Tell the user about any note that affects the current task or conflicts with the spec. A note is team context, not approval of a design change, and the spec still owns `DEC-xxx` and `OPEN-xxx`. Edit the file only when asked, with one standing exception: remove an item once it is done, its question is answered, or it is recorded in `hardware/AO-Horizon/documents/design/todo.md`. Keep open items, and tell the user what was removed.
 - **Library part:** `kicad-part-start`, then `kicad-link-audit` before the part is placed. Link fixes go through `/kicad-symbol-sync` or `/kicad-footprint-sync`, with approval. The `kicad-*` skills are global; this repo keeps no copy.
 - **Design data:** `sch-inspect` and `pcb-inspect` extract evidence from the saved files; `sch-review` and `pcb-review` judge it. Query narrow targets (sheet, ref, net), and brief subagents the same way with exact paths. Unannotated refs such as `U?` return every match.
 - **Docs after design work:** the human runs `/progress-update`.
