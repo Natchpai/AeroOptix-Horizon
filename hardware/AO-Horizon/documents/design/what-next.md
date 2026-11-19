@@ -5,11 +5,10 @@
 
 The specification and the execution checklist stay the source of truth. This list only points to their IDs.
 
-## 0. Next up (2026-11-19, after commit `dbe3c61`)
+## 0. Next up (2026-11-19, after commit `f594e29`)
 
-Spec rev 0.53 is committed and pushed (DEC-056, DEC-057, RC IN drawn). The KiCad sheets and new library parts of the 15:25 save are not committed yet. Review findings with actions are in `todo.md`.
+Spec rev 0.53, the 15:25 schematic and library changes (`1993716`) and the 80 × 80 mm PCB working area (`f594e29`) are committed and pushed. Spec rev 0.54 (PCB working area recorded, no new decisions) is not committed yet. Review findings with actions are in `todo.md`.
 
-- [ ] Commit the 15:25 schematic and library changes (KiCad sheets, `sym-lib-table`, `SP3031-01E` symbol, SN74LVC1G34, Conn_01x03, JST-GH SM03B), after `/kicad-link-audit`.
 - [ ] Re-run ERC: last run on the 12:49 save; since then Q701, R312, RC IN (CN706, D707, R714, U303) and the D706 changes (P2-022).
 - [ ] CN706 RC IN connector: decide with your partner (OPEN-034 item 6a): keep the JST-GH (pin 1 `+5V`, 2 signal) and amend DEC-053, or go back to the 2.54 mm servo header with PPM on pin 1 (section 7, P2-023).
 - [ ] C803 and C102 10 V tantalum (OPEN-021): see `todo.md`.
@@ -41,7 +40,7 @@ The board is split into design zones. Each zone below has its own to-do list.
 | Z4 F100 IO MCU (px4io) | `mcu-io.kicad_sch` | In capture (spec 4.2 "Schematic state"); U301, U302 and passives annotated | P1-002, P1-014, P2-014, P2-022, OPEN-026, OPEN-028, OPEN-029 |
 | Z5 Sensors (2 × IMU, 2 × barometer, magnetometer) | `sensor-imu.kicad_sch`, `sensor-navigation.kicad_sch` | All five sensors drawn (U401, U402, U501, U502, U503; spec 4.2); rails per DEC-043; IST8310 at 0x0C (DEC-047) | DEC-043, OPEN-011, DEC-047, SEN-002, P1-003, P1-004, OPEN-004, OPEN-013, OPEN-019, P2-012 |
 | Z6 External connectors and outputs (telemetry, GPS, I2C, ESC and servo headers, spare outputs) | `conn-peripherals.kicad_sch` (CN701 to CN706), `conn-actuator.kicad_sch` (CN801 to CN804) | Drawn, not decided (spec 4.2); pinouts not checked; RC IN parts decided (DEC-056, DEC-057), CN706 connector open | OPEN-018, OPEN-023, OPEN-031, OPEN-034, OPEN-037, P2-013, P2-015, P2-018, P2-023 |
-| Z7 PCB and mechanical | `AO-Horizon.kicad_pcb` | 27 × 29 mm placeholder outline, no footprints | OPEN-009, P3-001 |
+| Z7 PCB and mechanical | `AO-Horizon.kicad_pcb` | 80 × 80 mm working area on `Edge.Cuts` (not the outline), no footprints | OPEN-009, P3-001 |
 
 ## 1. Git
 
@@ -126,7 +125,7 @@ Drawn on `conn-peripherals` and `conn-actuator`, not decided (spec 4.2). Actuato
 
 ## 8. Zone Z7: PCB and mechanical
 
-- [ ] Board outline: the saved PCB has a 27 × 29 mm placeholder rectangle (drawn, not decided). Pick the outline under MEC-001, cable entry sides and dampers at placement, then send them to the CAD team (OPEN-009, MEC-002 to MEC-004).
+- [ ] Board outline: the saved PCB has an 80 × 80 mm working-area rectangle on `Edge.Cuts`, not the outline. Pick the outline under MEC-001, cable entry sides and dampers at placement, then send them to the CAD team (OPEN-009, MEC-002 to MEC-004).
 - [ ] Forward arrow on the silkscreen; USB-C and microSD on adjacent edges, reachable with the canopy open, with the H743 debug connector (MEC-003). M3, 3.2 mm holes, soft mount.
 
 ## 9. Waiting on the team
