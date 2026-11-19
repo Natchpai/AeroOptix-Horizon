@@ -28,13 +28,13 @@ export const places: Record<Level, Record<string, Place>> = {
   system: {
     fc: { x: -100, y: 60, w: 480, h: 580 },
 
-    // power in / out ports, left of the FC
+    // power in / out ports, left of the FC; the ESC headers face the ESC
     'o-pm': { x: -460, y: 200, w: 240 },
     'o-xt30': { x: -460, y: 400, w: 240 },
-    'o-servo': { x: -460, y: 540, w: 240 },
+    'o-esc': { x: -460, y: 500, w: 240 },
+    'o-servo': { x: -460, y: 600, w: 240 },
 
-    // normal connectors, right of the FC, 92 apart; ESC headers last, with
-    // their line going down
+    // normal connectors, right of the FC, 92 apart
     'o-tel1': { x: 480, y: 0, w: 240 },
     'o-tel2': { x: 480, y: 92, w: 240 },
     'o-rcin': { x: 480, y: 184, w: 240 },
@@ -44,13 +44,13 @@ export const places: Record<Level, Record<string, Place>> = {
     'o-usb': { x: 480, y: 552, w: 240 },
     'o-sd': { x: 480, y: 644, w: 240 },
     'o-dbg': { x: 480, y: 736, w: 240 },
-    'o-esc': { x: 480, y: 828, w: 240 },
 
-    // power chain, left to right: battery, PM02D (battery down to the PDB),
-    // PDB (tall: UBEC at 430, ESC at 1112), UBEC into the XT30
+    // power chain, left to right: battery, PM02D (battery down to the ESC),
+    // 4in1 ESC (no PDB, DEC-054; UBEC on its pads at 430, ESC headers at
+    // 530), UBEC into the XT30
     battery: { x: -1540, y: 200 },
     pm02d: { x: -1180, y: 140, h: 180 },
-    pdb: { x: -1180, y: 380, h: 782 },
+    esc: { x: -1210, y: 380, w: 260, h: 200 },
     ubec: { x: -820, y: 400 },
 
     // devices, level with their ports, wide enough for their notes
@@ -64,10 +64,8 @@ export const places: Record<Level, Record<string, Place>> = {
     card: { x: 940, y: 644, w: 260 },
     probe: { x: 940, y: 736, w: 260 },
 
-    // actuators under their ports; the ESC line from the PDB runs under
-    // the servos
+    // servos under their port
     servos: { x: -490, y: 992, w: 300 },
-    esc: { x: 470, y: 1082, w: 260 },
   },
 
   // System (L1), in zones: on-board I/O on top, sensors and the I2C2 bus
@@ -135,16 +133,18 @@ export const places: Record<Level, Record<string, Place>> = {
     // +5V bar centre (560)
     'pw-usb': { x: 760, y: 350 },
     'pw-pmux': { x: 760, y: 530 },
-    'pw-pdb': { x: 760, y: 860, h: 200 },
+    // 4in1 ESC in the old PDB place (no PDB, DEC-054); the UBEC sits on
+    // its battery pads
+    'pw-esc': { x: 760, y: 860, w: 260, h: 200 },
 
     'pw-r5v': { x: 1140, y: 280, w: 120, h: 560 },
 
     'pw-buck': { x: 1440, y: 270 },
     'pw-ldo': { x: 1440, y: 470, w: 240, h: 180 },
-    'pw-ubec': { x: 1440, y: 880 },
+    'pw-ubec': { x: 1440, y: 930 },
 
     'pw-r3v3': { x: 1820, y: 130, w: 120, h: 340 },
-    'pw-xt30': { x: 1800, y: 880 },
+    'pw-xt30': { x: 1800, y: 930 },
 
     // loads wide enough for their part numbers in full
     'pw-h743': { x: 2120, y: 145, w: 300, h: 140 },
@@ -152,8 +152,7 @@ export const places: Record<Level, Record<string, Place>> = {
     'pw-baro-mag': { x: 2120, y: 485, w: 300 },
     'pw-imu': { x: 2120, y: 575, w: 300 },
     'pw-ports': { x: 2120, y: 790, w: 300 },
-    'pw-servos': { x: 2120, y: 880, w: 300 },
-    'pw-esc': { x: 2120, y: 980, w: 300 },
+    'pw-servos': { x: 2120, y: 930, w: 300 },
   },
 }
 
@@ -180,6 +179,7 @@ export const zones: Partial<Record<Level, Zone[]>> = {
         'fc',
         'o-pm',
         'o-xt30',
+        'o-esc',
         'o-servo',
         'o-tel1',
         'o-tel2',
@@ -190,13 +190,12 @@ export const zones: Partial<Record<Level, Zone[]>> = {
         'o-usb',
         'o-sd',
         'o-dbg',
-        'o-esc',
       ],
     },
     {
       id: 'z-out-pwr',
-      label: 'Out board: power',
-      blocks: ['battery', 'pm02d', 'pdb', 'ubec'],
+      label: 'Out board: power and ESC',
+      blocks: ['battery', 'pm02d', 'esc', 'ubec'],
     },
     {
       id: 'z-out-dev',
@@ -216,9 +215,9 @@ export const zones: Partial<Record<Level, Zone[]>> = {
     {
       id: 'z-out-act',
       label: 'Out board: actuators',
-      // centred: the servo and ESC lines pass the left and right ends
+      // centred: the servo lines pass the left end
       title: 'center',
-      blocks: ['servos', 'esc'],
+      blocks: ['servos'],
     },
   ],
   board: [
@@ -277,9 +276,9 @@ export const lineAt: Record<string, number> = {
   // Overview: PM02D to its port, two lines 28 apart, centred on both
   's-pm-fc-pwr': 216,
   's-pm-fc-i2c': 244,
-  // PDB right side: UBEC and ESC lines, centred on the PDB (771)
-  's-pdb-ubec': 430,
-  's-pdb-esc': 1112,
+  // ESC right side: UBEC and ESC header lines, centred on the ESC (480)
+  's-esc-ubec': 430,
+  's-fc-esc': 530,
   // servo headers to servos pair, centred on both (-340)
   's-fc-servo': -354,
   's-fc-servo-pwr': -326,
@@ -292,7 +291,7 @@ export const lineAt: Record<string, number> = {
   'b-safety': 1036,
   // Power view: lines that would otherwise sit at the middle of a partial
   // overlap
-  'pw-pm-pdb': 960,
+  'pw-pm-esc': 960,
   'pw-5v-buck': 300,
   'pw-5v-ports': 820,
   // F100 right side, four ends 200 apart centred on 1336: the safety line

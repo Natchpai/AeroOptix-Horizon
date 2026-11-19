@@ -1,6 +1,6 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.30
+**Revision:** 0.31
 **Updated:** 2026-11-19
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012), the 5 V input is a TPS2121 power mux with a 1.5 A limit (DEC-029, DEC-030) and the `+3V3A` LDO is TPS73533DRBR (DEC-027). No other rail, regulator or protection part is approved. Not a verification record.
 **Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006 (closed), OPEN-007, OPEN-011, OPEN-021, OPEN-024 (closed), OPEN-025, OPEN-028. Decisions: DEC-007, DEC-010, DEC-011, DEC-012, DEC-018, DEC-019, DEC-053, DEC-054, DEC-025, DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-039, DEC-040, DEC-043, DEC-044, DEC-048, DEC-055, DEC-058, DEC-059. Checklist task: P0-017.
@@ -32,9 +32,9 @@ Fetches to st.com, invensense.tdk.com, te.com and en.benewake.com failed on 2026
 From the spec diagram. Candidate only, not approved (spec PWR-013).
 
 ```text
-6S battery -> XT90-S -> PM02D -> CRIUS PDB v1.0
+6S battery -> XT90-S -> PM02D -> Tekko32 4in1 ESC battery pads (no PDB, DEC-054)
                            |            |
-                           |            +-> 6 V UBEC -> board XT30 -> on-board 6 V bus
+                           |            +-> 6 V UBEC (on the ESC pads) -> board XT30 -> on-board 6 V bus
                            |                             -> 8 servo headers (+ IF-050 sense)
                            +-> TPS2121 mux IN1, 1.5 A (DEC-029/030) -> 5 V bus -> 3.3 V (MCUs, sensor VDDIO)
                                                                   +-> +3V3A LDO -> 3.3 V_IMU (sensor VDD, DEC-043)
@@ -42,6 +42,7 @@ From the spec diagram. Candidate only, not approved (spec PWR-013).
 USB VBUS (bench) -> TPS2121 mux IN2 ----------------------------^
 ```
 
+- No PDB (spec 4.3, rev 0.58): the 6 V UBEC is soldered to the ESC battery pads (human owner, 2026-11-19).
 - `ASSUMED`: the 5 V input feeds the external connectors directly, and both 3.3 V rails come from the 5 V input.
 - 3.3 V_IMU is the `+3V3A` rail from its own LDO. It feeds the VDD pins of the 2 IMUs, both barometers and the IST8310 (AVDD); their VDDIO pins (IST8310 DVDD) stay on `+3V3` (DEC-043, human owner, 2026-11-12; replaces DEC-025). The LDO is TPS73533DRBR (DEC-027, 2026-10-31).
 - USB VBUS powers the board and all external 5 V ports on the bench without the battery (team; all ports: human owner, 2026-10-24). The TPS2121 power mux joins USB (IN2) and the PM02D (IN1) and blocks reverse current on both channels (TI mux 9.3.6, `VERIFIED`). The PR1 and CP2 dividers give the PM02D priority with the XCOMP fast switchover (DEC-031 to DEC-034); switch points in section 6.

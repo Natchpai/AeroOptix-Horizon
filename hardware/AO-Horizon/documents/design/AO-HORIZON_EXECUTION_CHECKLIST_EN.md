@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Execution Checklist
 
-**Revision:** 0.51
+**Revision:** 0.52
 **Updated:** 2026-11-19
 **Status:** Active execution tracker; not an approval or verification record
-**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.57
+**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.58
 
 Use the specification for confirmed requirements and decisions. This checklist records the sequence of work and the evidence needed to close each gate. Diagram content is reference material. User-confirmed requirements take precedence. All sensor parts are chosen (DEC-008, DEC-010, DEC-011); their lifecycle and sourcing risks are open.
 
@@ -46,7 +46,7 @@ Groups: P0.1 scope and operating intent (P0-001 to P0-003). P0.2 MCU and safety 
 | P0-013 | Confirm board and servo power requirements. Servo current passes through the board on an on-board 6 V bus with a board-mount XT30 UBEC input (DEC-019). Protection, transients, distribution, and component choice are open (see P0-017). | PWR-001, PWR-002, PWR-010, PWR-011 | Human | DONE | DEC-007, DEC-019 |
 | P0-014 | Confirm logical F100 functions: 8 servo outputs on the px4io-v2 timers, safety switch and LED, servo rail sense; ESCs on the H743 (DEC-014, DEC-016, DEC-018). Electrical implementation unverified. Amended 2026-11-16 by DEC-050 and DEC-051: the 8 F100 outputs carry the 4 ESCs (MAIN 1 to 4) and the 4 control surfaces (MAIN 5 to 8); the tilt servos moved to H743 TIM5 (AUX 1 to 4). Amended 2026-11-19 by DEC-053: the F100 also reads the RC PPM input on PA8 (IF-038). | IF-030 to IF-038, IF-049 to IF-051, FUN-003 | Human | DONE | DEC-014, DEC-016, DEC-018, DEC-053 |
 | P0-015 | Confirm maximum PCB envelope. Shape, mounting, connector orientation, and environment open for P3. | MEC-001 | Human | DONE | DEC-006 |
-| P0-016 | Select non-MCU parts: regulators, protection, connectors, PDB/UBEC, and interface ICs. Chosen: TPS62142RGTR buck (DEC-012), TPS2121 power mux (DEC-029, DEC-030), TPS73533DRBR `+3V3A` LDO (DEC-027). Passive MFR and MFR.P/N: the human owner chooses them later. The rest are open. | CMP-006 to CMP-009, OPEN-010, OPEN-011 | Human | IN_PROGRESS | DEC-012, DEC-027, DEC-029, DEC-030; part selection record for the remaining parts |
+| P0-016 | Select non-MCU parts: regulators, protection, connectors, UBEC, and interface ICs. Chosen: TPS62142RGTR buck (DEC-012), TPS2121 power mux (DEC-029, DEC-030), TPS73533DRBR `+3V3A` LDO (DEC-027). Passive MFR and MFR.P/N: the human owner chooses them later. The rest are open. | CMP-006 to CMP-009, OPEN-010, OPEN-011 | Human | IN_PROGRESS | DEC-012, DEC-027, DEC-029, DEC-030; part selection record for the remaining parts |
 | P0-017 | Define power budget, rail tolerances, brownout thresholds, and 5 V and 6 V protection and transient requirements. | PWR-012 to PWR-014, SAF-012 to SAF-014, OPEN-006, OPEN-007 | Hardware | OPEN | Power budget table and protection requirement record. Draft: [AO-HORIZON_POWER_BUDGET_EN.md](AO-HORIZON_POWER_BUDGET_EN.md) |
 | P0-018 | Define environmental limits: operating and storage temperature, vibration and shock, humidity, ingress, altitude, maintenance. | ENV-001 to ENV-004 | TBD | OPEN | Decision record with a verification method per limit |
 | P0-019 | Get team decisions on the spec rows that the pinmap review 0.2 answers change, then update the spec. Done 2026-10-24: applied in spec rev 0.11. | OPEN-016, OPEN-015, SAF-001, FUN-002, FUN-003 | Team | DONE | Returned decisions file rev 0.2; spec change note 0.11; commit `c9fe9ed` |
