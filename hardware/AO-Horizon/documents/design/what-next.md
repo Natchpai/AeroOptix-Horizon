@@ -5,12 +5,11 @@
 
 The specification and the execution checklist stay the source of truth. This list only points to their IDs.
 
-## 0. Next up (2026-11-19, after commit `db38177`)
+## 0. Next up (2026-11-19, after commit `fe46bcf`)
 
-Spec rev 0.54 is committed and pushed (`db38177`). Not committed yet: spec rev 0.55 (DEC-058 to DEC-060, OPEN-038 closed) and the 16:03 save of `conn-actuator` and `conn-peripherals` with the new footprint `0_Capacitor_SMD:CP_EIA-6032-28_Kemet-C`. Review findings with actions are in `todo.md`.
+Spec rev 0.55 and the 16:03 save are committed and pushed (`bdb398d`, `fe46bcf`); the link audit was clean. ERC on the 16:03 save is clean (human owner) and the `{ESC}`, `{SURFACE}`, `{AUX_TIM5}`, `{EXT_I2C4}` bus links are traced. Not committed yet: spec rev 0.56 and `ERC.rpt`. Review findings with actions are in `todo.md`.
 
-- [ ] Run `/kicad-link-audit` for the new `CP_EIA-6032-28_Kemet-C` footprint, then commit the 16:03 save.
-- [ ] Re-run ERC: last run on the 12:49 save; since then Q701, R312, RC IN (CN706, D707, U303), the D706 changes, and the 16:03 save (C803, D807, R711 0 Ω, R712 to R715 re-annotated) (P2-022).
+- [ ] Re-run ERC after the next schematic change (P2-022); last clean run on the 16:03 save.
 - [ ] CN706 RC IN connector: decide with your partner (OPEN-034 item 6a): keep the JST-GH (pin 1 `+5V`, 2 signal) and amend DEC-053, or go back to the 2.54 mm servo header with PPM on pin 1 (section 7, P2-023).
 - [ ] Next review: the MCU, sensor and USB sheets (P2-022).
 - [ ] Datasheet checks (NotebookLM source or your values; a new source needs your approval):
