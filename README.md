@@ -9,7 +9,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.63, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.64, 2026-11-19): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -93,7 +93,7 @@ State of the saved KiCad files (2026-11-19 16:03 save, commit `fe46bcf`). Sheets
 | Area | State |
 |---|---|
 | Power sheet | Drawn; human ERC and a `sch-review` of the 2026-11-03 save are under Verification; LCSC codes on all resistors; PR1, CP2 and OV bottom resistors 5.1 kΩ, OV trip 5.51 to 6.21 V (DEC-055); MFR fields open (P2-021). |
-| MCU sheets | In capture; one shared reset with one button decided, button drawn on `user-interface` and its part not checked (DEC-046, OPEN-026); board LEDs driven straight from the pins, active low, 220 Ω (DEC-067); oscillator parts decided and their data meets both MCU HSE bypass limits (DEC-048, CMP-010); LCSC codes open (OPEN-028); VREF+ tied to VDDA with 2.2 µF (DEC-049, DEC-063); all allocated pins labelled with DEC-052 net names and every sheet pin matching its label; a few INFO names open (OPEN-032); 22 Ω and 10 nF on the ADC inputs and the servo-rail divider on `conn-actuator` decided (DEC-066). |
+| MCU sheets | In capture; one shared reset with one button decided, button drawn on `user-interface` and its part not checked (DEC-046, OPEN-026); board LEDs driven straight from the pins, active low, 220 Ω (DEC-067); oscillator parts decided and their data meets both MCU HSE bypass limits (DEC-048, CMP-010); LCSC codes match the part numbers (CMP-010); two INFO clock margins on U302 open (OPEN-028); VREF+ tied to VDDA with 2.2 µF (DEC-049, DEC-063); all allocated pins labelled with DEC-052 net names and every sheet pin matching its label; a few INFO names open (OPEN-032); 22 Ω and 10 nF on the ADC inputs and the servo-rail divider on `conn-actuator` decided (DEC-066). |
 | Sensor sheets | In capture with all five sensors; IST8310 at 0x0C as strapped (DEC-047, closes OPEN-027). |
 | USB and debug sheet | In capture; parts drawn, not approved (OPEN-010); CN602 (H743) and CN603 (F100) JST-SH 6-pin in the Pixhawk Debug Mini order, no NRST, reset by B901 (DEC-065); USB-C CC resistors 5.1 kΩ. |
 | External connectors | Drawn, not decided (spec 4.2): `conn-peripherals` (TELEM 1 and 2, I2C4, rangefinder, GPS1) linked to the MCU sheets by sheet pins; `conn-actuator` with MAIN 1 to 4 ESC headers (no + pin), MAIN 5 to 8 and AUX 1 to 4 on `+6V`, the CN804 XT30 UBEC input, 6 V bulk capacitors, a TVS and the servo-rail divider. Decided 2026-11-19: C803 68 µF 16 V tantalum (DEC-058) and D807 SMF7.5A unidirectional TVS (DEC-059). RC IN drawn (2026-11-19 15:25 save): D707 SP3031-01ETG ESD, R715 22 Ω (R714 before the 16:03 save) and the U303 SN74LVC1G34DCKR buffer to F100 PA8 (DEC-056, DEC-057); the CN706 JST-GH connector and its pin order differ from DEC-053 and wait on a team decision (OPEN-034 item 6a, P2-023). Spare outputs: a 4-pad row with GND, 22 Ω series and pull-downs decided, not drawn (DEC-069). Pinouts open (OPEN-023). |

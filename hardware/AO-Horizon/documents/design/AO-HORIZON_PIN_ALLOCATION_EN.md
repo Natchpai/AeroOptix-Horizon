@@ -188,7 +188,7 @@ Closed findings stay listed with their outcome.
 - [ ] Human reviews the pin choices and the design choices in sections 1 and 2.
 - [ ] DMA streams and interrupt priorities (firmware, P2-005) and timer clock per peripheral (P1-001). TIM5 DMA and the SDMMC1 setup are in the software port (decisions file S2, S4).
 - [ ] P2-018: pull-down value on the PWM lines (F-16; no DShot since DEC-050).
-- [ ] OPEN-028: oscillator data meets the HSE bypass limits of both MCUs (spec CMP-010, 2026-11-19); the LCSC codes are left (P1-014).
+- [ ] OPEN-028: oscillator data meets the HSE bypass limits of both MCUs and the LCSC codes match the part numbers (spec CMP-010, 2026-11-19); two INFO margins on U302 are left (P1-014).
 - [ ] Pick the weak pull-up value on F100 PA10 and PB11, and the resistors for the px4io LEDs on PB14, PB15 and PA11.
 - [ ] Run the datasheet text match on the rows marked `not checked`, and on the section 2 rows against the F100 DS.
 - [ ] Human confirms critical pins (power, SWD, USB, BOOT0, oscillator inputs) against the datasheet pinout figures.

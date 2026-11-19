@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Execution Checklist
 
-**Revision:** 0.57
+**Revision:** 0.58
 **Updated:** 2026-11-19
 **Status:** Active execution tracker; not an approval or verification record
-**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.63
+**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.64
 
 Use the specification for confirmed requirements and decisions. This checklist records the sequence of work and the evidence needed to close each gate. Diagram content is reference material. User-confirmed requirements take precedence. All sensor parts are chosen (DEC-008, DEC-010, DEC-011); their lifecycle and sourcing risks are open.
 
@@ -74,7 +74,7 @@ Any candidate pin mapping stays labeled `CANDIDATE / NOT VERIFIED` until P1 evid
 | P1-011 | Check voltage domains, IO levels, pull states, reset states, and boot-time behavior. Merged into P2-009 (PWM pull-down in P2-018) on 2026-11-19. | OPEN-031 | Hardware | N/A | See P2-009 |
 | P1-012 | Review package pin availability, reserved pins and unused pins. Merged into P1-001 on 2026-11-19. | OPEN-001 | Hardware | N/A | See P1-001 |
 | P1-013 | Record mapping revision, reviewer, date, conflicts and resolutions. Merged into P1-001 on 2026-11-19. | OPEN-001 | TBD | N/A | See P1-001 |
-| P1-014 | Define clock sources, reset topology, watchdog use, and F100 boot behavior. Frequencies per DEC-017 (no LSE); CMOS oscillators, no crystals or load capacitors (DEC-044); HSE bypass in firmware (DEC-045, P1-017); F100 BOOT0 and BOOT1 pulled down; watchdogs per spec 4.4. Reset decided 2026-11-14: one shared NRST net with one reset button (DEC-046). Oscillator parts decided (DEC-048); oscillator data checked against both MCU HSE bypass limits 2026-11-19 (CMP-010). Open: confirm the drawn reset button part (B?) and check the ST internal-reset behavior (OPEN-026); the oscillator LCSC codes (OPEN-028). | Spec 4.4, DEC-017, DEC-044, DEC-045, DEC-046, DEC-048, OPEN-026, OPEN-028 | Hardware | IN_PROGRESS | Clock/reset/boot decision record |
+| P1-014 | Define clock sources, reset topology, watchdog use, and F100 boot behavior. Frequencies per DEC-017 (no LSE); CMOS oscillators, no crystals or load capacitors (DEC-044); HSE bypass in firmware (DEC-045, P1-017); F100 BOOT0 and BOOT1 pulled down; watchdogs per spec 4.4. Reset decided 2026-11-14: one shared NRST net with one reset button (DEC-046). Oscillator parts decided (DEC-048); oscillator data checked against both MCU HSE bypass limits and the LCSC codes against the part numbers 2026-11-19 (CMP-010). Open: confirm the drawn reset button part (B?) and check the ST internal-reset behavior (OPEN-026); accept or change the two INFO margins on U302 (OPEN-028). | Spec 4.4, DEC-017, DEC-044, DEC-045, DEC-046, DEC-048, OPEN-026, OPEN-028 | Hardware | IN_PROGRESS | Clock/reset/boot decision record |
 | P1-015 | Check the BMP384 fallback against the BMP581 footprint, pinout and I2C address. Deferred 2026-11-19: needed only if the BMP581 cannot be bought (OPEN-004). | OPEN-004, CMP-004 | Hardware | DEFERRED | Datasheet comparison record |
 | P1-016 | Pick the ESC current-sense ADC pin and the ESC telemetry UART RX. Closed 2026-10-24: dropped, no ESC current sense or telemetry (IF-052, IF-053 removed, OPEN-022 closed). | OPEN-022, DEC-023 | Hardware | N/A | Spec rev 0.14 change note |
 | P1-017 | Set HSE bypass in firmware for the CMOS oscillators (DEC-044, DEC-045): define `STM32_HSEBYP_ENABLE` in the H743 board config (`board.h`) and build the H743 bootloader from it; build px4io for the F100 with HSEBYP set and package it in place of the stock image (DEC-022). Note sent to the team: `AO-HORIZON_SW_CLOCK_NOTE_EN.md` rev 0.1. Also start the IST8310 at I2C address 0x0C in the PX4 board start script (DEC-047; PX4 default is 0x0E) and check that the PX4 `ist8310` driver accepts the address. Merged P1-018 on 2026-11-19. | DEC-017, DEC-022, DEC-044, DEC-045, OPEN-028, DEC-047, SEN-003 | Software | OPEN | Board config and px4io build in the firmware repo; bench check that both MCUs run from HSE (P4); board start script; magnetometer found on the bench |
@@ -174,7 +174,7 @@ Open items live in the specification, section 8.2. Each row names its owner and 
 - Decided 2026-11-19: VDDA 2.2 µF, `OSC_*` names and spare order, debug connectors without NRST, analog inputs, board LEDs (DEC-063 to DEC-067). Left in OPEN-032: the INFO net names. Re-run ERC after the next schematic change (P2-009).
 - ERC is clean on the 2026-11-19 16:03 save (human owner). B901 pad pairs confirmed by the human owner (OPEN-026). `sch-review` of `conn-actuator` and `conn-peripherals` done 2026-11-19 (spec 4.2): buzzer driver (OPEN-023) and I2C4 pull-ups (OPEN-038) drawn in the 13:33 and 13:57 saves; fix D706 on CN705 pin 9 (OPEN-023), then review the MCU, sensor and USB sheets (P2-022).
 - Check the internal-reset behavior on the shared NRST net (OPEN-026).
-- Oscillator data meets both MCU HSE bypass limits (CMP-010, 2026-11-19); check the LCSC codes (OPEN-028). The software team sets HSE bypass and the IST8310 address (P1-017, P1-018).
+- Oscillator data meets both MCU HSE bypass limits and the LCSC codes match the part numbers (CMP-010, 2026-11-19); two INFO margins on U302 left (OPEN-028). The software team sets HSE bypass and the IST8310 address (P1-017, P1-018).
 - Collect the remaining team inputs: parts table, team tests and the ESC PWM rate (P0-022, OPEN-017, OPEN-031).
 - Before PCB placement: connector pinouts match DS-009 (2026-11-19); check the CN101 pin order and pick the I2C4 pull-up value (P2-015), design the servo bus and XT30 input (P2-016), and confirm the drawn MAIN and AUX actuator headers (P2-018).
 - Human review of the pin choices (P1-001, P1-002); fill the power-sheet resistor fields (P2-021).

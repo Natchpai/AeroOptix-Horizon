@@ -36,6 +36,6 @@ Sources: `sch-review` of `conn-actuator` and `conn-peripherals` (2026-11-19, com
 ## Not checked yet (need data)
 
 - [ ] CN101 PM02D pin order (1-2 5 V, 3 SCL, 4 SDA, 5-6 GND) against the PM02D documentation; DS-009 has only an analog power port (OPEN-023).
-- [ ] Oscillator LCSC codes C405461 and C17195695 against the part numbers (OPEN-028).
+- [x] Oscillator LCSC codes C405461 and C17195695 against the part numbers: both match (lcsc.com, 2026-11-19; spec 0.64 CMP-010, OPEN-028).
 - [ ] Servo plug contact rating on CN801 to CN803 (about 2.1 A per pin at stall; the Samtec TSW rating applies only with Samtec sockets) and servo tolerance of the 12.9 V D807 clamp (OPEN-021, CMP-011).
 - [ ] Device-side pinouts of the SiK V3 and the GPS V1: Holybro shows them only as images (OPEN-023).
