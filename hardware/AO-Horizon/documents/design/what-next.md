@@ -5,29 +5,27 @@
 
 The specification and the execution checklist stay the source of truth. This list only points to their IDs.
 
-## 0. Open from the 2026-11-19 11:38 save
+## 0. Next up (2026-11-19, after commit `944a102`)
 
-Read by `/progress-update light` (KiCad closed, not committed) and recorded in spec rev 0.47 as drawn, not decided. Fixed since the 16:52 save: the CN802 and CN803 + rows, the `Connector - Peripherals` sheet pins, the `MCU - IO` sheet pin names, the board LED polarity (direct drive, active low) and the `+6V` source (CN804 XT30).
+The 12:30 save is committed and pushed (spec rev 0.47). Fixed in the 12:26 and 12:30 saves: footprints on C201, C208, C214, C215, C301, C307 and C507; the CN804 `MP` pin (no-connect flag); `GPS1_SAFETY_LED` on both sheets and both sheet symbols; 5.1 kΩ parts (power mux dividers decided in DEC-055, 14 mV OV margin accepted).
 
-Drawing issues:
-- [ ] MAJOR | CN804 XT30PW-M | `VERIFIED` (preflight) | The footprint pad `MP` has no symbol pin. MP is a mechanical pad and KLC allows it without a pin. Confirm, or add an MP pin on `GND`.
-- [ ] MINOR | C208, C214, C215, C301, C307, C507 | `VERIFIED` (preflight) | No footprint.
-- [ ] MINOR | D807 / `+6V` | `NOT_VERIFIED` | SMF7.0A clamping voltage against the 7.4 V servo limit (PWR-011, OPEN-021).
-- [ ] MINOR | C803 / `+6V` | `NOT_VERIFIED` | The 47 µF tantalum voltage rating is not in the fields (OPEN-021).
-- [ ] MINOR | `GPS1_SAFTY_LED` | `VERIFIED` | `SAFTY` breaks the DEC-052 full-word rule. Rename it on `conn-peripherals`, `mcu-io` and both sheet symbols (OPEN-032).
-- [ ] MINOR | D901 to D903, R901 to R903 | `NOT_VERIFIED` | LED current through 255 Ω from `+3V3`, and the H743 pin sink current (OPEN-035).
+- [ ] Run ERC in KiCad and send the report. `sch-inspect` does not trace bus links (`{LED}`, `{USB_FS}`, `{EXT_I2C4}`, `{H7_SWD}`, `{F1_SWD}`). Then ask for a `sch-review` of `conn-actuator` and `conn-peripherals` (P2-022).
+- [ ] Datasheet checks (NotebookLM source or your values; a new source needs your approval):
+  - XT30PW-M current rating against the 13.2 A all-stall estimate (OPEN-021).
+  - D807 SMF7.0A clamping voltage against the 7.4 V servo limit (PWR-011, OPEN-021).
+  - C803 47 µF tantalum voltage rating, LCSC C308881 (OPEN-021).
+  - LED forward voltage and current through 220 Ω, and the H743 pin sink current (OPEN-035).
+- [ ] Decide the drawn blocks (spec 4.2), then ask Claude to record them:
+  - Peripheral connectors CN701 to CN705 (OPEN-023).
+  - Actuator headers CN801 to CN803 and the XT30 input CN804 with its bulk capacitors and TVS (OPEN-021, OPEN-031, P2-016, P2-018).
+  - Servo rail divider R813, R814, C804 (OPEN-033).
+  - Debug connectors CN602 and CN603, no NRST (OPEN-029).
+  - Board LEDs D901 to D903 (OPEN-035).
+- [ ] RC IN: decide the buffer proposal, then draw CN706 (section 7, P2-023).
 - [ ] INFO | CN603 pin 3 / `DBG_F1_RX` | `ASSUMED` | Single-use label, so it likely reaches no MCU pin (OPEN-029).
+- [ ] Checklist P2-022 still asks to annotate the `mcu-main-fc`, `mcu-io` and `conn-usb-debug` passives; they are annotated since the 16:52 save. Update the task.
 
-Decide (drawn, recorded as not decided in spec 4.2):
-- [ ] Peripheral connectors CN701 to CN705 (OPEN-023).
-- [ ] Actuator connectors CN801 to CN803 and the XT30 input CN804 with its bulk capacitors and TVS (OPEN-021, OPEN-031, P2-016, P2-018).
-- [ ] Servo rail divider R813, R814, C804 (OPEN-033).
-- [ ] Debug connectors CN602 and CN603 (OPEN-029).
-- [ ] Board LEDs D901 to D903 (OPEN-035).
-- [ ] `mcu-main-fc`, `mcu-io` passives annotated in the 16:52 save; spec 4.2 not updated for that yet (P2-022).
-- [ ] RC IN (DEC-053) not drawn yet (P2-023). Waits for the buffer decision in section 7.
-
-Before committing: `/progress-update sync` (README, CHANGELOG, design records).
+After design work: `/progress-update light`; before a commit: `/progress-update sync`.
 
 ## Zone list
 
@@ -65,27 +63,27 @@ Drawn on `conn-actuator` (11:38 save), not decided. Servo current passes through
 
 ## 4. Zone Z3: H743 main MCU
 
-Pins in the pin allocation (P1-001). Current state: spec 4.2 "Schematic state" (saved files, 2026-11-14).
+Pins in the pin allocation (P1-001). Current state: spec 4.2 "Schematic state" (2026-11-19 12:30 save).
 
 H743 values below are from ST DS12110 Rev 11 via NotebookLM (2026-11-12).
 
 - [x] VREF+ tied to VDDA on one 22 Ω RC filter from `+3V3` (DEC-049, drawn in the 17:35 save).
 - [ ] Human review of the pin choices (P1-001).
 - [ ] 16 MHz clock: CMOS oscillator U202 (DEC-044), part decided (DEC-048). Check its data against the HSE external-clock limits (OPEN-028). Firmware side: P1-017.
-- [ ] Reset (DEC-046: one shared `RESET_B` for H743 and F100 NRST, one button): check the drawn button B? (LCSC C2689510) and its `B` reference prefix. Check in NotebookLM whether an internal reset (IWDG, software, debugger) drives NRST low on the H743 and F100; if so, an H743 reset also resets the F100 (OPEN-026, SAF-001). `3V3_PG` stays local (DEC-039). NRST is on H743 debug connector pin 4; the F100 pads have none (OPEN-029).
+- [ ] Reset (DEC-046: one shared `RESET_B` for H743 and F100 NRST, one button): check the drawn button B901 PTS815SJM250SMTRLFS (LCSC C2689510) and its `B` reference prefix. Check in NotebookLM whether an internal reset (IWDG, software, debugger) drives NRST low on the H743 and F100; if so, an H743 reset also resets the F100 (OPEN-026, SAF-001). `3V3_PG` stays local (DEC-039). Neither debug connector (CN602, CN603) carries NRST (OPEN-029).
 - [ ] BOOT0: the DNP pull-up gives selection by rework only. Decide if that meets FUN-006 and TST-003 ("selectable and observable"), or add a pad, jumper or button (P1-007).
 - [ ] Net names (OPEN-032, DEC-052): choose for `OSC_16M00_OUT` and `OSC_24M00_OUT` (add `H7_`/`F1_`, or amend DEC-052); set the spare output order and update the pin allocation; add `DBG_UART3_*` members on `conn-usb-debug` with the debug pin set; info: `SS{slash}TR`, `3V3_LED_A`, `USB_FS_VBUS` carried twice. Then run ERC.
 - [ ] Replace the remaining `H7_<pin>` stub labels with function names from the pin allocation, and carry the signals that leave the sheet through sheet pins.
 - [ ] Mark unused pins with no-connect flags once the allocation is final (PA10, PA15, PB3, PB4 and the other free pins).
-- [ ] Annotate the passives (P2-022).
-- [ ] Debug: drawn as a 6-pin connector with SWDIO and SWCLK on pins 2 and 3, pins 4 and 5 open, no console and no NRST (16:40 save). The Pixhawk Debug Mini puts SWD on pins 4 and 5 and the console on 2 and 3; IF-045 also asks for an NRST pad. Decide the pin set (OPEN-029, P1-008).
+- [x] Annotate the passives (16:52 save).
+- [ ] Debug: CN602 JST-SH 6-pin in the Pixhawk Debug Mini order (1 VREF, 2 TX, 3 RX, 4 SWDIO, 5 SWCLK, 6 GND; 16:52 save). IF-045 and TST-001 also ask for an NRST pad, not drawn. Decide (OPEN-029, P1-008).
 - [ ] `3V3_PG` reaches no MCU pin now (local net, DEC-039). Decide if the H743 should read it; the pin allocation gives it no pin (OPEN-026).
 - [ ] USB: VBUS reaches PA9 through 0 Ω with no divider; settle the PA9 FT_u question (pin allocation F-06, P1-006). Then remove the temporary `PWR_FLAG` on `VBUS` from the power sheet if ERC allows (P2-022).
 - [ ] INFO | U601 / USB D+, D- | `NOT_VERIFIED` | On `conn-usb-debug` the data lines pass through U601 USBLC6-2SC6 (connector side on pins 1 and 3, MCU side on pins 6 and 4), so they depend on the internal link between pins 1-6 and 3-4. Check in the ST datasheet that those pin pairs are joined inside, or route D+ and D- past the pins on one net.
-- [ ] INFO | R601, R602 / CC1, CC2 | `NOT_VERIFIED` | The CC pull-downs are 5 kΩ; the usual USB-C sink Rd is 5.1 kΩ. Check the allowed Rd range in the USB Type-C specification, or change to 5.1 kΩ.
+- [x] R601, R602 / CC1, CC2: now 5.1 kΩ, the usual USB-C sink Rd (12:26 save).
 - [ ] INFO | Library `0_Conn_Card:Micro_SD_Card_Det1`, `0_Conn_USB:USB_C_Receptacle_USB2.0_16P` | `VERIFIED` (preflight, 2026-11-14) | The library symbols have an empty Footprint field; the placed SD? and CN601 have footprints. Fill the library field or leave it generic, then run `/kicad-link-audit`.
 - [ ] microSD: socket drawn; DET reaches no MCU pin; add CMD and DAT pull-ups and ESD (P2-022).
-- [ ] Board LEDs drawn: direct drive, active low, 255 Ω from `+3V3` (OPEN-035). No board buzzer: `BUZZER_TIM3_CH3` goes to GPS1 pin 9 (`GPS1_BUZZER_B`).
+- [ ] Board LEDs drawn: direct drive, active low, 220 Ω from `+3V3`; check LED current (OPEN-035). No board buzzer: `BUZZER_TIM3_CH3` goes to GPS1 pin 9 (`GPS1_BUZZER_B`).
 
 ## 5. Zone Z4: F100 IO MCU (px4io)
 
@@ -93,11 +91,11 @@ Pins from `px4/io-v2` (P1-002). Current state: spec 4.2 "Schematic state".
 
 - [ ] F100 library part from stock `MCU_ST_STM32F1:STM32F100C8Tx`, and the block diagram text (P2-014).
 - [ ] 24 MHz clock: CMOS oscillator U302 (DEC-044), part decided (DEC-048). Check its data against the HSE external-clock limits (OPEN-028). Custom px4io build: P1-017.
-- [ ] VDDA (`F1_VDDA`): 22 Ω from `+3V3` with only 100 nF. Add 1 µF (Fig. 35 shows 1 µF // 10 nF; DocID16455 Rev 9 via NotebookLM, `VERIFIED`). Table 8 says VDDA "must be the same potential as VDD" (`VERIFIED`); the note allowing up to 300 mV of difference is `NOT_VERIFIED` (not in the cited text). Expected drop about 20 mV with the ADC on (0.8 mA, `ESTIMATED`).
+- [ ] VDDA (`F1_VDDA`): 22 Ω from `+3V3` with C307 2.2 µF and 100 nF (spec 4.2). Confirm the value against Fig. 35 (Fig. 35 shows 1 µF // 10 nF; DocID16455 Rev 9 via NotebookLM, `VERIFIED`). Table 8 says VDDA "must be the same potential as VDD" (`VERIFIED`); the note allowing up to 300 mV of difference is `NOT_VERIFIED` (not in the cited text). Expected drop about 20 mV with the ADC on (0.8 mA, `ESTIMATED`).
 - [ ] px4io LEDs (blue PB14, amber PB15, green PA11): pick the resistors.
 - [ ] PA10 and PB11: weak pull-up to 3.3 V; pick the value.
 - [ ] NRST (pin 7) on the shared `RESET_B` (DEC-046); the internal-reset check is in Z3 (OPEN-026).
-- [ ] Debug pads: drawn as 4 pads (VREF, SWDIO, SWCLK, GND), no NRST and no console TX (PA9). Decide the pin set (OPEN-029, P1-008).
+- [ ] Debug: CN603 JST-SH 6-pin in the Debug Mini order replaces the pads (16:52 save); no NRST; pin 3 `DBG_F1_RX` likely reaches no MCU pin. Decide (OPEN-029, P1-008).
 
 ## 6. Zone Z5: Sensors
 
@@ -107,9 +105,9 @@ Parts decided (DEC-008, DEC-010, DEC-011). Current state: spec 4.2 "Schematic st
 
 To do:
 - [ ] Barometer address straps: check in NotebookLM that AD0 low on the ICP-20100 and SA0 low on the BMP581 give the SEN-002 addresses (`NOT_VERIFIED`).
-- [ ] I2C pull-ups (P1-004): one set for I2C2, sized for all three devices. 5k is not an E24 or E96 value; pick 4.7k, 4.99k or 5.1k.
+- [x] I2C pull-ups (P1-004): one set for I2C2, R501 and R502 5.1 kΩ (12:26 save). Bus capacitance not checked.
 - [ ] Sensor decoupling: only 100 nF per supply pin is drawn. Check each datasheet's recommended capacitors (`NOT_VERIFIED`).
-- [ ] IST8310 C507: add a footprint (P2-022).
+- [x] IST8310 C507: 0603 footprint (12:26 save).
 - [ ] Power-up order (OPEN-011): with DEC-039, VDDIO (`+3V3`) comes up before VDD (`+3V3A`). Check in NotebookLM that each sensor allows this (ICM-45686, ICP-20100, BMP581, IST8310).
 - [ ] `+3V3A` load: add ICP-20100, BMP581 and IST8310 VDD currents to the power budget (3.3 V_IMU rows are `TBD`).
 - [ ] IST8310 AVDD on the LDO: check the TPS73533DRBR output tolerance against the 3.6 V absolute maximum (OPEN-004).
@@ -152,7 +150,7 @@ Pinmap review 0.3 and the integration answers are applied (spec rev 0.12 to 0.14
 
 ## 10. Before the BOM
 
-- [ ] Resistor MFR, MFR.P/N and LCSC on the power sheet (P2-021). Use 1 % parts in the PR1, CP2, OV and ST dividers.
+- [ ] Resistor MFR and MFR.P/N on the power sheet (P2-021); LCSC codes are in since the 12:26 save. Use 1 % parts in the PR1, CP2, OV and ST dividers (DEC-055).
 
 ## 11. Bench, after the board is built
 
