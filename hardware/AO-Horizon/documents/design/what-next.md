@@ -24,7 +24,7 @@ Drawn, not decided (record in the spec when you agree):
 - [ ] `user-interface`: reset button annotated B901; LEDs D901 to D903 with Q901 to Q903 (see the LED item above).
 - [ ] `power_supplies`: D102 changed from PESD2USB3UV-T to PESD5V0U2BT (LCSC C85399) on the PM02D I2C lines at CN101.
 - [ ] `mcu-main-fc`, `mcu-io`: passives annotated (C201 to C217, R201 to R208, C301 to C310, R301 to R309).
-- [ ] RC IN (DEC-053) not drawn yet (P2-023).
+- [ ] RC IN (DEC-053) not drawn yet (P2-023). Waits for the buffer decision below.
 
 Docs to catch up after the decisions: spec 4.2 and 4.3 for the 16:52 save, OPEN-023, OPEN-029, OPEN-031, OPEN-032, OPEN-033, and the checklist trackers. Then run `/progress-update`.
 
@@ -126,7 +126,8 @@ Not drawn.
 
 - [ ] Connector pinouts against the Pixhawk standard DS-009: Telemetry 1 and 2, GPS1 10-pin (3.3 V and buzzer pins), airspeed, TF-Luna (OPEN-023, P2-015).
 - [ ] Telemetry 2 (USART1, PB14, PB15): JST-GH 6-pin, as Telemetry 1.
-- [ ] RC IN per DEC-053: CN706 1x3 header, 6.2 kΩ / 10 kΩ divider, `RCIN_TIM1_CH1` to F100 PA8 (P2-023, OPEN-034).
+- [ ] Decide on the team RC IN proposal (OPEN-034 item 5): 74LVC1G17 buffer on `+3V3` (1 kΩ in, 100 kΩ to `GND`, 22 Ω out, 100 nF) instead of the 6.2 kΩ / 10 kΩ divider. If yes: amend DEC-053, IF-038, F-21, P2-023 and P4-016, and add the part with `kicad-part-start` (datasheet values `NOT_VERIFIED`, notebook upload needs your approval). If no: the team measures the FS-iA6B PPM level first.
+- [ ] RC IN per DEC-053 (or the buffer if accepted): CN706 1x3 header, input circuit, `RCIN_TIM1_CH1` to F100 PA8 (P2-023, OPEN-034).
 - [ ] I2C4 (PD12, PD13): check 5 V tolerance in case a module pulls up to 5 V (OPEN-023).
 - [ ] Actuator headers per DEC-051: MAIN 1 to 4 ESC headers (3-pin, + pin removed), MAIN 5 to 8 and AUX 1 to 4 servo headers on the 6 V bus; keep them apart (IF-030 to IF-043, P2-018, OPEN-031).
 - [ ] PWM pull-downs: pick the value (P2-013, OPEN-018; no DShot since DEC-050).
