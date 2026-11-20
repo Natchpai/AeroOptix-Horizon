@@ -7132,7 +7132,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C21713975"
+		(property "LCSC" "C7519"
 			(at 146.05 90.17 0)
 			(hide yes)
 			(show_name no)
@@ -7143,7 +7143,7 @@
 				)
 			)
 		)
-		(property "MFR" "GOODWORK"
+		(property "MFR" "ST"
 			(at 146.05 90.17 0)
 			(hide yes)
 			(show_name no)

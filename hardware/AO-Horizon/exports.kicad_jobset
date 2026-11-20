@@ -47,6 +47,19 @@
         "record_output": true
       },
       "type": "special_execute"
+    },
+    {
+      "description": "",
+      "id": "e0166509-d3c1-4404-b73e-d63b61da4ec6",
+      "settings": {
+        "description": "",
+        "fail_on_error": true,
+        "format": "report",
+        "output_filename": "",
+        "severity": 48,
+        "units": "mm"
+      },
+      "type": "sch_erc"
     }
   ],
   "meta": {
@@ -73,6 +86,17 @@
       ],
       "settings": {
         "output_path": "documents/manufacturing/"
+      },
+      "type": "folder"
+    },
+    {
+      "description": "Verification",
+      "id": "a5ee921f-6ceb-4738-9d2f-c705a7f66929",
+      "only": [
+        "e0166509-d3c1-4404-b73e-d63b61da4ec6"
+      ],
+      "settings": {
+        "output_path": "documents/verification"
       },
       "type": "folder"
     }
