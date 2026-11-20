@@ -9,7 +9,7 @@
         "apply_defaults_to_fp_shapes": false,
         "apply_defaults_to_fp_text": false,
         "board_outline_line_width": 0.05,
-        "copper_line_width": 0.2,
+        "copper_line_width": 0.1,
         "copper_text_italic": false,
         "copper_text_size_h": 1.5,
         "copper_text_size_v": 1.5,
@@ -43,11 +43,11 @@
           "height": 1.27,
           "width": 2.54
         },
-        "silk_line_width": 0.1,
+        "silk_line_width": 0.15,
         "silk_text_italic": false,
         "silk_text_size_h": 1.0,
         "silk_text_size_v": 1.0,
-        "silk_text_thickness": 0.1,
+        "silk_text_thickness": 0.15,
         "silk_text_upright": false,
         "zones": {
           "border_display_style": 2,
@@ -69,7 +69,13 @@
           "thermal_relief_spoke_width": 0.5
         }
       },
-      "diff_pair_dimensions": [],
+      "diff_pair_dimensions": [
+        {
+          "gap": 0.0,
+          "via_gap": 0.0,
+          "width": 0.0
+        }
+      ],
       "drc_exclusions": [],
       "meta": {
         "version": 2
@@ -140,9 +146,9 @@
       },
       "rules": {
         "max_error": 0.005,
-        "min_clearance": 0.0,
+        "min_clearance": 0.1,
         "min_connection": 0.0,
-        "min_copper_edge_clearance": 0.5,
+        "min_copper_edge_clearance": 0.25,
         "min_groove_width": 0.0,
         "min_hole_clearance": 0.25,
         "min_hole_to_hole": 0.25,
@@ -150,12 +156,12 @@
         "min_microvia_drill": 0.1,
         "min_resolved_spokes": 2,
         "min_silk_clearance": 0.0,
-        "min_text_height": 0.8,
-        "min_text_thickness": 0.08,
+        "min_text_height": 1.0,
+        "min_text_thickness": 0.15,
         "min_through_hole_diameter": 0.3,
-        "min_track_width": 0.2,
+        "min_track_width": 0.1,
         "min_via_annular_width": 0.1,
-        "min_via_diameter": 0.5,
+        "min_via_diameter": 0.6,
         "solder_mask_to_copper_clearance": 0.0,
         "use_height_for_length_calcs": true
       },
@@ -206,7 +212,14 @@
           "td_width_to_size_filter_ratio": 0.9
         }
       ],
-      "track_widths": [],
+      "track_widths": [
+        0.0,
+        0.15,
+        0.2,
+        0.3,
+        0.4,
+        0.5
+      ],
       "tuning_pattern_settings": {
         "diff_pair_defaults": {
           "corner_radius_percentage": 80,
@@ -233,7 +246,12 @@
           "spacing": 0.6
         }
       },
-      "via_dimensions": [],
+      "via_dimensions": [
+        {
+          "diameter": 0.0,
+          "drill": 0.0
+        }
+      ],
       "zones_allow_external_fillets": false
     },
     "ipc2581": {
@@ -518,7 +536,7 @@
       },
       {
         "name": "+3V3",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "pcb_color": "rgb(206, 107, 221)",
         "priority": 8,
         "schematic_color": "rgb(206, 107, 221)",
         "tuning_profile": "",
@@ -526,7 +544,7 @@
       },
       {
         "name": "+3V3A",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "pcb_color": "rgb(115, 125, 222)",
         "priority": 6,
         "schematic_color": "rgb(115, 125, 222)",
         "tuning_profile": "",
@@ -534,7 +552,7 @@
       },
       {
         "name": "+5V",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "pcb_color": "rgb(206, 163, 20)",
         "priority": 9,
         "schematic_color": "rgb(206, 163, 20)",
         "tuning_profile": "",
@@ -542,7 +560,7 @@
       },
       {
         "name": "+6V",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "pcb_color": "rgb(229, 106, 20)",
         "priority": 5,
         "schematic_color": "rgb(229, 106, 20)",
         "tuning_profile": "",
@@ -550,7 +568,7 @@
       },
       {
         "name": "GND",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "pcb_color": "rgb(46, 46, 69)",
         "priority": 7,
         "schematic_color": "rgb(46, 46, 69)",
         "tuning_profile": "",
@@ -558,7 +576,7 @@
       },
       {
         "name": "I2C4",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "pcb_color": "rgb(42, 186, 124)",
         "priority": 1,
         "schematic_color": "rgb(42, 186, 124)",
         "tuning_profile": "",
@@ -566,7 +584,7 @@
       },
       {
         "name": "RNG_UART",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "pcb_color": "rgb(223, 147, 60)",
         "priority": 0,
         "schematic_color": "rgb(223, 147, 60)",
         "tuning_profile": "",
@@ -574,7 +592,7 @@
       },
       {
         "name": "SDMMC",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "pcb_color": "rgb(121, 176, 214)",
         "priority": 4,
         "schematic_color": "rgb(121, 176, 214)",
         "tuning_profile": "",
@@ -582,7 +600,7 @@
       },
       {
         "name": "TEL_UART",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "pcb_color": "rgb(106, 76, 221)",
         "priority": 2,
         "schematic_color": "rgb(106, 76, 221)",
         "tuning_profile": "",
@@ -590,7 +608,7 @@
       },
       {
         "name": "USB_FS",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "pcb_color": "rgb(33, 177, 226)",
         "priority": 3,
         "schematic_color": "rgb(33, 177, 226)",
         "tuning_profile": "",
