@@ -70,6 +70,28 @@
 				)
 			)
 		)
+		(property "MFR" "C&K"
+			(at 0 -6.35 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "PTS815SJM250SMTRLFS"
+			(at 0 -6.35 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "ki_keywords" "switch normally-open pushbutton push-button"
 			(at 0 0 0)
 			(show_name no)

@@ -69,6 +69,28 @@
 				(justify bottom)
 			)
 		)
+		(property "MFR" "Changzhou Amass Elec"
+			(at 0 7.62 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "XT30PW-M30.G.Y"
+			(at 0 7.62 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "ki_fp_filters" "AMASS_*"
 			(at 0 0 0)
 			(show_name no)

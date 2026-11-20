@@ -64,6 +64,28 @@
 				)
 			)
 		)
+		(property "MFR" "Samtec"
+			(at 1.27 -25.4 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "TSW-104-08-F-T-RA"
+			(at 1.27 -25.4 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(symbol "SAMTEC_TSW-104-08-F-T-RA_1_1"
 			(rectangle
 				(start -2.54 1.27)

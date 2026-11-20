@@ -61,6 +61,28 @@
 				)
 			)
 		)
+		(property "MFR" "TI"
+			(at -1.27 19.05 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "SN74LVC1G34DCKR"
+			(at -1.27 19.05 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "ki_keywords" "Buffer, Non-Inverting"
 			(at 0 0 0)
 			(show_name no)

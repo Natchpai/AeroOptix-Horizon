@@ -63,6 +63,28 @@
 				)
 			)
 		)
+		(property "MFR" "TI"
+			(at 1.27 -39.37 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "TPS2121RUXR"
+			(at 1.27 -39.37 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "ki_keywords" "power mux ORing switchover TI"
 			(at 0 0 0)
 			(show_name no)

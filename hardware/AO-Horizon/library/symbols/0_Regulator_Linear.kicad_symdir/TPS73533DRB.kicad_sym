@@ -63,6 +63,28 @@
 				)
 			)
 		)
+		(property "MFR" "TI"
+			(at 0 -29.21 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "TPS73533DRBR"
+			(at 0 -29.21 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "ki_fp_filters" "VSON?8?1EP*"
 			(at 0 0 0)
 			(show_name no)
