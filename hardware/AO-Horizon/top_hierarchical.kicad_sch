@@ -33,6 +33,12 @@
 		(color 0 0 0 0)
 		(uuid "22639e10-36e4-4312-a13b-1aa181a41098")
 	)
+	(junction
+		(at 181.61 173.99)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "246f4ad9-0cf3-4481-b69f-f9b4f893bbde")
+	)
 	(no_connect
 		(at 190.5 78.74)
 		(uuid "a3eeca16-c66c-44cd-a526-14b9518af074")
@@ -63,7 +69,7 @@
 	)
 	(wire
 		(pts
-			(xy 181.61 184.15) (xy 190.5 184.15)
+			(xy 181.61 185.42) (xy 190.5 185.42)
 		)
 		(stroke
 			(width 0)
@@ -271,6 +277,26 @@
 		)
 		(uuid "60192f4b-0535-4d04-9a1a-5c02307862a7")
 	)
+	(wire
+		(pts
+			(xy 153.67 173.99) (xy 181.61 173.99)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6631bfda-a8ee-4248-9679-1e6285192aea")
+	)
+	(wire
+		(pts
+			(xy 181.61 173.99) (xy 181.61 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7ae63ea0-ef12-4186-a1a4-9a5fd6107d6a")
+	)
 	(bus
 		(pts
 			(xy 228.6 201.93) (xy 254 201.93)
@@ -393,7 +419,7 @@
 	)
 	(wire
 		(pts
-			(xy 181.61 137.16) (xy 181.61 184.15)
+			(xy 181.61 137.16) (xy 181.61 173.99)
 		)
 		(stroke
 			(width 0)
@@ -1461,7 +1487,7 @@
 			)
 		)
 		(pin "RESET_B" input
-			(at 190.5 184.15 180)
+			(at 190.5 185.42 180)
 			(uuid "5478bc71-76f3-4859-8583-5783ec9534b7")
 			(effects
 				(font
@@ -1670,6 +1696,16 @@
 		(pin "DBG_UART1_TX" input
 			(at 153.67 193.04 0)
 			(uuid "bd38b9a8-1587-43bc-a00c-e0a8268a8e0b")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "RESET_B" output
+			(at 153.67 173.99 0)
+			(uuid "ff9d881d-bf59-4a95-9a2e-8e454b224844")
 			(effects
 				(font
 					(size 1.27 1.27)
