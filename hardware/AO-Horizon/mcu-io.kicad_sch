@@ -2746,10 +2746,6 @@
 		(at 184.15 124.46)
 		(uuid "cebfc58b-bb55-44d8-bdbd-ef88d54ac5a0")
 	)
-	(no_connect
-		(at 240.03 142.24)
-		(uuid "e5d523ca-55ea-4ffe-8602-7c2674a8909c")
-	)
 	(bus_entry
 		(at 369.57 114.3)
 		(size 2.54 -2.54)
@@ -3019,6 +3015,16 @@
 	)
 	(wire
 		(pts
+			(xy 264.16 157.48) (xy 264.16 153.67)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1697d259-7c34-4c23-b909-285c0edba6eb")
+	)
+	(wire
+		(pts
 			(xy 184.15 154.94) (xy 191.77 154.94)
 		)
 		(stroke
@@ -3049,7 +3055,7 @@
 	)
 	(wire
 		(pts
-			(xy 240.03 142.24) (xy 232.41 142.24)
+			(xy 232.41 142.24) (xy 264.16 142.24)
 		)
 		(stroke
 			(width 0)
@@ -3646,6 +3652,16 @@
 			(type default)
 		)
 		(uuid "73222b99-fafe-4ff2-b357-2192217657d1")
+	)
+	(wire
+		(pts
+			(xy 264.16 146.05) (xy 264.16 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "734cb5b0-b98b-4571-85c8-3a2be9a9dfcd")
 	)
 	(wire
 		(pts
@@ -6326,6 +6342,17 @@
 				)
 			)
 		)
+		(property "Rate" "50V"
+			(at 175.26 73.66 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
 			(at 175.26 73.66 0)
 			(hide yes)
@@ -6656,6 +6683,17 @@
 				)
 			)
 		)
+		(property "Rate" "16V"
+			(at 236.22 92.71 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GRM188Z71C225KE43D"
 			(at 236.22 92.71 0)
 			(hide yes)
@@ -6771,6 +6809,17 @@
 			)
 		)
 		(property "MFR" "muRata"
+			(at 226.06 92.71 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Rate" "50V"
 			(at 226.06 92.71 0)
 			(hide yes)
 			(show_name no)
@@ -7152,6 +7201,17 @@
 				)
 			)
 		)
+		(property "Rate" "50V"
+			(at 195.58 73.66 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
 			(at 195.58 73.66 0)
 			(hide yes)
@@ -7267,6 +7327,17 @@
 			)
 		)
 		(property "MFR" "muRata"
+			(at 344.17 165.1 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Rate" "50V"
 			(at 344.17 165.1 0)
 			(hide yes)
 			(show_name no)
@@ -7884,6 +7955,17 @@
 			)
 		)
 		(property "MFR" "muRata"
+			(at 165.1 73.66 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Rate" "50V"
 			(at 165.1 73.66 0)
 			(hide yes)
 			(show_name no)
@@ -8622,6 +8704,131 @@
 		)
 	)
 	(symbol
+		(lib_id "0_Resistor:R")
+		(at 264.16 149.86 180)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "8be52f85-713e-4f38-a201-880f1f5e8142")
+		(property "Reference" "R315"
+			(at 265.684 148.844 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "10k"
+			(at 265.684 151.384 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "0_Resistor_SMD:R_0402_1005Metric_NomDensity"
+			(at 265.938 149.86 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 264.16 149.86 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 264.16 149.86 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C144807"
+			(at 264.16 149.86 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "YAGEO"
+			(at 264.16 149.86 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "AC0402FR-0710KL"
+			(at 264.16 149.86 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
+			(at 264.16 149.86 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "2"
+			(uuid "8b1bb2ec-ccd4-437d-a277-03bf802e9290")
+		)
+		(pin "1"
+			(uuid "1dcdf9b7-2e2c-4147-86e3-657ddef29c8c")
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
+					(reference "R315")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "0_Capacitor:C")
 		(at 154.94 73.66 0)
 		(unit 1)
@@ -8700,6 +8907,17 @@
 			)
 		)
 		(property "MFR" "muRata"
+			(at 154.94 73.66 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Rate" "16V"
 			(at 154.94 73.66 0)
 			(hide yes)
 			(show_name no)
@@ -8825,6 +9043,17 @@
 			)
 		)
 		(property "MFR" "muRata"
+			(at 185.42 73.66 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Rate" "50V"
 			(at 185.42 73.66 0)
 			(hide yes)
 			(show_name no)
@@ -9508,6 +9737,17 @@
 				)
 			)
 		)
+		(property "Rate" "50V"
+			(at 180.34 99.06 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
 			(at 180.34 99.06 0)
 			(hide yes)
@@ -9946,6 +10186,85 @@
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
 					(reference "#PWR0319")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 264.16 157.48 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "c4fce867-4d9a-45a6-a4e2-3a05a2c2b338")
+		(property "Reference" "#PWR0320"
+			(at 264.16 163.83 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 264.16 162.56 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 264.16 157.48 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 264.16 157.48 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 264.16 157.48 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "0dabf086-e0c0-4340-8de1-282ca24d6fed")
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/92584a55-2e01-43a4-9009-7cca80536e22"
+					(reference "#PWR0320")
 					(unit 1)
 				)
 			)
@@ -10611,6 +10930,17 @@
 			)
 		)
 		(property "MFR" "muRata"
+			(at 107.95 129.54 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Rate" "50V"
 			(at 107.95 129.54 0)
 			(hide yes)
 			(show_name no)

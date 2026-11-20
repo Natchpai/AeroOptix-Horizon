@@ -6919,6 +6919,17 @@
 				)
 			)
 		)
+		(property "Rate" "50V"
+			(at 144.78 113.03 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
 			(at 144.78 113.03 0)
 			(hide yes)

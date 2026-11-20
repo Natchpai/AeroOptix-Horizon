@@ -8594,6 +8594,17 @@
 				)
 			)
 		)
+		(property "Rate" "50V"
+			(at 265.43 53.34 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
 			(at 265.43 53.34 0)
 			(hide yes)
@@ -8710,6 +8721,17 @@
 			)
 		)
 		(property "MFR" "muRata"
+			(at 82.55 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Rate" "50V"
 			(at 82.55 62.23 0)
 			(hide yes)
 			(show_name no)
@@ -10072,6 +10094,17 @@
 				)
 			)
 		)
+		(property "Rate" "50V"
+			(at 322.58 203.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GRM1555C1H103JE01D"
 			(at 322.58 203.2 0)
 			(hide yes)
@@ -10266,6 +10299,17 @@
 			)
 		)
 		(property "MFR" "muRata"
+			(at 317.5 176.53 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Rate" "50V"
 			(at 317.5 176.53 0)
 			(hide yes)
 			(show_name no)
@@ -12593,6 +12637,17 @@
 				)
 			)
 		)
+		(property "Rate" "50V"
+			(at 312.42 200.66 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GRM1555C1H103JE01D"
 			(at 312.42 200.66 0)
 			(hide yes)
@@ -14134,6 +14189,17 @@
 				)
 			)
 		)
+		(property "Rate" "50V"
+			(at 184.15 110.49 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
 			(at 184.15 110.49 0)
 			(hide yes)
@@ -14540,6 +14606,17 @@
 				)
 			)
 		)
+		(property "Rate" "50V"
+			(at 119.38 182.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
 			(at 119.38 182.88 0)
 			(hide yes)
@@ -14743,6 +14820,17 @@
 				)
 			)
 		)
+		(property "Rate" "50V"
+			(at 186.69 63.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
 			(at 186.69 63.5 0)
 			(hide yes)
@@ -14858,6 +14946,17 @@
 			)
 		)
 		(property "MFR" "muRata"
+			(at 356.87 198.12 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Rate" "50V"
 			(at 356.87 198.12 0)
 			(hide yes)
 			(show_name no)
@@ -16316,6 +16415,17 @@
 			)
 		)
 		(property "MFR" "muRata"
+			(at 208.28 182.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Rate" "50V"
 			(at 208.28 182.88 0)
 			(hide yes)
 			(show_name no)

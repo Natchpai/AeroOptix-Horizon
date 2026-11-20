@@ -3773,6 +3773,17 @@
 				)
 			)
 		)
+		(property "Rate" "50V"
+			(at 199.39 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
 			(at 199.39 50.8 0)
 			(hide yes)
@@ -4777,6 +4788,17 @@
 				)
 			)
 		)
+		(property "Rate" "16V"
+			(at 238.76 227.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GRM188Z71C475KE21D"
 			(at 238.76 227.33 0)
 			(hide yes)
@@ -5137,6 +5159,17 @@
 				)
 			)
 		)
+		(property "Rate" "50V"
+			(at 199.39 116.84 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
 			(at 199.39 116.84 0)
 			(hide yes)
@@ -5419,6 +5452,17 @@
 			)
 		)
 		(property "MFR" "muRata"
+			(at 231.14 116.84 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Rate" "50V"
 			(at 231.14 116.84 0)
 			(hide yes)
 			(show_name no)
@@ -5958,6 +6002,17 @@
 				)
 			)
 		)
+		(property "Rate" "50V"
+			(at 231.14 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
 			(at 231.14 50.8 0)
 			(hide yes)
@@ -6152,6 +6207,17 @@
 			)
 		)
 		(property "MFR" "muRata"
+			(at 231.14 189.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Rate" "50V"
 			(at 231.14 189.23 0)
 			(hide yes)
 			(show_name no)
@@ -6699,6 +6765,17 @@
 			)
 		)
 		(property "MFR" "muRata"
+			(at 199.39 189.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Rate" "50V"
 			(at 199.39 189.23 0)
 			(hide yes)
 			(show_name no)
