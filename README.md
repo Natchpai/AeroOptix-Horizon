@@ -4,12 +4,12 @@
 
 **Flight controller for the AeroOptix Club aircraft, STM32H743 with an STM32F100 IO MCU**
 
-> **Status:** `DRAFT`
+> **Status:** `PRELIMINARY`
 > **Board revision:** `A`
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.72, 2026-11-20): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.73, 2026-11-20): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -48,7 +48,7 @@ The team website, [natchpai.github.io/AeroOptix-Horizon](https://natchpai.github
 
 ## Project Status
 
-**Current Phase:** `DRAFT`
+**Current Phase:** `PRELIMINARY`
 
 | Phase | Description |
 |---|---|
@@ -76,8 +76,8 @@ flowchart LR
     classDef review fill:#b45309,color:#ffffff,stroke:#92400e
     classDef done fill:#15803d,color:#ffffff,stroke:#166534
 
-    class A review
-    class B inactive
+    class A done
+    class B review
     class C inactive
     class D inactive
 ```

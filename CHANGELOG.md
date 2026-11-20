@@ -233,6 +233,7 @@ Notable changes to this hardware project are documented here.
 - Specification rev 0.71 and checklist rev 0.64 (2026-11-20): DEC-086 recorded; OPEN-004 item (2) closed; P2-012 done. Selection records, `todo.md` and `what-next.md` updated.
 - Schematic (2026-11-20): D709 and R315 drawn by the human owner; Claude filled the empty `Rate` field on 57 capacitors at the human owner's request (50V on GCM155R71H104KE02D and GRM1555C1H103JE01D, 16V on GRM188Z71C225KE43D and GRM188Z71C475KE21D, from the Murata voltage code), with KiCad closed. Netlist unchanged apart from `Rate`; `kicad-cli` ERC 0 violations. Spec 0.71 and checklist 0.64 also record DEC-087 to DEC-091, OPEN-021, OPEN-023, OPEN-028, P2-022, P3-002 and P3-007; pin allocation rev 0.28 (PA12); `todo.md` INFO items closed except the LED Datasheet fields.
 - Schematic (2026-11-20, human owner): Datasheet field filled on D902, D903, D905 and D906. Specification rev 0.72 and checklist rev 0.65: DEC-092, DEC-093, OPEN-021, OPEN-023 (CN101 confirmed by the human owner; GPS V1 and SiK V3 pinouts match, from Holybro's official images read by Claude), P2-015 done, P2-016. Software notes rev 0.2 (SW-7, SiK flow control off). `todo.md` has no open items.
+- Project phase DRAFT to PRELIMINARY, declared by the human owner on 2026-11-20 (README status, phase record and workflow diagram; spec rev 0.73 "Hardware phase" row). Not a verification or approval.
 
 ### Fixed
 

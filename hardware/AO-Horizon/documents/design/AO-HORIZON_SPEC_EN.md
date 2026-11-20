@@ -4,10 +4,10 @@
 | -------------------- |---|
 | Project              | AeroOptix-Horizon |
 | Document owner       | Human engineering owner (TBD) |
-| Document revision    | 0.72 |
+| Document revision    | 0.73 |
 | Last updated         | 2026-11-20 |
 | Design tool          | KiCad 10 (saved files written by eeschema 10.0) |
-| Hardware phase       | TBD (declared by the human) |
+| Hardware phase       | PRELIMINARY (declared by the human owner, 2026-11-20) |
 | Related baseline     | FC_H743 rev2 reference from user-provided diagrams; native design baseline not established |
 | Specification status | Draft / not for fabrication |
 
@@ -675,6 +675,7 @@ DEC-020 to DEC-022 come from the software team's answers to the integration ques
 | 0.70     | 2026-11-20 | Added DEC-081 (SD1 decoupling C217 100 nF and C218 2.2 µF; "100n + 2u2"), DEC-082 (ICM-45686 RESV pin 7 no-connect; "Change pin 7 to NC"), DEC-083 (BMP581 INT through R512 10 kΩ to `GND`, ICP-20100 INT no-connect; "Tie INT to GND"), DEC-084 (U601 ST USBLC6-2SC6 C7519; "Switch to ST part") and DEC-085 (ICP-20100 power-up order accepted; "Accept, bench check"). Recorded the `sch-review` of `sensor-imu`, `sensor-navigation` and `conn-usb-debug` (4.2) and the ICM-45686 and ICP-20100 footprint check (OPEN-004). Recorded the 2026-11-20 14:29, 14:52 and 14:57 saves (not committed) in 4.2; DEC-080 now names C216 (references swapped in the 14:29 save). Updated OPEN-004, OPEN-010, OPEN-011 and the verdict. Claude's `kicad-cli` ERC on the 14:57 save: 0 violations. | Pending human review |
 | 0.71     | 2026-11-20 | Added DEC-086 (ICM-45686 and ICP-20100 footprints kept without the TDK app-note check; human owner: "ok, close it, it's fine"). OPEN-004 item (2) closed; P2-012 done. Added DEC-087 (D709 flyback diode on the GPS1 buzzer line; "Add flyback diode"), DEC-088 (R315 10 kΩ pull-down on F100 PA12; "i Added 10k pull-down"), DEC-089 (U302 clock margins accepted), DEC-090 (D807 accepted for the 6 V rail) and DEC-091 (U303 and U601 pin maps accepted without a check). Recorded the 2026-11-20 15:18 save in 4.2. Claude filled the empty `Rate` field on 57 capacitors at the human owner's request ("fill it for me, about C*"), from the Murata voltage code in each MFR.P/N; netlist unchanged apart from `Rate`, `kicad-cli` ERC 0 violations. New software note `AO-HORIZON_SW_NOTES_EN.md`. Updated OPEN-021, OPEN-023 and OPEN-028. | Pending human review |
 | 0.72     | 2026-11-20 | Added DEC-092 (SiK V3 100 mW or 500 mW model on 5 V; "100 mW or 500 mW (5 V)") and DEC-093 (servo plug rating and D807 clamp tolerance accepted; "Accept, close"). OPEN-023: CN101 pin order confirmed by the human owner; GPS V1 and SiK V3 module pinouts match CN705, CN701 and CN702 (Holybro official images read by Claude). OPEN-021 updated. Recorded the LED Datasheet fields in 4.2. `kicad-cli` ERC on the save: 0 violations. | Pending human review |
+| 0.73     | 2026-11-20 | Hardware phase set to PRELIMINARY, declared by the human owner ("ok move to PRELIMINARY, record it"). No design change. A phase is not a verification or approval. | Pending human review |
 
 ## Current verdict
 
