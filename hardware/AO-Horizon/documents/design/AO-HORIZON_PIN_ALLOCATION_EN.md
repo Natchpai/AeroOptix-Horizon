@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: MCU Pin Allocation
 
-**Revision:** 0.25
+**Revision:** 0.26
 **Updated:** 2026-11-20
 **Status:** Draft. The software team's answers (pinmap review 0.2 and 0.3, decisions file) are applied. The IO MCU is the STM32F100C8T6B (DEC-002). Partly drawn in the schematic (spec 4.2 "Schematic state"); the drawn labels match this allocation (F-19). HSE from CMOS oscillators (DEC-044, DEC-045). Actuator outputs per DEC-050 and DEC-051 (F100 MAIN 1 to 8, H743 AUX 1 to 4); no pin changed. DMA and interrupt priority checks are firmware work (P2-005); timer clocks are part of the pin review (P1-001). Not a verification record.
-**Requirement refs:** IF-010 to IF-024, IF-030 to IF-037, IF-040 to IF-051, SEN-001 to SEN-003, DEC-002, DEC-014 to DEC-018, DEC-043 to DEC-047, DEC-050, DEC-051, DEC-053, DEC-054, DEC-056, DEC-057, DEC-060, DEC-068, DEC-069. Checklist tasks: P1-001 (partial), P1-003 (partial).
+**Requirement refs:** IF-010 to IF-024, IF-030 to IF-037, IF-040 to IF-051, SEN-001 to SEN-003, DEC-002, DEC-014 to DEC-018, DEC-043 to DEC-047, DEC-050, DEC-051, DEC-053, DEC-054, DEC-056, DEC-057, DEC-060, DEC-068, DEC-069, DEC-079. Checklist tasks: P1-001 (partial), P1-003 (partial).
 **Decision owner:** Hardware
 
 Single record for the STM32H743VIT6 (LQFP100) and STM32F100C8T6B (LQFP48) pin allocation.
@@ -136,17 +136,17 @@ Output numbers and the first actuator mapping follow spec DEC-051. The team sets
 
 "Default" means the F1 DS lists the signal in the default alternate-function column, so no AFIO remap is needed. The DS column comes from the F103 datasheet. For the F100, every signal in this table is listed on the same pin in ST XML, and all 48 pin names and types match the F103 (F-18); the F100 DS text match is not rerun. The link, PWM, safety and servo-rail pins are the px4io-v2 pins (PX4 v1.16.2 `boards/px4/io-v2/src/board_config.h` and `timer_config.cpp`).
 
-Reserved for px4io-v2 functions (F-13). Not used for anything else. The LEDs are fitted; the others stay unconnected:
+Reserved for px4io-v2 functions (F-13). Not used for anything else. The LEDs are fitted, active low with 220 Ω from `+3V3` (DEC-079, 2026-11-20 13:37 save); the others stay unconnected:
 
 | Pin | px4io-v2 function | Plan |
 | --- | ----------------- | ---- |
-| PB14 | Blue LED (also heater output) | Fitted (team, Q20) |
-| PB15 | Amber LED | Fitted (team, Q20) |
-| PA11 | Green LED | Fitted (team, Q20) |
+| PB14 | Blue LED (also heater output) | Fitted (team, Q20): D905, net `LED_IO_BLUE_B`. PC14 and PC15 unconnected, so px4io drives the LED, not the heater (DEC-079) |
+| PB15 | Amber LED (`LED_AMBER`) | Fitted (team, Q20) as a red LED in place of amber: D904, net `LED_IO_RED_B` (DEC-079) |
+| PA11 | Green LED | Fitted (team, Q20): D906, net `LED_IO_GREEN_B`; off when armed with active-low wiring (DEC-079) |
 | PA15 | Servo fault input | Unconnected |
 | PA5, PA12 | RSSI | Unconnected (the FS-iA6B gives no analog or PWM RSSI on this board) |
-| PC13, PA10 | Spektrum (PA10 is also USART1_RX) | Unconnected; weak pull-up to 3.3 V on PA10 (team, review 0.3) |
-| PB10, PB11, PB4 | SBUS | Unconnected; weak pull-up to 3.3 V on PB11 (team, review 0.3) |
+| PC13, PA10 | Spektrum (PA10 is also USART1_RX) | Unconnected; R314 10 kΩ pull-up to 3.3 V on PA10 (team, review 0.3; DEC-079) |
+| PB10, PB11, PB4 | SBUS | Unconnected; R313 10 kΩ pull-up to 3.3 V on PB11 (team, review 0.3; DEC-079) |
 | PC14, PC15 | Board sense, read at boot | Unconnected (team, Q6) |
 
 Console (PA9) and NRST: the drawn F100 debug pads have neither (spec OPEN-029). Since the 2026-11-18 16:52 save CN603 carries the console; no NRST, reset by B901 (spec DEC-065, 2026-11-19). 2026-11-20 12:36 save (not committed): CN603 removed; the console (PA9 through R609), SWD, VREF, `RESET_B` and GND go to test pads TP601 to TP606, against DEC-065. TP605 is on `RESET_B` since the 12:56 save and reaches both NRST pins through D201 and D301 (spec OPEN-026, OPEN-039). No pin changed.
@@ -189,7 +189,7 @@ Closed findings stay listed with their outcome.
 - [ ] DMA streams and interrupt priorities (firmware, P2-005) and timer clock per peripheral (P1-001). TIM5 DMA and the SDMMC1 setup are in the software port (decisions file S2, S4).
 - [ ] P2-018: pull-down value on the PWM lines (F-16; no DShot since DEC-050).
 - [ ] OPEN-028: oscillator data meets the HSE bypass limits of both MCUs and the LCSC codes match the part numbers (spec CMP-010, 2026-11-19); two INFO margins on U302 are left (P1-014).
-- [ ] Pick the weak pull-up value on F100 PA10 and PB11, and the resistors for the px4io LEDs on PB14, PB15 and PA11.
+- [x] Pick the weak pull-up value on F100 PA10 and PB11, and the resistors for the px4io LEDs on PB14, PB15 and PA11. Done 2026-11-20: 10 kΩ and 220 Ω (spec DEC-079).
 - [ ] Run the datasheet text match on the rows marked `not checked`, and on the section 2 rows against the F100 DS.
 - [ ] Human confirms critical pins (power, SWD, USB, BOOT0, oscillator inputs) against the datasheet pinout figures.
 
