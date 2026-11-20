@@ -218,7 +218,7 @@
 					)
 				)
 			)
-			(property "Description" "Solder Pad"
+			(property "Description" "Solder pad"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -337,7 +337,7 @@
 					)
 				)
 			)
-			(property "Description" "Generic connectable  connector, single row, 01x03"
+			(property "Description" "Generic connector, single row, 01x03"
 				(at -1.016 9.652 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -525,7 +525,7 @@
 					)
 				)
 			)
-			(property "Description" "Generic connectable mounting pin connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(property "Description" "Generic connector, single row, 01x04, mounting pin"
 				(at -1.016 9.652 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -759,7 +759,7 @@
 					)
 				)
 			)
-			(property "Description" "Generic connector, single row, 01x06 with mounting pin"
+			(property "Description" "Generic connector, single row, 01x06, mounting pin"
 				(at 0 1.27 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -1052,7 +1052,7 @@
 					)
 				)
 			)
-			(property "Description" "Generic connectable mounting pin connector, single row, 01x10, script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(property "Description" "Generic connector, single row, 01x10, mounting pin"
 				(at 1.524 18.034 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -1628,7 +1628,29 @@
 					)
 				)
 			)
-			(property "Description" "Extremely low capacitance bidirectional ESD protection diode array , 3.3V Standoff, 0.25pF ±15kV"
+			(property "Description" "ESD protection diode array, bidirectional, 3.3V standoff, 0.25pF, ±15kV, DFN-10 1x2.5mm"
+				(at 0 -15.24 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR" "Nexperia"
+				(at 0 -15.24 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR.P/N" "PESD4USB3BBTBR-QZ"
 				(at 0 -15.24 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -2203,7 +2225,29 @@
 					)
 				)
 			)
-			(property "Description" "5V(Vswr) ESD Protection Diode 0.8pF"
+			(property "Description" "ESD protection diode, 0.8pF, SOD-882"
+				(at 0 8.89 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR" "Littelfuse"
+				(at 0 8.89 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR.P/N" "SP3031-01ETG"
 				(at 0 8.89 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -2499,7 +2543,18 @@
 					(justify left)
 				)
 			)
-			(property "Description" "MOSFET N-CH 30V 100mA SOT-323"
+			(property "Description" "N-channel MOSFET, 30V, 100mA, SOT-323"
+				(at 2.54 -15.24 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR.P/N" "2SK3018W"
 				(at 2.54 -15.24 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -6766,7 +6821,7 @@
 				)
 			)
 		)
-		(property "Description" "Extremely low capacitance bidirectional ESD protection diode array , 3.3V Standoff, 0.25pF ±15kV"
+		(property "Description" "ESD protection diode array, bidirectional, 3.3V standoff, 0.25pF, ±15kV, DFN-10 1x2.5mm"
 			(at 287.02 168.91 0)
 			(hide yes)
 			(show_name no)
@@ -6995,7 +7050,7 @@
 				)
 			)
 		)
-		(property "Description" "Extremely low capacitance bidirectional ESD protection diode array , 3.3V Standoff, 0.25pF ±15kV"
+		(property "Description" "ESD protection diode array, bidirectional, 3.3V standoff, 0.25pF, ±15kV, DFN-10 1x2.5mm"
 			(at 303.53 168.91 0)
 			(hide yes)
 			(show_name no)
@@ -7222,7 +7277,7 @@
 				)
 			)
 		)
-		(property "Description" "Extremely low capacitance bidirectional ESD protection diode array , 3.3V Standoff, 0.25pF ±15kV"
+		(property "Description" "ESD protection diode array, bidirectional, 3.3V standoff, 0.25pF, ±15kV, DFN-10 1x2.5mm"
 			(at 309.88 93.98 0)
 			(hide yes)
 			(show_name no)
@@ -7785,7 +7840,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x06 with mounting pin"
+		(property "Description" "Generic connector, single row, 01x06, mounting pin"
 			(at 179.07 71.12 0)
 			(hide yes)
 			(show_name no)
@@ -8282,7 +8337,7 @@
 				)
 			)
 		)
-		(property "Description" "5V(Vswr) ESD Protection Diode 0.8pF"
+		(property "Description" "ESD protection diode, 0.8pF, SOD-882"
 			(at 322.58 153.67 0)
 			(hide yes)
 			(show_name no)
@@ -9133,7 +9188,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connectable mounting pin connector, single row, 01x10, script generated (kicad-library-utils/schlib/autogen/connector/)"
+		(property "Description" "Generic connector, single row, 01x10, mounting pin"
 			(at 338.074 119.126 0)
 			(hide yes)
 			(show_name no)
@@ -9286,7 +9341,7 @@
 				)
 			)
 		)
-		(property "Description" "Extremely low capacitance bidirectional ESD protection diode array , 3.3V Standoff, 0.25pF ±15kV"
+		(property "Description" "ESD protection diode array, bidirectional, 3.3V standoff, 0.25pF, ±15kV, DFN-10 1x2.5mm"
 			(at 152.4 149.86 0)
 			(hide yes)
 			(show_name no)
@@ -9436,7 +9491,7 @@
 				)
 			)
 		)
-		(property "Description" "Solder Pad"
+		(property "Description" "Solder pad"
 			(at 158.75 245.11 0)
 			(hide yes)
 			(show_name no)
@@ -9682,7 +9737,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connectable mounting pin connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"
+		(property "Description" "Generic connector, single row, 01x04, mounting pin"
 			(at 336.55 68.58 0)
 			(hide yes)
 			(show_name no)
@@ -9937,7 +9992,7 @@
 				)
 			)
 		)
-		(property "Description" "DIODE SCHOTTKY 30V SOD-523"
+		(property "Description" "Schottky diode"
 			(at 254 161.29 0)
 			(hide yes)
 			(show_name no)
@@ -11053,7 +11108,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x06 with mounting pin"
+		(property "Description" "Generic connector, single row, 01x06, mounting pin"
 			(at 179.07 128.27 0)
 			(hide yes)
 			(show_name no)
@@ -11982,7 +12037,7 @@
 				)
 			)
 		)
-		(property "Description" "CONN HEADER 3POS 2.54mm SINGLE ROW TH R/A"
+		(property "Description" "Generic connector, single row, 01x03"
 			(at 307.594 222.758 0)
 			(hide yes)
 			(show_name no)
@@ -12111,7 +12166,7 @@
 				)
 			)
 		)
-		(property "Description" "Extremely low capacitance bidirectional ESD protection diode array , 3.3V Standoff, 0.25pF ±15kV"
+		(property "Description" "ESD protection diode array, bidirectional, 3.3V standoff, 0.25pF, ±15kV, DFN-10 1x2.5mm"
 			(at 152.4 217.17 0)
 			(hide yes)
 			(show_name no)
@@ -12263,7 +12318,7 @@
 				(justify left)
 			)
 		)
-		(property "Description" "MOSFET N-CH 30V 100mA SOT-323"
+		(property "Description" "N-channel MOSFET, 30V, 100mA, SOT-323"
 			(at 265.43 189.23 0)
 			(hide yes)
 			(show_name no)
@@ -12526,7 +12581,7 @@
 				)
 			)
 		)
-		(property "Description" "Solder Pad"
+		(property "Description" "Solder pad"
 			(at 186.69 264.16 0)
 			(hide yes)
 			(show_name no)
@@ -12616,7 +12671,7 @@
 				)
 			)
 		)
-		(property "Description" "5V(Vswr) ESD Protection Diode 0.8pF"
+		(property "Description" "ESD protection diode, 0.8pF, SOD-882"
 			(at 292.1 234.95 0)
 			(hide yes)
 			(show_name no)
@@ -13023,7 +13078,7 @@
 				)
 			)
 		)
-		(property "Description" "Solder Pad"
+		(property "Description" "Solder pad"
 			(at 186.69 245.11 0)
 			(hide yes)
 			(show_name no)
@@ -13361,7 +13416,7 @@
 				)
 			)
 		)
-		(property "Description" "Extremely low capacitance bidirectional ESD protection diode array , 3.3V Standoff, 0.25pF ±15kV"
+		(property "Description" "ESD protection diode array, bidirectional, 3.3V standoff, 0.25pF, ±15kV, DFN-10 1x2.5mm"
 			(at 152.4 92.71 0)
 			(hide yes)
 			(show_name no)
@@ -13963,7 +14018,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connectable mounting pin connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"
+		(property "Description" "Generic connector, single row, 01x04, mounting pin"
 			(at 179.07 191.77 0)
 			(hide yes)
 			(show_name no)
@@ -14177,7 +14232,7 @@
 				)
 			)
 		)
-		(property "Description" "Solder Pad"
+		(property "Description" "Solder pad"
 			(at 172.72 245.11 0)
 			(hide yes)
 			(show_name no)

@@ -369,7 +369,7 @@
 					)
 				)
 			)
-			(property "Footprint" "0_Conn_Header:SAMTEC_TSW-104-08-F-T-RA"
+			(property "Footprint" "0_Conn_PinHeader:SAMTEC_TSW-104-08-F-T-RA"
 				(at 1.27 -25.4 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -391,7 +391,29 @@
 					)
 				)
 			)
-			(property "Description" "Pin Header 12 Position 2.54mm Pitch Triple Row Through Hole, Right Angle"
+			(property "Description" "Pin header, triple row, 12 pins, 2.54mm pitch, right angle, through hole"
+				(at 1.27 -25.4 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR" "Samtec"
+				(at 1.27 -25.4 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR.P/N" "TSW-104-08-F-T-RA"
 				(at 1.27 -25.4 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -688,7 +710,7 @@
 					(justify bottom)
 				)
 			)
-			(property "Description" "Connector XT30PW30-M.G.* Male Plug Right Angle for RC ESC"
+			(property "Description" "XT30 power connector, male plug, right angle"
 				(at 0 7.62 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -698,6 +720,28 @@
 						(size 1.27 1.27)
 					)
 					(justify bottom)
+				)
+			)
+			(property "MFR" "Changzhou Amass Elec"
+				(at 0 7.62 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR.P/N" "XT30PW-M30.G.Y"
+				(at 0 7.62 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
 				)
 			)
 			(property "ki_fp_filters" "AMASS_*"
@@ -926,7 +970,7 @@
 					)
 				)
 			)
-			(property "Description" ""
+			(property "Description" "TVS/ESD diode, unidirectional"
 				(at 0 -5.08 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -1091,7 +1135,29 @@
 					)
 				)
 			)
-			(property "Description" "ESD DIODE 5VWM SOT-23"
+			(property "Description" "ESD protection diode, 5V standoff, SOT-23"
+				(at 22.86 -4.953 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR" "Nexperia"
+				(at 22.86 -4.953 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR.P/N" "PESD5V0U2BT,215"
 				(at 22.86 -4.953 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -4809,7 +4875,7 @@
 				)
 			)
 		)
-		(property "Description" "Pin Header 12 Position 2.54mm Pitch Triple Row Through Hole, Right Angle"
+		(property "Description" "Pin header, triple row, 12 pins, 2.54mm pitch, right angle, through hole"
 			(at 294.64 213.36 0)
 			(hide yes)
 			(show_name no)
@@ -5088,7 +5154,7 @@
 				)
 			)
 		)
-		(property "Description" "ESD DIODE 5VWM SOT-23"
+		(property "Description" "ESD protection diode, 5V standoff, SOT-23"
 			(at 285.75 161.163 0)
 			(hide yes)
 			(show_name no)
@@ -5913,7 +5979,7 @@
 				)
 			)
 		)
-		(property "Description" "Pin Header 12 Position 2.54mm Pitch Triple Row Through Hole, Right Angle"
+		(property "Description" "Pin header, triple row, 12 pins, 2.54mm pitch, right angle, through hole"
 			(at 294.64 93.98 0)
 			(hide yes)
 			(show_name no)
@@ -6757,7 +6823,7 @@
 				(justify bottom)
 			)
 		)
-		(property "Description" "Connector XT30PW30-M.G.* Male Plug Right Angle for RC ESC"
+		(property "Description" "XT30 power connector, male plug, right angle"
 			(at 76.2 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -7350,7 +7416,7 @@
 				)
 			)
 		)
-		(property "Description" "Pin Header 12 Position 2.54mm Pitch Triple Row Through Hole, Right Angle"
+		(property "Description" "Pin header, triple row, 12 pins, 2.54mm pitch, right angle, through hole"
 			(at 294.64 153.67 0)
 			(hide yes)
 			(show_name no)
@@ -8325,7 +8391,7 @@
 				)
 			)
 		)
-		(property "Description" "ESD DIODE 5VWM SOT-23"
+		(property "Description" "ESD protection diode, 5V standoff, SOT-23"
 			(at 302.26 220.853 0)
 			(hide yes)
 			(show_name no)
@@ -8753,7 +8819,7 @@
 				)
 			)
 		)
-		(property "Description" "ESD DIODE 5VWM SOT-23"
+		(property "Description" "ESD protection diode, 5V standoff, SOT-23"
 			(at 302.26 101.473 0)
 			(hide yes)
 			(show_name no)
@@ -9784,7 +9850,7 @@
 				)
 			)
 		)
-		(property "Description" "ESD DIODE 5VWM SOT-23"
+		(property "Description" "ESD protection diode, 5V standoff, SOT-23"
 			(at 285.75 101.473 0)
 			(hide yes)
 			(show_name no)
@@ -9912,7 +9978,7 @@
 				)
 			)
 		)
-		(property "Description" "CAP TANT 68uF ±20% 16V CASE-C-6032"
+		(property "Description" "Polarized capacitor"
 			(at 106.68 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -10058,7 +10124,7 @@
 				)
 			)
 		)
-		(property "Description" "ESD DIODE 5VWM SOT-23"
+		(property "Description" "ESD protection diode, 5V standoff, SOT-23"
 			(at 285.75 220.853 0)
 			(hide yes)
 			(show_name no)
@@ -10614,7 +10680,7 @@
 				)
 			)
 		)
-		(property "Description" "12.9VC Clamp 15.5A@10/1000us Ipp TVS DIODE SOD-123FL"
+		(property "Description" "TVS/ESD diode, unidirectional"
 			(at 85.09 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -10819,7 +10885,7 @@
 				)
 			)
 		)
-		(property "Description" "ESD DIODE 5VWM SOT-23"
+		(property "Description" "ESD protection diode, 5V standoff, SOT-23"
 			(at 302.26 161.163 0)
 			(hide yes)
 			(show_name no)

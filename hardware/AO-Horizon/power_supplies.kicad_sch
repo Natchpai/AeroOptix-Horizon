@@ -393,7 +393,7 @@
 					)
 				)
 			)
-			(property "Description" "Generic connector, single row, 01x06 with mounting pin"
+			(property "Description" "Generic connector, single row, 01x06, mounting pin"
 				(at 0 1.27 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -1073,6 +1073,28 @@
 					)
 				)
 			)
+			(property "MFR" "TI"
+				(at 1.27 -39.37 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR.P/N" "TPS2121RUXR"
+				(at 1.27 -39.37 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
 			(property "ki_keywords" "power mux ORing switchover TI"
 				(at 0 0 0)
 				(show_name no)
@@ -1383,7 +1405,7 @@
 					)
 				)
 			)
-			(property "Description" ""
+			(property "Description" "TVS/ESD diode, unidirectional"
 				(at 0 -5.08 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -1548,7 +1570,29 @@
 					)
 				)
 			)
-			(property "Description" "ESD DIODE 5VWM SOT-23"
+			(property "Description" "ESD protection diode, 5V standoff, SOT-23"
+				(at 22.86 -4.953 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR" "Nexperia"
+				(at 22.86 -4.953 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR.P/N" "PESD5V0U2BT,215"
 				(at 22.86 -4.953 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -1835,7 +1879,29 @@
 					)
 				)
 			)
-			(property "Description" "500mA Low Quiescent Current, Low Noise, High PSRR LDO Linear Regulator, Fixed 3.3V Output, 2.7-6.5V Input Voltage, VSON-8"
+			(property "Description" "LDO regulator, fixed 3.3V output, 500mA, 2.7-6.5V input, low noise, high PSRR, VSON-8"
+				(at 0 -29.21 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR" "TI"
+				(at 0 -29.21 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR.P/N" "TPS73533DRBR"
 				(at 0 -29.21 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -2086,7 +2152,29 @@
 					)
 				)
 			)
-			(property "Description" "2A Step-Down Converter with DCS-Control, Fixed 3.3V Output Voltage, 3-17V Input Voltage, QFN-16"
+			(property "Description" "Step-down converter, fixed 3.3V output, 2A, 3-17V input, DCS-Control, VQFN-16"
+				(at 0 -22.86 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR" "TI"
+				(at 0 -22.86 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR.P/N" "TPS62142RGTR"
 				(at 0 -22.86 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -2638,7 +2726,18 @@
 					(justify left)
 				)
 			)
-			(property "Description" "MOSFET N-CH 30V 100mA SOT-323"
+			(property "Description" "N-channel MOSFET, 30V, 100mA, SOT-323"
+				(at 2.54 -15.24 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR.P/N" "2SK3018W"
 				(at 2.54 -15.24 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -9599,7 +9698,7 @@
 				)
 			)
 		)
-		(property "Description" "500mA Low Quiescent Current, Low Noise, High PSRR LDO Linear Regulator, Fixed 3.3V Output, 2.7-6.5V Input Voltage, VSON-8"
+		(property "Description" "LDO regulator, fixed 3.3V output, 500mA, 2.7-6.5V input, low noise, high PSRR, VSON-8"
 			(at 339.09 194.31 0)
 			(hide yes)
 			(show_name no)
@@ -9891,7 +9990,7 @@
 				)
 			)
 		)
-		(property "Description" "2A Step-Down Converter with DCS-Control, Fixed 3.3V Output Voltage, 3-17V Input Voltage, QFN-16"
+		(property "Description" "Step-down converter, fixed 3.3V output, 2A, 3-17V input, DCS-Control, VQFN-16"
 			(at 156.21 205.74 0)
 			(hide yes)
 			(show_name no)
@@ -13238,7 +13337,7 @@
 				)
 			)
 		)
-		(property "Description" "ESD DIODE 5VWM SOT-23"
+		(property "Description" "ESD protection diode, 5V standoff, SOT-23"
 			(at 93.98 96.393 0)
 			(hide yes)
 			(show_name no)
@@ -13365,7 +13464,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x06 with mounting pin"
+		(property "Description" "Generic connector, single row, 01x06, mounting pin"
 			(at 45.72 82.55 0)
 			(hide yes)
 			(show_name no)
@@ -15060,7 +15159,7 @@
 				)
 			)
 		)
-		(property "Description" "TVS DIODE 5VWM 9.2VC SOD-123FL"
+		(property "Description" "TVS/ESD diode, unidirectional"
 			(at 63.5 62.23 0)
 			(hide yes)
 			(show_name no)
@@ -16264,7 +16363,7 @@
 				(justify left)
 			)
 		)
-		(property "Description" "MOSFET N-CH 30V 100mA SOT-323"
+		(property "Description" "N-channel MOSFET, 30V, 100mA, SOT-323"
 			(at 302.26 99.06 0)
 			(hide yes)
 			(show_name no)

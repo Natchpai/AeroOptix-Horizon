@@ -406,7 +406,29 @@
 					)
 				)
 			)
-			(property "Description" "single pole normally-open tactile switch"
+			(property "Description" "Tactile switch, SPST-NO, 4.2x3.2mm"
+				(at 0 -6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR" "C&K"
+				(at 0 -6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR.P/N" "PTS815SJM250SMTRLFS"
 				(at 0 -6.35 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -3349,7 +3371,7 @@
 				)
 			)
 		)
-		(property "Description" "single pole normally-open tactile switch"
+		(property "Description" "Tactile switch, SPST-NO, 4.2x3.2mm"
 			(at 124.46 87.63 0)
 			(hide yes)
 			(show_name no)

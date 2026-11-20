@@ -213,7 +213,7 @@
 					)
 				)
 			)
-			(property "Description" "Micro SD Card Socket with one card detection pin"
+			(property "Description" "Micro SD card socket, one card detect pin"
 				(at 21.844 -23.622 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -762,7 +762,18 @@
 					)
 				)
 			)
-			(property "Description" "STMicroelectronics Arm Cortex-M7 MCU, 2048KB flash, 1024KB RAM, 480 MHz, 1.71-3.6V, 82 GPIO, LQFP100"
+			(property "Description" "STMicroelectronics Arm Cortex-M7 MCU, 2048KB flash, 1024KB RAM, 480MHz, 1.71-3.6V, 82 GPIO, LQFP-100"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR" "ST"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -3471,7 +3482,18 @@
 					)
 				)
 			)
-			(property "Description" "1.6-3.3V CMOS Clock Oscillator"
+			(property "Description" "Clock oscillator, CMOS, 1.6-3.3V, 2.5x2.0mm"
+				(at 0 11.43 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR" "ECS"
 				(at 0 11.43 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -13596,7 +13618,7 @@
 				)
 			)
 		)
-		(property "Description" "STMicroelectronics Arm Cortex-M7 MCU, 2048KB flash, 1024KB RAM, 480 MHz, 1.71-3.6V, 82 GPIO, LQFP100"
+		(property "Description" "STMicroelectronics Arm Cortex-M7 MCU, 2048KB flash, 1024KB RAM, 480MHz, 1.71-3.6V, 82 GPIO, LQFP-100"
 			(at 214.63 146.05 0)
 			(hide yes)
 			(show_name no)
@@ -14503,7 +14525,7 @@
 				)
 			)
 		)
-		(property "Description" "1.6-3.3V CMOS Clock Oscillator"
+		(property "Description" "Clock oscillator, CMOS, 1.6-3.3V, 2.5x2.0mm"
 			(at 121.92 111.76 0)
 			(hide yes)
 			(show_name no)
@@ -14632,7 +14654,7 @@
 				)
 			)
 		)
-		(property "Description" "Micro SD Card Socket with one card detection pin"
+		(property "Description" "Micro SD card socket, one card detect pin"
 			(at 365.76 220.98 0)
 			(hide yes)
 			(show_name no)
@@ -15366,7 +15388,7 @@
 				)
 			)
 		)
-		(property "Description" "DIODE SCHOTTKY 30V SOD-523"
+		(property "Description" "Schottky diode"
 			(at 171.45 62.23 0)
 			(hide yes)
 			(show_name no)

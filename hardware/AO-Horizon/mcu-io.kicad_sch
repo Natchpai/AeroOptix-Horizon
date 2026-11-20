@@ -378,7 +378,29 @@
 					)
 				)
 			)
-			(property "Description" "Buffer, Non-Inverting 1 Element 1 Bit per Element Push-Pull Output SC-70-5, 1.65V ~ 5.5V"
+			(property "Description" "Single buffer, non-inverting, push-pull output, 1.65-5.5V, SC-70-5"
+				(at -1.27 19.05 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR" "TI"
+				(at -1.27 19.05 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR.P/N" "SN74LVC1G34DCKR"
 				(at -1.27 19.05 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -595,7 +617,18 @@
 					)
 				)
 			)
-			(property "Description" "STMicroelectronics Arm Cortex-M3 MCU, 64KB flash, 8KB RAM, 24 MHz, 2.0-3.6V, 37 GPIO, LQFP48"
+			(property "Description" "STMicroelectronics Arm Cortex-M3 MCU, 64KB flash, 8KB RAM, 24MHz, 2.0-3.6V, 37 GPIO, LQFP-48"
+				(at -19.05 -52.07 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR" "ST"
 				(at -19.05 -52.07 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -1675,7 +1708,18 @@
 					)
 				)
 			)
-			(property "Description" "Clock Oscillator"
+			(property "Description" "Clock oscillator, 2.5x2.0mm"
+				(at 0 11.43 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR" "ABRACON"
 				(at 0 11.43 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -7642,7 +7686,7 @@
 				)
 			)
 		)
-		(property "Description" "Buffer, Non-Inverting 1 Element 1 Bit per Element Push-Pull Output SC-70-5, 1.65V ~ 5.5V"
+		(property "Description" "Single buffer, non-inverting, push-pull output, 1.65-5.5V, SC-70-5"
 			(at 344.17 166.37 0)
 			(hide yes)
 			(show_name no)
@@ -9441,7 +9485,7 @@
 				)
 			)
 		)
-		(property "Description" "STMicroelectronics Arm Cortex-M3 MCU, 64KB flash, 8KB RAM, 24 MHz, 2.0-3.6V, 37 GPIO, LQFP48"
+		(property "Description" "STMicroelectronics Arm Cortex-M3 MCU, 64KB flash, 8KB RAM, 24MHz, 2.0-3.6V, 37 GPIO, LQFP-48"
 			(at 193.04 196.85 0)
 			(hide yes)
 			(show_name no)
@@ -9838,7 +9882,7 @@
 				)
 			)
 		)
-		(property "Description" "Clock Oscillator"
+		(property "Description" "Clock oscillator, 2.5x2.0mm"
 			(at 125.73 113.03 0)
 			(hide yes)
 			(show_name no)
@@ -9967,7 +10011,7 @@
 				)
 			)
 		)
-		(property "Description" "DIODE SCHOTTKY 30V SOD-523"
+		(property "Description" "Schottky diode"
 			(at 171.45 92.71 0)
 			(hide yes)
 			(show_name no)
