@@ -2148,7 +2148,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://optoelectronics.liteon.com/upload/download/DS22-2000-230/LTST-C191TBKT.PDF"
 			(at 267.97 162.56 0)
 			(hide yes)
 			(show_name no)
@@ -2488,7 +2488,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://optoelectronics.liteon.com/upload/download/DS22-2000-230/LTST-C191TBKT.PDF"
 			(at 267.97 100.33 0)
 			(hide yes)
 			(show_name no)
@@ -3469,7 +3469,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.everlighteurope.com/custom/files/datasheets/DSE-0025772.pdf"
 			(at 314.96 100.33 0)
 			(hide yes)
 			(show_name no)
@@ -3605,7 +3605,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "https://www.everlighteurope.com/custom/files/datasheets/DSE-0025772.pdf"
 			(at 314.96 162.56 0)
 			(hide yes)
 			(show_name no)
