@@ -8,6 +8,301 @@
 		(comment 1 "Sensor - Navigation")
 	)
 	(lib_symbols
+		(symbol "0_Capacitor:C"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "C"
+				(at 0.635 2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "C"
+				(at 0.635 -2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0.9652 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Unpolarized capacitor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "cap capacitor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "C_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "C_0_1"
+				(polyline
+					(pts
+						(xy -2.032 0.762) (xy 2.032 0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.032 -0.762) (xy 2.032 -0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "C_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 2.794)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 2.794)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "0_Resistor:R"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "R"
+				(at 2.032 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "R"
+				(at 0 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at -1.778 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Resistor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "R res resistor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "R_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "R_0_1"
+				(rectangle
+					(start -1.016 -2.54)
+					(end 1.016 2.54)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "R_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "0_Sensor_Magnetic:IST8310"
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -972,301 +1267,6 @@
 						)
 					)
 					(number "10"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "Device:C"
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0.254)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "C"
-				(at 0.635 2.54 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Value" "C"
-				(at 0.635 -2.54 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Footprint" ""
-				(at 0.9652 -3.81 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Unpolarized capacitor"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "cap capacitor"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_fp_filters" "C_*"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "C_0_1"
-				(polyline
-					(pts
-						(xy -2.032 0.762) (xy 2.032 0.762)
-					)
-					(stroke
-						(width 0.508)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -2.032 -0.762) (xy 2.032 -0.762)
-					)
-					(stroke
-						(width 0.508)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "C_1_1"
-				(pin passive line
-					(at 0 3.81 270)
-					(length 2.794)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 -3.81 90)
-					(length 2.794)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "Device:R"
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "R"
-				(at 2.032 0 90)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "R"
-				(at 0 0 90)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at -1.778 0 90)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Resistor"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "R res resistor"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_fp_filters" "R_*"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "R_0_1"
-				(rectangle
-					(start -1.016 -2.54)
-					(end 1.016 2.54)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "R_1_1"
-				(pin passive line
-					(at 0 3.81 270)
-					(length 1.27)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 -3.81 90)
-					(length 1.27)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -3197,7 +3197,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
+		(lib_id "0_Resistor:R")
 		(at 267.97 212.09 180)
 		(unit 1)
 		(body_style 1)
@@ -3285,6 +3285,17 @@
 			)
 		)
 		(property "MFR.P/N" "AC0402FR-0710KL"
+			(at 267.97 212.09 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 267.97 212.09 0)
 			(hide yes)
 			(show_name no)
@@ -3623,7 +3634,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
+		(lib_id "0_Capacitor:C")
 		(at 199.39 50.8 0)
 		(unit 1)
 		(body_style 1)
@@ -3721,6 +3732,17 @@
 				)
 			)
 		)
+		(property "STATUS" "CHECKED"
+			(at 199.39 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "7e260e1e-5705-493d-97df-1beaaf3fde41")
 		)
@@ -3737,7 +3759,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
+		(lib_id "0_Resistor:R")
 		(at 290.83 199.39 180)
 		(unit 1)
 		(body_style 1)
@@ -3825,6 +3847,17 @@
 			)
 		)
 		(property "MFR.P/N" "AC0402FR-0710KL"
+			(at 290.83 199.39 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 290.83 199.39 0)
 			(hide yes)
 			(show_name no)
@@ -4029,6 +4062,17 @@
 				)
 			)
 		)
+		(property "STATUS" "CHECKED"
+			(at 213.36 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "ae8811aa-a143-4fa0-87b3-b92da2da9d81")
 		)
@@ -4069,7 +4113,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
+		(lib_id "0_Resistor:R")
 		(at 124.46 55.88 180)
 		(unit 1)
 		(body_style 1)
@@ -4167,6 +4211,17 @@
 				)
 			)
 		)
+		(property "STATUS" "CHECKED"
+			(at 124.46 55.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "2b38e9fd-b2bb-4286-bc2c-9011b4db6a5b")
 		)
@@ -4183,7 +4238,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
+		(lib_id "0_Resistor:R")
 		(at 267.97 199.39 180)
 		(unit 1)
 		(body_style 1)
@@ -4281,6 +4336,17 @@
 				)
 			)
 		)
+		(property "STATUS" "CHECKED"
+			(at 267.97 199.39 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "9d3fbd97-8678-495f-a459-a1c65b57b1ba")
 		)
@@ -4297,7 +4363,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
+		(lib_id "0_Resistor:R")
 		(at 180.34 147.32 270)
 		(unit 1)
 		(body_style 1)
@@ -4384,6 +4450,17 @@
 			)
 		)
 		(property "MFR.P/N" "RC0402FR-07100KL"
+			(at 180.34 147.32 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 180.34 147.32 90)
 			(hide yes)
 			(show_name no)
@@ -4560,7 +4637,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
+		(lib_id "0_Capacitor:C")
 		(at 238.76 227.33 0)
 		(unit 1)
 		(body_style 1)
@@ -4649,6 +4726,17 @@
 			)
 		)
 		(property "MFR.P/N" "GRM188Z71C475KE21D"
+			(at 238.76 227.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 238.76 227.33 0)
 			(hide yes)
 			(show_name no)
@@ -4785,7 +4873,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
+		(lib_id "0_Capacitor:C")
 		(at 199.39 116.84 0)
 		(unit 1)
 		(body_style 1)
@@ -4873,6 +4961,17 @@
 			)
 		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
+			(at 199.39 116.84 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 199.39 116.84 0)
 			(hide yes)
 			(show_name no)
@@ -5066,7 +5165,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
+		(lib_id "0_Capacitor:C")
 		(at 231.14 116.84 0)
 		(unit 1)
 		(body_style 1)
@@ -5154,6 +5253,17 @@
 			)
 		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
+			(at 231.14 116.84 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 231.14 116.84 0)
 			(hide yes)
 			(show_name no)
@@ -5334,7 +5444,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
+		(lib_id "0_Resistor:R")
 		(at 146.05 157.48 180)
 		(unit 1)
 		(body_style 1)
@@ -5432,6 +5542,17 @@
 				)
 			)
 		)
+		(property "STATUS" "CHECKED"
+			(at 146.05 157.48 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "f76f3f72-9eb1-48ef-b7e5-81b25b2060d7")
 		)
@@ -5448,7 +5569,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
+		(lib_id "0_Resistor:R")
 		(at 161.29 90.17 180)
 		(unit 1)
 		(body_style 1)
@@ -5546,6 +5667,17 @@
 				)
 			)
 		)
+		(property "STATUS" "CHECKED"
+			(at 161.29 90.17 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "76f14e20-f869-47bd-8191-f3eea82c136f")
 		)
@@ -5562,7 +5694,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
+		(lib_id "0_Capacitor:C")
 		(at 231.14 50.8 0)
 		(unit 1)
 		(body_style 1)
@@ -5650,6 +5782,17 @@
 			)
 		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
+			(at 231.14 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 231.14 50.8 0)
 			(hide yes)
 			(show_name no)
@@ -5755,7 +5898,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
+		(lib_id "0_Capacitor:C")
 		(at 231.14 189.23 0)
 		(unit 1)
 		(body_style 1)
@@ -5843,6 +5986,17 @@
 			)
 		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
+			(at 231.14 189.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 231.14 189.23 0)
 			(hide yes)
 			(show_name no)
@@ -6291,7 +6445,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
+		(lib_id "0_Capacitor:C")
 		(at 199.39 189.23 0)
 		(unit 1)
 		(body_style 1)
@@ -6379,6 +6533,17 @@
 			)
 		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
+			(at 199.39 189.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 199.39 189.23 0)
 			(hide yes)
 			(show_name no)
@@ -7066,7 +7231,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
+		(lib_id "0_Resistor:R")
 		(at 146.05 170.18 180)
 		(unit 1)
 		(body_style 1)
@@ -7154,6 +7319,17 @@
 			)
 		)
 		(property "MFR.P/N" "AC0402FR-0710KL"
+			(at 146.05 170.18 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 146.05 170.18 0)
 			(hide yes)
 			(show_name no)
@@ -7336,7 +7512,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
+		(lib_id "0_Resistor:R")
 		(at 290.83 212.09 180)
 		(unit 1)
 		(body_style 1)
@@ -7434,6 +7610,17 @@
 				)
 			)
 		)
+		(property "STATUS" "CHECKED"
+			(at 290.83 212.09 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "ff30f7e6-fa84-4004-80ed-2e9d92136b8b")
 		)
@@ -7450,7 +7637,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
+		(lib_id "0_Resistor:R")
 		(at 116.84 55.88 180)
 		(unit 1)
 		(body_style 1)
@@ -7538,6 +7725,17 @@
 			)
 		)
 		(property "MFR.P/N" "RC0402FR-075K1L"
+			(at 116.84 55.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 116.84 55.88 0)
 			(hide yes)
 			(show_name no)
@@ -7641,7 +7839,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
+		(lib_id "0_Resistor:R")
 		(at 161.29 102.87 180)
 		(unit 1)
 		(body_style 1)
@@ -7729,6 +7927,17 @@
 			)
 		)
 		(property "MFR.P/N" "AC0402FR-0710KL"
+			(at 161.29 102.87 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 161.29 102.87 0)
 			(hide yes)
 			(show_name no)

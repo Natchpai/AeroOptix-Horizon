@@ -780,6 +780,12 @@
           "show": true
         },
         {
+          "group_by": false,
+          "label": "STATUS",
+          "name": "STATUS",
+          "show": true
+        },
+        {
           "group_by": true,
           "label": "Exclude from Board",
           "name": "${EXCLUDE_FROM_BOARD}",
@@ -863,7 +869,7 @@
       "include_excluded_from_bom": true,
       "name": "",
       "sort_asc": true,
-      "sort_field": "Value"
+      "sort_field": "Description"
     },
     "bus_aliases": {
       "AUX_TIM5": [
@@ -949,6 +955,11 @@
           "name": "MFR.P/N",
           "url": false,
           "visible": false
+        },
+        {
+          "name": "STATUS",
+          "url": false,
+          "visible": false
         }
       ],
       "hop_over_size_choice": 0,
@@ -984,7 +995,7 @@
         "uuid": "76162bf1-0d95-48cb-b65a-4de551455d04"
       }
     ],
-    "used_designators": "#FLG1,#FLG101-106,#FLG201,#FLG301,#FLG801,#PWR1-20,#PWR101-120,#PWR201-218,#PWR301-317,#PWR401-410,#PWR501-522,#PWR601-617,#PWR701-723,#PWR801-811,#PWR901-906,B901,C101-121,C201-217,C301-311,C401-404,C501-507,C601-603,C701-706,C801-805,CN101,CN601-603,CN701-706,CN801-803,D101-106,D701-707,D801-807,D901-903,L101-102,Q901-903,R101-108,R115,R201-208,R301-312,R501-511,R601-612,R701-714,R801-814,R901-909,SD201,U101-103,U201,U301,U303,U401-402,U501-503,U601",
+    "used_designators": "#FLG1,#FLG101-106,#FLG201,#FLG301,#FLG801,#PWR1-20,#PWR101-120,#PWR201-218,#PWR301-317,#PWR401-410,#PWR501-522,#PWR601-617,#PWR701-723,#PWR801-813,#PWR901-906,B901,C101-121,C201-217,C301-311,C401-404,C501-507,C601-603,C701-706,C801-805,CN101,CN601-603,CN701-706,CN801-804,D101-106,D701-707,D801-807,D901-903,L101-102,Q901-903,R101-108,R115,R201-208,R301-312,R501-511,R601-612,R701-714,R716-721,R801-826,R901-909,SD201,U101-103,U201,U301,U303,U401-402,U501-503,U601",
     "variants": []
   },
   "sheets": [
@@ -1052,7 +1063,7 @@
     "PROJECT_ID": "NP-AO-2601",
     "PROJECT_NAME": "AeroOptix - Horizon",
     "RELEASE_DATE": "Dec-2026",
-    "SCH_DRAWING_DATE": "11-Nov-2026",
+    "SCH_DRAWING_DATE": "20-Nov-2026",
     "SCH_DRAWING_NAME": "NATCHANON T.",
     "SCH_REVIEW_DATE": "",
     "SCH_REVIEW_NAME": "",

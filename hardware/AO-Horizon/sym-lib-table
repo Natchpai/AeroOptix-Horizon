@@ -19,4 +19,8 @@
 	(lib (name "0_Oscillator") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Oscillator.kicad_symdir") (options "") (descr ""))
 	(lib (name "0_Switch") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Switch.kicad_symdir") (options "") (descr ""))
 	(lib (name "0_Logic_74x") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Logic_74x.kicad_symdir") (options "") (descr ""))
+	(lib (name "0_Resistor") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Resistor.kicad_symdir") (options "") (descr ""))
+	(lib (name "0_Capacitor") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Capacitor.kicad_symdir") (options "") (descr ""))
+	(lib (name "0_Inductor") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Inductor.kicad_symdir") (options "") (descr ""))
+	(lib (name "0_LED") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_LED.kicad_symdir") (options "") (descr ""))
 )
