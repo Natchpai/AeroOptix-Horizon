@@ -4509,6 +4509,17 @@
 				)
 			)
 		)
+		(property "STATUS" "CHECKED"
+			(at 213.36 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "10"
 			(uuid "3ad7e493-ad16-4be2-ad5c-c41d99709844")
 		)
@@ -4976,6 +4987,17 @@
 			)
 		)
 		(property "MFR.P/N" "IST8310"
+			(at 213.36 213.36 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 213.36 213.36 0)
 			(hide yes)
 			(show_name no)
