@@ -9,7 +9,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.70, 2026-11-20): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.71, 2026-11-20): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -98,7 +98,7 @@ State of the saved KiCad files (2026-11-19 16:03 save, commit `fe46bcf`). Sheets
 | USB and debug sheet | In capture; parts drawn, not approved (OPEN-010); CN602 (H743) JST-SH 6-pin in the Pixhawk Debug Mini order, no NRST, reset by B901 (DEC-065); F100 debug on test pads TP601 to TP606, with TP605 on `RESET_B` (DEC-075); USB-C CC resistors 5.1 kΩ.; VBUS sense on PA9 through a 5.1 kΩ / 10 kΩ divider, so PA9 stays under 4 V when the MCU is unpowered (DEC-080); USB ESD is the ST USBLC6-2SC6, LCSC C7519 (DEC-084). |
 | External connectors | Drawn, not decided (spec 4.2): `conn-peripherals` (TELEM 1 and 2, I2C4, rangefinder, GPS1) linked to the MCU sheets by sheet pins; `conn-actuator` with MAIN 1 to 4 ESC headers (no + pin), MAIN 5 to 8 and AUX 1 to 4 on `+6V`, the CN804 XT30 UBEC input, 6 V bulk capacitors, a TVS and the servo-rail divider. Decided 2026-11-19: C803 68 µF 16 V tantalum (DEC-058) and D807 SMF7.5A unidirectional TVS (DEC-059). RC IN drawn (2026-11-19 15:25 save): SP3031-01ETG ESD (D708 since the 23:17 save; DEC-071), R715 22 Ω (R714 before the 16:03 save) and the U303 SN74LVC1G34DCKR buffer to F100 PA8 (DEC-056, DEC-057); CN706 is a 1x3 2.54 mm header since the 2026-11-20 save, with pin 1 `+5V`, 2 PPM, 3 `GND`, kept as drawn (DEC-072). 100 kΩ pull-downs on all 15 PWM lines (DEC-073). Spare outputs: 22 Ω series, pull-downs and pads CN707 to CN710 drawn (DEC-069; pad footprint open, OPEN-039). Pinouts open (OPEN-023). |
 | PCB | No footprints. The 80 × 80 mm `Edge.Cuts` rectangle is a working area, not the board outline (OPEN-009). |
-| Library | Project parts for the parts in use. Sensor footprints: IST8310 and BMP581 confirmed by the human owner, with a 30 µm solder mask margin on purpose; ICP-20100 and ICM-45686 match the datasheet body, pitch and pad numbers, land patterns wait for TDK AN-000140 and AN-000393 (OPEN-004, P2-012). New: Amass XT30PW-M symbol, footprint and 3D model. |
+| Library | Project parts for the parts in use. Sensor footprints: IST8310 and BMP581 confirmed by the human owner, with a 30 µm solder mask margin on purpose; ICP-20100 and ICM-45686 match the datasheet body, pitch and pad numbers and are kept without the TDK land-pattern app notes (DEC-086). New: Amass XT30PW-M symbol, footprint and 3D model. |
 
 ## Hardware Design
 
@@ -131,7 +131,7 @@ Interface allocations agreed with the software team (DEC-014, DEC-018) are in sp
 
 | Check | Result | Evidence |
 |---|---|---|
-| Schematic ERC | Whole schematic, 2026-11-20 14:56 export: 0 errors, 0 warnings | [`AO-Horizon-erc.rpt`](hardware/AO-Horizon/documents/verification/AO-Horizon-erc.rpt) (replaces `ERC.rpt`); Claude's `kicad-cli` ERC on the 14:57 save: 0 violations. An ERC pass is not a proof of correctness |
+| Schematic ERC | Whole schematic, 2026-11-20 15:18 export: 0 errors, 0 warnings | [`AO-Horizon-erc.rpt`](hardware/AO-Horizon/documents/verification/AO-Horizon-erc.rpt) (replaces `ERC.rpt`); Claude's `kicad-cli` ERC after the 2026-11-20 `Rate` fill (D709, R315 drawn): 0 violations. An ERC pass is not a proof of correctness |
 | Schematic review | Power sheet (2026-11-03 save); connector and actuator sheets (2026-11-19 12:49 save); MCU sheets (2026-11-20, commit `6b01a14`); sensor and USB sheets (2026-11-20 14:29 save) | `sch-review`, spec 4.3 and 4.2; findings open (OPEN-021, OPEN-023); OPEN-038 closed. MCU sheets: the PA9 VBUS MAJOR is fixed (DEC-080); MINOR and INFO findings in `todo.md`. Sensor and USB sheets: no connectivity defect; findings closed by DEC-081 to DEC-085. All 12 bus links traced with the KiCad netlist (16:03 save): every member reaches its allocated pin; the spare outputs reach no pad yet |
 | PCB DRC | `NOT_VERIFIED` | PCB is empty |
 | BOM / footprint review | `NOT_VERIFIED` | `TBD` |

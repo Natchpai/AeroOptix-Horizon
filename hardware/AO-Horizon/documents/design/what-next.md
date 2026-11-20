@@ -67,7 +67,7 @@ H743 values below are from ST DS12110 Rev 11 via NotebookLM (2026-11-12).
 - [ ] Mark unused pins with no-connect flags once the allocation is final (PA10, PA15, PB3, PB4 and the other free pins).
 - [ ] `3V3_PG` reaches no MCU pin now (local net, DEC-039). Decide if the H743 should read it; the pin allocation gives it no pin (OPEN-026).
 - [ ] USB: PA9 VBUS divider done (DEC-080). Remove the temporary `PWR_FLAG` on `VBUS` from the power sheet if ERC allows (P2-022).
-- [ ] INFO | U601 / USB D+, D- | `NOT_VERIFIED` | U601 is now the ST part, LCSC C7519 (DEC-084). On `conn-usb-debug` the data lines pass through U601 USBLC6-2SC6 (connector side on pins 1 and 3, MCU side on pins 6 and 4), so they depend on the internal link between pins 1-6 and 3-4. Check in the ST datasheet that those pin pairs are joined inside, or route D+ and D- past the pins on one net.
+- [x] INFO | U601 / USB D+, D- | `NOT_VERIFIED`, accepted (DEC-091) | U601 is now the ST part, LCSC C7519 (DEC-084). On `conn-usb-debug` the data lines pass through U601 USBLC6-2SC6 (connector side on pins 1 and 3, MCU side on pins 6 and 4), so they depend on the internal link between pins 1-6 and 3-4. Check in the ST datasheet that those pin pairs are joined inside, or route D+ and D- past the pins on one net.
 - [ ] INFO | Library `0_Conn_Card:Micro_SD_Card_Det1`, `0_Conn_USB:USB_C_Receptacle_USB2.0_16P` | `VERIFIED` (preflight, 2026-11-14) | The library symbols have an empty Footprint field; the placed SD? and CN601 have footprints. Fill the library field or leave it generic, then run `/kicad-link-audit`.
 - [ ] microSD: 10 kΩ pull-ups on CMD and DAT0 to DAT3, no DET pull-up, no card detect (DEC-078); ESD still open (P2-022).
 - [ ] Board LEDs decided as drawn (DEC-067); check brightness on the bench. No board buzzer: `BUZZER_TIM3_CH3` drives Q701, which switches GPS1 pin 9 (`GPS1_BUZZER_B`, 13:33 save; OPEN-023).
@@ -93,8 +93,7 @@ Parts decided (DEC-008, DEC-010, DEC-011). Current state: spec 4.2 "Schematic st
 - [ ] `+3V3A` load: add ICP-20100, BMP581 and IST8310 VDD currents to the power budget (3.3 V_IMU rows are `TBD`).
 - [ ] IST8310 AVDD on the LDO: check the TPS73533DRBR output tolerance against the 3.6 V absolute maximum (OPEN-004).
 - [x] BMP581 and IST8310 footprints confirmed by you on 2026-11-19 (spec 0.62), with a 30 µm solder mask margin on purpose (P2-012).
-- [ ] ICP-20100: land pattern (AN-000140) and pin 1 corner (P2-012).
-- [ ] ICM-45686: pad size and pin 1 corner against TDK AN-000393 (P2-012).
+- [x] ICP-20100 and ICM-45686 footprints kept as they are, without the TDK app notes (DEC-086, 2026-11-20; P2-012).
 - [ ] BMP384 fallback: compare footprint and pinout with the BMP581 (P1-015, OPEN-004). Address per SEN-002.
 - [ ] ICM-45686 pin 9 unused: drawn with a no-connect flag. Confirm NC or tie to VDDIO in the datasheet (the IMU record note is `NOT_VERIFIED`).
 - [ ] SPI chip-selects (P1-003); I2C2 pull-ups are covered above (P1-003).

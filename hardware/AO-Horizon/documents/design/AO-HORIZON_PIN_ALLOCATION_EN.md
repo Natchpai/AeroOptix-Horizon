@@ -1,6 +1,6 @@
 # AeroOptix-Horizon: MCU Pin Allocation
 
-**Revision:** 0.27
+**Revision:** 0.28
 **Updated:** 2026-11-20
 **Status:** Draft. The software team's answers (pinmap review 0.2 and 0.3, decisions file) are applied. The IO MCU is the STM32F100C8T6B (DEC-002). Partly drawn in the schematic (spec 4.2 "Schematic state"); the drawn labels match this allocation (F-19). HSE from CMOS oscillators (DEC-044, DEC-045). Actuator outputs per DEC-050 and DEC-051 (F100 MAIN 1 to 8, H743 AUX 1 to 4); no pin changed. DMA and interrupt priority checks are firmware work (P2-005); timer clocks are part of the pin review (P1-001). Not a verification record.
 **Requirement refs:** IF-010 to IF-024, IF-030 to IF-037, IF-040 to IF-051, SEN-001 to SEN-003, DEC-002, DEC-014 to DEC-018, DEC-043 to DEC-047, DEC-050, DEC-051, DEC-053, DEC-054, DEC-056, DEC-057, DEC-060, DEC-068, DEC-069, DEC-079. Checklist tasks: P1-001 (partial), P1-003 (partial).
@@ -144,7 +144,7 @@ Reserved for px4io-v2 functions (F-13). Not used for anything else. The LEDs are
 | PB15 | Amber LED (`LED_AMBER`) | Fitted (team, Q20) as a red LED in place of amber: D904, net `LED_IO_RED_B` (DEC-079) |
 | PA11 | Green LED | Fitted (team, Q20): D906, net `LED_IO_GREEN_B`; off when armed with active-low wiring (DEC-079) |
 | PA15 | Servo fault input | Unconnected |
-| PA5, PA12 | RSSI | Unconnected (the FS-iA6B gives no analog or PWM RSSI on this board) |
+| PA5, PA12 | RSSI | Unconnected (the FS-iA6B gives no analog or PWM RSSI on this board); PA12 has a 10 kΩ pull-down, R315 (spec DEC-088) |
 | PC13, PA10 | Spektrum (PA10 is also USART1_RX) | Unconnected; R314 10 kΩ pull-up to 3.3 V on PA10 (team, review 0.3; DEC-079) |
 | PB10, PB11, PB4 | SBUS | Unconnected; R313 10 kΩ pull-up to 3.3 V on PB11 (team, review 0.3; DEC-079) |
 | PC14, PC15 | Board sense, read at boot | Unconnected (team, Q6) |
