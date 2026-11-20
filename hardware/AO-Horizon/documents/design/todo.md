@@ -19,12 +19,10 @@ None open. (The ICM-45686 and ICP-20100 land patterns are accepted without the T
 
 ## INFO
 
-- [ ] INFO | D902, D903, D905, D906 | `VERIFIED` (`kicad-cli` netlist, 13:37 save) | The blue and green LEDs have an empty Datasheet field; the red ones (D901, D904) link the LCSC data sheet. | Fill in the Datasheet field. (DEC-067, DEC-079)
+None open.
 
-Closed 2026-11-20 (human owner's answers): Q701 diode (DEC-087), PA12 pull-down (DEC-088), U302 margins (DEC-089), D807 at 6 V (DEC-090), U303 and U601 pin maps (DEC-091), capacitor `Rate` fields (filled), software notes (moved to `AO-HORIZON_SW_NOTES_EN.md`), layout and silkscreen notes (checklist P3-002, P3-007), `+6V` bulk (OPEN-021), servo ADC during spikes (OPEN-033 closed), ICP-20100 power-up (P4-015), library audit (P3-007).
+Closed 2026-11-20 (human owner's answers): LED Datasheet fields (filled), Q701 diode (DEC-087), PA12 pull-down (DEC-088), U302 margins (DEC-089), D807 at 6 V (DEC-090), U303 and U601 pin maps (DEC-091), capacitor `Rate` fields (filled), software notes (moved to `AO-HORIZON_SW_NOTES_EN.md`), layout and silkscreen notes (checklist P3-002, P3-007), `+6V` bulk (OPEN-021), servo ADC during spikes (OPEN-033 closed), ICP-20100 power-up (P4-015), library audit (P3-007).
 
 ## Not checked yet (need data)
 
-- [ ] CN101 PM02D pin order (1-2 5 V, 3 SCL, 4 SDA, 5-6 GND) against the PM02D documentation; DS-009 has only an analog power port (OPEN-023).
-- [ ] Servo plug contact rating on CN801 to CN803 (about 2.1 A per pin at stall; the Samtec TSW rating applies only with Samtec sockets) and servo tolerance of the 12.9 V D807 clamp (OPEN-021, CMP-011).
-- [ ] Device-side pinouts of the SiK V3 and the GPS V1: Holybro shows them only as images (OPEN-023).
+None open. Closed 2026-11-20: CN101 pin order (confirmed by the human owner), servo plug rating and clamp tolerance (DEC-093), SiK V3 and GPS V1 pinouts (OPEN-023, DEC-092).

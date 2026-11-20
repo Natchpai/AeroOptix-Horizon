@@ -1,11 +1,11 @@
 # AeroOptix-Horizon: Board Notes for the Software Team
 
-**Revision:** 0.1
+**Revision:** 0.2
 **Updated:** 2026-11-20
 **From:** Hardware
 **To:** Software team
 **Status:** Firmware notes from the schematic reviews of 2026-11-20. Not a verification record. The board is in schematic capture; nothing is built yet. The HSE bypass request is in [AO-HORIZON_SW_CLOCK_NOTE_EN.md](AO-HORIZON_SW_CLOCK_NOTE_EN.md).
-**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.71 (IF-047, DEC-080, DEC-083, DEC-088, 4.2)
+**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.72 (IF-047, DEC-080, DEC-083, DEC-088, DEC-092, 4.2)
 
 Each note says what the board does, what we ask from the firmware, and where the evidence is. "Needed" means the board will not work as intended without it; "preferred" means it works either way.
 
@@ -19,6 +19,7 @@ Each note says what the board does, what we ask from the firmware, and where the
 | SW-4 | BMP581 INT, U502 pin 7 (DEC-083) | INT through R512 10 kΩ to `GND` | Keep `INT_CONFIG.int_en` off (the reset default). Do not turn on the interrupt output. | Needed | BMP581 DS004-13 §6.2 via NotebookLM (`VERIFIED`) |
 | SW-5 | F100 PA12 RSSI input (DEC-088) | `F1_PA12` with R315 10 kΩ to `GND`; nothing else connected | px4io sets PA12 as a timer input for PWM RSSI. Keep PWM RSSI off; with the pull-down the input reads low. | Preferred | PX4 v1.16.2 io-v2 `board_config.h` line 130 (`VERIFIED`) |
 | SW-6 | ICP-20100 INT, U501 pin 7 (DEC-083) | Not connected | None needed: INT is open-drain with an internal pull-up. Leave its interrupt sources masked. | Info | DS-000416 §8 via NotebookLM (`VERIFIED`) |
+| SW-7 | SiK V3 telemetry radios on TELEM1 and TELEM2, CN701 and CN702 (DEC-092) | TX, RX, `+5V`, `GND` only; CTS and RTS not connected | Keep hardware flow control off, on the radio (SiK `RTSCTS` setting) and on the H743 serial port. | Needed | Holybro SiK V3 pinout image (radio has CTS and RTS pins); the SiK default is `ASSUMED` |
 
 ## 2. Not for firmware
 

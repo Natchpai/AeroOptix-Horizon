@@ -126,6 +126,7 @@ Notable changes to this hardware project are documented here.
 - DEC-086 (specification rev 0.71, human owner, 2026-11-20): the ICM-45686 (`Bosch_LGA-14_3x2.5mm_P0.5mm`) and ICP-20100 (`ST_HLGA-10_2x2mm_P0.5mm_LayoutBorder3x2y`) footprints are kept as they are. Pad length, keep-out, pin 1 corner and the U501 mask bridge are not checked against TDK AN-000393 and AN-000140.
 - DEC-087 to DEC-091 (specification rev 0.71, human owner, 2026-11-20): D709 BAT54XV2T1G flyback diode from the GPS1 buzzer line (Q701 drain) to `+5V`; R315 10 kΩ pull-down on F100 PA12; U302 clock margins, D807 on the 6 V rail and the U303 and U601 pin maps accepted as they are.
 - `AO-HORIZON_SW_NOTES_EN.md` rev 0.1: board notes for the software team (H743 LED config, PA9 VBUS input, IST8310 soft reset, BMP581 INT, F100 PA12).
+- DEC-092 and DEC-093 (specification rev 0.72, human owner, 2026-11-20): the SiK V3 is the 100 mW or 500 mW model on 5 V; the servo plug contact rating and the servo tolerance of the 12.9 V D807 clamp are accepted without data.
 
 ### Changed
 
@@ -231,6 +232,7 @@ Notable changes to this hardware project are documented here.
 - Specification rev 0.70 and checklist rev 0.63 (2026-11-20): DEC-081 to DEC-085 recorded in 4.2 (microSD, IMU, barometer, magnetometer and USB rows), OPEN-004 (footprint check), OPEN-010, OPEN-011, P2-009, P2-012, P2-022, P4-015, the next actions and the verdict; new 4.2 review paragraph for the sensor and USB sheets; DEC-080 now names C216 for the PA9 capacitor. IMU and barometer selection records rev 0.13: footprint check and pin 7 notes. `todo.md` and `what-next.md`: closed MINOR items removed, new INFO items (C218 `Rate`, U601 pinout, IST8310 soft reset, ICP-20100 power-up order).
 - Specification rev 0.71 and checklist rev 0.64 (2026-11-20): DEC-086 recorded; OPEN-004 item (2) closed; P2-012 done. Selection records, `todo.md` and `what-next.md` updated.
 - Schematic (2026-11-20): D709 and R315 drawn by the human owner; Claude filled the empty `Rate` field on 57 capacitors at the human owner's request (50V on GCM155R71H104KE02D and GRM1555C1H103JE01D, 16V on GRM188Z71C225KE43D and GRM188Z71C475KE21D, from the Murata voltage code), with KiCad closed. Netlist unchanged apart from `Rate`; `kicad-cli` ERC 0 violations. Spec 0.71 and checklist 0.64 also record DEC-087 to DEC-091, OPEN-021, OPEN-023, OPEN-028, P2-022, P3-002 and P3-007; pin allocation rev 0.28 (PA12); `todo.md` INFO items closed except the LED Datasheet fields.
+- Schematic (2026-11-20, human owner): Datasheet field filled on D902, D903, D905 and D906. Specification rev 0.72 and checklist rev 0.65: DEC-092, DEC-093, OPEN-021, OPEN-023 (CN101 confirmed by the human owner; GPS V1 and SiK V3 pinouts match, from Holybro's official images read by Claude), P2-015 done, P2-016. Software notes rev 0.2 (SW-7, SiK flow control off). `todo.md` has no open items.
 
 ### Fixed
 
