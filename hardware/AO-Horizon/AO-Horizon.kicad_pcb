@@ -151,7 +151,7 @@
 	(property "SCH_DRAWING_NAME" "NATCHANON T.")
 	(property "SCH_REVIEW_DATE" "")
 	(property "SCH_REVIEW_NAME" "")
-	(property "STATUS" "DRAFT")
+	(property "STATUS" "PRELIMINARY")
 	(gr_rect
 		(start 110 60)
 		(end 190 140)

@@ -82,8 +82,9 @@ export const systemBlocks: Block[] = [
     kind: 'external',
     label: 'Telemetry radio',
     sub: 'Holybro SiK V3, MAVLink',
-    refs: ['IF-010', 'DEC-053'],
+    refs: ['IF-010', 'DEC-053', 'DEC-092'],
     open: ['OPEN-034'],
+    note: 'The 100 mW or 500 mW model, on 5 V from Tel1 pin 1 (DEC-092). CTS and RTS are not connected, so hardware flow control stays off.',
   },
   {
     id: 'rx',
@@ -107,8 +108,8 @@ export const systemBlocks: Block[] = [
     level: 'system',
     kind: 'external',
     label: 'GPS + compass',
-    sub: 'Holybro M9N (to confirm)',
-    refs: ['IF-012', 'IF-049'],
+    sub: 'Holybro M10/M9N GPS V1',
+    refs: ['IF-012', 'IF-049', 'DEC-070'],
     open: ['OPEN-023'],
   },
   {
@@ -240,7 +241,7 @@ export const systemBlocks: Block[] = [
     kind: 'connector',
     label: 'USB-C',
     sub: 'Device only',
-    refs: ['IF-022'],
+    refs: ['IF-022', 'DEC-080', 'DEC-084'],
     open: ['OPEN-006'],
   },
   {
@@ -249,7 +250,7 @@ export const systemBlocks: Block[] = [
     kind: 'io',
     label: 'microSD slot',
     sub: 'No card detect',
-    refs: ['IF-044'],
+    refs: ['IF-044', 'DEC-078', 'DEC-081'],
   },
   {
     id: 'o-dbg',
@@ -555,7 +556,7 @@ export const boardBlocks: Block[] = [
     sub: '6-pin CLIK-Mate',
     refs: ['IF-048', 'PWR-001'],
     open: ['OPEN-023'],
-    note: 'The power sheet still draws a 6-pin JST-GH (OPEN-023).',
+    note: 'Pin order 1-2 5 V, 3 SCL, 4 SDA, 5-6 GND, confirmed by the human owner (OPEN-023).',
   },
   // Connectors (cable side) and on-board I/O (kind io)
   {
@@ -609,8 +610,9 @@ export const boardBlocks: Block[] = [
     kind: 'connector',
     label: 'USB-C',
     sub: 'Device only',
-    refs: ['IF-022'],
+    refs: ['IF-022', 'DEC-080', 'DEC-084'],
     open: ['OPEN-006'],
+    note: 'VBUS sense on PA9 through the R603 5k1 / R604 10k divider, so PA9 stays under 4 V when the MCU is unpowered (DEC-080). ESD: ST USBLC6-2SC6 (DEC-084).',
   },
   {
     id: 'j-sd',
@@ -618,7 +620,8 @@ export const boardBlocks: Block[] = [
     kind: 'io',
     label: 'microSD slot',
     sub: 'No card detect',
-    refs: ['IF-044'],
+    refs: ['IF-044', 'DEC-078', 'DEC-081'],
+    note: '10 kΩ pull-ups on CMD and DAT0 to DAT3, no card detect (DEC-078); 100 nF and 2.2 µF at the card supply (DEC-081).',
   },
   {
     id: 'j-dbg',
@@ -633,8 +636,9 @@ export const boardBlocks: Block[] = [
     level: 'board',
     kind: 'io',
     label: 'F100 SWD pads',
-    sub: 'Bench only',
-    refs: ['IF-051'],
+    sub: 'Test pads, bench only',
+    refs: ['IF-051', 'DEC-075'],
+    note: 'TP601 to TP606: VREF, console TX, SWDIO, SWCLK, reset and GND (DEC-075).',
   },
   {
     id: 'j-rcin',
@@ -679,7 +683,8 @@ export const boardBlocks: Block[] = [
     kind: 'io',
     label: 'Spare outputs × 3',
     sub: 'Pads only',
-    refs: range('IF', 17, 19),
+    refs: [...range('IF', 17, 19), 'DEC-069', 'DEC-076'],
+    note: 'Pads CN707 to CN709 (SPARE1 to SPARE3) and CN710 (GND), 2.0 mm SMD, each output with 22 Ω and a 100 kΩ pull-down (DEC-069, DEC-073, DEC-076).',
   },
   {
     id: 'buzzer',
@@ -687,8 +692,9 @@ export const boardBlocks: Block[] = [
     kind: 'io',
     label: 'Buzzer driver',
     sub: 'Q701, to GPS1',
-    refs: ['IF-046', 'DEC-068'],
+    refs: ['IF-046', 'DEC-068', 'DEC-070', 'DEC-087'],
     open: ['OPEN-023'],
+    note: 'Q701 switches GPS1 pin 9 (BUZZER-) to GND; D709 BAT54XV2T1G flyback diode to +5V (DEC-087).',
   },
   {
     id: 'leds',
@@ -696,7 +702,8 @@ export const boardBlocks: Block[] = [
     kind: 'io',
     label: 'Board LEDs',
     sub: 'Red, blue, green',
-    refs: ['IF-047'],
+    refs: ['IF-047', 'DEC-067'],
+    note: 'D901 to D903 on PE2 to PE4, active low (DEC-067); the green LED needs a board config entry (IF-047). The F100 px4io LEDs D904 to D906 (PB14, PB15, PA11, DEC-079) are not drawn here.',
   },
 ]
 
@@ -767,8 +774,8 @@ export const boardLinks: Link[] = [
     from: 'i2c2',
     to: 'mag',
     bus: 'i2c',
-    label: '0x0E',
-    refs: ['SEN-003'],
+    label: '0x0C',
+    refs: ['SEN-003', 'DEC-047'],
   },
   // MCU link
   {
@@ -1075,7 +1082,7 @@ export const powerBlocks: Block[] = [
     sub: 'TPS73533DRBR',
     refs: ['PWR-013', 'DEC-043', 'DEC-027', 'CMP-009'],
     open: ['OPEN-011'],
-    note: 'Part decided: TPS73533DRBR (DEC-027). +3V3A feeds the VDD pins of all sensors; their VDDIO pins stay on +3V3 (DEC-043). The load and the VDDIO-before-VDD power-up order are open (OPEN-011).',
+    note: 'Part decided: TPS73533DRBR (DEC-027). +3V3A feeds the VDD pins of all sensors; their VDDIO pins stay on +3V3 (DEC-043). The load is open, and the power-up order has a bench check (OPEN-011, DEC-085).',
   },
   {
     id: 'pw-r3v3',
@@ -1109,7 +1116,7 @@ export const powerBlocks: Block[] = [
     sub: 'ICP-20100, BMP581, IST8310',
     refs: ['SEN-002', 'SEN-003', 'DEC-043'],
     open: ['OPEN-004', 'OPEN-011'],
-    note: 'VDD (IST8310 AVDD) on +3V3A; VDDIO (IST8310 DVDD) on +3V3 (DEC-043). VDDIO-before-VDD power-up order not checked (OPEN-011).',
+    note: 'VDD (IST8310 AVDD) on +3V3A; VDDIO (IST8310 DVDD) on +3V3 (DEC-043). Power-up order: the BMP581 allows any order, the ICP-20100 window is accepted for a bench check (DEC-085), the IST8310 states none (OPEN-011).',
   },
   {
     id: 'pw-imu',
@@ -1119,7 +1126,7 @@ export const powerBlocks: Block[] = [
     sub: 'ICM-45686, VDD',
     refs: ['SEN-001', 'DEC-043'],
     open: ['OPEN-011'],
-    note: 'VDD on +3V3A; VDDIO on +3V3 (DEC-043). VDDIO-before-VDD power-up order not checked (OPEN-011).',
+    note: 'VDD on +3V3A; VDDIO on +3V3 (DEC-043). The ICM-45686 states no VDDIO-before-VDD order; bench check P4-015 (OPEN-011).',
   },
   {
     id: 'pw-ports',

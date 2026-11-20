@@ -8,6 +8,161 @@
 		(comment 1 "Sensor - IMU")
 	)
 	(lib_symbols
+		(symbol "0_Capacitor:C"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "C"
+				(at 0.635 2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "C"
+				(at 0.635 -2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0.9652 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Unpolarized capacitor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "cap capacitor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "C_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "C_0_1"
+				(polyline
+					(pts
+						(xy -2.032 0.762) (xy 2.032 0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.032 -0.762) (xy 2.032 -0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "C_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 2.794)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 2.794)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "0_Sensor_Motion:ICM-45686"
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -214,7 +369,7 @@
 					)
 				)
 				(pin passive line
-					(at 6.35 -21.59 90)
+					(at 26.67 -12.7 180)
 					(length 3.81)
 					(name "RESV"
 						(effects
@@ -350,161 +505,6 @@
 						)
 					)
 					(number "14"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "Device:C"
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0.254)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "C"
-				(at 0.635 2.54 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Value" "C"
-				(at 0.635 -2.54 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Footprint" ""
-				(at 0.9652 -3.81 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Unpolarized capacitor"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "cap capacitor"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_fp_filters" "C_*"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "C_0_1"
-				(polyline
-					(pts
-						(xy -2.032 0.762) (xy 2.032 0.762)
-					)
-					(stroke
-						(width 0.508)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -2.032 -0.762) (xy 2.032 -0.762)
-					)
-					(stroke
-						(width 0.508)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "C_1_1"
-				(pin passive line
-					(at 0 3.81 270)
-					(length 2.794)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 -3.81 90)
-					(length 2.794)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -945,17 +945,9 @@
 		(color 0 0 0 0)
 		(uuid "a7186f42-1445-4f50-b472-18350e92c9ef")
 	)
-	(junction
-		(at 213.36 119.38)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "b4a263ae-f33c-4c6e-af32-12b8ff55a663")
-	)
-	(junction
-		(at 213.36 213.36)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "d88a73c7-33d0-4cff-932a-f047aaeb5a7e")
+	(no_connect
+		(at 240.03 203.2)
+		(uuid "184cc016-5e4d-47da-b07d-c358f3c10b1e")
 	)
 	(no_connect
 		(at 240.03 177.8)
@@ -968,6 +960,10 @@
 	(no_connect
 		(at 186.69 109.22)
 		(uuid "57b06aef-9961-4a7b-ac9b-1863477d64b8")
+	)
+	(no_connect
+		(at 240.03 109.22)
+		(uuid "72c54fcd-0408-4fb4-a610-503b3997c27d")
 	)
 	(no_connect
 		(at 240.03 83.82)
@@ -1121,7 +1117,7 @@
 	)
 	(wire
 		(pts
-			(xy 213.36 119.38) (xy 213.36 121.92)
+			(xy 213.36 118.11) (xy 213.36 121.92)
 		)
 		(stroke
 			(width 0)
@@ -1181,7 +1177,7 @@
 	)
 	(wire
 		(pts
-			(xy 213.36 213.36) (xy 213.36 215.9)
+			(xy 213.36 212.09) (xy 213.36 215.9)
 		)
 		(stroke
 			(width 0)
@@ -1241,16 +1237,6 @@
 	)
 	(wire
 		(pts
-			(xy 219.71 213.36) (xy 213.36 213.36)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5eb3fa84-1df9-428b-93c2-20f01251a68c")
-	)
-	(wire
-		(pts
 			(xy 215.9 60.96) (xy 226.06 60.96)
 		)
 		(stroke
@@ -1268,16 +1254,6 @@
 			(type default)
 		)
 		(uuid "682b5253-be3c-4129-a504-a1332196e4ba")
-	)
-	(wire
-		(pts
-			(xy 219.71 212.09) (xy 219.71 213.36)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7ccc6f36-f606-4638-9dfb-fe0874012fc2")
 	)
 	(wire
 		(pts
@@ -1318,26 +1294,6 @@
 			(type default)
 		)
 		(uuid "96a591fc-1d84-429e-af48-52366b5fe408")
-	)
-	(wire
-		(pts
-			(xy 213.36 212.09) (xy 213.36 213.36)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "997fff08-c6a9-46c4-b8c1-f4fc3b184247")
-	)
-	(wire
-		(pts
-			(xy 219.71 119.38) (xy 219.71 118.11)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9c810b1f-092f-4f56-a67e-6d0f1801e6b5")
 	)
 	(wire
 		(pts
@@ -1398,16 +1354,6 @@
 			(type default)
 		)
 		(uuid "ab2456bc-fa89-4d35-ac38-d27c02c8d89b")
-	)
-	(wire
-		(pts
-			(xy 213.36 118.11) (xy 213.36 119.38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b5da6a35-2ec6-4d13-9bef-6a6d97a26d62")
 	)
 	(wire
 		(pts
@@ -1478,16 +1424,6 @@
 			(type default)
 		)
 		(uuid "f26b3d5b-04ce-4afd-b71b-102ecd9c22d0")
-	)
-	(wire
-		(pts
-			(xy 219.71 119.38) (xy 213.36 119.38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f53e7016-d2ae-41ce-9abb-4b13cc1094fe")
 	)
 	(bus
 		(pts
@@ -1871,7 +1807,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
+		(lib_id "0_Capacitor:C")
 		(at 195.58 66.04 0)
 		(unit 1)
 		(body_style 1)
@@ -1958,7 +1894,29 @@
 				)
 			)
 		)
+		(property "Rate" "50V"
+			(at 195.58 66.04 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
+			(at 195.58 66.04 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 195.58 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -2073,6 +2031,17 @@
 			)
 		)
 		(property "MFR.P/N" "ICM-45686"
+			(at 213.36 96.52 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 213.36 96.52 0)
 			(hide yes)
 			(show_name no)
@@ -2233,6 +2202,17 @@
 				)
 			)
 		)
+		(property "STATUS" "CHECKED"
+			(at 213.36 190.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "14"
 			(uuid "4be20fba-2028-43e5-93a5-061e6ee85c3e")
 		)
@@ -2285,7 +2265,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
+		(lib_id "0_Capacitor:C")
 		(at 226.06 66.04 0)
 		(unit 1)
 		(body_style 1)
@@ -2372,7 +2352,29 @@
 				)
 			)
 		)
+		(property "Rate" "50V"
+			(at 226.06 66.04 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
+			(at 226.06 66.04 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 226.06 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -2509,7 +2511,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
+		(lib_id "0_Capacitor:C")
 		(at 195.58 160.02 0)
 		(unit 1)
 		(body_style 1)
@@ -2596,7 +2598,29 @@
 				)
 			)
 		)
+		(property "Rate" "50V"
+			(at 195.58 160.02 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
+			(at 195.58 160.02 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 195.58 160.02 0)
 			(hide yes)
 			(show_name no)
@@ -2968,7 +2992,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
+		(lib_id "0_Capacitor:C")
 		(at 226.06 160.02 0)
 		(unit 1)
 		(body_style 1)
@@ -3055,7 +3079,29 @@
 				)
 			)
 		)
+		(property "Rate" "50V"
+			(at 226.06 160.02 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MFR.P/N" "GCM155R71H104KE02D"
+			(at 226.06 160.02 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
 			(at 226.06 160.02 0)
 			(hide yes)
 			(show_name no)

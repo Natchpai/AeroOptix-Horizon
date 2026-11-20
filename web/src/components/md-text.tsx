@@ -13,7 +13,7 @@ export function MdText({ text }: { text: string }) {
           return (
             <code
               key={i}
-              className='rounded bg-muted px-1 py-0.5 font-mono text-[0.85em]'
+              className='rounded bg-muted px-1 py-0.5 font-mono text-[0.85em] [overflow-wrap:anywhere]'
             >
               {p.slice(1, -1)}
             </code>
