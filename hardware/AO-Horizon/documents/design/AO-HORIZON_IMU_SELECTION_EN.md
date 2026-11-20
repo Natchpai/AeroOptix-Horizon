@@ -1,7 +1,7 @@
 # AeroOptix-Horizon: IMU Selection Summary
 
-**Revision:** 0.12
-**Updated:** 2026-11-19
+**Revision:** 0.13
+**Updated:** 2026-11-20
 **Status:** Part confirmed by the team (DEC-008). Datasheet values and implementation are not verified. Not a verification record.
 **Requirement refs:** SEN-001, CMP-003 (spec). Decisions: DEC-008, DEC-009, DEC-043 (replaces DEC-025). Checklist task: P0-008.
 **Decision owner:** Team
@@ -88,7 +88,7 @@ DigiKey checked 2026-10-16; LCSC checked 2026-10-18 from a page fetch. USD. Not 
 ## 5. Open checks
 
 - [ ] Human confirms the DS values in sections 2 and 3 against DS-000489 Rev 1.1: Table 3, Table 9, Table 10, §4.5, §10.2.
-- [ ] Get the land pattern from TDK AN-000393 and compare it with the library footprint `0_Package_LGA:Bosch_LGA-14_3x2.5mm_P0.5mm` (a stock Bosch land copied on 2026-10-19; OPEN-004, P2-012). Its pad count, pitch and pad-row spans match DS §10.2; pad size and pin 1 corner are not checked. Since 2026-11-19 the footprint sets a 30 µm solder mask margin, chosen by the human owner (spec 0.62). The BF claim of a footprint shared with ICM-42688-P is `NOT_VERIFIED`.
+- [ ] Get the land pattern from TDK AN-000393 and compare it with the library footprint `0_Package_LGA:Bosch_LGA-14_3x2.5mm_P0.5mm` (a stock Bosch land copied on 2026-10-19; OPEN-004, P2-012). Its pad count, pitch and pad-row spans match DS §10.2; pad size and pin 1 corner are not checked. Since 2026-11-19 the footprint sets a 30 µm solder mask margin, chosen by the human owner (spec 0.62). The BF claim of a footprint shared with ICM-42688-P is `NOT_VERIFIED`. 2026-11-20 check (spec OPEN-004): body 3 × 2.5 mm, 14 pads, 0.5 mm pitch, 0.25 mm pad width and pad numbers match DS-000489 r1.1; pad length (0.675 mm, 0.1 mm past the body edge), keep-out and pin 1 corner wait for AN-000393. RESV (pin 7) is now a no-connect (DEC-082): on `GND` its default-on pull-up needs a firmware write (DS-000489 Table 10).
 - [ ] Decide how to tie reserved pins 2, 3, 7, 10, 11 and record the matching `pe_trim` setting for firmware.
 - [ ] Confirm errata for ICM-45686.
 - [ ] Secure a source for 2 × ICM-45686 per board, and check JLCPCB eligibility.

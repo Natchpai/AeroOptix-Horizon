@@ -11,13 +11,11 @@ Sources: `sch-review` of `conn-actuator` and `conn-peripherals` (2026-11-19, com
 
 ## MAJOR
 
-None open. (The PA9 VBUS MAJOR from the 2026-11-20 `sch-review` is fixed in the 14:21 save, DEC-080.)
+None open. (The `sch-review` of the sensor and USB sheets on 2026-11-20 raised IST8310 RSTN; it has an internal pull-up, so it is not a defect.) (The PA9 VBUS MAJOR from the 2026-11-20 `sch-review` is fixed in the 14:21 save, DEC-080.)
 
 ## MINOR
 
-- [ ] MINOR | Sensor and USB sheets (MCU sheets reviewed 2026-11-20, see below) | `NOT_VERIFIED` | Team first pass found OK: H743 and F100 decoupling, VDDA filters, VCAP 2 × 2.2 µF, BOOT0/BOOT1 pull-downs, HSE bypass inputs, H7↔F1 UART cross with 22 Ω, SPI1/SPI4 IMU direction and INT lines, I2C2 pull-ups, sensor straps (0x63, 0x46, 0x0C), IST8310 C1 4.7 µF, USB D+/D−, CC 5.1 kΩ, USBLC6-2SC6, VBUS sense, debug connectors. Not checked by the team: sensor decoupling values against each datasheet, IST8310 VPP pin, power-up order (OPEN-011). | Check the open points, and run `sch-review` on these sheets before layout (P2-009).
-- [ ] MINOR | SD1 pin 4 VDD / `+3V3` | `VERIFIED` (`kicad-cli` netlist; spec 4.2) | No decoupling capacitor at the microSD socket: the 7 × 100 nF on `mcu-main-fc` go to the 5 VDD pins, VBAT and U202. 100 nF plus about 10 µF at a card socket is common practice (`ASSUMED`, no cited requirement); card insertion and write current spikes draw from `+3V3` near the MCU. | Add 100 nF plus bulk at SD1 VDD, or record that a shared capacitor sits close to SD1. (DEC-078, P2-022)
-- [ ] MINOR | ICP-20100, ICM-45686 footprints | `NOT_VERIFIED` | Team list of items open before layout. ICP-20100 has no land pattern in its datasheet (BARO_MAG_SELECTION line 185); the ICM-45686 footprint is not checked against TDK AN-000393 (IMU_SELECTION line 91). | Check both footprints before layout (OPEN-004, P2-012).
+- [ ] MINOR | ICP-20100, ICM-45686 land patterns | `NOT_VERIFIED` | Body, pad count, pitch, pad width and pad numbers match the datasheets (check 2026-11-20). Pad length, keep-out and pin 1 corner need TDK AN-000393 (ICM-45686) and AN-000140 (ICP-20100), which are not in the notebooks. U501 corner pads are 0.125 mm apart with 0 mask margin. | Download both app notes from the TDK product pages; Claude adds them to the notebooks with approval and re-checks. Check the fab mask-bridge minimum. (OPEN-004, P2-012)
 
 ## INFO
 
@@ -35,6 +33,11 @@ None open. (The PA9 VBUS MAJOR from the 2026-11-20 `sch-review` is fixed in the 
 - [ ] INFO | C301, C214, C215, MCU 100 nF | `VERIFIED` (DocID16455 Rev 9 Figure 10, DS12110 Rev 11 Table 15 via NotebookLM) | Layout notes: C301 4.7 µF must connect at F100 VDD3 (pin 48); C214 and C215 need ESR under 100 mΩ (MLCC normally meets it, `ASSUMED`); each 100 nF close to its VDD pin. | Apply at placement (P3).
 - [ ] INFO | U301 PA12 / `F1_PA12` | `VERIFIED` (PX4 v1.16.2 io-v2 `board_config.h` line 130) | px4io sets PA12 as a floating timer input (`GPIO_TIM_RSSI`); on this board it is unconnected. | Keep PWM RSSI off in PX4, or add a pull-down.
 - [ ] INFO | U201 PA9 / `USB_FS_VBUS` | `VERIFIED` (DS12110 Table 11 footnote 4, Table 50; PX4 v1.16.2 fmu-v6c `board_config.h` line 202) | With the R603 5k1 / R604 10k divider PA9 reads high with or without the PX4 pull-down (2.81 to 3.28 V with it on, `ESTIMATED`). | Tell the software team: PA9 as a plain input with no pull-down and `VBDEN` off is preferred; bench-check PA9 and USB detection (P4). (DEC-080)
+
+- [ ] INFO | C218 (2u2, C576485) | `VERIFIED` (`kicad-cli` netlist, 14:29 save) | `Rate` field empty; GRM188Z71C225KE43D is 16 V. | Fill in `16V`. (DEC-081)
+- [ ] INFO | U601 USBLC6-2SC6 (C7519) | `NOT_VERIFIED` | D+ and D- reach the MCU only through the U601 links (pins 1 to 6, 3 to 4); the ST page timed out, so the pinout is not checked on the ST datasheet. | Check the ST datasheet pin diagram. (DEC-084, OPEN-010)
+- [ ] INFO | U503 IST8310 | `VERIFIED` (IST8310 V1.8 §3.5, `sch-review` subagent) | Re-POR needs AVDD below 0.1 V for 10 ms, so a short USB replug may not reset it. | Tell the software team: soft-reset the IST8310 at driver start.
+- [ ] INFO | U501 power-up order | `ESTIMATED` | VDDIO is up about 0.5 ms before VDD; accepted (DEC-085). | Bench check of baro start-up (P4-015).
 
 ## Not checked yet (need data)
 

@@ -1,7 +1,7 @@
 # AeroOptix-Horizon: Barometer and Magnetometer Selection Summary
 
-**Revision:** 0.12
-**Updated:** 2026-11-19
+**Revision:** 0.13
+**Updated:** 2026-11-20
 **Status:** ICP-20100 confirmed by the team (DEC-010). BMP390 removed on 2026-10-21. The team accepted BMP581 as barometer 2 on 2026-10-24, with BMP384 as fallback (DEC-010, decisions file D7); the fallback fit is open (OPEN-004; P1-015, deferred). Magnetometer changed from BMM150 to iSentek IST8310 by the human owner on 2026-10-24 (DEC-011); the team accepted it at 0x0E the same day (pinmap review Q11). The human owner changed the address to 0x0C, as strapped, on 2026-11-14 (DEC-047). Lifecycle and availability risks are open. Datasheet values and implementation are not verified. Not a verification record.
 **Requirement refs:** SEN-002, SEN-003, CMP-004, CMP-005, OPEN-004, DEC-047 (spec). Supply rails: DEC-043 (`+3V3A` on the sensor VDD pins and IST8310 AVDD; VDDIO and IST8310 DVDD on `+3V3`). Checklist tasks: P0-009, P0-010.
 **Decision owner:** Team (barometers); human owner (magnetometer change)
@@ -182,7 +182,7 @@ Dated snapshot: stock and price are from the dates shown and are not refreshed. 
 - [ ] Confirm IST8310 lifecycle and a supplier (iSentek, LCSC or distributor).
 - [ ] Get the ICP-20100 supply range and operating temperature, and the BMP581 operating temperature, from their datasheets (NotebookLM or user-supplied values). Land patterns are in the footprint checks (OPEN-004).
 - [ ] Set the address straps on I2C2: ICP-20100 0x63, BMP581 0x46 (SDO low), IST8310 0x0C with CAD0 and CAD1 both low (DEC-047; P1-003, P1-017). The address sets do not overlap (re-check table). IST8310 DRDY and RSTN stay unconnected (team, Q11); RSTN has an internal pull-up.
-- [ ] Check the library footprints against the datasheet drawings (OPEN-004, P2-012). The ICP-20100 symbol pin map matches Table 18. The IST8310 stock `LGA-16_3x3mm_P0.5mm` footprint is confirmed by the human owner on 2026-11-19 (spec 0.62; no land pattern in the datasheet), with a 30 µm solder mask margin. Open: ICP-20100 has no land pattern in its datasheet (AN-000140) and its pads are wider than terminal b.
+- [ ] Check the library footprints against the datasheet drawings (OPEN-004, P2-012). The ICP-20100 symbol pin map matches Table 18. The IST8310 stock `LGA-16_3x3mm_P0.5mm` footprint is confirmed by the human owner on 2026-11-19 (spec 0.62; no land pattern in the datasheet), with a 30 µm solder mask margin. Open: ICP-20100 has no land pattern in its datasheet (AN-000140) and its pads are wider than terminal b. 2026-11-20 check (spec OPEN-004): body, pad count, pitch, pad width and pad numbers of `ST_HLGA-10_2x2mm_P0.5mm_LayoutBorder3x2y` match DS-000416 r1.3; pad length, keep-out and pin 1 corner wait for AN-000140; corner pads are 0.125 mm apart with 0 mask margin. Unused INT (pin 7) is a no-connect (DEC-083): it is open-drain with an internal pull-up (DS-000416 §8). The BMP581 INT goes to `GND` through R512 10 kΩ (DEC-083).
 - [ ] Confirm that PX4 `icp201xx` supports ICP-20100. The team says it does (pinmap review section 5); not checked by hardware (`NOT_VERIFIED`).
 - [ ] Check JLCPCB assembly eligibility (section 4).
 
