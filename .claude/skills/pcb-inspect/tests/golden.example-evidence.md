@@ -41,7 +41,9 @@ local X would give `(159.0625, 84.95)` mm, where no `+5V` track ends.
 ## Board totals
 
 The saved file has 306 top-level `footprint` forms, 1599 `segment` forms, no
-`arc` track forms, 797 `via` forms and 133 `zone` forms, and no net table.
+`arc` track forms, 797 `via` forms, 133 top-level `zone` forms plus one `zone`
+inside a footprint (a keepout near line 38629), and no net table. `zone_count`
+is 134.
 
 ## `/Top/Power Supplies/+5VUSB` routing geometry
 

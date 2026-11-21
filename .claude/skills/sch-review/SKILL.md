@@ -84,10 +84,11 @@ manufacturer or device checklist.
    sheet's symbol list from the `.kicad_sch` directly.
    Record the scope the queries actually covered and any parser limits. Ask for a human
    visual check where native data cannot settle a question.
-3. **Account for every pin.** For each IC in scope, run `local-net <ref>` (`pins <ref>` does not print the
-   status) and put
+3. **Account for every pin.** For each IC in scope, run `local-net <ref> --limit 0`
+   (`pins <ref>` does not print the status; the default limit of 20 cuts the
+   pin list of a large IC) and put
    every pin of every unit in one group by its `local_connection_status`:
-   - connected: `LOCAL_WIRE_PATH` or `LABEL_ANCHOR_ONLY`
+   - connected: `LOCAL_WIRE_PATH`, `LABEL_ANCHOR_ONLY` or `PIN_CONTACT_ONLY`
    - no-connect: `NO_CONNECT_MARKER`
    - unresolved: `NO_LOCAL_CONNECTION_FOUND`, `CONFLICTING_NO_CONNECT`, no
      status, or a truncated pin list

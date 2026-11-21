@@ -54,22 +54,28 @@ Resolve the script and project paths first; do not assume the working directory.
 `python <skill dir>/scripts/query_sch.py <command> [target] --project <root.kicad_sch> [--limit <n>] [--max-files <n>]`
 
 - `--project` takes the **root** schematic (the sheet at the top of the
-  hierarchy) or its directory. Do not pass a child sheet as the root: parent
-  links and other instances can be lost.
+  hierarchy) or its directory. For a directory, the root is
+  `<name>.kicad_sch` next to the one `<name>.kicad_pro`; without a project
+  file the directory must hold one `.kicad_sch`. Do not pass a child sheet as
+  the root: parent links and other instances can be lost.
 - `--pin <n>` works with `project-net` only (required when the component has
   several nets); other commands reject it.
 - `--limit` bounds every list in the output, nested ones too (see JSON
-  contract, truncation).
+  contract, truncation). Default 20, maximum 200; `--limit 0` means no
+  bound, for example to list every pin of a large IC.
 - `--sheet <name>` and `--prefix <p>` work with `components` only. `--sheet`
   takes a sheet name, file name or file stem. `--prefix U` keeps `U1` and
   `U104`, not `USB1`. References that start with `#` are listed only when
-  the prefix starts with `#`.
+  the prefix starts with `#`: `--prefix '#'` lists all of them, `--prefix
+  '#PWR'` only `#PWR1`, `#PWR2`, ...
 - When the user describes a part ("the first IC") instead of giving a
   reference, list candidates with `components`; do not guess designators.
 - `net <name>` matches the label or power symbol text exactly (case
   sensitive), for example `+5V` or `SPI_CLK`, not a KiCad net path such as
   `/Power/+5V`. A bus member name (for example `SPI_CLK` from `{SPI}`) is a
-  net name; a bus name is not.
+  net name; a bus name is not. KiCad saves some characters as escapes
+  (`SS/TR` as `SS{slash}TR`); either form matches, and `saved_names` shows
+  the saved text.
 - `bus <name>` takes a bus label or sheet pin name (`{SPI}`, `D[0..7]`,
   `P{A B}`) or an alias name (`SPI` also matches `{SPI}`). Without a name it
   lists every bus name and alias.
@@ -83,9 +89,9 @@ Resolve the script and project paths first; do not assume the working directory.
 
 | Command | Purpose |
 |---|---|
-| `summary` | Sheets and component counts. |
+| `summary` | Per schematic file: `symbol_count` (every placed symbol, power symbols too), `component_count` (references without `#`), child sheets. A reused sheet file is counted once. |
 | `components [--sheet <name>] [--prefix <p>]` | List reference, value, `lib_id` and instance path. |
-| `component <ref>` | Locate a component; its properties. |
+| `component <ref>` | Locate a component; all its properties (`properties`). |
 | `sheet <name>` | Locate a hierarchical sheet. |
 | `pins <ref>` | Symbol pins with local wire/label geometry. |
 | `local-net <ref>` | Sheet-local wires, junctions, labels, power symbols. |
@@ -155,11 +161,20 @@ Report the scope actually reached, not the one requested, if expansion failed.
 - Every successful command returns `mode`, `target`, `root`, `results`,
   `total_matches`, `truncated`, `missing_sheets`, `skipped_outside_project`,
   `verification`, `limitations`, and `warnings`.
+- `local-net` gives each pin a `local_connection_status`:
+  `LOCAL_WIRE_PATH` (wire at the pin), `LABEL_ANCHOR_ONLY` (a label on the
+  pin, no wire), `PIN_CONTACT_ONLY` (a pin of another symbol, a power symbol
+  too, placed on the pin, no wire), `NO_CONNECT_MARKER`,
+  `CONFLICTING_NO_CONNECT` (no-connect marker on a connected pin) or
+  `NO_LOCAL_CONNECTION_FOUND`. Pins come from the unit that the queried
+  reference uses in its sheet instance.
 - `project-net` returns one result: `PROJECT_CONNECTIVITY_EVIDENCE` (source pin,
   connected pins, label/power evidence, truncation flags, limitations), or
   `TARGET_NOT_FOUND_OR_UNRESOLVED` / `AMBIGUOUS_TARGET_NETS`. Report either
   unresolved status as `NOT_VERIFIED`; it does not show a connection is absent.
   `project_net_verified` is always false: it is not KiCad netlist parity.
+  Starting pins that reach each other are one net (for example the shared
+  power pin of each placed unit), and each reference and pin is listed once.
 - `net` returns one result per separate net that carries the name, with
   `matched_by` (label kind, instance path, file) and the same evidence
   fields as `project-net`. A local label repeated in several sheet instances
@@ -192,8 +207,8 @@ Report the scope actually reached, not the one requested, if expansion failed.
   proof that either tool is wrong. Zero differences is `VERIFIED` evidence
   that the `project-net` graph matches KiCad for every multi-pin net of the
   saved files, not that the design is correct.
-- `verification` is set by the command. No value means the design was
-  verified:
+- `verification` is set by the command. No value claims the design was
+  verified; each one names the kind of partial evidence:
 
   | Command | `verification` |
   |---|---|
@@ -211,12 +226,11 @@ Report the scope actually reached, not the one requested, if expansion failed.
 - `limitations` is also set by the command; report the lines it prints.
 - Errors (invalid input, unreadable files, bad bounds, traversal failure) exit
   nonzero with `verification: NOT_VERIFIED`; infer nothing from them.
-- Truncation: check `truncated`, `pins_truncated`, `connected_pins_truncated`,
-  `matched_by_truncated`, `names_truncated`, `bus_links_truncated`,
-  `members_truncated`, `occurrences_truncated`, `sheets_truncated`,
-  `candidate_labels_truncated` and `parent_labels_truncated` before
-  concluding. A truncated
-  list cannot show that an item is absent; raise `--limit` (maximum 200).
+- Truncation: every bounded list has a `<list>_truncated` flag next to it,
+  and the top-level `truncated` is true when the result list or any nested
+  list was cut. Check `truncated` before concluding. A truncated list cannot
+  show that an item is absent; raise `--limit` (maximum 200) or use
+  `--limit 0`.
 
 ## Limitations
 - Wires join as in KiCad 10 (checked against KiCad 10.0.8 netlists): a symbol

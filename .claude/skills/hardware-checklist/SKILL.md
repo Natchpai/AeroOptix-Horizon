@@ -106,7 +106,7 @@ Report ID coverage and topic coverage separately. ID coverage is a script or exa
 
 ## Boundaries
 
-- Do not open, parse, assess, or generate PDF content.
+- Do not open, parse or assess schematic or PCB PDFs, and do not generate them. Other PDFs follow the evidence baseline above and `pdf.md`.
 - Keep KiCad design and library files read-only.
 - Do not run ERC or DRC, claim their results, or treat a pass as proof of correctness.
 - Do not mark a task done, approve a gate, or declare a phase for the human.

@@ -36,13 +36,15 @@ from list_symbols import LCSC_KEYS, children, first, head, parse  # noqa: E402
 import register  # noqa: E402
 
 EM_DASH = "\u2014"
-MPN_KEYS = ("MPN", "Manufacturer Part Number", "Manufacturer_Part_Number", "MFR Part #", "Part Number")
+MPN_KEYS = ("MFR.P/N", "MPN", "Manufacturer Part Number", "Manufacturer_Part_Number", "MFR Part #", "Part Number")
 LINK_RE = re.compile(r"\]\(<?([^)>\s]+)>?(?:\s+\"[^\"]*\")?\)")
 VAR_RE = re.compile(r"\$\{([A-Za-z0-9_]+)\}")
 STOCK_VAR_RE = re.compile(r"KICAD(\d+)_(3DMODEL|FOOTPRINT|SYMBOL|TEMPLATE)_DIR")
 STOCK_SUBDIR = {"3DMODEL": "3dmodels", "FOOTPRINT": "footprints", "SYMBOL": "symbols", "TEMPLATE": "template"}
 MAX_LIBRARY_ENTRIES = 50
 FIELD_NAMES = ("MFR", "MFR.P/N", "LCSC", "Footprint")
+# .claude/ holds tool files and fixtures, -backups/ holds KiCad backups: not project docs.
+MD_EXCLUDE = (":(exclude).claude/**", ":(exclude)**/*-backups/**", ":(exclude)*-backups/**")
 
 
 def git(root: Path, *args: str) -> str:
@@ -232,7 +234,11 @@ def check_sheets(files: list[Path], changed: set, ctx: Ctx) -> list[dict]:
             ctx.finds.append(["MINOR", "unannotated", path.name, dict(unannotated)])
         if no_fp:
             ctx.finds.append(["MINOR", "no_footprint_placed", path.name, f"board parts with an empty Footprint: {sorted(no_fp)}"])
-        out.append({"sheet": path.relative_to(ctx.proj).as_posix(), "changed": path in changed,
+        try:
+            sheet = path.relative_to(ctx.proj).as_posix()
+        except ValueError:  # a sheet stored outside the project folder
+            sheet = path.as_posix()
+        out.append({"sheet": sheet, "changed": path in changed,
                     "parts": len(parts), "unannotated": dict(unannotated),
                     "power_nets": sorted(power_nets)})
     for (sev, check, item, detail), refs in links.items():
@@ -254,6 +260,17 @@ def lib_symbols(sym_file: Path):
             if name and num and len(pin) > 2:
                 pins.append({"number": num[1], "name": name[1]})
         yield top[1], pins, props_of(top).get("Footprint", ""), first(top, "extends") is not None
+
+
+def pin_row_found(number: str, name: str, text: str) -> bool:
+    """A text line that starts with the pin number, then the first word of its name.
+
+    KiCad markup (overbar ~{RESET}, subscript _{x}, superscript ^{x}) is dropped
+    first, so the datasheet text may say ~RESET or RESET.
+    """
+    plain = re.sub(r"[~_^]\{([^}]*)\}", r"\1", name)
+    token = re.escape(re.split(r"[/ ]", plain)[0])
+    return bool(re.search(rf"(?im)^\W*{re.escape(number)}\W+{token}(?!\w)", text))
 
 
 def check_library(sym_files: list[Path], mod_files: list[Path], pin_text: dict, ctx: Ctx) -> dict:
@@ -279,8 +296,7 @@ def check_library(sym_files: list[Path], mod_files: list[Path], pin_text: dict, 
             if name in pin_text:
                 miss = []
                 for p in pins:
-                    token = re.escape(re.split(r"[/ ]", p["name"])[0])
-                    if not re.search(rf"(?im)^\W*{re.escape(p['number'])}\W+{token}\b", pin_text[name]):
+                    if not pin_row_found(p["number"], p["name"], pin_text[name]):
                         miss.append(f"{p['number']}:{p['name']}")
                 entry["pin_text_missing"] = miss
                 if miss:
@@ -304,8 +320,9 @@ def strip_code(text: str) -> str:
 def check_docs(repo: Path, since: str, mds: list[str], untracked: set, spec: Path | None,
                checklist: Path | None, id_prefixes: list, open_prefix: str, tracker_prefix: str,
                finds: list) -> dict:
-    added = [ln for ln in git(repo, "diff", "-U0", since, "--", "*.md").splitlines()
+    added = [ln for ln in git(repo, "diff", "-U0", since, "--", "*.md", *MD_EXCLUDE).splitlines()
              if ln.startswith("+") and not ln.startswith("+++")]
+    mds = [p for p in mds if (repo / p).is_file()]  # a tracked file may be deleted
     for p in mds:
         if p in untracked:
             added += (repo / p).read_text(encoding="utf-8").splitlines()
@@ -335,9 +352,9 @@ def check_docs(repo: Path, since: str, mds: list[str], untracked: set, spec: Pat
             undefined |= {(md.name, i) for i in id_re.findall(text) if i not in defined}
         for link in LINK_RE.findall(text):
             link = unquote(link)
-            if re.match(r"[a-zA-Z][a-zA-Z0-9+.-]*:", link) or link.startswith("/"):
+            if re.match(r"[a-zA-Z][a-zA-Z0-9+.-]*:", link) or link.startswith(("/", "#")):
                 continue
-            if not (md.parent / link).exists():
+            if not (md.parent / link.split("#", 1)[0]).exists():
                 broken.append(f"{p} -> {link}")
     for f, i in sorted(undefined):
         finds.append(["MINOR", "undefined_id", i, f"cited in {f}, not defined in the spec"])
@@ -358,10 +375,10 @@ def check_docs(repo: Path, since: str, mds: list[str], untracked: set, spec: Pat
             cl_reg = register.records(checklist.read_text(encoding="utf-8"), open_prefix)
             # Only active tasks count: a DONE or N/A (merged, retired) row closes nothing.
             tasks = {i for i, r in cl_reg.kind("task").items()
-                     if not r.cells.get("status", "").strip("` ").startswith(("DONE", "N/A"))}
+                     if not register.status_text(r.cells.get("status", "")).upper().startswith(("DONE", "N/A"))}
             open_rows = 0
             for oid, r in register.records(spec.read_text(encoding="utf-8"), open_prefix).kind("open").items():
-                if r.cells.get("desc", "").startswith("Closed") or r.cells.get("owner", "").startswith("Closed"):
+                if register.is_closed(r.cells.get("desc", ""), r.cells.get("owner", "")):
                     continue
                 open_rows += 1
                 body = " | ".join(r.raw[1:])
@@ -389,7 +406,7 @@ CLOSED_STATUS = ("DONE", "N/A", "DEFERRED")
 STATUS_RE = re.compile(r"^(OPEN|IN_PROGRESS|DONE|N/A|DEFERRED|BLOCKED)")
 PENDING_RE = re.compile(r"(?i)\b(later|TBD|open|fill|not decided|not chosen|missing|empty|not filled)\b")
 CLOSED_WORD_RE = re.compile(r"(?i)\b(closed?|closes|done|accepted|settled|resolved|replaced|was|were|cleared)\b")
-REV_HEADER_RE = re.compile(r"(?m)^(?:\*\*Revision:\*\*\s*|\|\s*Document revision\s*\|\s*)(\d+(?:\.\d+)+)")
+REV_HEADER_RE = register.REV_HEADER_RE
 REF_RANGE_RE = re.compile(r"\b([A-Z]{1,3})(\d+)\s+(?:to|-)\s+(?:\1)?(\d+)\b")
 REF_RE = re.compile(r"\b([A-Z]{1,3})(\d{1,4})\b")
 UNANNOTATED_RE = re.compile(r"\b([A-Z]{1,3})\?")
@@ -397,11 +414,14 @@ SENTENCE_SPLIT_RE = re.compile(r"(?<=[.;])\s+|\n")
 
 
 def section(text: str, heading: str) -> str:
-    """Body of the first '## <heading>' section, up to the next '## ' heading."""
-    m = re.search(rf"(?m)^##\s+{re.escape(heading)}\s*$", text)
+    """Body of the first '##' or '###' <heading> section, up to the next heading
+    of the same or a higher level. Case-insensitive; a number such as '8.' or
+    '8.2' before the heading text is allowed."""
+    m = re.search(rf"(?mi)^(#{{2,3}})\s+(?:\d+(?:\.\d+)*\.?\s+)?{re.escape(heading)}\s*$", text)
     if not m:
         return ""
-    nxt = re.search(r"(?m)^##\s", text[m.end():])
+    level = len(m.group(1))
+    nxt = re.search(rf"(?m)^#{{1,{level}}}\s", text[m.end():])
     return text[m.end(): m.end() + nxt.start()] if nxt else text[m.end():]
 
 
@@ -481,7 +501,7 @@ def review_items(spec_text: str, checklist_text: str, readme_text: str | None,
     opens = {}  # id -> (desc, owner, full row text, closed)
     for i, r in spec_reg.kind("open").items():
         desc, owner = r.cells.get("desc", ""), r.cells.get("owner", "")
-        opens[i] = (desc, owner, r.text, desc.startswith("Closed") or owner.startswith("Closed"))
+        opens[i] = (desc, owner, r.text, register.is_closed(desc, owner))
     decs = {}  # id -> (date, cited ids, {cited id: item numbers, when every cite names items})
     for i, r in spec_reg.kind("dec").items():
         body = " | ".join(r.raw[1:])
@@ -489,7 +509,7 @@ def review_items(spec_text: str, checklist_text: str, readme_text: str | None,
                    set(ANY_ID_RE.findall(body)), item_cites(body))
     tasks = {}  # id -> (task text, status, evidence, full row)
     for i, r in cl_reg.kind("task").items():
-        st = r.cells.get("status", "").strip("` ")
+        st = register.status_text(r.cells.get("status", "")).upper()
         if STATUS_RE.match(st):
             tasks[i] = (r.cells.get("task", ""), st, r.cells.get("evidence", ""), r.text)
     gates = {i: r.cells.get("status", "") for i, r in cl_reg.kind("gate").items()}
@@ -630,6 +650,7 @@ def review_items(spec_text: str, checklist_text: str, readme_text: str | None,
 
 
 def find_doc(repo: Path, mds: list[str], name_key: str, heading_key: str | None) -> Path | None:
+    mds = [p for p in mds if (repo / p).is_file()]
     hit = next((p for p in mds if name_key in Path(p).name.upper()), None)
     if hit is None and heading_key:
         for p in mds:
@@ -690,7 +711,7 @@ def main() -> int:
             raise RuntimeError(f"root schematic not found: {root_sch.name}")
         untracked = set(git(repo, "ls-files", "--others", "--exclude-standard").splitlines())
         mds = sorted(p for p in git(repo, "ls-files", "--cached", "--others", "--exclude-standard", "*.md").splitlines()
-                     if not p.startswith(".claude/") and "-backups/" not in p)
+                     if not p.startswith(".claude/") and "-backups/" not in p and (repo / p).is_file())
         spec = Path(args.spec).resolve() if args.spec else find_doc(repo, mds, "SPEC", "specification")
         checklist = Path(args.checklist).resolve() if args.checklist else find_doc(repo, mds, "CHECKLIST", None)
         since = args.since

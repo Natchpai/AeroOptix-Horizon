@@ -253,7 +253,8 @@ class QuerySchRegression(unittest.TestCase):
         r = self.call('summary', '--limit', '1')
         self.assertEqual(len(r['results']), 1)
         self.assertTrue(r['truncated'])
-        self.call('summary', '--limit', '0', ok=False)
+        self.call('summary', '--limit', '-1', ok=False)
+        self.call('summary', '--limit', '201', ok=False)
         self.call('pins', 'U1', '--pin', '1', ok=False)
         self.call('component', ok=False)
 
@@ -973,6 +974,191 @@ class QuerySchRegression(unittest.TestCase):
                 pro.write_text(text, encoding='utf-8')
                 self.before[pro] = sha(pro)
                 self.call('net', 'SIG_A', project=root)
+
+    def module(self):
+        spec = importlib.util.spec_from_file_location('_query_sch_unit', SCRIPT)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    def test_50_shared_pin_of_a_multi_unit_symbol_is_one_net(self):
+        dual = ('(symbol "TEST:Dual" (symbol "Dual_0_1" (pin power_in line (at 0 -5 0) (length 1) (name "V+") (number "8")))'
+                ' (symbol "Dual_1_1" (pin passive line (at 0 0 0) (length 1) (name "A") (number "1")))'
+                ' (symbol "Dual_2_1" (pin passive line (at 0 0 0) (length 1) (name "B") (number "2"))))')
+        lib = lib_symbols()[:-1] + dual + ')'
+        path = f'/{ROOT_ID}'
+        root = self.write_root('dual top.kicad_sch', lib,
+            component('U1', 10, 10, 'u1a', path, lib='TEST:Dual'),
+            component('U1', 50, 10, 'u1b', path, lib='TEST:Dual').replace('(unit 1)', '(unit 2)'),
+            wire(10, 15, 10, 20), component('#PWR1', 10, 20, 'p1', path, 'VBUS', 'power:VBUS'),
+            wire(50, 15, 50, 20), component('#PWR2', 50, 20, 'p2', path, 'VBUS', 'power:VBUS'))
+        r = self.call('project-net', 'U1', '--pin', '8', project=root)['results'][0]
+        self.assertEqual(r['status'], 'PROJECT_CONNECTIVITY_EVIDENCE', r)
+        net = self.call('net', 'VBUS', project=root)['results'][0]
+        pins = [(p['reference'], p['pin_number']) for p in net['connected_component_pins']]
+        self.assertEqual(pins, [('U1', '8')])
+
+    def unit_child(self, name):
+        child = self.dir / f'{name} child.kicad_sch'
+        first, second = '5aaaaaaa-0000-0000-0000-000000000000', '5bbbbbbb-0000-0000-0000-000000000000'
+        dual = ('(symbol "TEST:Dual" (symbol "Dual_1_1" (pin passive line (at 0 0 0) (length 1) (name "A") (number "1")))'
+                ' (symbol "Dual_2_1" (pin passive line (at 0 0 0) (length 1) (name "B") (number "2"))))')
+        lib = lib_symbols()[:-1] + dual + ')'
+        root = self.write_root(f'{name} top.kicad_sch', lib,
+            sheet('First', child.name, first, 'UNUSED', 50, 50), sheet('Second', child.name, second, 'UNUSED2', 90, 50))
+        child.write_text('(kicad_sch (version 20250114) (generator "test") (uuid "5ccccccc-0000-0000-0000-000000000000")\n'
+            + lib + f'''
+            (symbol (lib_id "TEST:Dual") (at 10 10 0) (unit 1) (property "Reference" "UM1") (uuid "um1")
+              (instances (project "Test" (path "/{ROOT_ID}/{first}" (reference "UM1") (unit 1))
+                                         (path "/{ROOT_ID}/{second}" (reference "UM2") (unit 2)))))
+            {wire(10, 10, 20, 10)})''', encoding='utf-8')
+        self.files.append(child)
+        self.before[child] = sha(child)
+        return root
+
+    def test_51_pins_use_the_unit_of_the_queried_instance(self):
+        root = self.unit_child('pin units')
+        for mode in ('pins', 'local-net'):
+            with self.subTest(mode=mode):
+                r = self.call(mode, 'UM2', project=root)
+                self.assertEqual([p['number'] for p in r['results'][0]['pins']], ['2'])
+                r = self.call(mode, 'UM1', project=root)
+                self.assertEqual([p['number'] for p in r['results'][0]['pins']], ['1'])
+
+    def test_52_local_net_sees_a_power_symbol_or_pin_on_a_pin(self):
+        path = f'/{ROOT_ID}'
+        root = self.write_root('touch.kicad_sch', lib_symbols(),
+            component('C1', 10, 10, 'c1', path), component('#PWR1', 10, 10, 'p1', path, 'VBUS', 'power:VBUS'),
+            component('R2', 30, 10, 'r2', path), component('R3', 30, 10, 'r3', path),
+            component('R4', 50, 10, 'r4', path))
+        c1 = self.call('local-net', 'C1', project=root)['results'][0]['pins'][0]
+        self.assertEqual(c1['local_connection_status'], 'PIN_CONTACT_ONLY')
+        self.assertEqual([p['name'] for p in c1['power_nets']], ['VBUS'])
+        r2 = self.call('local-net', 'R2', project=root)['results'][0]['pins'][0]
+        self.assertEqual(r2['local_connection_status'], 'PIN_CONTACT_ONLY')
+        r4 = self.call('local-net', 'R4', project=root)['results'][0]['pins'][0]
+        self.assertEqual(r4['local_connection_status'], 'NO_LOCAL_CONNECTION_FOUND')
+
+    def test_53_connected_pins_include_parent_pins_joined_by_label(self):
+        child = self.dir / 'label child.kicad_sch'
+        sid = '7aaaaaaa-0000-0000-0000-000000000000'
+        root = self.write_root('label top.kicad_sch', lib_symbols(),
+            sheet('A', child.name, sid, 'N1', 10, 10), wire(10, 10, 20, 10), '(label "N" (at 20 10 0))',
+            component('R9', 20, 10, 'r9', f'/{ROOT_ID}'),
+            component('R10', 60, 10, 'r10', f'/{ROOT_ID}'), '(label "N" (at 60 10 0))')
+        child.write_text(content('7bbbbbbb-0000-0000-0000-000000000000',
+            component('U5', 10, 10, 'u5', f'/{ROOT_ID}/{sid}'), wire(10, 10, 20, 10),
+            '(hierarchical_label "N1" (at 20 10 0))'), encoding='utf-8')
+        self.files.append(child)
+        self.before[child] = sha(child)
+        r = self.call('connected-pins', 'U5', project=root)
+        trace = r['results'][0]['pins'][0]['hierarchical_traces'][0]
+        self.assertEqual(sorted(p['reference'] for p in trace['connected_component_pins']), ['R10', 'R9'])
+
+    def test_54_connected_pins_use_the_reference_of_each_instance(self):
+        src = self.dir / 'src.kicad_sch'
+        shared = self.dir / 'shared dest.kicad_sch'
+        x, b1, b2 = ('8aaaaaaa-0000-0000-0000-000000000000', '8bbbbbbb-0000-0000-0000-000000000000',
+                     '8ccccccc-0000-0000-0000-000000000000')
+        root = self.write_root('dest top.kicad_sch', lib_symbols(),
+            sheet('X', src.name, x, 'S', 10, 10), sheet('B1', shared.name, b1, 'S', 30, 10),
+            sheet('B2', shared.name, b2, 'S', 50, 10), wire(10, 10, 30, 10), wire(30, 10, 50, 10))
+        src.write_text(content('8ddddddd-0000-0000-0000-000000000000',
+            component('U1', 10, 10, 'u1', f'/{ROOT_ID}/{x}'), wire(10, 10, 20, 10),
+            '(hierarchical_label "S" (at 20 10 0))'), encoding='utf-8')
+        shared.write_text(content('8eeeeeee-0000-0000-0000-000000000000', f'''
+            (symbol (lib_id "TEST:OnePin") (at 10 10 0) (unit 1) (property "Reference" "U5") (uuid "u5")
+              (instances (project "Test" (path "/{ROOT_ID}/{b1}" (reference "U5") (unit 1))
+                                         (path "/{ROOT_ID}/{b2}" (reference "U6") (unit 1)))))''',
+            wire(10, 10, 20, 10), '(hierarchical_label "S" (at 20 10 0))'), encoding='utf-8')
+        self.files.extend([src, shared])
+        self.before.update({src: sha(src), shared: sha(shared)})
+        r = self.call('connected-pins', 'U1', project=root)
+        trace = r['results'][0]['pins'][0]['hierarchical_traces'][0]
+        found = {x['sheet_name']: [p['reference'] for d in x['destination_paths'] for p in d['connected_component_pins']]
+                 for x in trace['connected_sheet_pins']}
+        self.assertEqual(found, {'B1': ['U5'], 'B2': ['U6']})
+
+    def test_55_project_directory_uses_the_kicad_pro_name(self):
+        pro = self.root.with_suffix('.kicad_pro')
+        pro.write_text('{}', encoding='utf-8')
+        self.files.append(pro)
+        self.before[pro] = sha(pro)
+        r = self.call('summary', project=self.dir)
+        self.assertEqual(Path(r['root']).name, self.root.name)
+
+    def test_56_text_markup_is_not_a_bus_group(self):
+        mod = self.module()
+        names = lambda text, aliases={}: [n for _, n in mod.bus_members(text, aliases) or []]
+        self.assertIsNone(mod.bus_members('~{RESET}', {}))
+        self.assertIsNone(mod.bus_members('V_{CC}', {}))
+        self.assertIsNone(mod.bus_members('X^{2}', {}))
+        self.assertEqual(names('CTRL{~{RST} EN}'), ['CTRL.~{RST}', 'CTRL.EN'])
+        self.assertEqual(names('{SPI}', {'SPI': ['~{CS}', 'CLK']}), ['~{CS}', 'CLK'])
+        self.assertEqual(names('~{D}[0..1]'), ['~{D}0', '~{D}1'])
+
+    def test_57_net_matches_a_name_saved_with_kicad_escapes(self):
+        root = self.write_root('escape.kicad_sch', lib_symbols(),
+            component('R1', 10, 10, 'r1', f'/{ROOT_ID}'), wire(10, 10, 20, 10), '(label "SS{slash}TR" (at 20 10 0))')
+        r = self.call('net', 'SS/TR', project=root)['results'][0]
+        self.assertEqual(r['status'], 'PROJECT_CONNECTIVITY_EVIDENCE', r)
+        self.assertEqual(r['saved_names'], ['SS{slash}TR'])
+        self.assertEqual(self.call('net', 'SS{slash}TR', project=root)['results'][0]['status'],
+                         'PROJECT_CONNECTIVITY_EVIDENCE')
+
+    def test_58_component_prints_every_property(self):
+        root = self.write_root('props.kicad_sch', lib_symbols(),
+            component('R1', 10, 10, 'r1', f'/{ROOT_ID}').replace(
+                '(property "Value" "Generic")', '(property "Value" "Generic") (property "MFR.P/N" "RC0402")'))
+        r = self.call('component', 'R1', project=root)['results'][0]
+        self.assertEqual(r['properties']['MFR.P/N'], 'RC0402')
+
+    def test_59_limit_covers_nested_lists_and_zero_means_all(self):
+        sid = '9aaaaaaa-0000-0000-0000-000000000000'
+        root = self.write_root('pins top.kicad_sch', lib_symbols(),
+            multi_sheet('Many', 'missing.kicad_sch', sid, [('A', 0, 1), ('B', 0, 2), ('C', 0, 3)]))
+        r = self.call('sheet', 'Many', '--limit', '1', project=root)
+        self.assertEqual(r['results'][0]['pins'], ['A'])
+        self.assertTrue(r['results'][0]['pins_truncated'])
+        self.assertTrue(r['truncated'])
+        r = self.call('sheet', 'Many', '--limit', '0', project=root)
+        self.assertEqual(r['results'][0]['pins'], ['A', 'B', 'C'])
+        self.assertFalse(r['truncated'])
+        nested = self.call('project-net', 'U1', '--pin', '1', '--limit', '1')
+        self.assertTrue(nested['results'][0]['connected_pins_truncated'])
+        self.assertTrue(nested['truncated'])
+
+    def test_60_prefix_hash_lists_every_hidden_reference(self):
+        refs = [x['reference'] for x in self.call('components', '--prefix', '#')['results']]
+        self.assertIn('#PWR01', refs)
+
+    def test_61_summary_counts_components_apart_from_power_symbols(self):
+        rows = {Path(x['file']).name: x for x in self.call('summary')['results']}
+        power = rows['Power State.kicad_sch']
+        self.assertEqual(power['symbol_count'], 6)
+        self.assertEqual(power['component_count'], 5)
+
+    def test_62_find_kicad_cli_prefers_the_newest_version(self):
+        mod = self.module()
+        found = [r'C:\Program Files\KiCad\9.0\bin\kicad-cli.exe', r'C:\Program Files\KiCad\10.0\bin\kicad-cli.exe']
+        with mock.patch.dict(os.environ, {'KICAD_CLI': ''}), \
+                mock.patch.object(mod.shutil, 'which', return_value=None), \
+                mock.patch.object(mod.glob, 'glob', return_value=found), \
+                mock.patch.object(mod.Path, 'is_file', return_value=True), \
+                mock.patch.object(mod.sys, 'platform', 'win32'):
+            self.assertIn('10.0', mod.find_kicad_cli())
+
+    def test_63_instance_of_the_current_project_wins(self):
+        root = self.write_root('proj.kicad_sch', lib_symbols(), f'''
+            (symbol (lib_id "TEST:OnePin") (at 10 10 0) (unit 1) (property "Reference" "R?") (uuid "r7")
+              (instances (project "Old" (path "/{ROOT_ID}" (reference "R7") (unit 1)))
+                         (project "proj" (path "/{ROOT_ID}" (reference "R8") (unit 1)))))''')
+        refs = [x['reference'] for x in self.call('components', project=root)['results']]
+        self.assertEqual(refs, ['R8'])
+
+    def test_64_argument_errors_are_json(self):
+        done = self.call('summary', '--limit', 'abc', ok=False)
+        self.assertEqual(json.loads(done.stderr)['verification'], 'NOT_VERIFIED')
 
 
 

@@ -73,14 +73,14 @@
       }
     },
     {
-      "name": "board totals match the count of top-level forms in the file",
+      "name": "board totals match the count of forms in the file (zones include one inside a footprint)",
       "command": ["summary"],
       "status": "BOARD_SUMMARY",
       "fields": {
         "footprint_count": 306,
         "track_count": 1599,
         "via_count": 797,
-        "zone_count": 133,
+        "zone_count": 134,
         "has_net_table": false
       }
     }

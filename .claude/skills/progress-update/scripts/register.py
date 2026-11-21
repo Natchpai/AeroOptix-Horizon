@@ -28,10 +28,19 @@ from pathlib import Path
 ID_RE = re.compile(r"^[A-Z][A-Z0-9]*-\d+$")
 SEP_CELL_RE = re.compile(r"^:?-+:?$")  # GFM: one or more hyphens
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.*?)\s*#*\s*$")
-STATUS_WORD_RE = re.compile(r"^(OPEN|IN_PROGRESS|DONE|N/A|DEFERRED|BLOCKED)")
-TASK_STATUS_RE = re.compile(r"^(OPEN|IN_PROGRESS|DONE|N/A|DEFERRED|BLOCKED(?: BY \S+)?)(?:\s|$|\()")
+# Table detection is loose (bold or any case), so a non-canonical status still
+# makes a task table and bad_status can flag it. TASK_STATUS_RE is the strict form.
+STATUS_WORD_RE = re.compile(r"^(OPEN|IN_PROGRESS|DONE|N/A|DEFERRED|BLOCKED)", re.IGNORECASE)
+TASK_STATUS_RE = re.compile(r"^(OPEN|IN_PROGRESS|DONE|N/A|DEFERRED|BLOCKED BY \S+)(?:\s|$|\()")
 REV_RE = re.compile(r"\d+(?:\.\d+)+")
 CLOSED_DATE_RE = re.compile(r"^Closed\s+20\d\d-\d\d-\d\d")
+# Documented closed forms: description "Closed <date>: ..." (or "Closed: ..."),
+# owner cell "Closed". "Closed-loop ..." is not a closed row.
+CLOSED_DESC_RE = re.compile(r"^Closed(?:\s+20\d\d-\d\d-\d\d|\s*:)")
+CLOSED_OWNER_RE = re.compile(r"^Closed(?![-\w])")
+# Header revision: "**Revision:** 0.1" or a table row "| Revision | 0.1 |" /
+# "| Document revision | 0.1 |" (cell names may be bold).
+REV_HEADER_RE = re.compile(r"(?mi)^(?:\*\*Revision:\*\*\s*|\|\s*\**(?:Document\s+)?revision\**\s*\|\s*)(\d+(?:\.\d+)+)")
 MD_NAME_RE = re.compile(r"([A-Za-z0-9_.\-]+\.md)\b")
 LONG_TASK = 600
 
@@ -156,6 +165,20 @@ def _norm(h: str) -> str:
     return re.sub(r"[`*_]", "", h).strip().lower()
 
 
+def cell_id(c: str) -> str:
+    """First-column ID without backticks or bold."""
+    return c.strip("`* ")
+
+
+def status_text(c: str) -> str:
+    return c.strip("`* ")
+
+
+def is_closed(desc: str, owner: str) -> bool:
+    """True for an open-item row in a documented closed form."""
+    return bool(CLOSED_DESC_RE.match(desc.strip()) or CLOSED_OWNER_RE.match(status_text(owner)))
+
+
 def column_map(kind: str, header: list[str]) -> dict[str, int]:
     names = [_norm(h) for h in header]
     roles = POSITION[kind]
@@ -175,7 +198,7 @@ def table_kind(t: Table, open_prefix: str, dec_prefix: str, ref_prefix: str) -> 
         return "gate"
     if first == "revision":
         return "note"
-    ids = [c[0] for _, c in t.rows if c and ID_RE.match(c[0])]
+    ids = [cell_id(c[0]) for _, c in t.rows if c and ID_RE.match(cell_id(c[0]))]
     if not ids:
         return ""
     pre = {i.rsplit("-", 1)[0] for i in ids}
@@ -188,7 +211,7 @@ def table_kind(t: Table, open_prefix: str, dec_prefix: str, ref_prefix: str) -> 
     names = [_norm(h) for h in t.header]
     if "status" in names:
         k = names.index("status")
-        if any(len(c) > k and STATUS_WORD_RE.match(c[k].strip("` ")) for _, c in t.rows):
+        if any(len(c) > k and STATUS_WORD_RE.match(status_text(c[k])) for _, c in t.rows):
             return "task"
     return "other"
 
@@ -203,7 +226,7 @@ def records(text: str, open_prefix: str = "OPEN", dec_prefix: str = "DEC", ref_p
         for line, cells in t.rows:
             if not cells or not cells[0]:
                 continue
-            rid = cells[0].strip("` ")
+            rid = cell_id(cells[0])
             if kind == "gate":
                 if not re.match(r"^[A-Z][A-Z0-9]*$", rid):
                     continue
@@ -223,7 +246,7 @@ def records(text: str, open_prefix: str = "OPEN", dec_prefix: str = "DEC", ref_p
 
 
 def doc_revision(text: str) -> str | None:
-    m = re.search(r"(?m)^(?:\*\*Revision:\*\*\s*|\|\s*Document revision\s*\|\s*)(\d+(?:\.\d+)+)", text)
+    m = REV_HEADER_RE.search(text)
     return m.group(1) if m else None
 
 
@@ -247,14 +270,16 @@ def lint(spec_text: str, checklist_text: str | None, rev_of=None,
         for kind, rid, a, b in reg.duplicates:
             if kind in ("open", "dec", "ref", "task", "gate"):
                 finds.append(["INFO", "duplicate_id", rid, f"{kind} row defined again at line {b} (first at line {a})"])
+            elif kind == "note" and reg is spec:
+                finds.append(["MINOR", "rev_order", rid, f"change-note revision {rid} again at line {b} (first at line {a})"])
     for rid, r in cl.kind("task").items():
         st = r.cells.get("status", "").strip("` ")
-        if not TASK_STATUS_RE.match(st + " "):
+        if not TASK_STATUS_RE.match(st):
             finds.append(["MINOR", "bad_status", rid, f"status {st!r} is not one of OPEN, IN_PROGRESS, "
                                                        "BLOCKED BY <ID>, DEFERRED, DONE, N/A"])
     for rid, r in spec.kind("open").items():
         desc, owner = r.cells.get("desc", ""), r.cells.get("owner", "")
-        if (desc.startswith("Closed") or owner.startswith("Closed")) and not CLOSED_DATE_RE.match(desc):
+        if is_closed(desc, owner) and not CLOSED_DATE_RE.match(desc.strip()):
             finds.append(["INFO", "closed_no_date", rid, "closed row does not start with 'Closed <YYYY-MM-DD>:'"])
     notes = list(spec.kind("note"))
     for a, b in zip(notes, notes[1:]):

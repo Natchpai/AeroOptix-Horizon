@@ -5,8 +5,8 @@ description: >-
   and records a phase the human declares (DRAFT, PRELIMINARY, CHECK, RELEASE).
   Use when the user asks to create or revise the README, create, update or
   release-note the changelog, or declares a project phase. Uses confirmed
-  facts only. Does not judge readiness, read PDFs, edit KiCad files, commit,
-  tag or release.
+  facts only. Does not judge readiness, read schematic or PCB PDFs, edit
+  KiCad files, commit, tag or release.
 argument-hint: "readme create|update | changelog init|update [range]|release <version> | phase <PHASE>"
 ---
 
@@ -130,8 +130,12 @@ release, with the main IDs) and the rest from the entries and
    README"), acknowledge it in chat only.
 3. To record it, find exactly one `**Current Phase:**` or `- Current Phase:`
    line and replace only its value. If it already holds that phase, say so.
-   If the line is missing, duplicated or ambiguous, report it and change
-   nothing. Do not create `PHASE.md` or any other state file.
+   If the line is missing (create mode leaves it out until a phase is
+   declared), add `**Current Phase:** <PHASE>` as the first line under the
+   `## Project Status` heading, as in the template, and say so; with no such
+   heading, report it and change nothing. If the line is duplicated or
+   ambiguous, report it and change nothing. Do not create `PHASE.md` or any
+   other state file.
 4. If the README has the Mermaid workflow diagram (nodes `A` to `D` for
    DRAFT, PRELIMINARY, CHECK, RELEASE), update only its `class` lines:
    earlier phases `done`, the declared phase `review`, later phases

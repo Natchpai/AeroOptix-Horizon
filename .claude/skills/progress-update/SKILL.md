@@ -88,7 +88,7 @@ Run the deterministic checks first, from the repo root:
 python -I -X utf8 <skills dir>/progress-update/scripts/progress_preflight.py [--since <ref>]
 ```
 It prints one JSON: project, spec and checklist paths, since point, commits,
-changed files by kind, per-sheet parts, library checks, doc checks, a
+changed files by kind, per-sheet part counts, library checks, doc checks, a
 `review` count and a `findings` list. The review checks every open spec item,
 every checklist task and gate status, and the summary lists against the
 spec, checklist, README and saved schematic fields (`review:*` findings, see
@@ -128,8 +128,8 @@ do steps 1 to 4 by hand.
   - `README.md` and `CHANGELOG.md` at the repo root
 
   A doc that is missing stays missing: report it as `MISSING` and skip it.
-- **Since point:** the argument; else the spec's "Last updated" or "Updated"
-  date; else the last commit that touched the spec.
+- **Since point:** the argument (a date becomes a ref, see step 0); else the
+  last commit that touched the spec, as preflight does; else `HEAD`.
 
 Done when you know the project folder, root schematic, each doc path (or
 `MISSING`), and the since point.
@@ -145,10 +145,11 @@ Done when you have the list of changed `.kicad_sch` / `.kicad_pcb` files, lib
 table changes, and new library items.
 
 ### 3. Collect
-- **Sheets:** preflight `sheets` lists each sheet's parts and labels. By
+- **Sheets:** preflight `sheets` gives each sheet's part count, unannotated
+  references and power nets, not the part list. For the parts, by
   hand: `python -I <skills dir>/progress-update/scripts/list_symbols.py <sheet.kicad_sch>`.
   Then trace each IC and connector with `sch-inspect`
-  (`query_sch.py local-net <ref> --project <root.kicad_sch>`). Unannotated
+  (`query_sch.py local-net <ref> --project <root.kicad_sch> --limit 0`). Unannotated
   refs such as `U?` work as targets; the tool returns every match.
 - **PCB:** if `.kicad_pcb` changed, run `pcb-inspect` `summary`.
 - **Library:** list new symbol, footprint and 3D model names (preflight
