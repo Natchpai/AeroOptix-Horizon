@@ -23,4 +23,5 @@
 	(lib (name "0_Capacitor") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Capacitor.kicad_symdir") (options "") (descr ""))
 	(lib (name "0_Inductor") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Inductor.kicad_symdir") (options "") (descr ""))
 	(lib (name "0_LED") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_LED.kicad_symdir") (options "") (descr ""))
+	(lib (name "0_Device") (type "KiCad") (uri "${KIPRJMOD}/library/symbols/0_Device.kicad_symdir") (options "") (descr ""))
 )

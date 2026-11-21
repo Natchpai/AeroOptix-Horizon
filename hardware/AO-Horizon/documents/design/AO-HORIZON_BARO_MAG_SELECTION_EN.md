@@ -1,7 +1,7 @@
 # AeroOptix-Horizon: Barometer and Magnetometer Selection Summary
 
-**Revision:** 0.13
-**Updated:** 2026-11-20
+**Revision:** 0.14
+**Updated:** 2026-11-21
 **Status:** ICP-20100 confirmed by the team (DEC-010). BMP390 removed on 2026-10-21. The team accepted BMP581 as barometer 2 on 2026-10-24, with BMP384 as fallback (DEC-010, decisions file D7); the fallback fit is open (OPEN-004; P1-015, deferred). Magnetometer changed from BMM150 to iSentek IST8310 by the human owner on 2026-10-24 (DEC-011); the team accepted it at 0x0E the same day (pinmap review Q11). The human owner changed the address to 0x0C, as strapped, on 2026-11-14 (DEC-047). Lifecycle and availability risks are open. Datasheet values and implementation are not verified. Not a verification record.
 **Requirement refs:** SEN-002, SEN-003, CMP-004, CMP-005, OPEN-004, DEC-047 (spec). Supply rails: DEC-043 (`+3V3A` on the sensor VDD pins and IST8310 AVDD; VDDIO and IST8310 DVDD on `+3V3`). Checklist tasks: P0-009, P0-010.
 **Decision owner:** Team (barometers); human owner (magnetometer change)
@@ -93,6 +93,7 @@ Source keys used below:
 | Package | LGA-10L, 2.000 × 2.000 × 0.800 mm nom, 0.5 mm pitch | LCSC; DS Table 19 | `VERIFIED` (DS via NotebookLM) |
 | Interfaces, I2C address selection | Not on the page | TDK | `NOT_VERIFIED` |
 | Default I2C address | 0x63 | PX4 `Inven_Sense_ICP201XX_registers.hpp` | `VERIFIED` (driver default) |
+| I2C address selection | AD0 = 0: 0x63, AD0 = 1: 0x64. CSB high selects I2C. Figure 10 ties AD0 to VDDIO or GND with no resistor | DS-000416 rev 1.3 §4.1.9, §4, Table 6, Figure 10, §5.3 | `VERIFIED` (DS via NotebookLM, cited, 2026-11-21) |
 | Supply, temperature, noise, accuracy | Not on the page. Datasheet DS-000416 v1.4 not read. | TDK | `NOT_VERIFIED` |
 | PX4 driver | `barometer/invensense/icp201xx`. ICP-20100 is not named in the headers read. | PX4 | `VERIFIED` (directory); coverage `NOT_VERIFIED` |
 
@@ -181,7 +182,7 @@ Dated snapshot: stock and price are from the dates shown and are not refreshed. 
 - [x] Check the BMP581 footprint against the datasheet figures (pin 1 corner, Fig. 32 pad sizes) before placing it. Confirmed by the human owner on 2026-11-19 (spec 0.62): U502 on `Bosch_LGA-10_2x2mm_P0.5mm_LayoutBorder3x2y`. The footprint sets a 30 µm solder mask margin, on purpose (§8.2 gives 20 µm) (OPEN-004, P2-012).
 - [ ] Confirm IST8310 lifecycle and a supplier (iSentek, LCSC or distributor).
 - [ ] Get the ICP-20100 supply range and operating temperature, and the BMP581 operating temperature, from their datasheets (NotebookLM or user-supplied values). Land patterns are in the footprint checks (OPEN-004).
-- [ ] Set the address straps on I2C2: ICP-20100 0x63, BMP581 0x46 (SDO low), IST8310 0x0C with CAD0 and CAD1 both low (DEC-047; P1-003, P1-017). The address sets do not overlap (re-check table). IST8310 DRDY and RSTN stay unconnected (team, Q11); RSTN has an internal pull-up.
+- [x] Set the address straps on I2C2: ICP-20100 0x63, BMP581 0x46 (SDO low), IST8310 0x0C with CAD0 and CAD1 both low (DEC-047; P1-003, P1-017). Since DEC-099 (2026-11-21) the straps are direct ties: AD0 and SDO through net ties NT501 and NT502 to `GND`, CAD0 and CAD1 straight to `GND`, no strap resistors. The address sets do not overlap (re-check table). IST8310 DRDY and RSTN stay unconnected (team, Q11); RSTN has an internal pull-up.
 - [x] Check the library footprints against the datasheet drawings (OPEN-004, P2-012). The ICP-20100 symbol pin map matches Table 18. The IST8310 stock `LGA-16_3x3mm_P0.5mm` footprint is confirmed by the human owner on 2026-11-19 (spec 0.62; no land pattern in the datasheet), with a 30 µm solder mask margin. Open: ICP-20100 has no land pattern in its datasheet (AN-000140) and its pads are wider than terminal b. 2026-11-20 check (spec OPEN-004): body, pad count, pitch, pad width and pad numbers of `ST_HLGA-10_2x2mm_P0.5mm_LayoutBorder3x2y` match DS-000416 r1.3; pad length, keep-out and pin 1 corner wait for AN-000140; corner pads are 0.125 mm apart with 0 mask margin. Unused INT (pin 7) is a no-connect (DEC-083): it is open-drain with an internal pull-up (DS-000416 §8). The BMP581 INT goes to `GND` through R512 10 kΩ (DEC-083). Closed 2026-11-20: footprint kept without the app-note check (spec DEC-086).
 - [ ] Confirm that PX4 `icp201xx` supports ICP-20100. The team says it does (pinmap review section 5); not checked by hardware (`NOT_VERIFIED`).
 - [ ] Check JLCPCB assembly eligibility (section 4).

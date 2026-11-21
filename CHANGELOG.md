@@ -135,6 +135,7 @@ Notable changes to this hardware project are documented here.
 - DEC-097 (specification rev 0.79, human owner, 2026-11-21): second KEMET T495C686M016ATE250 68 µF (C804) on `+6V`; on-board bulk 156 µF nominal.
 - Pin allocation rev 0.30 section 6: review record signed off by the human owner (2026-11-21).
 - OPEN-040 (specification rev 0.80): PCB stackup and board rules drawn, not decided (P3-010).
+- Library (not committed, 2026-11-21): `0_Device` symbol family with a stock copy of `NetTie_2`, and the `0_NetTie` footprint family (`NetTie-2_SMD_Pad0.15mm`), both in the lib tables.
 
 ### Changed
 
@@ -251,6 +252,9 @@ Notable changes to this hardware project are documented here.
 - `AO-HORIZON_SW_NOTES_EN.md` rev 0.3: PA12 pull-down is now R313 (was R315).
 - Specification rev 0.81 and checklist rev 0.69 (2026-11-21, no new decisions): P2-021 (power-sheet resistor fields) done by the human owner, 1 % tolerance still `ASSUMED`; P2-016 cites DEC-097 and stays open for the copper and servo GND join (OPEN-021); P4-011 adds the PWM boot-state check from DEC-073 (`NOT_VERIFIED`). No KiCad file changed.
 - Specification rev 0.82 and checklist rev 0.70 (2026-11-21, no new decisions): P0-023, P1-001, P1-003, P1-006, P1-014, P1-017, P2-005, P2-009, P2-012, P2-015, P2-016, P2-018, P2-021, P2-022, P2-023, P3-002 (task text trimmed), REF-04; see the change-note.
+- Specification rev 0.83 and checklist rev 0.71 (2026-11-21): DEC-098, DEC-099, DEC-047, DEC-053, DEC-072, IF-038, OPEN-034, P2-023, P2-024; see the change-note.
+- Schematic (not committed, 2026-11-21 16:08 save): `sensor-navigation` strap resistors R503 to R511 removed, net ties NT501 and NT502 added (DEC-099). Netclass rule areas (ESC, SERVO, GPS1, PPM, DBG, ANALOG, I2C2, SPI) on six sheets, no rules set; drawn, not decided. Nets unchanged by the rule areas.
+- `AO-HORIZON_BARO_MAG_SELECTION_EN.md` rev 0.14: ICP-20100 address selection row (AD0 low gives 0x63, cited).
 
 ### Fixed
 

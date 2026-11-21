@@ -10071,6 +10071,25 @@
 		(dnp no)
 		(polyline
 			(pts
+				(xy 311.15 107.95) (xy 311.15 120.65) (xy 327.66 120.65) (xy 327.66 107.95)
+			)
+			(stroke
+				(width 0)
+				(type dash)
+			)
+			(fill
+				(type none)
+			)
+			(uuid "3fd12502-6fae-4c89-bb6d-97fadeb62a23")
+		)
+	)
+	(rule_area
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(polyline
+			(pts
 				(xy 311.785 86.995) (xy 311.785 94.615) (xy 328.295 94.615) (xy 328.295 86.995)
 			)
 			(stroke
@@ -10102,6 +10121,44 @@
 			(uuid "60e68103-6ed7-4c84-83db-0968d0e9f70b")
 		)
 	)
+	(rule_area
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(polyline
+			(pts
+				(xy 35.56 68.58) (xy 35.56 85.09) (xy 102.87 85.09) (xy 102.87 68.58)
+			)
+			(stroke
+				(width 0)
+				(type dash)
+			)
+			(fill
+				(type none)
+			)
+			(uuid "9bada7e8-1e27-4be2-8cb8-846002437049")
+		)
+	)
+	(rule_area
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(polyline
+			(pts
+				(xy 59.69 204.47) (xy 59.69 212.09) (xy 76.2 212.09) (xy 76.2 204.47)
+			)
+			(stroke
+				(width 0)
+				(type dash)
+			)
+			(fill
+				(type none)
+			)
+			(uuid "f6c05b22-a062-421a-9c35-5fad3c61d625")
+		)
+	)
 	(netclass_flag ""
 		(length 2.54)
 		(shape round)
@@ -10127,6 +10184,110 @@
 		)
 		(property "Component Class" ""
 			(at -96.52 29.21 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
+	)
+	(netclass_flag ""
+		(length 2.54)
+		(shape round)
+		(at 43.18 85.09 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "4a7f018b-52f1-4a94-8754-1d773b8a71f0")
+		(property "Netclass" "ANALOG"
+			(at 43.8785 87.63 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Component Class" ""
+			(at -118.11 22.86 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
+	)
+	(netclass_flag ""
+		(length 2.54)
+		(shape round)
+		(at 311.15 107.95 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6f06d1c4-45a7-4485-ada4-2a3b145be6ec")
+		(property "Netclass" "SERVO"
+			(at 311.8485 105.41 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Component Class" ""
+			(at -43.18 -22.86 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
+	)
+	(netclass_flag ""
+		(length 2.54)
+		(shape round)
+		(at 76.2 212.09 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "c8447bf2-76e9-4c8f-8b45-89363c1e747e")
+		(property "Netclass" "I2C2"
+			(at 80.01 212.09 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Component Class" ""
+			(at -81.28 156.21 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
