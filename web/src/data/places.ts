@@ -75,10 +75,9 @@ export const places: Record<Level, Record<string, Place>> = {
     h743: { x: 400, y: 200, w: 720, h: 640 },
 
     // on-board I/O, top: 228 apart, centred on the H743 top
-    'j-sd': { x: 318, y: 0 },
-    'p-spare': { x: 546, y: 0 },
-    leds: { x: 774, y: 0 },
-    buzzer: { x: 1002, y: 0 },
+    'j-sd': { x: 432, y: 0 },
+    'p-spare': { x: 660, y: 0 },
+    leds: { x: 888, y: 0 },
 
     // H743 left side, 120 apart: the IMUs, the I2C2 trunk, USB-C and the
     // H743 debug port
@@ -94,13 +93,17 @@ export const places: Record<Level, Record<string, Place>> = {
     baro2: { x: -500, y: 490 },
     mag: { x: -500, y: 582 },
 
-    // IO MCU under the H743, centred on it. Its right side drives the
-    // safety line to GPS1 and the servo group, centred on 1130; its left
-    // side the SWD pads, in the USB and debug column.
+    // IO MCU and buzzer driver under the H743. The H743 bottom has two
+    // ends centred on 760: the MCU link at 580 (F100 centre) and the
+    // buzzer line at 940 (buzzer centre). The buzzer driver sits level
+    // with GPS1's centre (916), so its line to GPS1 is the middle of
+    // three GPS1 ends 120 apart (796, 916, 1036). The F100 left side
+    // drives the SWD pads, in the USB and debug column.
     // Tall for its four right-side ends (DEC-051, DEC-053): the safety
     // line, RC IN, the ESC group and the surface group, 200 apart, centred
     // on 1336.
-    f100: { x: 560, y: 900, w: 400, h: 872 },
+    f100: { x: 380, y: 900, w: 400, h: 872 },
+    buzzer: { x: 840, y: 886 },
     'p-f100dbg': { x: 40, y: 1306 },
 
     // connectors, right column, 92 apart. GPS1 is tall, so it faces both
@@ -224,7 +227,7 @@ export const zones: Partial<Record<Level, Zone[]>> = {
     {
       id: 'z-io',
       label: 'On-board I/O',
-      blocks: ['j-sd', 'p-spare', 'leds', 'buzzer'],
+      blocks: ['j-sd', 'p-spare', 'leds'],
     },
     {
       id: 'z-usb-dbg',
@@ -282,9 +285,9 @@ export const lineAt: Record<string, number> = {
   // servo headers to servos pair, centred on both (-340)
   's-fc-servo': -354,
   's-fc-servo-pwr': -326,
-  // H743 top: the outer two lines through the middle of their blocks
-  'b-sd': 418,
-  'b-buzzer': 1102,
+  // H743 bottom: the MCU link through the F100 centre (the buzzer line
+  // meets the middle of its block without help)
+  'b-link': 580,
   // GPS1: the H743 line on the 92 px pitch of the right column
   'b-gps': 796,
   // F100 right side: the safety line and the servo group, centred

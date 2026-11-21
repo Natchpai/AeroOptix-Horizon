@@ -25,6 +25,8 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 - **Block diagram:**
   - **Overview** (L0, id `system`): the PCB as one In board zone with its ports, and Out board zones for power and ESC, devices and actuators.
   - **System** (L1, id `board`): the blocks inside the board, in zones (Connectors, USB and debug, On-board I/O). I2C2 is drawn as a bus bar.
+    - The buzzer driver (Q701) sits under the H743, right of the F100, outside the zones. It has `TIM3_CH3` from the H743 bottom and `BUZZER-, pin 9` to GPS1, which is the middle of GPS1's three left ends (796, 916, 1036).
+    - The F100 moved 180 px left for this (x 380).
   - **Power** (L1, id `power`): source to load, left to right. A candidate feed is faded.
   - **Interface** (L2): click a link label to see each signal with its MCU pin. The far end shows `TBD`.
   - Click a block for its detail panel.
@@ -114,7 +116,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 ## Next steps
 
 1. Engineer reviews the `npm run drift` list and decides which site texts to fix.
-2. Buzzer-to-GPS1 line (Batch 3) and Showcase 3D viewer (Batch 4), per the plan of 2026-11-21.
+2. Showcase 3D viewer (Batch 4), per the plan of 2026-11-21: the engineer exports the GLB.
 3. Keep `topology.ts` in step with the spec. `npm run check` now flags a new IF row that is on no link.
 
 ## Known gaps

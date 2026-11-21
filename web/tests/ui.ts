@@ -329,6 +329,7 @@ async function main() {
       'diagram?level=board&block=i2c2',
       'diagram?level=board&block=p-f100dbg',
       'diagram?level=board&block=j-gps',
+      'diagram?level=board&block=buzzer',
     ]) {
       const v = await open(browser, route)
       await straightLines(v.page, `/${route}`)

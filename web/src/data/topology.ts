@@ -920,6 +920,16 @@ export const boardLinks: Link[] = [
     pins: [{ mcu: 'h743', refs: ['IF-046'] }],
   },
   {
+    id: 'b-buzzer-gps',
+    level: 'board',
+    from: 'buzzer',
+    to: 'j-gps',
+    bus: 'pwm',
+    label: 'BUZZER-, pin 9',
+    refs: ['IF-046', 'DEC-068', 'DEC-087'],
+    open: ['OPEN-023'],
+  },
+  {
     id: 'b-leds',
     level: 'board',
     from: 'h743',
