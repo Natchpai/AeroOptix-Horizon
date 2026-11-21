@@ -6,7 +6,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bundles, lineAt, places, sideOverrides, zones } from '../src/data/places'
-import { blocks, links, pinsNotOnDiagram } from '../src/data/topology'
+import { blocks, ifNotOnLink, links, pinsNotOnDiagram } from '../src/data/topology'
 import type {
   Level,
   Mcu,
@@ -37,6 +37,8 @@ for (const b of blocks) {
   if (!b.refs.length) err(`block ${b.id}: no source ID`)
   for (const r of [...b.refs, ...(b.open ?? [])])
     if (!ids[r]) err(`block ${b.id}: ${r} is not in the spec`)
+  for (const r of b.refs)
+    if (ids[r]?.removed) err(`block ${b.id}: ${r} is a removed row`)
 }
 
 // 2. Links point at blocks on the same level, and their IDs exist.
@@ -53,6 +55,21 @@ for (const l of links) {
     if (!ids[r]) err(`link ${l.id}: ${r} is not in the spec`)
   for (const r of l.refs)
     if (ids[r]?.removed) err(`link ${l.id}: ${r} is a removed row`)
+}
+
+// 2b. Every live interface row is on a link, or explained in ifNotOnLink.
+//     This catches a new IF row in the spec that the diagram does not draw.
+const ifOnLink = new Set(links.flatMap((l) => l.refs))
+const ifExplained = new Set(ifNotOnLink.map((x) => x.id))
+for (const s of Object.values(ids)) {
+  if (s.kind !== 'IF' || s.removed) continue
+  if (!ifOnLink.has(s.id) && !ifExplained.has(s.id))
+    err(`${s.id} (spec line ${s.line}, ${s.section}) is on no link: add it to a link's refs or to ifNotOnLink`)
+}
+for (const x of ifNotOnLink) {
+  if (!ids[x.id]) err(`ifNotOnLink: ${x.id} is not in the spec`)
+  else if (ids[x.id].removed) err(`ifNotOnLink: ${x.id} is a removed row`)
+  if (ifOnLink.has(x.id)) err(`ifNotOnLink: ${x.id} is on a link now; remove it from the list`)
 }
 
 // 3. Pin selectors match rows, and every pin row is used or explained.

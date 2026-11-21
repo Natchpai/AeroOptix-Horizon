@@ -197,11 +197,15 @@ export function CommandMenu() {
                 value={`${s.id} ${idTitle(s.id)}`}
                 onSelect={() =>
                   runCommand(() =>
-                    window.open(
-                      sourceUrl(s.file, s.line),
-                      '_blank',
-                      'noreferrer'
-                    )
+                    // decisions open on the site's Decisions page; the
+                    // other kinds open their spec row on GitHub
+                    s.kind === 'DEC'
+                      ? navigate({ to: '/decisions', search: { id: s.id } })
+                      : window.open(
+                          sourceUrl(s.file, s.line),
+                          '_blank',
+                          'noreferrer'
+                        )
                   )
                 }
               >

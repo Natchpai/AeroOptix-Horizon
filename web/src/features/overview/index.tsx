@@ -17,6 +17,7 @@ import {
   ListChecks,
   Microchip,
   Network,
+  ScrollText,
   Workflow,
   Zap,
 } from 'lucide-react'
@@ -112,6 +113,14 @@ const explore = [
     icon: Microchip,
     color: 'var(--bus-uart)',
   },
+  {
+    title: 'Decisions',
+    text: `All ${Object.values(ids).filter((s) => s.kind === 'DEC').length} DEC rows of the spec, searchable, with where the diagram uses them.`,
+    to: '/decisions',
+    search: {},
+    icon: ScrollText,
+    color: 'var(--status-decided)',
+  },
 ] as const
 
 /** Checklist task states, in bar order. N/A tasks are left out. */
@@ -187,7 +196,7 @@ export function Overview() {
         </div>
 
         {/* Explore */}
-        <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'>
+        <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
           {explore.map((e) => (
             <Link key={e.title} to={e.to} search={e.search} className='group'>
               <Card className='h-full gap-3 transition-colors group-hover:border-primary/60'>

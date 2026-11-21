@@ -123,15 +123,20 @@ function pinRows(headingStart: string, pkgCol: string): PinRow[] {
     col(pkgCol),
     col('DS'),
   ]
-  return t.rows.map((r) => ({
-    function: r.cells[cF],
-    refs: r.cells[cR].split(',').map((s) => s.trim()).filter(Boolean),
-    signal: r.cells[cS],
-    pin: r.cells[cP],
-    number: /^\d+$/.test(r.cells[cN]) ? Number(r.cells[cN]) : null,
-    ds: r.cells[cD] ?? '',
-    line: r.line,
-  }))
+  // A row whose Signal is "-" records a pin that lost its function (for
+  // example PC0 and PC1, spec DEC-107). It is not allocated, so the site
+  // leaves it out: it shows as a free pin on the package view.
+  return t.rows
+    .filter((r) => r.cells[cS].trim() !== '-')
+    .map((r) => ({
+      function: r.cells[cF],
+      refs: r.cells[cR].split(',').map((s) => s.trim()).filter(Boolean),
+      signal: r.cells[cS],
+      pin: r.cells[cP],
+      number: /^\d+$/.test(r.cells[cN]) ? Number(r.cells[cN]) : null,
+      ds: r.cells[cD] ?? '',
+      line: r.line,
+    }))
 }
 
 const reservedTable = pinTables.find(

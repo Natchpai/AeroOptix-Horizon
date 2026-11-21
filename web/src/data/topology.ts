@@ -44,7 +44,7 @@ export const systemBlocks: Block[] = [
     kind: 'external',
     label: 'Power module',
     sub: 'Holybro PM02D, INA228',
-    refs: ['IF-048', 'PWR-001'],
+    refs: ['IF-048', 'PWR-001', 'DEC-107'],
     open: ['OPEN-023'],
   },
   {
@@ -178,7 +178,7 @@ export const systemBlocks: Block[] = [
     kind: 'connector',
     label: 'Servo headers × 8',
     sub: 'MAIN 5 to 8, AUX 1 to 4',
-    refs: [...range('IF', 30, 37), 'DEC-019', 'DEC-051'],
+    refs: [...range('IF', 30, 37), 'DEC-019', 'DEC-051', 'DEC-106'],
     open: ['OPEN-021'],
   },
   {
@@ -266,7 +266,7 @@ export const systemBlocks: Block[] = [
     kind: 'connector',
     label: 'ESC headers × 4',
     sub: 'MAIN 1 to 4, + removed',
-    refs: [...range('IF', 40, 43), 'DEC-051', 'DEC-054'],
+    refs: [...range('IF', 40, 43), 'DEC-051', 'DEC-054', 'DEC-106'],
     open: ['OPEN-017', 'OPEN-031'],
   },
 ]
@@ -554,9 +554,9 @@ export const boardBlocks: Block[] = [
     kind: 'connector',
     label: 'Power module conn',
     sub: '6-pin CLIK-Mate',
-    refs: ['IF-048', 'PWR-001'],
+    refs: ['IF-048', 'PWR-001', 'DEC-107'],
     open: ['OPEN-023'],
-    note: 'Pin order 1-2 5 V, 3 SCL, 4 SDA, 5-6 GND, confirmed by the human owner (OPEN-023).',
+    note: 'Pin order 1-2 5 V, 3 SCL, 4 SDA, 5-6 GND, confirmed by the human owner (OPEN-023). Battery voltage and current come only from the PM02D INA228 over I2C4; no analog battery input (DEC-107).',
   },
   // Connectors (cable side) and on-board I/O (kind io)
   {
@@ -620,8 +620,8 @@ export const boardBlocks: Block[] = [
     kind: 'io',
     label: 'microSD slot',
     sub: 'No card detect',
-    refs: ['IF-044', 'DEC-078', 'DEC-081'],
-    note: '10 kΩ pull-ups on CMD and DAT0 to DAT3, no card detect (DEC-078); 100 nF and 2.2 µF at the card supply (DEC-081).',
+    refs: ['IF-044', 'DEC-078', 'DEC-081', 'DEC-104'],
+    note: '10 kΩ pull-ups on CMD and DAT0 to DAT3, no card detect (DEC-078); 100 nF and 2.2 µF at the card supply (DEC-081). No ESD part on the SD1 lines (DEC-104).',
   },
   {
     id: 'j-dbg',
@@ -656,8 +656,9 @@ export const boardBlocks: Block[] = [
     kind: 'connector',
     label: 'ESC headers × 4',
     sub: 'MAIN 1 to 4, + removed',
-    refs: [...range('IF', 40, 43), 'DEC-051', 'DEC-054'],
+    refs: [...range('IF', 40, 43), 'DEC-051', 'DEC-054', 'DEC-106'],
     open: ['OPEN-017', 'OPEN-031'],
+    note: 'CN802, Samtec TSW-104-08-F-T-RA (4 positions, 3 rows, right angle): row a `GND`, row b `+6V`, row c signal, with row b unconnected (DEC-106).',
   },
   {
     id: 'j-servo',
@@ -665,8 +666,9 @@ export const boardBlocks: Block[] = [
     kind: 'connector',
     label: 'Surface servo headers × 4',
     sub: 'MAIN 5 to 8, +6 V',
-    refs: [...range('IF', 30, 33), 'DEC-019', 'DEC-051'],
+    refs: [...range('IF', 30, 33), 'DEC-019', 'DEC-051', 'DEC-106'],
     open: ['OPEN-021'],
+    note: 'CN803, Samtec TSW-104-08-F-T-RA (4 positions, 3 rows, right angle): row a `GND`, row b `+6V`, row c signal (DEC-106).',
   },
   {
     id: 'j-aux',
@@ -674,8 +676,9 @@ export const boardBlocks: Block[] = [
     kind: 'connector',
     label: 'Tilt servo headers × 4',
     sub: 'AUX 1 to 4, +6 V',
-    refs: [...range('IF', 34, 37), 'DEC-019', 'DEC-051'],
+    refs: [...range('IF', 34, 37), 'DEC-019', 'DEC-051', 'DEC-106'],
     open: ['OPEN-031'],
+    note: 'CN801, Samtec TSW-104-08-F-T-RA (4 positions, 3 rows, right angle): row a `GND`, row b `+6V`, row c signal (DEC-106).',
   },
   {
     id: 'p-spare',
@@ -785,7 +788,7 @@ export const boardLinks: Link[] = [
     to: 'f100',
     bus: 'uart',
     label: 'USART6 ↔ USART2, 1.5 Mb/s',
-    refs: ['IF-024', 'DEC-015'],
+    refs: ['IF-024', 'IF-001', 'DEC-015'],
     pins: [
       { mcu: 'h743', refs: ['IF-024'] },
       { mcu: 'f100', refs: ['IF-024'] },
@@ -915,6 +918,16 @@ export const boardLinks: Link[] = [
     label: 'TIM3_CH3',
     refs: ['IF-046', 'DEC-068'],
     pins: [{ mcu: 'h743', refs: ['IF-046'] }],
+  },
+  {
+    id: 'b-buzzer-gps',
+    level: 'board',
+    from: 'buzzer',
+    to: 'j-gps',
+    bus: 'pwm',
+    label: 'BUZZER-, pin 9',
+    refs: ['IF-046', 'DEC-068', 'DEC-087'],
+    open: ['OPEN-023'],
   },
   {
     id: 'b-leds',
@@ -1295,14 +1308,22 @@ export const pinsNotOnDiagram: {
   { mcu: 'h743', refs: ['DEC-044'], reason: 'CMOS oscillator' },
   { mcu: 'h743', refs: ['DEC-045'], reason: 'OSC_OUT not used (HSE bypass)' },
   { mcu: 'h743', refs: ['P1-007'], reason: 'Boot select' },
-  {
-    mcu: 'h743',
-    refs: ['IF-048'],
-    reason: 'Analog battery inputs, reserve (DEC-023)',
-  },
   { mcu: 'f100', refs: ['DEC-044'], reason: 'CMOS oscillator' },
   { mcu: 'f100', refs: ['DEC-045'], reason: 'OSC_OUT not used (HSE bypass)' },
   { mcu: 'f100', refs: ['P1-014'], reason: 'Boot select' },
+]
+
+/**
+ * Live IF rows that no diagram link cites, with the reason. `npm run check`
+ * fails on any other live IF row that is on no link, and on an entry here
+ * that is unknown, removed or now on a link.
+ */
+export const ifNotOnLink: { id: string; reason: string }[] = [
+  {
+    id: 'IF-023',
+    reason:
+      'SWD summary row; the SWD links cite IF-045 (H743) and IF-051 (F100)',
+  },
 ]
 
 export const blocks: Block[] = [...systemBlocks, ...boardBlocks, ...powerBlocks]

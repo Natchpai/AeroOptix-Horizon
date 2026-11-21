@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SiteRouteRouteImport } from './routes/_site/route'
 import { Route as errors404RouteImport } from './routes/(errors)/404'
 import { Route as SiteIndexRouteImport } from './routes/_site/index'
+import { Route as SiteDecisionsRouteImport } from './routes/_site/decisions'
 import { Route as SiteDiagramRouteImport } from './routes/_site/diagram'
 import { Route as SitePinoutRouteImport } from './routes/_site/pinout'
 import { Route as SiteShowcaseRouteImport } from './routes/_site/showcase'
@@ -28,6 +29,11 @@ const errors404Route = errors404RouteImport.update({
 const SiteIndexRoute = SiteIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
+const SiteDecisionsRoute = SiteDecisionsRouteImport.update({
+  id: '/decisions',
+  path: '/decisions',
   getParentRoute: () => SiteRouteRoute,
 } as any)
 const SiteDiagramRoute = SiteDiagramRouteImport.update({
@@ -49,12 +55,14 @@ const SiteShowcaseRoute = SiteShowcaseRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof SiteIndexRoute
   '/404': typeof errors404Route
+  '/decisions': typeof SiteDecisionsRoute
   '/diagram': typeof SiteDiagramRoute
   '/pinout': typeof SitePinoutRoute
   '/showcase': typeof SiteShowcaseRoute
 }
 export interface FileRoutesByTo {
   '/404': typeof errors404Route
+  '/decisions': typeof SiteDecisionsRoute
   '/diagram': typeof SiteDiagramRoute
   '/pinout': typeof SitePinoutRoute
   '/showcase': typeof SiteShowcaseRoute
@@ -64,6 +72,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_site': typeof SiteRouteRouteWithChildren
   '/(errors)/404': typeof errors404Route
+  '/_site/decisions': typeof SiteDecisionsRoute
   '/_site/diagram': typeof SiteDiagramRoute
   '/_site/pinout': typeof SitePinoutRoute
   '/_site/showcase': typeof SiteShowcaseRoute
@@ -71,13 +80,14 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/404' | '/diagram' | '/pinout' | '/showcase'
+  fullPaths: '/' | '/404' | '/decisions' | '/diagram' | '/pinout' | '/showcase'
   fileRoutesByTo: FileRoutesByTo
-  to: '/404' | '/diagram' | '/pinout' | '/showcase' | '/'
+  to: '/404' | '/decisions' | '/diagram' | '/pinout' | '/showcase' | '/'
   id:
     | '__root__'
     | '/_site'
     | '/(errors)/404'
+    | '/_site/decisions'
     | '/_site/diagram'
     | '/_site/pinout'
     | '/_site/showcase'
@@ -112,6 +122,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteIndexRouteImport
       parentRoute: typeof SiteRouteRoute
     }
+    '/_site/decisions': {
+      id: '/_site/decisions'
+      path: '/decisions'
+      fullPath: '/decisions'
+      preLoaderRoute: typeof SiteDecisionsRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
     '/_site/diagram': {
       id: '/_site/diagram'
       path: '/diagram'
@@ -137,6 +154,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface SiteRouteRouteChildren {
+  SiteDecisionsRoute: typeof SiteDecisionsRoute
   SiteDiagramRoute: typeof SiteDiagramRoute
   SitePinoutRoute: typeof SitePinoutRoute
   SiteShowcaseRoute: typeof SiteShowcaseRoute
@@ -144,6 +162,7 @@ interface SiteRouteRouteChildren {
 }
 
 const SiteRouteRouteChildren: SiteRouteRouteChildren = {
+  SiteDecisionsRoute: SiteDecisionsRoute,
   SiteDiagramRoute: SiteDiagramRoute,
   SitePinoutRoute: SitePinoutRoute,
   SiteShowcaseRoute: SiteShowcaseRoute,

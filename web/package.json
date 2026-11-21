@@ -6,6 +6,7 @@
   "scripts": {
     "extract": "tsx scripts/extract-docs.ts",
     "check": "tsx scripts/extract-docs.ts && tsx scripts/check-data.ts",
+    "drift": "tsx scripts/extract-docs.ts && tsx scripts/drift.ts",
     "predev": "npm run extract",
     "dev": "vite",
     "prebuild": "npm run check",
