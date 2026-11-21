@@ -7,6 +7,7 @@ import {
   GitBranch,
   LayoutDashboard,
   Network,
+  ScrollText,
   Sparkles,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
@@ -37,6 +38,7 @@ export const sidebarData: SidebarData = {
             { title: 'STM32F100', url: '/pinout', search: { mcu: 'f100' } },
           ],
         },
+        { title: 'Decisions', url: '/decisions', icon: ScrollText },
       ],
     },
     {

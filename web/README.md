@@ -61,12 +61,13 @@ For a DEC row only Topic and Selected option count, and history phrases such as 
 
 `npm run test:ui` serves `dist/` and opens it in the installed Microsoft Edge (through `playwright-core`; no browser download). It lists every failure and exits 1 when:
 
-- a page throws an error, in dark or light (Overview, the three diagram views, an Interface view, both pinouts)
+- a page throws an error, in dark or light (Overview, the three diagram views, an Interface view, both pinouts, Decisions)
 - a drawn line is not straight on screen, in dark or light
 - a link label covers a block, another label or another line: with no block selected, with blocks selected in turn, and in light theme
 - an SVG export (4 views, dark and light) is not valid XML, or still holds CSS (`var(`, `color-mix`, `oklab`, `class=`)
 - a page scrolls sideways at 390 px (dark and light), or a diagram view opens there below zoom 0.35
 - a hash link changed in an open tab (as when a URL is pasted) does not show the new view, block selection or pin
+- picking a DEC ID in Ctrl+K does not open its row on the Decisions page
 
 It takes about 4 minutes. CI does not run it, because CI has no Edge. Google Fonts are fetched once per run and then served from memory. If they cannot be fetched, the run warns that label checks used fallback fonts.
 

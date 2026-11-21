@@ -30,7 +30,12 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - Click a block for its detail panel.
   - On a phone (canvas under 640 px), a view that would fit below zoom 0.35 opens centred on its start block at 0.35: FC, Main MCU, or the power mux.
 - **Pinout:** LQFP100 and LQFP48 package views and pin tables. A pin links to its diagram link.
-- **Search:** Ctrl+K over pins, signals, blocks and spec IDs.
+- **Decisions:** every `DEC-xxx` row of the spec in a sortable, filterable table (`?q=` filter, `?id=DEC-xxx` opens a row).
+  - A row shows the ID, topic, decision (clamped), date and how many diagram items cite it.
+  - Click a row for the full decision, the notes, the spec line and links to the diagram blocks and links that cite it.
+  - On a phone only ID and topic show; the decision and date move into the opened row.
+  - It is also an Overview card and a sidebar item.
+- **Search:** Ctrl+K over pins, signals, blocks and spec IDs. A DEC result opens it on the Decisions page; other IDs open their spec row on GitHub.
 - **SVG export:** on each diagram view and each package card. The export uses native SVG with hex colours, plus a footer with the spec revision, the phase, "not for fabrication" and the date.
 - **Showcase:** placeholder.
 
@@ -88,7 +93,8 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - SVG export;
   - no sideways scroll at 390 px in both themes;
   - a readable phone zoom;
-  - same-tab hash links.
+  - same-tab hash links;
+  - the Decisions page (both themes, 390 px) and Ctrl+K on a DEC ID.
 
 ## Verified (2026-11-21)
 
@@ -108,7 +114,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 ## Next steps
 
 1. Engineer reviews the `npm run drift` list and decides which site texts to fix.
-2. Decisions page (Batch 2), buzzer-to-GPS1 line (Batch 3) and Showcase 3D viewer (Batch 4), per the plan of 2026-11-21.
+2. Buzzer-to-GPS1 line (Batch 3) and Showcase 3D viewer (Batch 4), per the plan of 2026-11-21.
 3. Keep `topology.ts` in step with the spec. `npm run check` now flags a new IF row that is on no link.
 
 ## Known gaps
