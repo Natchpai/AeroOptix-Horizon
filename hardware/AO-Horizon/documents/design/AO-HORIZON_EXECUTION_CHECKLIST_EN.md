@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Execution Checklist
 
-**Revision:** 0.71
+**Revision:** 0.72
 **Updated:** 2026-11-21
 **Status:** Active execution tracker; not an approval or verification record
-**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.83
+**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.84
 
 Use the specification for confirmed requirements and decisions. This checklist records the sequence of work and the evidence needed to close each gate. Diagram content is reference material. User-confirmed requirements take precedence. All sensor parts are chosen (DEC-008, DEC-010, DEC-011); their lifecycle and sourcing risks are open.
 
@@ -63,7 +63,7 @@ Any candidate pin mapping stays labeled `CANDIDATE / NOT VERIFIED` until P1 evid
 | ------ |---|---|---|---|---|
 | P1-001 | Review the H743 and F100 pin allocation (human review): alternate-function and timer conflicts, package pins, reserved and unused pins; record the reviewer, date, conflicts and resolutions in the pin allocation. H743 pins from `px4/fmu-v6c`, F100 pins from `px4/io-v2` on the STM32F100C8T6B, with the DEC-051 output mapping applied. Signed off by the human owner 2026-11-21 (pin allocation section 6). Left: F-15 waits on P4-011; datasheet text match and critical-pin figure check in P3-009; DMA and interrupt priorities are firmware (P2-005). | IF-010 to IF-024, IF-030 to IF-051, OPEN-001, OPEN-003 | Human | DONE | [AO-HORIZON_PIN_ALLOCATION_EN.md](AO-HORIZON_PIN_ALLOCATION_EN.md) rev 0.30, section 6 review record; [AO-HORIZON_PINMAP_REVIEW_EN.md](AO-HORIZON_PINMAP_REVIEW_EN.md) rev 0.3 |
 | P1-002 | Assign exact F100 pins and alternate functions. Merged into P1-001 on 2026-11-19. | IF-030 to IF-043, IF-049 to IF-051, OPEN-001 | Hardware | N/A | See P1-001 |
-| P1-003 | Allocate the sensor buses: both IMUs on SPI with CS and INT1, software reset only (DEC-009), INT2 not used; barometers on I2C2 per SEN-002 (BMP384 fallback: OPEN-004); IST8310 at 0x0C (DEC-047), DRDY and RSTN not connected; magnetic placement. Done 2026-11-21: R501 and R502 5k1 are the only I2C2 pull-ups, 400 kHz or less, about 45 pF, re-check after routing (DEC-094); bus recovery by GPIO in firmware (P2-005); U503 placement (DEC-096, checked in P3-002). Drawn: SPI, INT1 (PC4, PE15) and `NAV_I2C2_*` reach the H743 (spec 4.2). | SEN-001, SEN-002, SEN-003, DEC-047, DEC-094, DEC-096 | Hardware | DONE | DEC-094 (pull-ups, bus capacitance, recovery); DEC-096 (magnetic placement) |
+| P1-003 | Allocate the sensor buses: both IMUs on SPI with CS and INT1, software reset only (DEC-009), INT2 not used; barometers on I2C2 per SEN-002 (BMP384 fallback: OPEN-004); IST8310 at 0x0C (DEC-047), DRDY and RSTN not connected; magnetic placement. Done 2026-11-21: R501 and R502 2k are the only I2C2 pull-ups, 400 kHz or less, rise time about 76 ns at an assumed 45 pF, 177 pF limit (DEC-094, DEC-100); bus recovery by GPIO in firmware (P2-005); U503 placement (DEC-096, checked in P3-002). Drawn: SPI, INT1 (PC4, PE15) and `NAV_I2C2_*` reach the H743 (spec 4.2). | SEN-001, SEN-002, SEN-003, DEC-047, DEC-094, DEC-100, DEC-096 | Hardware | DONE | DEC-094, DEC-100 (pull-ups, bus capacitance, recovery); DEC-096 (magnetic placement) |
 | P1-004 | Allocate both I2C barometers. Merged into P1-003 on 2026-11-19. | SEN-002 | Hardware | N/A | See P1-003 |
 | P1-005 | Allocate the I2C magnetometer (IST8310). Merged into P1-003 on 2026-11-19. | SEN-003, DEC-047, P1-018 | Hardware | N/A | See P1-003 |
 | P1-006 | Allocate USB FS, VBUS sensing, ESD/protection, connector and reset support for H743 flashing. Drawn on `conn-usb-debug` (spec 4.2): CN601 USB-C, U601 USBLC6-2SC6 (DEC-084), CC 5k1 to `GND`, VBUS to PA9 through R603 5k1 / R604 10k (DEC-080; PA9 3.31 V at 5.0 V and 3.64 V at 5.5 V, `ESTIMATED`). Net check 2026-11-21 (08:42 save, `sch-inspect`, `VERIFIED`): VBUS, CC, D+ and D- through U601 to PA12 and PA11, SBU no-connect, shield on `GND`. TPS2121 blocks reverse current on each channel, so U101 does not drive `VBUS` (`VERIFIED`). Left: bench check (P4-005). | IF-022, DEC-080 | Hardware | DONE | USB net check 2026-11-21 (this row); DEC-080, DEC-084 |
