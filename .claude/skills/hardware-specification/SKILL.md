@@ -90,7 +90,7 @@ Pick the mode from `$ARGUMENTS` or the request. If unclear, ask.
 
 ## Boundaries
 
-- Do not open or read a PDF, except a datasheet the user approves for a direct read (`pdf.md`). Datasheet values come from the user, official manufacturer web pages, or NotebookLM answers with cited text; uploading a file to NotebookLM needs the user's approval. If the project has `.claude/rules/engineering.md`, follow its "Datasheet evidence" section.
+- Do not open or read a schematic or PCB PDF. Project report PDFs may be read; a datasheet PDF only after the user approves that file for a direct read (`pdf.md`). Datasheet values come from the user, official manufacturer web pages, or NotebookLM answers with cited text; uploading a file to NotebookLM needs the user's approval. If the project has `.claude/rules/engineering.md`, follow its "Datasheet evidence" section.
 - KiCad design and library files are read-only.
 - The project phase (`DRAFT`, `PRELIMINARY`, `CHECK`, `RELEASE`) is declared by the human; a specification never sets or changes it.
 - Electrical specs, component ratings, manufacturing capabilities and test results come from the user or a cited source. Without one, write `TBD` or `NOT_VERIFIED`.

@@ -40,7 +40,7 @@ argument-hint: "[<reference> | <MPN> | compare <MPN1> <MPN2>]"
 ## Workflow
 1. Resolve `$ARGUMENTS` or the request into a reference, an MPN, or a pair of MPNs. For a KiCad reference, find its sheet instance and read only the relevant properties from the native `.kicad_sch` data, not a full-project netlist.
 2. Resolve the exact manufacturer and orderable MPN, including package and suffix. If it is ambiguous, list the candidate identities and let the user pick. If the reference is not found, report `NOT_VERIFIED`; you may list similar references, but do not choose one.
-3. Get the needed datasheet sections and package drawing from an allowed source. For a PDF, use NotebookLM only after the user approves: pin the notebook, and quote the cited table or pin text for the exact MPN. Record source and revision, or say the document could not be checked.
+3. Get the needed datasheet sections and package drawing from an allowed source. Query an existing NotebookLM notebook without asking; adding a PDF as a source needs the user's approval. Pin the notebook, and quote the cited table or pin text for the exact MPN. Record source and revision, or say the document could not be checked.
 4. Pick the checks the question needs:
    - **Identity/BOM:** manufacturer, MPN, value, variants and orderable package.
    - **Electrical:** absolute maximum ratings versus recommended operating conditions, limits, tolerances and derating.

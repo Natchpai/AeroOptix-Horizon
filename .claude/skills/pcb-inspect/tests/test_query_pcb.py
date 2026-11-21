@@ -1,4 +1,4 @@
-"""Standalone PCB synthetic regression tests (v0.1 through v1.1.1)."""
+"""Standalone PCB synthetic regression tests (v0.1 through v1.2.0)."""
 import json
 import subprocess
 import sys
@@ -184,6 +184,43 @@ CONFLICTING_NET_BOARD = '''(kicad_pcb (version 20260206) (generator "pcbnew")
  (nets (net 1 "NET_A") (net 1 "NET_B")))'''
 
 EMPTY_FORM_BOARD = '''(kicad_pcb (version 20260206) ())'''
+
+# v1.2: KiCad 10 board (no net table) with an unrouted net (VCC), a net that
+# exists only on routing (STITCH), a keepout zone inside a footprint, pad
+# drills, a split exposed pad (U1.9 x3), user layer names and an outline
+# polygon with an arc piece. The footprint zone uses board coordinates, as
+# KiCad 10 saves it.
+V12_BOARD = '''(kicad_pcb (version 20260206) (generator "pcbnew") (generator_version "10.0")
+ (layers (0 "F.Cu" signal) (2 "B.Cu" signal) (5 "F.SilkS" user "F.Silkscreen") (25 "Edge.Cuts" user))
+ (footprint "Test:IC" (layer "F.Cu") (at 10 10 90)
+  (property "Reference" "U1") (property "Value" "ic")
+  (pad "1" smd rect (at -1 0 90) (size 0.6 1.7) (layers "F.Cu") (net "VCC"))
+  (pad "2" thru_hole oval (at 1 0 90) (size 1.7 1) (drill oval 1 0.6) (layers "*.Cu" "*.Mask") (net "GND"))
+  (pad "3" thru_hole circle (at 0 2 90) (size 1.5 1.5) (drill 0.8) (layers "*.Cu" "*.Mask") (net "GND"))
+  (pad "9" smd rect (at 0 0 90) (size 0.4 0.4) (layers "F.Cu") (net "GND"))
+  (pad "9" smd rect (at 0.5 0 90) (size 0.4 0.4) (layers "F.Cu") (net "GND"))
+  (pad "9" smd rect (at 1 0 90) (size 0.4 0.4) (layers "F.Cu") (net "GND"))
+  (zone (layers "F.Cu" "B.Cu") (uuid "fz1") (hatch edge 0.5) (connect_pads (clearance 0)) (min_thickness 0.25)
+   (keepout (tracks not_allowed) (vias not_allowed) (pads allowed) (copperpour not_allowed) (footprints allowed))
+   (fill (thermal_gap 0.5) (thermal_bridge_width 0.5))
+   (polygon (pts (xy 8 8) (xy 12 8) (xy 12 12) (xy 8 12)))))
+ (footprint "Test:Cap" (layer "B.Cu") (at 20 10)
+  (property "Reference" "C1") (property "Value" "100n")
+  (pad "1" smd rect (at 0 0) (size 0.8 0.8) (layers "B.Cu") (net "VCC"))
+  (pad "2" smd rect (at 1 0) (size 0.8 0.8) (layers "B.Cu") (net "GND")))
+ (gr_poly (pts (xy 0 0) (xy 20 0) (arc (start 20 0) (mid 25 5) (end 20 10)) (xy 0 10))
+  (stroke (width 0.1) (type default)) (fill no) (layer "Edge.Cuts"))
+ (segment (start 30 0) (end 31 0) (width 0.2) (layer "F.Cu") (net "STITCH"))
+ (via (at 31 0) (size 0.6) (drill 0.3) (layers "F.Cu" "B.Cu") (net "STITCH")))'''
+
+# v1.2: KiCad 9 board whose via uses a net code that is not in the net table.
+V12_UNKNOWN_CODE_BOARD = '''(kicad_pcb (version 20241229) (generator "pcbnew")
+ (layers (0 "F.Cu" signal) (31 "B.Cu" signal))
+ (nets (net 0 "") (net 1 "GND") (net 2 "VCC"))
+ (footprint "Test:One" (layer "F.Cu") (at 1 2)
+  (property "Reference" "J1") (property "Value" "test")
+  (pad "1" smd rect (at 0 0) (size 1 1) (layers "F.Cu") (net 1 "GND")))
+ (via (at 3 4) (size 0.6) (drill 0.3) (layers "F.Cu" "B.Cu") (net 3)))'''
 
 
 class PCBTests(unittest.TestCase):
@@ -733,9 +770,9 @@ class PCBTests(unittest.TestCase):
     def test_version_is_the_same_in_script_and_skill(self):
         source = SCRIPT.read_text(encoding="utf-8")
         skill = (SCRIPT.parents[1] / "SKILL.md").read_text(encoding="utf-8")
-        self.assertIn('VERSION = "1.1.1"', source)
-        self.assertIn("(v1.1.1)", source.split("\n", 2)[1])
-        self.assertIn("## Commands (v1.1.1,", skill)
+        self.assertIn('VERSION = "1.2.0"', source)
+        self.assertIn("(v1.2.0)", source.split("\n", 2)[1])
+        self.assertIn("## Commands (v1.2.0,", skill)
         self.assertNotIn("v0.4", source)
         self.assertNotIn("v1.0", skill)
 
@@ -852,6 +889,159 @@ class PCBTests(unittest.TestCase):
         self.assertEqual(rc, 2)
         self.assertEqual(data["status"], "NOT_VERIFIED")
         self.assertIn("not a KiCad PCB", data["error"])
+
+    # --- v1.2: net presence, argparse errors, footprint zones, side, drills,
+    # pad groups, outline arcs, summary metadata
+
+    def write_v12_board(self):
+        self.board.write_text(V12_BOARD, encoding="utf-8")
+
+    def test_routing_on_an_unrouted_real_net_is_not_missing(self):
+        self.write_v12_board()
+        for command in ("tracks", "vias"):
+            rc, data = self.run_cli(command, "VCC")
+            self.assertEqual(rc, 0)
+            self.assertEqual(data["status"], "NOT_FOUND")
+            self.assertEqual(data["net_status"], "ASSIGNED")
+            self.assertEqual(data["net_item_counts"]["pad_count"], 2)
+        rc, missing = self.run_cli("tracks", "NOPE")
+        self.assertEqual(rc, 0)
+        self.assertEqual(missing["net_status"], "MISSING")
+        self.assertNotIn("net_item_counts", missing)
+
+    def test_net_that_exists_only_on_routing_is_found(self):
+        self.write_v12_board()
+        rc, data = self.run_cli("net", "STITCH")
+        self.assertEqual(rc, 0)
+        self.assertEqual(data["status"], "FOUND")
+        self.assertEqual(data["net_status"], "ASSIGNED")
+        self.assertEqual(data["pad_count"], 0)
+        self.assertEqual(data["net_item_counts"]["track_count"], 1)
+        self.assertEqual(data["net_item_counts"]["via_count"], 1)
+        rc, missing = self.run_cli("net", "NOPE")
+        self.assertEqual(rc, 0)
+        self.assertEqual(missing["status"], "NOT_FOUND")
+        self.assertEqual(missing["net_status"], "MISSING")
+
+    def test_zones_not_found_reports_net_status(self):
+        self.write_v12_board()
+        rc, data = self.run_cli("zones", "VCC")
+        self.assertEqual(rc, 0)
+        self.assertEqual(data["status"], "NOT_FOUND")
+        self.assertEqual(data["net_status"], "ASSIGNED")
+        rc, missing = self.run_cli("zones", "NOPE")
+        self.assertEqual(rc, 0)
+        self.assertEqual(missing["net_status"], "MISSING")
+
+    def test_argument_errors_are_json_on_stderr(self):
+        cases = [
+            [sys.executable, str(SCRIPT), "nets", "--board", str(self.board), "--limit", "abc"],
+            [sys.executable, str(SCRIPT), "component", "U1", "--board", str(self.board)],
+            [sys.executable, str(SCRIPT), "pads", "U1"],
+            [sys.executable, str(SCRIPT), "nets", "--board", str(self.board), "--match"],
+        ]
+        for argv in cases:
+            proc = subprocess.run(argv, capture_output=True, text=True, encoding="utf-8")
+            self.assertEqual(proc.returncode, 2, argv)
+            self.assertEqual(proc.stdout, "")
+            error = json.loads(proc.stderr)
+            self.assertEqual(error["status"], "NOT_VERIFIED")
+            self.assertEqual(error["verification"], "NOT_VERIFIED")
+            self.assertTrue(error["error"])
+
+    def test_zones_inside_footprints_are_listed_and_counted(self):
+        self.write_v12_board()
+        rc, data = self.run_cli("zones", "")
+        self.assertEqual(rc, 0)
+        self.assertEqual(data["zone_count"], 1)
+        zone = data["zones"][0]
+        self.assertTrue(zone["rule_area"])
+        self.assertEqual(zone["footprint"], "U1")
+        self.assertEqual(zone["outline_bbox"]["min"], {"x_mm": 8.0, "y_mm": 8.0})
+        rc, summary = self.run_cli("summary")
+        self.assertEqual(rc, 0)
+        self.assertEqual(summary["zone_count"], 1)
+
+    def test_unknown_net_code_is_not_reported_as_a_net_name(self):
+        self.board.write_text(V12_UNKNOWN_CODE_BOARD, encoding="utf-8")
+        rc, data = self.run_cli("nets")
+        self.assertEqual(rc, 0)
+        self.assertEqual([row["name"] for row in data["nets"]], ["GND"])
+        rc, vias = self.run_cli("vias", "3")
+        self.assertEqual(rc, 0)
+        self.assertEqual(vias["status"], "NOT_FOUND")
+
+    def test_nearby_rejects_a_layer_that_is_not_on_the_board(self):
+        self.write_v12_board()
+        rc, data = self.run_cli("nearby", "U1", "--layer", "f.cu")
+        self.assertEqual(rc, 2)
+        self.assertEqual(data["status"], "NOT_VERIFIED")
+        self.assertIn("--layer", data["error"])
+        rc, ok = self.run_cli("nearby", "U1", "--layer", "B.Cu")
+        self.assertEqual(rc, 0)
+        self.assertEqual([row["reference"] for row in ok["neighbors"]], ["C1"])
+
+    def test_footprint_reports_side(self):
+        self.write_v12_board()
+        rc, top = self.run_cli("footprint", "U1")
+        self.assertEqual(rc, 0)
+        self.assertEqual(top["footprints"][0]["side"], "top")
+        rc, bottom = self.run_cli("footprint", "C1")
+        self.assertEqual(rc, 0)
+        self.assertEqual(bottom["footprints"][0]["side"], "bottom")
+
+    def test_outline_polygon_arc_points_are_in_the_box(self):
+        self.write_v12_board()
+        rc, data = self.run_cli("summary")
+        self.assertEqual(rc, 0)
+        self.assertEqual(data["edge_cuts_bbox"]["max"], {"x_mm": 25.0, "y_mm": 10.0})
+        self.assertEqual(data["edge_cuts_bbox_status"], "NOT_VERIFIED")
+
+    def test_pads_report_rotation_and_drill(self):
+        self.write_v12_board()
+        rc, data = self.run_cli("pads", "U1")
+        self.assertEqual(rc, 0)
+        pads = {}
+        for pad in data["pads"]:
+            pads.setdefault(pad["number"], pad)
+        self.assertEqual(pads["1"]["rotation_deg"], 90.0)
+        self.assertIsNone(pads["1"]["drill_mm"])
+        self.assertIsNone(pads["1"]["drill_shape"])
+        self.assertEqual(pads["2"]["drill_mm"], {"x_mm": 1.0, "y_mm": 0.6})
+        self.assertEqual(pads["2"]["drill_shape"], "oval")
+        self.assertEqual(pads["3"]["drill_mm"], {"x_mm": 0.8, "y_mm": 0.8})
+        self.assertEqual(pads["3"]["drill_shape"], "circle")
+
+    def test_pad_distance_group_uses_the_nearest_pad_of_a_split_pad(self):
+        self.write_v12_board()
+        rc, plain = self.run_cli("pad-distance", "U1.9", "C1.1")
+        self.assertEqual(rc, 0)
+        self.assertEqual(plain["status"], "AMBIGUOUS")
+        rc, grouped = self.run_cli("pad-distance", "U1.9", "C1.1", "--group")
+        self.assertEqual(rc, 0)
+        self.assertEqual(grouped["status"], "FOUND")
+        self.assertEqual(grouped["distance_mm"], 10.0)
+        self.assertEqual(grouped["first"]["position"], {"x_mm": 10.0, "y_mm": 10.0})
+        self.assertEqual(grouped["first"]["group_size"], 3)
+        self.assertEqual(grouped["second"]["group_size"], 1)
+        self.assertEqual(self.run_cli_raw("pads", "U1", "--group").returncode, 2)
+
+    def test_summary_reports_generator_version_and_user_layer_names(self):
+        self.write_v12_board()
+        rc, data = self.run_cli("summary")
+        self.assertEqual(rc, 0)
+        self.assertEqual(data["metadata"]["generator_version"], "10.0")
+        layers = {layer["name"]: layer for layer in data["layers"]}
+        self.assertEqual(layers["F.SilkS"]["user_name"], "F.Silkscreen")
+        self.assertIsNone(layers["F.Cu"]["user_name"])
+
+    def test_v12_read_only(self):
+        self.write_v12_board()
+        before = self.board.read_bytes()
+        for args in (("summary",), ("net", "STITCH"), ("zones", ""), ("pads", "U1"),
+                     ("pad-distance", "U1.9", "C1.1", "--group")):
+            self.run_cli(*args)
+        self.assertEqual(self.board.read_bytes(), before)
 
 
 if __name__ == "__main__":

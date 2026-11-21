@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Targeted, read-only KiCad PCB inspection (v1.1.1). Python 3.10+ stdlib."""
+"""Targeted, read-only KiCad PCB inspection (v1.2.0). Python 3.10+ stdlib."""
 from __future__ import annotations
 
 import argparse
@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 
-VERSION = "1.1.1"  # keep the docstring above and SKILL.md in step
+VERSION = "1.2.0"  # keep the docstring above and SKILL.md in step
 
 
 class QueryError(Exception):
@@ -182,6 +182,10 @@ def net_value(expr, declared_nets):
             return {"net_code": code, "net_name": None, "net_status": "UNCONNECTED"}
         if code == "":
             return {"net_code": None, "net_name": None, "net_status": "UNCONNECTED"}
+        # With a net table, a bare number is a net code. One that the table
+        # does not declare is unresolved, not a net with that number as name.
+        if declared_nets and code.isascii() and code.isdigit():
+            return {"net_code": code, "net_name": None, "net_status": "NOT_VERIFIED"}
         # KiCad 10 boards have no net table and store (net "name") on each
         # item. That is the normal format, not a missing declaration.
         status = "ASSIGNED_WITHOUT_DECLARATION" if declared_nets else "ASSIGNED"
@@ -351,13 +355,18 @@ def board_position(footprint_at, pad_at, footprint_layer):
     }
 
 
+FOOTPRINT_SIDES = {"F.Cu": "top", "B.Cu": "bottom"}
+
+
 def footprint_data(expr):
     footprint_props = props(expr)
+    layer = value(expr, "layer")
     return {
         "reference": footprint_props.get("Reference") or value(expr, "reference"),
         "value": footprint_props.get("Value"),
         "library_id": expr[1] if len(expr) > 1 else None,
-        "layer": value(expr, "layer"),
+        "layer": layer,
+        "side": FOOTPRINT_SIDES.get(layer),
         "position": at_value(expr),
         "uuid": value(expr, "uuid"),
         "attributes": [item[1:] for item in children(expr, "attr")],
@@ -375,6 +384,28 @@ def geometry_status(pad_type, shape, pad_at, size, layers):
     return "STRUCTURAL_EVIDENCE"
 
 
+def drill_value(expr):
+    """Return (drill size, drill shape) of a pad, or (None, None) with no drill.
+
+    KiCad saves (drill d), (drill oval x y) or (drill oval d), optionally
+    followed by an (offset x y) form.
+    """
+    node = first(expr, "drill")
+    if not node:
+        return None, None
+    tokens = [part for part in node[1:] if not isinstance(part, list)]
+    shape = "circle"
+    if tokens and tokens[0] == "oval":
+        shape = "oval"
+        tokens = tokens[1:]
+    sizes = [optional_number(token) for token in tokens[:2]]
+    if not sizes or any(size is None for size in sizes):
+        return None, "NOT_VERIFIED"
+    x_mm = sizes[0]
+    y_mm = sizes[1] if len(sizes) > 1 else x_mm
+    return {"x_mm": x_mm, "y_mm": y_mm}, shape
+
+
 def pad_data(expr, footprint, declared_nets, source_index):
     if len(expr) < 4:
         raise QueryError("invalid pad definition")
@@ -383,12 +414,18 @@ def pad_data(expr, footprint, declared_nets, source_index):
     layers = layer_values(expr)
     pad_type = str(expr[2])
     shape = str(expr[3])
+    drill, drill_shape = drill_value(expr)
     result = {
         "number": str(expr[1]),
         "type": pad_type,
         "shape": shape,
         "layers": layers,
         "size_mm": size,
+        # KiCad saves the pad angle in board terms: it already includes the
+        # footprint rotation.
+        "rotation_deg": pad_at["rotation_deg"] if pad_at else None,
+        "drill_mm": drill,
+        "drill_shape": drill_shape,
         "position": board_position(footprint["position"], pad_at, footprint["layer"]),
         "geometry_status": geometry_status(pad_type, shape, pad_at, size, layers),
         "verification": "STRUCTURAL_EVIDENCE",
@@ -467,6 +504,11 @@ def xy_points(expr):
                 points.append({"x_mm": x_mm, "y_mm": y_mm})
         else:
             plain = False
+            if isinstance(item, list) and item and item[0] == "arc":
+                # Use the saved arc points; the caller marks the result
+                # NOT_VERIFIED because the bulge between them is not traced.
+                arc_points = (point_value(item, tag) for tag in ("start", "mid", "end"))
+                points.extend(point for point in arc_points if point)
     return points, plain
 
 
@@ -514,7 +556,7 @@ def via_totals(records):
     }
 
 
-def zone_data(expr, declared_nets, source_index):
+def zone_data(expr, declared_nets, source_index, footprint=None):
     layers = layer_values(expr)
     if layers is None:
         layer = value(expr, "layer")
@@ -533,6 +575,7 @@ def zone_data(expr, declared_nets, source_index):
     result = {
         "layers": layers,
         "name": value(expr, "name"),
+        "footprint": footprint,
         "priority": int(priority) if priority is not None else None,
         "rule_area": first(expr, "keepout") is not None,
         "teardrop": any(isinstance(item, list) and item and item[0] == "teardrop" for attr in children(expr, "attr") for item in attr[1:]),
@@ -559,8 +602,20 @@ def zone_data(expr, declared_nets, source_index):
     return result
 
 
+def zone_exprs(extras):
+    """Top-level zones, then zones saved inside footprints, as (reference, expr).
+
+    KiCad saves a footprint zone outline in board coordinates, like a
+    top-level zone, so no footprint transform is applied.
+    """
+    return [(None, parse(fragment)) for fragment in extras["zones"]] + list(extras["footprint_zones"])
+
+
 def zone_records(extras, declared_nets):
-    return [zone_data(parse(fragment), declared_nets, index) for index, fragment in enumerate(extras["zones"])]
+    return [
+        zone_data(expr, declared_nets, index, reference)
+        for index, (reference, expr) in enumerate(zone_exprs(extras))
+    ]
 
 
 def edge_cuts_data(extras):
@@ -627,9 +682,27 @@ def net_usage(declared_nets, footprints, raw_tracks, raw_vias, extras):
         add(net_value(expr, declared_nets), "track_count")
     for expr, _index in raw_vias:
         add(net_value(expr, declared_nets), "via_count")
-    for fragment in extras["zones"]:
-        add(net_value(parse(fragment), declared_nets), "zone_count")
+    for _reference, expr in zone_exprs(extras):
+        add(net_value(expr, declared_nets), "zone_count")
     return usage
+
+
+def absent_net_status(net_name, declared_nets, usage):
+    """Net status for a query that found no items of the requested kind.
+
+    The net can still exist on other saved items, for example an unrouted
+    net that has only pads. Returns (net_status, declaration_status, usage row).
+    """
+    if any(name == net_name for name in declared_nets.values()):
+        return "DECLARED", "STRUCTURAL_EVIDENCE", usage.get(net_name)
+    row = usage.get(net_name)
+    if declared_nets:
+        return ("ASSIGNED_WITHOUT_DECLARATION" if row else "MISSING"), "NOT_VERIFIED", row
+    return ("ASSIGNED" if row else "MISSING"), "NOT_APPLICABLE", row
+
+
+def item_counts(row):
+    return {key: row[key] for key in ("pad_count", "track_count", "via_count", "zone_count")}
 
 
 def scan_board(file):
@@ -644,7 +717,7 @@ def scan_board(file):
     vias = []
     # Zones and board-outline graphics are kept as raw text and parsed only
     # by the commands that need them.
-    extras = {"zones": [], "edge_cuts": []}
+    extras = {"zones": [], "edge_cuts": [], "footprint_zones": []}
     def add_net(expr):
         if len(expr) < 3:
             return
@@ -659,11 +732,14 @@ def scan_board(file):
             metadata["version"] = str(fragment[1:-1].strip().split(maxsplit=1)[-1])
         elif tag == "generator":
             metadata["generator"] = str(fragment[1:-1].strip().split(maxsplit=1)[-1]).strip('"')
+        elif tag == "generator_version":
+            metadata["generator_version"] = str(fragment[1:-1].strip().split(maxsplit=1)[-1]).strip('"')
         elif tag == "layers":
             expr = parse(fragment)
             for item in expr[1:]:
                 if isinstance(item, list) and len(item) >= 3:
-                    layers.append({"id": item[0], "name": item[1], "type": item[2]})
+                    user_name = item[3] if len(item) > 3 and not isinstance(item[3], list) else None
+                    layers.append({"id": item[0], "name": item[1], "type": item[2], "user_name": user_name})
         elif tag == "net":
             add_net(parse(fragment))
         elif tag == "nets":
@@ -671,7 +747,9 @@ def scan_board(file):
                 add_net(net)
         elif tag == "footprint":
             expr = parse(fragment)
-            footprints.append((footprint_data(expr), expr))
+            footprint = footprint_data(expr)
+            footprints.append((footprint, expr))
+            extras["footprint_zones"].extend((footprint["reference"], zone) for zone in children(expr, "zone"))
         elif tag in {"segment", "arc"}:
             tracks.append((parse(fragment), len(tracks)))
         elif tag == "via":
@@ -732,11 +810,12 @@ def summarize(file, target, limit):
         "has_net_table": bool(declared_nets),
         "track_count": len(raw_tracks),
         "via_count": len(raw_vias),
-        "zone_count": len(extras["zones"]),
+        "zone_count": len(extras["zones"]) + len(extras["footprint_zones"]),
         **edge_cuts_data(extras),
         "limitations": [
             "No copper connectivity, clearance, ERC/DRC, pad-to-net, or zone-fill verification.",
             "net_count is the number of distinct net names assigned to saved pads, tracks, vias and zones.",
+            "zone_count includes zones saved inside footprints.",
             "edge_cuts_bbox uses top-level Edge.Cuts graphics only; outline graphics inside footprints are not included.",
         ],
     }
@@ -785,7 +864,7 @@ def inspect_pads(file, reference, limit):
 
 
 def inspect_net(file, net_name, limit):
-    _metadata, _layers, declared_nets, footprints, _tracks, _vias, _extras = scan_board(file)
+    _metadata, _layers, declared_nets, footprints, raw_tracks, raw_vias, extras = scan_board(file)
     data = base_data(file)
     matching_codes = sorted(code for code, name in declared_nets.items() if name == net_name)
     if len(matching_codes) != 1:
@@ -805,18 +884,27 @@ def inspect_net(file, net_name, limit):
             if pad_record["net_name"] == net_name:
                 assignments.append((footprint, pad_record, footprint_index))
     if not assignments:
-        return {
+        usage = net_usage(declared_nets, footprints, raw_tracks, raw_vias, extras)
+        net_status, declaration_status, row = absent_net_status(net_name, declared_nets, usage)
+        result = {
             **data,
-            "status": "NOT_FOUND",
+            "status": "FOUND" if row else "NOT_FOUND",
             "net": net_name,
-            "net_status": "MISSING",
-            "net_declaration_status": "NOT_VERIFIED" if declared_nets else "NOT_APPLICABLE",
+            "net_status": net_status,
+            "net_code": matching_codes[0] if matching_codes else None,
+            "net_declaration_status": declaration_status,
             "footprint_count": 0,
             "pad_count": 0,
             "footprints": [],
             "pads": [],
-            "limitations": ["No saved pad assignment with this exact net name exists in the saved PCB."],
+            "limitations": [
+                "No saved pad is assigned to this net; it exists only on saved tracks, vias or zones."
+                if row else "No saved pad assignment with this exact net name exists in the saved PCB.",
+            ],
         }
+        if row:
+            result["net_item_counts"] = item_counts(row)
+        return result
     unresolved = [pad for _footprint, pad, _index in assignments if pad["net_status"] not in {"ASSIGNED", "ASSIGNED_WITHOUT_DECLARATION"}]
     if unresolved:
         return {
@@ -870,7 +958,7 @@ def inspect_routing(file, net_name, limit, kind):
     This is deliberately an assignment query.  The returned items are not
     joined into paths and do not establish any physical copper connection.
     """
-    _metadata, _layers, declared_nets, _footprints, raw_tracks, raw_vias, _extras = scan_board(file)
+    _metadata, _layers, declared_nets, footprints, raw_tracks, raw_vias, extras = scan_board(file)
     data = base_data(file)
     if kind == "tracks":
         records = [track_data(expr, declared_nets, source_index) for expr, source_index in raw_tracks]
@@ -929,13 +1017,19 @@ def inspect_routing(file, net_name, limit, kind):
 
     matching.sort(key=lambda record: record["_source_index"])
     if not matching:
+        row = None
         if net_name == "":
             absent_message = "No unconnected saved routing items exist in the saved PCB."
-        elif matching_codes:
-            absent_message = "The net is declared, but no saved routing items are assigned to it."
         else:
-            absent_message = "No saved routing item has this exact net assignment."
-        return {
+            usage = net_usage(declared_nets, footprints, raw_tracks, raw_vias, extras)
+            reported_net_status, declaration_status, row = absent_net_status(net_name, declared_nets, usage)
+            if matching_codes:
+                absent_message = f"The net is declared, but no saved {kind} are assigned to it."
+            elif row:
+                absent_message = f"The net exists on other saved items, but no saved {kind} are assigned to it."
+            else:
+                absent_message = "No saved routing item has this exact net assignment."
+        result = {
             **data,
             "status": "NOT_FOUND",
             "net": net_name,
@@ -947,6 +1041,9 @@ def inspect_routing(file, net_name, limit, kind):
             f"{list_key}_truncated": False,
             "limitations": [absent_message],
         }
+        if row:
+            result["net_item_counts"] = item_counts(row)
+        return result
 
     return {
         **data,
@@ -978,7 +1075,7 @@ def inspect_vias(file, net_name, limit):
 
 def inspect_zones(file, net_name, limit):
     """Return saved zones assigned to one exact net name ("" for zones with no net)."""
-    _metadata, _layers, declared_nets, _footprints, _tracks, _vias, extras = scan_board(file)
+    _metadata, _layers, declared_nets, footprints, raw_tracks, raw_vias, extras = scan_board(file)
     data = base_data(file)
     records = zone_records(extras, declared_nets)
     if net_name == "":
@@ -986,16 +1083,26 @@ def inspect_zones(file, net_name, limit):
     else:
         matching = [record for record in records if record["net_name"] == net_name]
     if not matching:
-        return {
+        if net_name == "":
+            net_status, declaration_status, row = "UNCONNECTED", "NOT_APPLICABLE", None
+        else:
+            usage = net_usage(declared_nets, footprints, raw_tracks, raw_vias, extras)
+            net_status, declaration_status, row = absent_net_status(net_name, declared_nets, usage)
+        result = {
             **data,
             "status": "NOT_FOUND",
             "net": net_name,
+            "net_status": net_status,
+            "net_declaration_status": declaration_status,
             "zone_count": 0,
             "zones": [],
             "zones_truncated": False,
             "board_zone_count": len(records),
             "limitations": ["No saved zone has this exact net assignment."],
         }
+        if row:
+            result["net_item_counts"] = item_counts(row)
+        return result
     by_layer = {}
     for record in matching:
         for layer in record["layers"] or ["UNKNOWN"]:
@@ -1018,6 +1125,7 @@ def inspect_zones(file, net_name, limit):
             "A zone outline is not filled copper. fill_status is NOT_VERIFIED: saved fill polygons may be stale and are not checked.",
             "outline_bbox is the bounding box of the saved outline points, not the copper area.",
             "A connect_pads mode of null means the file saves no mode token.",
+            "A zone saved inside a footprint names it in `footprint`; a top-level zone has null.",
             "Saved zone net assignment does not prove copper connectivity or clearance.",
             "Saved PCB may differ from unsaved editor state.",
         ],
@@ -1053,8 +1161,10 @@ def inspect_nets(file, match, limit):
 
 def inspect_nearby(file, reference, limit, layer=None, radius=None):
     """Find footprint origins near one uniquely identified saved footprint."""
-    _metadata, _layers, _declared_nets, footprints, _tracks, _vias, _extras = scan_board(file)
+    _metadata, layers, _declared_nets, footprints, _tracks, _vias, _extras = scan_board(file)
     data = base_data(file)
+    if layer is not None and layer not in {item["name"] for item in layers}:
+        raise QueryError(f"--layer {layer!r} is not a layer on this board; names are case-sensitive, for example F.Cu or B.Cu")
     matches = [(index, footprint) for index, (footprint, _expr) in enumerate(footprints) if footprint["reference"] == reference]
     if not matches:
         return {
@@ -1161,8 +1271,36 @@ def pad_identifier_matches(identifier, footprints):
     return matches, reference_matches
 
 
-def resolve_pad_identifier(identifier, footprints, declared_nets, limit):
+def resolve_pad_group(identifier, matches, declared_nets):
+    """Resolve all pads with one number on one footprint (a split pad) as a group."""
+    positions = []
+    for _footprint_index, footprint, pad_expr, pad_index in matches:
+        try:
+            position = pad_data(pad_expr, footprint, declared_nets, pad_index)["position"]
+        except QueryError as exc:
+            return {"status": "NOT_VERIFIED", "identifier": identifier, "error": str(exc)}
+        if position is None:
+            return {
+                "status": "NOT_VERIFIED",
+                "identifier": identifier,
+                "error": "a pad in the requested group has no resolvable saved board-space centre",
+            }
+        positions.append(position)
+    footprint = matches[0][1]
+    return {
+        "status": "FOUND",
+        "identifier": identifier,
+        "reference": footprint["reference"],
+        "pad_number": str(matches[0][2][1]),
+        "group_size": len(matches),
+        "_positions": positions,
+    }
+
+
+def resolve_pad_identifier(identifier, footprints, declared_nets, limit, group=False):
     matches, reference_matches = pad_identifier_matches(identifier, footprints)
+    if group and matches and len({footprint_index for footprint_index, _f, _e, _i in matches}) == 1:
+        return resolve_pad_group(identifier, matches, declared_nets)
     if not matches:
         if "." not in identifier:
             message = "pad identifier must use the complete saved reference followed by a dot and exact saved pad number"
@@ -1220,11 +1358,28 @@ def resolve_pad_identifier(identifier, footprints, declared_nets, limit):
     }
 
 
-def inspect_pad_distance(file, first_identifier, second_identifier, limit):
+def nearest_group_pair(first_pad, second_pad):
+    """Pick the nearest pair of pad centres from two resolved pad groups."""
+    best = None
+    for first_position in first_pad.pop("_positions"):
+        for second_position in second_pad["_positions"]:
+            distance = point_distance(first_position, second_position)
+            if best is None or distance < best[0]:
+                best = (distance, first_position, second_position)
+    second_pad.pop("_positions")
+    distance, first_pad["position"], second_pad["position"] = best
+    return distance
+
+
+def inspect_pad_distance(file, first_identifier, second_identifier, limit, group=False):
     _metadata, _layers, declared_nets, footprints, _tracks, _vias, _extras = scan_board(file)
     data = base_data(file)
-    first_pad = resolve_pad_identifier(first_identifier, footprints, declared_nets, limit)
-    second_pad = resolve_pad_identifier(second_identifier, footprints, declared_nets, limit)
+    first_pad = resolve_pad_identifier(first_identifier, footprints, declared_nets, limit, group)
+    second_pad = resolve_pad_identifier(second_identifier, footprints, declared_nets, limit, group)
+    if group:
+        for pad in (first_pad, second_pad):
+            if pad["status"] != "FOUND":
+                pad.pop("_positions", None)
     unresolved = [item for item in (first_pad, second_pad) if item["status"] != "FOUND"]
     if unresolved:
         status = "AMBIGUOUS" if any(item["status"] == "AMBIGUOUS" for item in unresolved) else unresolved[0]["status"]
@@ -1237,6 +1392,20 @@ def inspect_pad_distance(file, first_identifier, second_identifier, limit):
             "second": second_pad,
             "measurement_point": "saved pad centres in board coordinates after the saved footprint translation and rotation",
             "limitations": ["No distance is calculated until both requested pad identifiers resolve to exactly one saved pad centre."],
+        }
+    if group:
+        return {
+            **data,
+            "status": "FOUND",
+            "first": first_pad,
+            "second": second_pad,
+            "distance_mm": nearest_group_pair(first_pad, second_pad),
+            "distance_status": "STRUCTURAL_EVIDENCE",
+            "measurement_point": "Smallest Euclidean distance between the saved pad centres of the two pad groups (all pads with the same number on one footprint), in board coordinates, in millimeters. Each `position` is the pad centre used.",
+            "limitations": [
+                "Pad-centre distance does not prove copper clearance, physical clearance, connectivity, routing quality, or electrical correctness.",
+                "Saved PCB may differ from unsaved editor state.",
+            ],
         }
     return {
         **data,
@@ -1253,8 +1422,28 @@ def inspect_pad_distance(file, first_identifier, second_identifier, limit):
     }
 
 
+def json_error(message):
+    """Print the standard JSON error to stderr; stdout stays empty."""
+    print(json.dumps({"status": "NOT_VERIFIED", "verification": "NOT_VERIFIED", "error": message}, ensure_ascii=False, sort_keys=True), file=sys.stderr)
+
+
+class JsonArgumentParser(argparse.ArgumentParser):
+    """Report argument errors as JSON on stderr, like every other error."""
+
+    def error(self, message):
+        json_error(f"{self.prog}: {message}")
+        sys.exit(2)
+
+
 def main(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__)
+    # Print UTF-8 JSON whatever the console code page is. A legacy code page
+    # (common on Windows) cannot encode some paths and names.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8")
+        except (AttributeError, ValueError):
+            pass  # not a text console stream (for example a test buffer)
+    parser = JsonArgumentParser(description=__doc__)
     parser.add_argument("command", choices=["summary", "footprint", "pads", "net", "nets", "tracks", "vias", "zones", "nearby", "pad-distance"])
     parser.add_argument("target", nargs="?")
     parser.add_argument("target2", nargs="?")
@@ -1263,14 +1452,8 @@ def main(argv=None):
     parser.add_argument("--match", help="nets only: case-insensitive substring of the net name")
     parser.add_argument("--layer", help="nearby only: keep footprints on this layer, for example F.Cu")
     parser.add_argument("--radius", type=float, help="nearby only: keep footprints within this origin distance in mm")
+    parser.add_argument("--group", action="store_true", help="pad-distance only: treat all pads with the same number on one footprint as one group and use the nearest pair")
     args = parser.parse_args(argv)
-    # Print UTF-8 JSON whatever the console code page is. A legacy code page
-    # (common on Windows) cannot encode some paths and names.
-    for stream in (sys.stdout, sys.stderr):
-        try:
-            stream.reconfigure(encoding="utf-8")
-        except (AttributeError, ValueError):
-            pass  # not a text console stream (for example a test buffer)
     try:
         if args.limit < 1 or args.limit > 1000:
             raise QueryError("--limit must be from 1 to 1000")
@@ -1290,6 +1473,8 @@ def main(argv=None):
             raise QueryError("--match works with nets only")
         if (args.layer is not None or args.radius is not None) and args.command != "nearby":
             raise QueryError("--layer and --radius work with nearby only")
+        if args.group and args.command != "pad-distance":
+            raise QueryError("--group works with pad-distance only")
         if args.radius is not None and not (math.isfinite(args.radius) and args.radius > 0):
             raise QueryError("--radius must be a positive number of millimetres")
         path = Path(args.board).expanduser().resolve()
@@ -1314,12 +1499,12 @@ def main(argv=None):
         elif args.command == "nearby":
             result = inspect_nearby(path, args.target, args.limit, args.layer, args.radius)
         else:
-            result = inspect_pad_distance(path, args.target, args.target2, args.limit)
+            result = inspect_pad_distance(path, args.target, args.target2, args.limit, args.group)
         print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
         return 0
     except (QueryError, OSError, UnicodeError, RecursionError, IndexError, KeyError, TypeError, ValueError) as exc:
         # Errors are JSON on stderr, as in query_sch.py; stdout stays empty.
-        print(json.dumps({"status": "NOT_VERIFIED", "verification": "NOT_VERIFIED", "error": str(exc)}, ensure_ascii=False, sort_keys=True), file=sys.stderr)
+        json_error(str(exc))
         return 2
 
 
