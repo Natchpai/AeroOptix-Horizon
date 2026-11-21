@@ -180,9 +180,8 @@ const changeTable = parseTables(specLines).find(
   (t) => /^9\.\s/.test(t.heading) && t.headers[0] === 'Revision'
 )
 if (!changeTable) throw new Error('spec: section 9 change notes table not found')
-const specChanges = changeTable.rows
-  .slice(-5)
-  .reverse()
+// every change note for the Spec history page; the last 5 for the Overview
+const specHistory = changeTable.rows
   .map((r) => ({
     revision: r.cells[0],
     date: r.cells[1],
@@ -190,6 +189,9 @@ const specChanges = changeTable.rows
     approvedBy: r.cells[3] ?? '',
     line: r.line,
   }))
+  .reverse()
+if (!specHistory.length) throw new Error('spec: section 9 change notes table is empty')
+const specChanges = specHistory.slice(0, 5)
 
 // heading number of the OPEN rows, e.g. "8.2 Open questions ..." -> "8.2"
 const openSection =
@@ -211,15 +213,49 @@ const gateTable = clTables.find((t) => t.heading === 'Gate summary')
 if (!gateTable) throw new Error('checklist: "## Gate summary" table not found')
 
 const TASK_RE = /^P\d-\d{3}$/
-const tasks: { id: string; status: string; line: number }[] = []
+type Task = {
+  id: string
+  gate: string
+  task: string
+  req: string
+  owner: string
+  status: string
+  /** The whole Status cell, e.g. "BLOCKED BY P1-004" */
+  statusText: string
+  evidence: string
+  line: number
+}
+const tasks: Task[] = []
 for (const t of clTables) {
   const cS = t.headers.indexOf('Status')
-  if (cS < 0) continue
+  if (cS < 0 || !t.rows.some((r) => TASK_RE.test(r.cells[0]))) continue
+  const col = (name: string) => {
+    const k = t.headers.indexOf(name)
+    if (k < 0)
+      throw new Error(`checklist: "${t.heading}" task table has no "${name}" column`)
+    return k
+  }
+  const [cT, cR, cO, cE] = [
+    col('Task'),
+    col('Req'),
+    col('Owner'),
+    col('Evidence required / link'),
+  ]
   for (const r of t.rows) {
     if (!TASK_RE.test(r.cells[0])) continue
-    // "BLOCKED BY P1-004" -> BLOCKED
-    const status = (r.cells[cS] ?? '').replace(/`/g, '').split(/\s/)[0]
-    tasks.push({ id: r.cells[0], status, line: r.line })
+    const statusText = (r.cells[cS] ?? '').replace(/`/g, '').trim()
+    tasks.push({
+      id: r.cells[0],
+      gate: r.cells[0].split('-')[0],
+      task: r.cells[cT] ?? '',
+      req: r.cells[cR] ?? '',
+      owner: r.cells[cO] ?? '',
+      // "BLOCKED BY P1-004" -> BLOCKED
+      status: statusText.split(/\s/)[0],
+      statusText,
+      evidence: r.cells[cE] ?? '',
+      line: r.line,
+    })
   }
 }
 if (!tasks.length) throw new Error('checklist: no P<n>-<nnn> task rows found')
@@ -269,10 +305,8 @@ const progress = {
   gates,
   nextAction,
   nextActionLine: naStart + 1,
-  // status and line of every task, for links from the next action
-  tasks: Object.fromEntries(
-    tasks.map((t) => [t.id, { status: t.status, line: t.line }])
-  ),
+  // every task row, for the Checklist page and links from the next action
+  tasks: Object.fromEntries(tasks.map((t) => [t.id, t])),
 }
 
 // ---------- build stamp ----------
@@ -338,6 +372,7 @@ write('meta.json', meta)
 write('ids.json', ids)
 write('pins.json', { h743, f100, f100Reserved })
 write('progress.json', progress)
+write('history.json', specHistory)
 
 console.log(
   `extract-docs: ${Object.keys(ids).length} spec IDs, H743 ${h743.length} pins, ` +

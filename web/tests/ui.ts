@@ -4,7 +4,9 @@
  * exports are plain valid SVG, phone width has no sideways scroll and opens
  * diagrams at a readable zoom, the light theme passes the same checks, and
  * a hash link changed in an open tab shows the new view, and Ctrl+K on a
- * decision or an open item (open or closed) opens its row on its page.
+ * decision or an open item (open or closed) opens its row on its page,
+ * a next-action task chip opens its Checklist row, and an Overview
+ * revision chip opens its Spec history row.
  *
  * Run after `npm run build`: `npm run test:ui`. Local only (CI has no Edge).
  * Exits 1 and lists every failure.
@@ -251,6 +253,53 @@ async function searchOpensRow(browser: Browser, id: string, page: string) {
   await v.close()
 }
 
+/** A task chip in the Overview next action opens its row on the Checklist. */
+async function taskChipOpensRow(browser: Browser) {
+  const where = 'next-action task chip'
+  const v = await open(browser, '')
+  const chip = v.page.locator('a[href*="checklist?id=P"]').first()
+  const id = ((await chip.textContent()) ?? '').trim()
+  if (!/^P\d-\d{3}$/.test(id)) fail(where, `no task chip found ("${id}")`)
+  await chip.click()
+  await v.page.waitForTimeout(1000)
+  const [hash, row] = await v.page.evaluate(() => [
+    location.hash,
+    document.querySelector('tr[data-state=selected]')?.id ?? '',
+  ])
+  if (!hash.includes('checklist') || !hash.includes(id))
+    fail(where, `went to ${hash || 'nowhere'}`)
+  if (row !== `row-${id}`) fail(where, `selected row is "${row}"`)
+  for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+}
+
+/** A revision chip on the Overview opens its row on Spec history. */
+async function revChipOpensRow(browser: Browser) {
+  const where = 'Overview revision chip'
+  const v = await open(browser, '')
+  const chip = v.page.locator('a[href*="history?rev="]').first()
+  const rev = ((await chip.textContent()) ?? '').replace('rev', '').trim()
+  await chip.click()
+  await v.page.waitForTimeout(1000)
+  const [hash, row] = await v.page.evaluate(() => [
+    location.hash,
+    document.querySelector('tr[data-state=selected]')?.id ?? '',
+  ])
+  if (!hash.includes('history')) fail(where, `went to ${hash || 'nowhere'}`)
+  if (row !== `rev-${rev}`) fail(where, `selected row is "${row}"`)
+  // 0.10 and 0.1 both exist; a link must keep the trailing zero
+  await v.page.evaluate(() => {
+    location.hash = '#/history?rev=%220.10%22'
+  })
+  await v.page.waitForTimeout(1000)
+  const ten = await v.page.evaluate(
+    () => document.querySelector('tr[data-state=selected]')?.id ?? ''
+  )
+  if (ten !== 'rev-0.10') fail(where, `rev "0.10" selected "${ten}"`)
+  for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+}
+
 /** Click an export button; the file must be valid SVG with plain colours. */
 async function svgExport(page: Page, button: string, where: string) {
   const download = page.waitForEvent('download', { timeout: 15000 })
@@ -292,6 +341,11 @@ async function main() {
         'open',
         'open?id=OPEN-023',
         'open?closed=true',
+        'checklist',
+        'checklist?id=P3-007',
+        'checklist?gate=P3&status=OPEN',
+        'history',
+        'history?rev=0.86',
         'showcase',
       ]) {
         const v = await open(browser, route, { theme })
@@ -315,6 +369,8 @@ async function main() {
     await searchOpensRow(browser, 'DEC-050', 'decisions')
     await searchOpensRow(browser, 'OPEN-023', '/open')
     await searchOpensRow(browser, 'OPEN-001', '/open')
+    await taskChipOpensRow(browser)
+    await revChipOpensRow(browser)
 
     // diagram drawing, with nothing and with a block selected
     for (const route of [
@@ -369,6 +425,9 @@ async function main() {
         'decisions?id=DEC-050',
         'open?id=OPEN-023',
         'open?closed=true&id=OPEN-001',
+        'checklist',
+        'checklist?id=P3-007',
+        'history?rev=0.86',
         'showcase',
       ]) {
         const v = await open(browser, route, { width: 390, theme })

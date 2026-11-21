@@ -6,7 +6,9 @@ import {
   Cpu,
   FileText,
   GitBranch,
+  History,
   LayoutDashboard,
+  ListChecks,
   Network,
   ScrollText,
   Sparkles,
@@ -41,6 +43,8 @@ export const sidebarData: SidebarData = {
         },
         { title: 'Decisions', url: '/decisions', icon: ScrollText },
         { title: 'Open items', url: '/open', icon: CircleAlert },
+        { title: 'Checklist', url: '/checklist', icon: ListChecks },
+        { title: 'Spec history', url: '/history', icon: History },
       ],
     },
     {

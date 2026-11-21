@@ -129,14 +129,8 @@ export type Meta = {
   ioMcu: string
   /** Spec heading number of the OPEN rows, e.g. "8.2" */
   openSection: string
-  /** Last spec change notes (section 9), newest first */
-  specChanges: {
-    revision: string
-    date: string
-    description: string
-    approvedBy: string
-    line: number
-  }[]
+  /** Last 5 spec change notes (section 9), newest first */
+  specChanges: SpecChange[]
   /** Commit and date the site was built from */
   build: { commit: string; date: string }
   /** Board GLB for the Showcase (web/public), or null when not exported */
@@ -163,5 +157,31 @@ export type Progress = {
   /** One entry per sentence or list item, in record order */
   nextAction: string[]
   nextActionLine: number
-  tasks: Record<string, { status: string; line: number }>
+  tasks: Record<string, Task>
+}
+
+/** One P<n>-<nnn> row of the checklist, cells as written there. */
+export type Task = {
+  id: string
+  /** Gate the task belongs to, e.g. P3 */
+  gate: string
+  task: string
+  /** Spec IDs, as written (ranges like "IF-030 to IF-043" stay text) */
+  req: string
+  owner: string
+  /** First word of the Status cell: OPEN, DONE, BLOCKED, N/A ... */
+  status: string
+  /** The whole Status cell, e.g. "BLOCKED BY P1-004" */
+  statusText: string
+  evidence: string
+  line: number
+}
+
+/** One row of the spec section 9 change-note table. */
+export type SpecChange = {
+  revision: string
+  date: string
+  description: string
+  approvedBy: string
+  line: number
 }

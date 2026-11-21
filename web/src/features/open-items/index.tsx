@@ -45,6 +45,8 @@ import { IdChip } from '@/components/id-chip'
 import { Main } from '@/components/layout/main'
 import { SiteHeader } from '@/components/layout/site-header'
 import { MdText } from '@/components/md-text'
+import { TaskChip } from '@/components/task-status'
+import { tasksNaming } from './cites'
 
 const route = getRouteApi('/_site/open')
 
@@ -341,6 +343,7 @@ function OpenDetail({ row }: { row: SpecId }) {
   const cited = citedBy.get(row.id) ?? []
   const decs = cited.filter((s) => s.kind === 'DEC')
   const rest = cited.filter((s) => s.kind !== 'DEC')
+  const tasks = tasksNaming(row)
   return (
     <div className='grid gap-4 text-sm lg:grid-cols-[minmax(0,1fr)_18rem]'>
       <div className='min-w-0 space-y-2'>
@@ -366,6 +369,25 @@ function OpenDetail({ row }: { row: SpecId }) {
         </a>
       </div>
       <div className='min-w-0 space-y-4'>
+        <div className='space-y-2'>
+          <div className={label}>Checklist tasks</div>
+          {tasks.length ? (
+            <ul className='space-y-1'>
+              {tasks.map((t) => (
+                <li key={t.id} className='flex items-baseline gap-1.5'>
+                  <span className='w-16 shrink-0'>
+                    <TaskChip id={t.id} />
+                  </span>
+                  <span className='min-w-0 truncate text-xs text-muted-foreground'>
+                    <MdText text={t.task} />
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className='text-xs text-muted-foreground'>None.</p>
+          )}
+        </div>
         <div className='space-y-2'>
           <div className={label}>On the diagram</div>
           {used.length ? (

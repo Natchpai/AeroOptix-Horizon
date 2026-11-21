@@ -1,0 +1,496 @@
+import { Fragment, useEffect, useMemo, useState } from 'react'
+import { getRouteApi, Link as RouterLink } from '@tanstack/react-router'
+import {
+  type ColumnDef,
+  type FilterFn,
+  type SortingState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
+import { type Task, meta, progress, sourceUrl } from '@/data'
+import { ChevronDown, ChevronRight } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { DataTableColumnHeader } from '@/components/data-table'
+import { Main } from '@/components/layout/main'
+import { SiteHeader } from '@/components/layout/site-header'
+import { MdText } from '@/components/md-text'
+import { SpecText } from '@/components/spec-text'
+import {
+  GateBar,
+  StatusBadge,
+  TaskLegend,
+  allTaskStates,
+  taskState,
+} from '@/components/task-status'
+import { openItemsNaming } from '@/features/open-items/cites'
+
+const route = getRouteApi('/_site/checklist')
+
+/** Every task row, in record order. */
+const tasks = Object.values(progress.tasks)
+
+/** The filter searches the whole row. */
+const rowText: FilterFn<Task> = (row, _col, value: string) => {
+  const q = value.trim().toLowerCase()
+  const t = row.original
+  return (
+    !q ||
+    [t.id, t.task, t.req, t.owner, t.statusText, t.evidence]
+      .join(' ')
+      .toLowerCase()
+      .includes(q)
+  )
+}
+
+const label =
+  'text-xs font-semibold tracking-wide text-muted-foreground uppercase'
+
+export function ChecklistPage() {
+  const search = route.useSearch()
+  const navigate = route.useNavigate()
+  const [sorting, setSorting] = useState<SortingState>([])
+  const filter = search.q ?? ''
+  const set = (patch: Partial<typeof search>, replace = true) =>
+    navigate({ search: { ...search, ...patch }, replace })
+  const toggle = (id: string) =>
+    set({ id: id === search.id ? undefined : id }, false)
+
+  // A link to one task shows it even when the gate or status filter hides it.
+  const data = useMemo(
+    () =>
+      tasks.filter(
+        (t) =>
+          t.id === search.id ||
+          ((!search.gate || t.gate === search.gate) &&
+            (!search.status || t.status === search.status))
+      ),
+    [search.gate, search.status, search.id]
+  )
+  const inGate = search.gate
+    ? tasks.filter((t) => t.gate === search.gate)
+    : tasks
+
+  const columns = useMemo<ColumnDef<Task>[]>(
+    () => [
+      {
+        accessorKey: 'id',
+        meta: { thClassName: 'w-24 sm:w-28' },
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title='ID' />
+        ),
+        cell: ({ row }) => (
+          <span className='flex items-center gap-1 font-mono text-xs font-semibold whitespace-nowrap'>
+            {row.original.id === search.id ? (
+              <ChevronDown className='size-3.5 text-muted-foreground' />
+            ) : (
+              <ChevronRight className='size-3.5 text-muted-foreground' />
+            )}
+            {/* on a phone the status column is hidden; a dot keeps it */}
+            <span
+              className='size-2 shrink-0 rounded-full sm:hidden'
+              style={{ background: taskState(row.original.status).color }}
+              title={row.original.status}
+            />
+            {row.original.id}
+          </span>
+        ),
+      },
+      {
+        accessorKey: 'task',
+        header: 'Task',
+        enableSorting: false,
+        cell: ({ row }) => (
+          <span className='line-clamp-2 [overflow-wrap:anywhere]'>
+            <MdText text={row.original.task} />
+          </span>
+        ),
+      },
+      {
+        accessorKey: 'req',
+        meta: { className: 'hidden lg:table-cell', thClassName: 'w-[18%]' },
+        header: 'Req',
+        enableSorting: false,
+        cell: ({ row }) => (
+          <span className='line-clamp-2 font-mono text-xs [overflow-wrap:anywhere] text-muted-foreground'>
+            {row.original.req || '-'}
+          </span>
+        ),
+      },
+      {
+        accessorKey: 'owner',
+        meta: { className: 'hidden md:table-cell', thClassName: 'w-[14%]' },
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title='Owner' />
+        ),
+        cell: ({ row }) => (
+          <span className='line-clamp-2 [overflow-wrap:anywhere] text-muted-foreground'>
+            <MdText text={row.original.owner || '-'} />
+          </span>
+        ),
+      },
+      {
+        accessorKey: 'status',
+        meta: { className: 'hidden sm:table-cell', thClassName: 'w-28' },
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title='Status' />
+        ),
+        cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      },
+    ],
+    [search.id]
+  )
+
+  const table = useReactTable({
+    data,
+    columns,
+    state: { sorting, globalFilter: filter },
+    onSortingChange: setSorting,
+    globalFilterFn: rowText,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+  })
+
+  // A link such as ?id=P3-007 scrolls its row into view once.
+  useEffect(() => {
+    if (!search.id) return
+    const t = setTimeout(
+      () =>
+        document
+          .getElementById(`row-${search.id}`)
+          ?.scrollIntoView({ block: 'start' }),
+      50
+    )
+    return () => clearTimeout(t)
+  }, [search.id])
+
+  const rows = table.getRowModel().rows
+  const chip = (on: boolean) =>
+    cn('h-7 px-2.5 text-xs', on && 'border-primary/60 bg-primary/10')
+
+  return (
+    <>
+      <SiteHeader title='Checklist' />
+      <Main className='space-y-4'>
+        <div>
+          <h1 className='text-2xl font-bold tracking-tight'>Checklist</h1>
+          <p className='text-sm text-muted-foreground'>
+            Every gate and task of the{' '}
+            <a
+              href={sourceUrl(meta.sources.checklist)}
+              target='_blank'
+              rel='noreferrer'
+              className='text-primary hover:underline'
+            >
+              execution checklist
+            </a>{' '}
+            (rev {progress.revision} · {progress.updated}), as written there.
+            Gates are work stages, not the project phase. A{' '}
+            <span className='font-mono'>DONE</span> task is not a measured or
+            verified result.
+          </p>
+        </div>
+
+        <Card className='gap-3'>
+          <CardHeader>
+            <CardTitle className='text-base'>Gates</CardTitle>
+            <CardDescription>
+              Click a gate to list its tasks below.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className='space-y-4'>
+            <ul className='divide-y divide-border'>
+              {progress.gates.map((g) => {
+                const total = Object.entries(g.counts)
+                  .filter(([k]) => k !== 'N/A')
+                  .reduce((t, [, n]) => t + n, 0)
+                const on = search.gate === g.id
+                return (
+                  <li key={g.id}>
+                    <button
+                      type='button'
+                      aria-pressed={on}
+                      onClick={() =>
+                        set({ gate: on ? undefined : g.id, id: undefined })
+                      }
+                      className={cn(
+                        '-mx-2 grid w-[calc(100%+1rem)] gap-x-6 gap-y-1.5 rounded-md px-2 py-3 text-start text-sm transition-colors hover:bg-muted/50 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]',
+                        on && 'bg-primary/10 hover:bg-primary/10'
+                      )}
+                    >
+                      <div className='space-y-1.5'>
+                        <div className='flex items-center gap-2'>
+                          <span className='rounded border border-primary/40 px-1.5 py-0.5 font-mono text-[11px] leading-none text-primary'>
+                            {g.id}
+                          </span>
+                          <span className='min-w-0 font-medium'>{g.name}</span>
+                          <span className='ms-auto flex shrink-0 items-center gap-2 text-xs text-muted-foreground'>
+                            {g.counts.DONE ?? 0} of {total} done
+                            <StatusBadge status={g.status} />
+                          </span>
+                        </div>
+                        <GateBar counts={g.counts} />
+                      </div>
+                      <div className='text-xs leading-relaxed text-muted-foreground'>
+                        <MdText text={g.exit} />
+                        {g.note && (
+                          <span className='mt-1 block'>
+                            <MdText text={g.note} />
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+            <TaskLegend />
+          </CardContent>
+        </Card>
+
+        <Card className='gap-3'>
+          <CardHeader className='space-y-3'>
+            <div className='flex flex-row flex-wrap items-center justify-between gap-2'>
+              <div>
+                <CardTitle className='text-base'>
+                  Tasks{search.gate && ` in ${search.gate}`}
+                </CardTitle>
+                <CardDescription>
+                  {rows.length} of {tasks.length} tasks
+                </CardDescription>
+              </div>
+              <Input
+                placeholder='Filter: ERC, OPEN-023, Human…'
+                value={filter}
+                onChange={(e) => set({ q: e.target.value || undefined })}
+                className='h-8 w-full sm:w-72'
+              />
+            </div>
+            <div className='flex flex-wrap gap-1.5' aria-label='Gate'>
+              <Button
+                variant='outline'
+                size='sm'
+                aria-pressed={!search.gate}
+                className={chip(!search.gate)}
+                onClick={() => set({ gate: undefined })}
+              >
+                All gates
+              </Button>
+              {progress.gates.map((g) => (
+                <Button
+                  key={g.id}
+                  variant='outline'
+                  size='sm'
+                  aria-pressed={search.gate === g.id}
+                  className={cn(chip(search.gate === g.id), 'font-mono')}
+                  onClick={() =>
+                    set({ gate: search.gate === g.id ? undefined : g.id })
+                  }
+                >
+                  {g.id}
+                </Button>
+              ))}
+            </div>
+            <div className='flex flex-wrap gap-1.5' aria-label='Status'>
+              <Button
+                variant='outline'
+                size='sm'
+                aria-pressed={!search.status}
+                className={chip(!search.status)}
+                onClick={() => set({ status: undefined })}
+              >
+                All states
+              </Button>
+              {allTaskStates.map((s) => {
+                const n = inGate.filter((t) => t.status === s.key).length
+                if (!n && search.status !== s.key) return null
+                const on = search.status === s.key
+                return (
+                  <Button
+                    key={s.key}
+                    variant='outline'
+                    size='sm'
+                    aria-pressed={on}
+                    className={chip(on)}
+                    onClick={() => set({ status: on ? undefined : s.key })}
+                  >
+                    <span
+                      className='size-2 rounded-sm'
+                      style={{ background: s.color }}
+                    />
+                    {s.label}
+                    <span className='text-muted-foreground'>{n}</span>
+                  </Button>
+                )
+              })}
+            </div>
+          </CardHeader>
+          <CardContent className='px-0'>
+            <div className='overflow-x-auto'>
+              <Table className='sm:table-fixed'>
+                <TableHeader>
+                  {table.getHeaderGroups().map((hg) => (
+                    <TableRow key={hg.id}>
+                      {hg.headers.map((h) => (
+                        <TableHead
+                          key={h.id}
+                          className={cn(
+                            'first:ps-6',
+                            h.column.columnDef.meta?.className,
+                            h.column.columnDef.meta?.thClassName
+                          )}
+                        >
+                          {flexRender(
+                            h.column.columnDef.header,
+                            h.getContext()
+                          )}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+                <TableBody>
+                  {rows.map((r) => {
+                    const open = r.original.id === search.id
+                    return (
+                      <Fragment key={r.id}>
+                        <TableRow
+                          id={`row-${r.original.id}`}
+                          onClick={() => toggle(r.original.id)}
+                          data-state={open ? 'selected' : undefined}
+                          className={cn(
+                            'cursor-pointer scroll-mt-20 align-top data-[state=selected]:bg-primary/10',
+                            r.original.status === 'N/A' &&
+                              'text-muted-foreground'
+                          )}
+                        >
+                          {r.getVisibleCells().map((c) => (
+                            <TableCell
+                              key={c.id}
+                              className={cn(
+                                'py-2 whitespace-normal first:ps-6',
+                                c.column.columnDef.meta?.className
+                              )}
+                            >
+                              {flexRender(
+                                c.column.columnDef.cell,
+                                c.getContext()
+                              )}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                        {open && (
+                          <TableRow className='bg-primary/5 hover:bg-primary/5'>
+                            <TableCell
+                              colSpan={columns.length}
+                              className='px-6 py-3 whitespace-normal'
+                            >
+                              <TaskDetail task={r.original} />
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </Fragment>
+                    )
+                  })}
+                  {!rows.length && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length}
+                        className='px-6 py-6 text-center text-sm text-muted-foreground'
+                      >
+                        No tasks match.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </Main>
+    </>
+  )
+}
+
+function TaskDetail({ task }: { task: Task }) {
+  const open = openItemsNaming(task.id, `${task.task} ${task.req}`)
+  return (
+    <div className='grid gap-4 text-sm lg:grid-cols-[minmax(0,1fr)_18rem]'>
+      <div className='min-w-0 space-y-2'>
+        <div className={label}>Task</div>
+        <p className='leading-relaxed [overflow-wrap:anywhere]'>
+          <SpecText text={task.task} />
+        </p>
+        <div className={label}>Req</div>
+        <p className='leading-relaxed [overflow-wrap:anywhere]'>
+          {task.req ? <SpecText text={task.req} /> : '-'}
+        </p>
+        <div className={label}>Owner · status</div>
+        <p className='leading-relaxed [overflow-wrap:anywhere]'>
+          <MdText text={task.owner || '-'} /> ·{' '}
+          <MdText text={task.statusText} />
+        </p>
+        <div className={label}>Evidence required / link</div>
+        <p className='leading-relaxed [overflow-wrap:anywhere]'>
+          {task.evidence ? <SpecText text={task.evidence} /> : '-'}
+        </p>
+        <a
+          href={sourceUrl(meta.sources.checklist, task.line)}
+          target='_blank'
+          rel='noreferrer'
+          className='inline-block text-xs text-primary hover:underline'
+        >
+          Checklist line {task.line}
+        </a>
+      </div>
+      <div className='min-w-0 space-y-2'>
+        <div className={label}>Open items</div>
+        {open.length ? (
+          <ul className='space-y-1'>
+            {open.map((o) => (
+              <li key={o.id} className='flex items-baseline gap-1.5'>
+                <RouterLink
+                  to='/open'
+                  search={{ id: o.id }}
+                  className={cn(
+                    'w-20 shrink-0 font-mono text-xs text-primary hover:underline',
+                    o.closed && 'line-through opacity-60'
+                  )}
+                >
+                  {o.id}
+                </RouterLink>
+                <span className='min-w-0 truncate text-xs text-muted-foreground'>
+                  <MdText text={o.fields['Description'] ?? ''} />
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className='text-xs text-muted-foreground'>
+            No open item names this task.
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}

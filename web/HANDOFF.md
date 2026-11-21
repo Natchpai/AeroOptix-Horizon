@@ -2,7 +2,7 @@
 
 **Updated:** 2026-11-21
 
-**Status:** live on GitHub Pages. The engineer approved the Pinout page and the Open items page look, and reviewed the Block diagram. Text is synced to spec rev 0.86 (DEC-106 actuator headers, DEC-107 no H743 battery ADC) and pin allocation rev 0.31.
+**Status:** live on GitHub Pages. The engineer approved the Pinout page and the Open items, Checklist and Spec history page looks, and reviewed the Block diagram. Text is synced to spec rev 0.86 (DEC-106 actuator headers, DEC-107 no H743 battery ADC) and pin allocation rev 0.31.
 
 Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in `README.md`. Earlier history is in Git (`git log -- web`).
 
@@ -12,9 +12,9 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 - **Deploy:** `.github/workflows/pages.yml`, on a push to `main` that touches `web/`, the design docs or `README.md`. It can also be started by hand.
 - **Merging:** `main` needs linear history, so PRs from `dev` are squash-merged. After each PR, merge `main` into `dev`.
 - **What the build reads** (`scripts/extract-docs.ts`), so a merged record change updates the site:
-  - the spec: every ID row, the header, and the last 5 change notes;
+  - the spec: every ID row, the header, and every change note (`history.json`; the Overview shows the last 5);
   - the pin allocation: H743, F100 and F100-reserved tables;
-  - the checklist: `Gate summary`, task status and `Current next action`;
+  - the checklist: `Gate summary`, every task row (ID, Task, Req, Owner, Status, Evidence) and `Current next action`. A task table without one of those columns fails the build;
   - the root `README.md`: phase, revisions, key features, MCUs.
   - A missing heading or table fails the build, and the old site stays up.
 - **Hand-written:** blocks and links in `src/data/topology.ts`, and positions in `src/data/places.ts`.
@@ -41,8 +41,19 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - A row shows the ID, description and owner (both clamped to 2 lines) and how many diagram items cite it. On a phone only ID and description show.
   - The opened row, full width, shows the full description, owner, impact, spec line, the diagram blocks and links that cite it, the DEC rows whose text names it (links to the Decisions page) and other spec rows that name it.
   - The full text is not shown in the table cell: OPEN-023 is about 4,600 characters and made the row too tall.
+  - The opened row also lists checklist tasks: the ones the item names (usually its owner column) and the ones whose text names the item.
   - The Overview open-items card links here ("All open items" and each description). It is also a sidebar item.
-- **Search:** Ctrl+K over pins, signals, blocks and spec IDs. A DEC result opens it on the Decisions page and an OPEN result on the Open items page; other IDs open their spec row on GitHub.
+- **Checklist** (`/checklist`): every gate and `Pn-xxx` task of the execution checklist.
+  - A Gates card shows each gate's name, status, the stacked bar, the exit criterion and the note. Click a gate to filter the tasks (`?gate=P3`).
+  - The task table filters by gate, by status (`?status=OPEN`, with counts) and by text (`?q=`). `?id=P3-007` opens a row, even when a filter hides it.
+  - Columns: ID, Task, Req (wide screens), Owner, Status. On a phone the status shows as a dot before the ID.
+  - The opened row shows the task, Req, owner and status, evidence (spec IDs and task IDs as chips), the checklist line and the open items that name the task.
+  - Task chips (`src/components/task-status.tsx`, shared with the Overview) open `/checklist?id=`: the Overview next action and the gate IDs in the Progress card link here, not to GitHub.
+- **Spec history** (`/history`): the whole section 9 change-note table (`history.json`), newest first, with a text filter (`?q=`).
+  - Rows show revision, date, the note (clamped to 3 lines) and who approved it. Spec IDs and task IDs in the note are chips. Click a row to open it in place, with a link to its spec line; in a closed row a chip click opens the row.
+  - `?rev=` opens a revision even when the filter hides it. Revisions 0.1 and 0.10 both exist, and the router reads a typed `?rev=0.10` as the number 0.1. Site links keep the string (`?rev=%220.10%22`), and `test:ui` checks that 0.10 opens 0.10.
+  - The Overview "Recent spec changes" card links here ("Full history" and each revision chip).
+- **Search:** Ctrl+K over pins, signals, blocks and spec IDs (not checklist tasks). A DEC result opens it on the Decisions page and an OPEN result on the Open items page; other IDs open their spec row on GitHub.
 - **SVG export:** on each diagram view and each package card. The export uses native SVG with hex colours, plus a footer with the spec revision, the phase, "not for fabrication" and the date.
 - **Showcase:** a 3D board viewer (`@google/model-viewer` 4.4.0 with `three` 0.183.x), loaded only on this page. It shows `web/public/models/ao-horizon.glb` with its board revision, export date (last commit of the file), KiCad version, size, a "not for fabrication" tag and a GLB download. Without the file the page says "No board model yet".
   - **Lighting:** the KiCad GLB sets only a base colour per material, so glTF reads every material as rough metal and the board looks grey and flat. On load, `fixMaterials()` sorts materials by colour (solder mask, silkscreen, gold, tin, plastic) and sets metallic and roughness. Lighting is the `legacy` environment with `neutral` tone mapping, exposure 1 and full shadow, picked from screenshots on 2026-11-21.
@@ -106,12 +117,14 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - no sideways scroll at 390 px in both themes;
   - a readable phone zoom;
   - same-tab hash links;
-  - the Decisions and Open items pages (both themes, 390 px), and Ctrl+K on DEC-050, OPEN-023 and the closed OPEN-001.
+  - the Decisions, Open items, Checklist and Spec history pages (both themes, 390 px), Ctrl+K on DEC-050, OPEN-023 and the closed OPEN-001, a next-action task chip opening its Checklist row, and an Overview revision chip (and `0.10`) opening its Spec history row.
 
 ## Verified (2026-11-21)
 
 - `npm run build` passes, and so does `npm run test:ui` (installed Edge, Windows), with the Open items page.
 - Open items page screenshots at 1440 and 390 px, dark and light; the engineer approved the look.
+- Checklist page: `npm run build` and `npm run test:ui` pass; screenshots at 1440 and 390 px, dark and light; the engineer approved the look.
+- Spec history page: `npm run build` and `npm run test:ui` pass; screenshots at 1440 and 390 px, dark and light; the engineer approved the look.
 - **Fault injection:**
   - Removing IF-001 from `b-link` makes `npm run check` fail on IF-001.
   - Setting the magnetometer tap to `0x0E` makes `npm run drift` list it.
@@ -126,7 +139,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 
 ## Next steps
 
-1. New pages: see "Next pages (plan, 2026-11-21)" below. Page 1 (Open items) is built; page 2 (Checklist) is next.
+1. New pages: see "Next pages (plan, 2026-11-21)" below. Pages 1 (Open items), 2 (Checklist) and 4 (Spec history) are built; page 3 (Traceability) is next.
 2. Engineer reviews the `npm run drift` list (24 findings) and decides which site texts to fix.
 3. Re-export the board GLB once the parts are placed on the board.
 4. Keep `topology.ts` in step with the spec. `npm run check` flags a new IF row that is on no link.
@@ -134,7 +147,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 
 ## Next pages (plan, 2026-11-21)
 
-The engineer asked for these pages. Page 1 is built (2026-11-21); the others are not built yet.
+The engineer asked for these pages. Pages 1, 2 and 4 are built (2026-11-21); pages 3 and 5 are not built yet.
 
 **Pattern for each page** (copy the Decisions page, `src/features/decisions/index.tsx`):
 - route `src/routes/_site/<page>.tsx` with `validateSearch` (`q`, `id`);
@@ -154,13 +167,13 @@ Data comes from `src/data/generated/*.json`, written by `scripts/extract-docs.ts
 
 Order: 1 and 2 first (cheap, most asked), then 4, 3, 5.
 
-1. **Open items** (`/open`), **built 2026-11-21** (see "What the site does"). Left: add checklist tasks to the opened row after page 2's extractor change.
+1. **Open items** (`/open`), **built 2026-11-21** (see "What the site does").
    - All OPEN rows from `ids.json` (`kind === 'OPEN'`; fields Description, Impact, Owner / next action; `closed`). Open rows first, with a toggle to show closed rows.
    - The detail row shows the full text and "cited by": diagram blocks and links (`refs`, `open`), DEC rows whose text names the ID, and checklist tasks (after page 2's extractor change).
    - Ctrl+K: an OPEN result opens `/open?id=`, as DEC does in `src/components/command-menu.tsx`.
    - The Overview open-items card links here.
    - No extractor change.
-2. **Checklist** (`/checklist`)
+2. **Checklist** (`/checklist`), **built 2026-11-21** (see "What the site does"). Not done: Ctrl+K over task IDs.
    - Every gate and `Pn-xxx` task: ID, Task, Req, Owner, Status, Evidence. Filter by gate and status.
    - Gate rows show the exit criterion and the stacked bar from the Overview `ProgressCard`.
    - **Extractor:** `progress.tasks` keeps only `{status, line}` today. Add `task`, `req`, `owner` and `evidence` from the task tables (header `| ID | Task | Req | Owner | Status | Evidence required / link |` under `## P<n>: ...`).
@@ -174,7 +187,7 @@ Order: 1 and 2 first (cheap, most asked), then 4, 3, 5.
    - Flag a requirement with no task, or with no decision and no diagram item.
    - Report only: the page never fails the build.
    - Expand ranges written as "IF-030 to IF-043" (like `range()` in `topology.ts`).
-4. **Spec history** (`/history`)
+4. **Spec history** (`/history`), **built 2026-11-21** (see "What the site does").
    - The full section 9 change-note table (revision, date, description, approved by), newest first, with search. Spec IDs in the text become `IdChip`s.
    - **Extractor:** `specChanges` keeps only the last 5 (`extract-docs.ts`, `.slice(-5)`). Add `specHistory` with every row, and keep `specChanges` for the Overview.
 5. **Power budget** (`/power`)
