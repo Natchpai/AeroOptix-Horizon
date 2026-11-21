@@ -16,6 +16,22 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            // The record data every page reads (spec IDs, pins, checklist,
+            // meta) gets its own chunk, so it caches apart from the code.
+            {
+              name: 'records',
+              test: /[\\/]src[\\/]data[\\/]generated[\\/](ids|meta|pins|progress)\.json/,
+            },
+          ],
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
