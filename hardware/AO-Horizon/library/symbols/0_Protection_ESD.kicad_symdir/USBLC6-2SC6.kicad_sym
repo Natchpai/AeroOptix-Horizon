@@ -58,7 +58,29 @@
 				(justify left)
 			)
 		)
-		(property "Description" "Very low capacitance ESD protection diode, 2 data-line, SOT-23-6"
+		(property "Description" "ESD protection diode array, 2 data lines, very low capacitance, SOT-23-6"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "ST"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "USBLC6-2SC6"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)

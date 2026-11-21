@@ -80,6 +80,6 @@ Open items live in the specification's open-item table ([section]). Each row the
 - [ ] Release package revisions are traceable to each other.
 - [ ] The human provides the final approval for each gate.
 
-## Next action
+## Current next action
 
 [One or two sentences: the next task to work on and what blocks it.]

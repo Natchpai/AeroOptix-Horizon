@@ -50,8 +50,10 @@ manufacturer or device checklist.
   NotebookLM answers with cited text. Query an existing notebook without
   asking. Adding a source or creating a notebook uploads a file and needs the
   user's approval. With no source, the value is `NOT_VERIFIED`.
-- If the project has `.claude/rules/engineering.md`, follow it; it is the full
-  policy.
+- KiCad design and library files are read-only. Propose changes; do not apply
+  them.
+- If the project has `.claude/rules/engineering.md` and `pdf.md`, follow them;
+  they are the full policy.
 
 ## Workflow
 

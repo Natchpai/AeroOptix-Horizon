@@ -13,17 +13,35 @@ session. Outputs are Markdown edits only. The human keeps every design
 decision, the phase, and every git action.
 
 `<skills dir>` below is the folder that holds this skill. Sibling skills
-(`sch-inspect`, `pcb-inspect`, `hardware-checklist`, `hw-git-readme`,
-`hw-git-changelog`) are used when installed there; when one is missing, do
-that part by hand and say so in the report.
+(`sch-inspect`, `pcb-inspect`, `hardware-checklist`, `hw-docs`) are used
+when installed there; when one is missing, do that part by hand and say so in
+the report.
+
+**One history.** The spec change-note table is the design history. The
+checklist, README and CHANGELOG point to spec IDs and revisions; they do not
+repeat the decision or open-item text.
+
+## Evidence baseline
+
+- Label each significant claim `VERIFIED` (named evidence: CAD data, a
+  calculation or an official source), `ASSUMED` (assumption stated),
+  `ESTIMATED` (method and margin stated) or `NOT_VERIFIED` (evidence missing
+  or check not run).
+- Datasheet, schematic and PCB PDFs are not read, by any tool. Project report
+  PDFs may be read.
+- Datasheet values come from the user, official manufacturer web pages, or
+  NotebookLM answers with cited text. Query an existing notebook without
+  asking. Adding a source or creating a notebook uploads a file and needs the
+  user's approval. With no source, the value is `NOT_VERIFIED`.
+- KiCad design and library files are read-only. Propose changes; do not apply
+  them.
+- If the project has `.claude/rules/engineering.md` and `pdf.md`, follow them;
+  they are the full policy.
 
 ## Rules
-- KiCad files and project libraries are read-only. Report that you read the
-  **saved** files; the editor may hold unsaved changes.
-- Evidence and findings follow `.claude/rules/engineering.md` when the project
-  has it. Otherwise label each statement `VERIFIED`, `ASSUMED`, `ESTIMATED` or
-  `NOT_VERIFIED`, and write one line per finding:
-  `SEVERITY | ref / net | label | statement | source`.
+- Report that you read the **saved** KiCad files; the editor may hold unsaved
+  changes.
+- Write one line per finding: `SEVERITY | ref / net | label | statement | source`.
 - Tag every part you report as one of:
   - **DECISION**: the human chose it in this session. Quote their words. Only
     a DECISION gets a decision-record row.
@@ -33,10 +51,10 @@ that part by hand and say so in the report.
   instead of resolving it.
 - Leave out every `ignore` item (a reference, value or library) from findings
   and docs.
-- Datasheet values come only from user-supplied text, official web pages or
-  cited NotebookLM answers. PDFs stay closed.
 - Write plain English: short sentences, exact names (refs, nets, part
   numbers), no em dash.
+- The review (step 4) only proposes. Never close an open item, change a task
+  or gate status, or drop a summary line without the human's answer in step 5.
 
 ## Modes
 
@@ -68,10 +86,15 @@ Run the deterministic checks first, from the repo root:
 python -I -X utf8 <skills dir>/progress-update/scripts/progress_preflight.py [--since <ref>]
 ```
 It prints one JSON: project, spec and checklist paths, since point, commits,
-changed files by kind, per-sheet parts, library checks, doc checks and a
-`findings` list. Use it for steps 1, 2, the sheet and library parts of 3, the
+changed files by kind, per-sheet parts, library checks, doc checks, a
+`review` count and a `findings` list. The review checks every open spec item,
+every checklist task and gate status, and the summary lists against the
+spec, checklist, README and saved schematic fields (`review:*` findings, see
+step 4). Use it for steps 1, 2, the sheet and library parts of 3, the
 listed checks in 4, and 7. Read the JSON, not the KiCad files, for anything it
-covers. Options:
+covers. The spec and checklist tables are read by `scripts/register.py`:
+columns by header name first, then by position, so a table with extra or
+renamed columns still reads. Options:
 - `--project <file.kicad_pro or folder>` when the repo has several projects
   (run from inside a project folder also picks it).
 - `--spec <md>` and `--checklist <md>` when the names do not contain `SPEC`
@@ -79,8 +102,9 @@ covers. Options:
   "Specification").
 - `--id-prefixes DEC,OPEN,...` when the spec's ID prefixes are not found right
   (default: short or zero-padded IDs in the first column of table rows).
-  `--open-prefix` (default `OPEN`) and `--tracker-prefix` (default `OI`) set
-  the open-item and checklist tracker IDs. With no tracker rows in the
+  `--open-prefix` (default `OPEN`), `--dec-prefix` (default `DEC`) and
+  `--tracker-prefix` (default `OI`) set the open-item, decision and checklist
+  tracker IDs. With no tracker rows in the
   checklist, the spec's open-item table is the register, and preflight checks
   that each open row names an active checklist task (`open_without_task`).
 - `--pin-text SYMBOL=<fulltext.txt>` (for example a NotebookLM
@@ -143,6 +167,17 @@ unannotated references, single-use local labels, no `PWR_FLAG`, board parts
 with no footprint, unresolved symbol or footprint links, pin and pad
 mismatches and missing 3D models. Read its `limitations` list: without the
 global KiCad library tables, stock links are not checked.
+
+It also covers the table structure (`register.py lint`, also runnable alone:
+`python -I register.py lint --spec <md> --checklist <md>`):
+
+| Check | Means |
+|---|---|
+| `duplicate_id` | A DEC, OPEN, REF, task or gate ID is defined twice (INFO). |
+| `bad_status` | A task status is not `OPEN`, `IN_PROGRESS`, `BLOCKED BY <ID>`, `DEFERRED`, `DONE` or `N/A`. |
+| `closed_no_date` | A closed open item does not start with `Closed <YYYY-MM-DD>:` (INFO). |
+| `rev_order` | Change-note revisions out of order, or the spec header is not the newest row. |
+| `long_task` | Task text over 600 characters; keep the statement, `Left:` and the current state, and move history to the spec change-note (INFO). |
 Copy those rows; each is `[severity, check, item, detail]` and its evidence
 is the saved file, so label it `VERIFIED` with "preflight" as the source.
 
@@ -152,11 +187,35 @@ Check by hand, because they need connectivity or a datasheet:
 - labels that reach nothing on any sheet (preflight sees one sheet at a time)
 - parts a checked datasheet recommends that are missing
 
+**Review of open items, status and lists.** Preflight `review:*` rows are
+`INFO` questions, not defects. Each means "this may be stale":
+
+| Check | Means |
+|---|---|
+| `review:tasks_closed` | Every task an open item names is `DONE` or `N/A`. |
+| `review:newer_dec` | A DEC on or after the row's newest date cites the item (or the open item a task waits on), and the row does not cite that DEC. A cite that names items (`OPEN-031 item 5`) counts only for rows that name one of those items. |
+| `review:field_filled` | The text waits for MFR, MFR.P/N, LCSC or a footprint field that is filled on every part it names (or every BOM part). |
+| `review:ref_missing` | The still-open text names a reference that is not in the saved schematic, or an unannotated one. |
+| `review:rev_drift` | A cited record revision (a task, the checklist header, a spec REF row, or the README spec revision) differs from the record's header. |
+| `review:status_mismatch` | A task is `DONE` with no evidence, or a gate status does not match its tasks. |
+| `review:summary_cites_closed` | The spec "Current verdict", the checklist "Current next action" or the README "Open Items" calls a closed item open. |
+
+Read the row behind each one and drop false hits (a DEC that only mentions
+the item, a field word used in another sense). Report the rest under their
+own heading with the stale text and the evidence. Each is `VERIFIED` only for
+what it compares; whether the item is done is the human's call.
+
 Done when each finding has a severity, a label and its evidence.
 
 ### 5. Confirm
 If a stated decision is ambiguous ("maybe X", "try X"), ask once with
-AskUserQuestion: DECISION or DRAWN. Otherwise go on.
+AskUserQuestion: DECISION or DRAWN.
+
+For each `review:*` finding kept in step 4, ask with AskUserQuestion, up to 4
+per call. Quote the stale text and the evidence, and offer: close the item or
+set the new status (name it, for example `DONE`), re-point it to another task,
+or keep it as it is. Record the answer with the human's words. Otherwise go
+on.
 
 ### 6. Update docs
 Edit in this order so each fact has one home and the others point to it.
@@ -178,13 +237,30 @@ fitting row or table and mention it in the report.
 3. **Design records:** edit only the ones the change touches (power budget for
    regulators and rails, selection records for part choices, pin allocation
    for MCU pins). Change rows; keep their labels.
-4. **README:** follow `hw-git-readme` update mode. Sync the spec revision,
+4. **README:** follow `hw-docs` readme update mode. Sync the spec revision,
    features, specifications table, open-items summary and documentation links.
-5. **CHANGELOG:** follow `hw-git-changelog`. Add entries under
-   `[Unreleased]` and state the verification status.
+5. **CHANGELOG:** follow `hw-docs` changelog mode. Add **one pointer line per
+   spec revision** under `[Unreleased]`, for example
+   `- Specification rev 0.81 (2026-11-21): P2-016, P2-021, P4-011; see the change-note.`
+   (the IDs the revision added or changed). Schematic, PCB, library and
+   website commits get their own short lines. Do not copy change-note text.
 
-Done when every decision and open item added to the spec also appears in the
-checklist, the README and the CHANGELOG (for each doc that exists).
+**Review answers (step 5):** apply only what the human chose, in the same
+order:
+- Close an open item: start its description with
+  `Closed <date>: <reason, the human's words>` and set the owner cell to
+  `Closed`.
+- Re-point an item: change its owner cell to the new task.
+- Change a task or gate status: set the status and put the evidence record in
+  the last cell. `DONE` needs both.
+- Fix a stale summary line or revision number.
+- Note each change in the open change-note row (open-revision rule), drop
+  closed items from the README open-items list, and name them in the
+  revision's CHANGELOG pointer line.
+
+Done when every decision and open item added to the spec is named by its
+checklist task, the README summary (when it is a top item) and the
+CHANGELOG pointer line (for each doc that exists).
 
 **`light`:** do items 1 and 2 only, using the open-revision rule in Modes:
 the revision and date change only when a new revision starts; otherwise add
@@ -196,14 +272,18 @@ if the checklist keeps a tracker table).
 added or changed DEC and OPEN row as input. Do items 3 to 5 for them, and set
 the README spec revision to the open revision. Leave the spec and checklist
 as they are, except for a broken cross-reference. If there is no open
-revision, say that nothing needs syncing and stop. Done when every DEC and
-OPEN row in that diff also appears in the README and the CHANGELOG, and every
-design record that owns an affected value is updated.
+revision, say that nothing needs syncing and stop. `sync` skips steps 4 and
+5, so list any `review:*` rows in the report for the next full or `light`
+run instead of acting on them. Done when the open revision has its CHANGELOG
+pointer line, the README summary names the top open items, and every design
+record that owns an affected value is updated.
 
 ### 7. Check
 Run preflight again with `--findings-only` and the same `--since`. It reads
 the working tree, so it sees your edits. No `em_dash`, `undefined_id`,
-`no_tracker_row`, `open_without_task` or `broken_link` row may be new. Then:
+`no_tracker_row`, `open_without_task`, `broken_link`, `bad_status`,
+`rev_order` or `duplicate_id` row may be new, and
+`review:*` rows may remain only for items the human chose to keep. Then:
 ```bash
 git diff --stat
 ```
@@ -218,6 +298,8 @@ decision and open-item ID you cite exists in the spec.
 ### 8. Report
 - Target and scope: project, sheets read, since point, saved-file note.
 - Findings, most severe first.
+- Review: n found, n closed or changed by the human, n kept, n dropped as
+  false hits.
 - Doc changes, one line per file; docs `MISSING`.
 - Not changed, with the reason (phase, records not touched, ignored items).
 - A proposed commit message, for example
@@ -225,7 +307,7 @@ decision and open-item ID you cite exists in the spec.
 
 `light` report, at most 10 lines: the IDs added or changed, the open revision
 number, MAJOR and CRITICAL findings in full, a count of MINOR and INFO
-findings, the step 7 result, and the line "README, CHANGELOG and design
+findings, the review count, the step 7 result, and the line "README, CHANGELOG and design
 records not synced; run `/progress-update sync` before committing." No commit
 message.
 

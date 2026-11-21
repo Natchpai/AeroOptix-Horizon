@@ -1,6 +1,6 @@
 # What Next
 
-**Updated:** 2026-11-20
+**Updated:** 2026-11-21
 **Status:** Personal reminder list. Not a requirement, decision or verification record.
 
 The specification and the execution checklist stay the source of truth. This list only points to their IDs.
@@ -61,7 +61,7 @@ H743 values below are from ST DS12110 Rev 11 via NotebookLM (2026-11-12).
 - [ ] Human review of the pin choices (P1-001).
 - [ ] 16 MHz clock: CMOS oscillator U202 (DEC-044), part decided (DEC-048). Data meets the H743 HSE bypass limits (CMP-010). Firmware side: P1-017.
 - [ ] Reset: check the drawn button B901 PTS815SJM250SMTRLFS (LCSC C2689510) and its `B` reference prefix (OPEN-026). NRST split with D201 and D301 BAT54XV2T1G behind B901 decided 2026-11-20 (DEC-074, amends DEC-046); bench check of the reset paths in P4. `3V3_PG` stays local (DEC-039). CN602 carries no NRST (DEC-065); the F100 has TP605 `RESET_B` (DEC-075).
-- [ ] BOOT0: the DNP pull-up gives selection by rework only. Decide if that meets FUN-006 and TST-003 ("selectable and observable"), or add a pad, jumper or button (P1-007).
+- [x] BOOT0: push button B902 to `+3V3` added (DEC-095, 2026-11-21). Left: ST bootloader ports (AN2606) and the bench boot-state test (P1-007, P4).
 - [ ] Net names (OPEN-032): `OSC_*` names and the spare order are decided (DEC-064); left: info `SS{slash}TR`, `3V3_LED_A`, `USB_FS_VBUS` carried twice. Then run ERC.
 - [ ] Replace the remaining `H7_<pin>` stub labels with function names from the pin allocation, and carry the signals that leave the sheet through sheet pins.
 - [ ] Mark unused pins with no-connect flags once the allocation is final (PA10, PA15, PB3, PB4 and the other free pins).
@@ -79,7 +79,7 @@ Pins from `px4/io-v2` (P1-001). Current state: spec 4.2 "Schematic state".
 - [ ] 24 MHz clock: CMOS oscillator U302 (DEC-044), part decided (DEC-048). Data meets the F100 HSE bypass limits, with zero duty-cycle margin (CMP-010, OPEN-028). Custom px4io build: P1-017.
 - [ ] VDDA (`F1_VDDA`): 22 Ω from `+3V3` with C307 2.2 µF and 100 nF (spec 4.2). Confirm the value against Fig. 35 (Fig. 35 shows 1 µF // 10 nF; DocID16455 Rev 9 via NotebookLM, `VERIFIED`). Table 8 says VDDA "must be the same potential as VDD" (`VERIFIED`); the note allowing up to 300 mV of difference is `NOT_VERIFIED` (not in the cited text). Expected drop about 20 mV with the ADC on (0.8 mA, `ESTIMATED`).
 - [x] px4io LEDs: blue PB14 (D905), red PB15 in place of amber (D904), green PA11 (D906), 220 Ω, active low (DEC-079).
-- [x] PA10 and PB11: 10 kΩ pull-ups R314 and R313 (DEC-079).
+- [x] PA10 and PB11: 10 kΩ pull-ups R312 and R311 (DEC-079).
 - [x] NRST (pin 7) on `F1_RESET_B`, to B901 through D301 (DEC-074).
 - [x] Debug: test pads TP601 to TP606, TP605 on `RESET_B` (DEC-075).
 
@@ -101,7 +101,7 @@ Parts decided (DEC-008, DEC-010, DEC-011). Current state: spec 4.2 "Schematic st
 
 ## 7. Zone Z6: External connectors and outputs
 
-Drawn on `conn-peripherals` and `conn-actuator`, not decided (spec 4.2). Actuator headers per DEC-051 (CN802 ESC headers without the + pin; CN801, CN803 on the 6 V bus): keep them apart at layout (IF-030 to IF-043, P2-018, OPEN-031). RC IN drawn (CN706, D708, R715 on `conn-peripherals`; U303, R310, R311, C311 on `mcu-io`); U303, the 22 Ω (R714, now R715) and the SP3031-01ETG ESD diode decided (DEC-057, DEC-071; D707 until the 23:17 save). I2C4 pins PD12 and PD13 are FT (OPEN-023).
+Drawn on `conn-peripherals` and `conn-actuator`, not decided (spec 4.2). Actuator headers per DEC-051 (CN802 ESC headers without the + pin; CN801, CN803 on the 6 V bus): keep them apart at layout (IF-030 to IF-043, P2-018, OPEN-031). RC IN drawn (CN706, D708, R715 on `conn-peripherals`; U303, R308, R309, C311 on `mcu-io`); U303, the 22 Ω (R714, now R715) and the SP3031-01ETG ESD diode decided (DEC-057, DEC-071; D707 until the 23:17 save). I2C4 pins PD12 and PD13 are FT (OPEN-023).
 
 - [x] I2C4 pull-ups: R705 and R706 2 kΩ, a DS-009 deviation (DEC-077). Pin order of CN701 to CN703 and CN705 matches DS-009 (2026-11-19).
 - [x] CN706 pin order kept as drawn (DEC-072, 2026-11-20).

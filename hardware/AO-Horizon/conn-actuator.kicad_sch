@@ -369,7 +369,7 @@
 					)
 				)
 			)
-			(property "Footprint" "0_Conn_Header:SAMTEC_TSW-104-08-F-T-RA"
+			(property "Footprint" "0_Conn_PinHeader:SAMTEC_TSW-104-08-F-T-RA"
 				(at 1.27 -25.4 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -391,7 +391,29 @@
 					)
 				)
 			)
-			(property "Description" "Pin Header 12 Position 2.54mm Pitch Triple Row Through Hole, Right Angle"
+			(property "Description" "Pin header, triple row, 12 pins, 2.54mm pitch, right angle, through hole"
+				(at 1.27 -25.4 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR" "Samtec"
+				(at 1.27 -25.4 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR.P/N" "TSW-104-08-F-T-RA"
 				(at 1.27 -25.4 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -688,7 +710,7 @@
 					(justify bottom)
 				)
 			)
-			(property "Description" "Connector XT30PW30-M.G.* Male Plug Right Angle for RC ESC"
+			(property "Description" "XT30 power connector, male plug, right angle"
 				(at 0 7.62 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -698,6 +720,28 @@
 						(size 1.27 1.27)
 					)
 					(justify bottom)
+				)
+			)
+			(property "MFR" "Changzhou Amass Elec"
+				(at 0 7.62 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR.P/N" "XT30PW-M30.G.Y"
+				(at 0 7.62 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
 				)
 			)
 			(property "ki_fp_filters" "AMASS_*"
@@ -926,7 +970,7 @@
 					)
 				)
 			)
-			(property "Description" ""
+			(property "Description" "TVS/ESD diode, unidirectional"
 				(at 0 -5.08 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -1091,7 +1135,29 @@
 					)
 				)
 			)
-			(property "Description" "ESD DIODE 5VWM SOT-23"
+			(property "Description" "ESD protection diode, 5V standoff, SOT-23"
+				(at 22.86 -4.953 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR" "Nexperia"
+				(at 22.86 -4.953 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR.P/N" "PESD5V0U2BT,215"
 				(at 22.86 -4.953 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -2141,10 +2207,22 @@
 		(uuid "7a91bf56-816e-4a29-a2f4-a79f1e2f6875")
 	)
 	(junction
+		(at 106.68 93.98)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "7d8c2d86-f5a8-4b4b-8a2c-fc288662953e")
+	)
+	(junction
 		(at 303.53 222.25)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "7f3ff683-006d-4f85-a511-38c0775b0a24")
+	)
+	(junction
+		(at 118.11 72.39)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "80a7a2df-a6e5-4bbd-8ac9-2f06337a1c96")
 	)
 	(junction
 		(at 358.14 219.71)
@@ -2882,6 +2960,16 @@
 	)
 	(wire
 		(pts
+			(xy 118.11 72.39) (xy 156.21 72.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "399c46dd-e63e-430d-a895-cc06386fb405")
+	)
+	(wire
+		(pts
 			(xy 375.92 74.93) (xy 375.92 90.17)
 		)
 		(stroke
@@ -3352,6 +3440,16 @@
 	)
 	(wire
 		(pts
+			(xy 118.11 72.39) (xy 118.11 80.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "79839501-ff9e-4457-aee1-bed3cbcdb27f")
+	)
+	(wire
+		(pts
 			(xy 106.68 72.39) (xy 106.68 80.01)
 		)
 		(stroke
@@ -3432,7 +3530,7 @@
 	)
 	(wire
 		(pts
-			(xy 110.49 72.39) (xy 156.21 72.39)
+			(xy 110.49 72.39) (xy 118.11 72.39)
 		)
 		(stroke
 			(width 0)
@@ -3689,6 +3787,16 @@
 			(type default)
 		)
 		(uuid "a590ddb3-db8a-42ed-8c22-2c921658378e")
+	)
+	(wire
+		(pts
+			(xy 118.11 87.63) (xy 118.11 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a65b7c84-a432-44df-b02e-43a2236d0940")
 	)
 	(wire
 		(pts
@@ -4252,6 +4360,16 @@
 	)
 	(wire
 		(pts
+			(xy 106.68 93.98) (xy 118.11 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f328d9fc-f9c7-4251-8df3-de31b13066f6")
+	)
+	(wire
+		(pts
 			(xy 262.89 101.6) (xy 262.89 102.87)
 		)
 		(stroke
@@ -4809,7 +4927,7 @@
 				)
 			)
 		)
-		(property "Description" "Pin Header 12 Position 2.54mm Pitch Triple Row Through Hole, Right Angle"
+		(property "Description" "Pin header, triple row, 12 pins, 2.54mm pitch, right angle, through hole"
 			(at 294.64 213.36 0)
 			(hide yes)
 			(show_name no)
@@ -5088,7 +5206,7 @@
 				)
 			)
 		)
-		(property "Description" "ESD DIODE 5VWM SOT-23"
+		(property "Description" "ESD protection diode, 5V standoff, SOT-23"
 			(at 285.75 161.163 0)
 			(hide yes)
 			(show_name no)
@@ -5913,7 +6031,7 @@
 				)
 			)
 		)
-		(property "Description" "Pin Header 12 Position 2.54mm Pitch Triple Row Through Hole, Right Angle"
+		(property "Description" "Pin header, triple row, 12 pins, 2.54mm pitch, right angle, through hole"
 			(at 294.64 93.98 0)
 			(hide yes)
 			(show_name no)
@@ -6757,7 +6875,7 @@
 				(justify bottom)
 			)
 		)
-		(property "Description" "Connector XT30PW30-M.G.* Male Plug Right Angle for RC ESC"
+		(property "Description" "XT30 power connector, male plug, right angle"
 			(at 76.2 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -6842,7 +6960,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "45cfdc4c-9562-436c-ab13-ae2e50696020")
-		(property "Reference" "C804"
+		(property "Reference" "C805"
 			(at 147.32 111.76 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6961,7 +7079,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/752a7d5d-6af8-4edd-90d9-991407e2c1d9"
-					(reference "C804")
+					(reference "C805")
 					(unit 1)
 				)
 			)
@@ -7350,7 +7468,7 @@
 				)
 			)
 		)
-		(property "Description" "Pin Header 12 Position 2.54mm Pitch Triple Row Through Hole, Right Angle"
+		(property "Description" "Pin header, triple row, 12 pins, 2.54mm pitch, right angle, through hole"
 			(at 294.64 153.67 0)
 			(hide yes)
 			(show_name no)
@@ -8022,6 +8140,151 @@
 		)
 	)
 	(symbol
+		(lib_id "0_Capacitor:C_Polarized")
+		(at 118.11 83.82 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "80004936-3e7d-4a98-9260-32e6ee0a20a8")
+		(property "Reference" "C804"
+			(at 121.92 81.661 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "68u"
+			(at 121.92 84.201 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "0_Capacitor_SMD:CP_EIA-6032-28_Kemet-C"
+			(at 119.0752 87.63 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.lcsc.com/datasheet/C122319.pdf"
+			(at 118.11 83.82 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Polarized capacitor"
+			(at 118.11 83.82 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C122319"
+			(at 118.11 83.82 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "KEMET"
+			(at 118.11 83.82 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "T495C686M016ATE250"
+			(at 118.11 83.82 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Rate" "16V"
+			(at 123.19 86.36 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Type" "Tantalum"
+			(at 123.19 88.9 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
+			(at 118.11 83.82 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "3368757a-421f-4e2f-8878-14dd35755158")
+		)
+		(pin "2"
+			(uuid "66c896c0-7c57-4478-9a46-261ac13afd30")
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/752a7d5d-6af8-4edd-90d9-991407e2c1d9"
+					(reference "C804")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "0_Resistor:R")
 		(at 248.92 87.63 90)
 		(unit 1)
@@ -8325,7 +8588,7 @@
 				)
 			)
 		)
-		(property "Description" "ESD DIODE 5VWM SOT-23"
+		(property "Description" "ESD protection diode, 5V standoff, SOT-23"
 			(at 302.26 220.853 0)
 			(hide yes)
 			(show_name no)
@@ -8753,7 +9016,7 @@
 				)
 			)
 		)
-		(property "Description" "ESD DIODE 5VWM SOT-23"
+		(property "Description" "ESD protection diode, 5V standoff, SOT-23"
 			(at 302.26 101.473 0)
 			(hide yes)
 			(show_name no)
@@ -9784,7 +10047,7 @@
 				)
 			)
 		)
-		(property "Description" "ESD DIODE 5VWM SOT-23"
+		(property "Description" "ESD protection diode, 5V standoff, SOT-23"
 			(at 285.75 101.473 0)
 			(hide yes)
 			(show_name no)
@@ -9912,7 +10175,7 @@
 				)
 			)
 		)
-		(property "Description" "CAP TANT 68uF ±20% 16V CASE-C-6032"
+		(property "Description" "Polarized capacitor"
 			(at 106.68 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -10058,7 +10321,7 @@
 				)
 			)
 		)
-		(property "Description" "ESD DIODE 5VWM SOT-23"
+		(property "Description" "ESD protection diode, 5V standoff, SOT-23"
 			(at 285.75 220.853 0)
 			(hide yes)
 			(show_name no)
@@ -10614,7 +10877,7 @@
 				)
 			)
 		)
-		(property "Description" "12.9VC Clamp 15.5A@10/1000us Ipp TVS DIODE SOD-123FL"
+		(property "Description" "TVS/ESD diode, unidirectional"
 			(at 85.09 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -10819,7 +11082,7 @@
 				)
 			)
 		)
-		(property "Description" "ESD DIODE 5VWM SOT-23"
+		(property "Description" "ESD protection diode, 5V standoff, SOT-23"
 			(at 302.26 161.163 0)
 			(hide yes)
 			(show_name no)

@@ -31,7 +31,7 @@
 				)
 			)
 		)
-		(property "Footprint" "0_Conn_Header:SAMTEC_TSW-104-08-F-T-RA"
+		(property "Footprint" "0_Conn_PinHeader:SAMTEC_TSW-104-08-F-T-RA"
 			(at 1.27 -25.4 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -53,7 +53,29 @@
 				)
 			)
 		)
-		(property "Description" "Pin Header 12 Position 2.54mm Pitch Triple Row Through Hole, Right Angle"
+		(property "Description" "Pin header, triple row, 12 pins, 2.54mm pitch, right angle, through hole"
+			(at 1.27 -25.4 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "Samtec"
+			(at 1.27 -25.4 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "TSW-104-08-F-T-RA"
 			(at 1.27 -25.4 0)
 			(show_name no)
 			(do_not_autoplace no)

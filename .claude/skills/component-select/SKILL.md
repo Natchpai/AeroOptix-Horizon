@@ -2,11 +2,12 @@
 name: component-select
 description: >-
   Finds and shortlists electronic parts by engineering fit: requirements,
-  operating conditions, trade-offs and availability. Use when the user asks to
-  choose an IC or component, find alternatives or a replacement for an obsolete
-  part, or decide which candidate fits a circuit best. Not for supplier stock
-  and price or a spec table.
-argument-hint: "[requirements | function | existing MPN]"
+  operating conditions, trade-offs and availability, and builds a spec
+  comparison table of candidates, one column per part number. Use when the
+  user asks to choose an IC or component, find alternatives or a replacement
+  for an obsolete part, decide which candidate fits a circuit best, or wants a
+  spec comparison table. Not for supplier stock and price.
+argument-hint: "[requirements | function | existing MPN] | table <MPN> [<MPN> ...] | table add <MPN>"
 ---
 
 # Component Selection
@@ -39,14 +40,16 @@ preferred parts.
   calculation or an official source), `ASSUMED` (assumption stated),
   `ESTIMATED` (method and margin stated) or `NOT_VERIFIED` (evidence missing
   or check not run).
-- Never open or read a PDF. Datasheet values come from the user, official
-  manufacturer web pages, or NotebookLM answers with cited text, used only
-  after the user approves uploading the file. With none of these, the value is
-  `NOT_VERIFIED`.
+- Datasheet, schematic and PCB PDFs are not read, by any tool. Project report
+  PDFs may be read.
+- Datasheet values come from the user, official manufacturer web pages, or
+  NotebookLM answers with cited text. Query an existing notebook without
+  asking. Adding a source or creating a notebook uploads a file and needs the
+  user's approval. With no source, the value is `NOT_VERIFIED`.
 - KiCad design and library files are read-only. Propose changes; do not apply
   them.
-- If the project has `.claude/rules/engineering.md`, follow it; it is the full
-  policy.
+- If the project has `.claude/rules/engineering.md` and `pdf.md`, follow them;
+  they are the full policy.
 
 ## Workflow
 
@@ -115,4 +118,42 @@ Shortlist: <MPN A> | RECOMMENDED | dropout below 1.7 V headroom at 300 mA (VERIF
            <MPN B> | ALTERNATIVE | pinout same as A (NOT_VERIFIED) | second source
            <MPN C> | REJECTED    | 200 mA max output, below the 300 mA load (VERIFIED, maker page)
 Next:      check B's pinout against A's datasheet before using it as a second source.
+```
+
+## Table mode: spec comparison for given part numbers
+
+Use it when the user gives candidates and wants a spec table (`table <MPN>
+...`), or adds a part to an existing one (`table add <MPN>`). One column per
+part, one row per spec. It compares; it does not pick a winner unless asked.
+
+Rules (on top of the evidence baseline):
+- Every cell has an evidence label; a cell with no source is `NOT_VERIFIED`.
+  Leave no blank. Give the source in the cell or in a list under the table.
+- Keep recommended operating values and absolute maximum values in separate
+  rows, and name which one a row holds. Use one unit per row.
+- Say which row decides the choice.
+- Keep every row and every `NOT_VERIFIED` cell; a summary may add to the
+  table, not replace it.
+- Write the file only when asked, in the KiCad project's existing documents
+  folder (near the `.kicad_pro`); if there is none or more than one, ask once.
+  Keep one file per topic and update it.
+- Pad the first column of every table to its longest cell, with matching
+  separator dashes; leave the other columns unpadded.
+
+Steps: get the exact orderable MPNs and the use case. Pick the rows that
+matter (usually 15 to 25), always including status, interface, supply range
+(VDD and I/O), package and size, footprint match to the main candidate,
+operating temperature, the key performance numbers, and driver or software
+support when it applies; add the project's spec rows (`SEN-*`, `PWR-*`) that
+apply, and reuse an existing table's rows. Adding a part adds a column and
+leaves the others unchanged. End with the `NOT_VERIFIED` cells and how to
+close them. Price and stock go in `stock-select` table mode, same column order.
+
+```text
+| Parameter      | <MPN 1> | <MPN 2> | (new P/N) |
+| -------------- | --- | --- | --- |
+| Manufacturer   | name | name | |
+| Product status | Production `VERIFIED` | `NOT_VERIFIED` | |
+| Supply range   | 1.71 to 3.6 V `VERIFIED` | `NOT_VERIFIED` | |
+| Package        | LGA-14 2.5x3 mm `VERIFIED` | ... | |
 ```

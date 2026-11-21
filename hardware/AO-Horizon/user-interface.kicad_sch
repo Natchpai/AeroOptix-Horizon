@@ -406,7 +406,29 @@
 					)
 				)
 			)
-			(property "Description" "single pole normally-open tactile switch"
+			(property "Description" "Tactile switch, SPST-NO, 4.2x3.2mm"
+				(at 0 -6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR" "C&K"
+				(at 0 -6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MFR.P/N" "PTS815SJM250SMTRLFS"
 				(at 0 -6.35 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -922,6 +944,18 @@
 		)
 		(uuid "53aff081-0082-4842-acdc-d322c5c16a28")
 	)
+	(rectangle
+		(start 95.25 118.11)
+		(end 156.21 176.53)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "7b1cc23e-1a0a-4858-afbe-4c22fe40c345")
+	)
 	(circle
 		(center 267.97 100.33)
 		(radius 2.2895)
@@ -1013,6 +1047,19 @@
 			)
 		)
 		(uuid "1bef879e-5804-4790-a9f5-3f7dd1dbcc5e")
+	)
+	(text "BOOT0 Button"
+		(exclude_from_sim no)
+		(at 95.25 116.84 0)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 3.048 3.048)
+				(bold yes)
+			)
+			(justify left)
+		)
+		(uuid "234b74e3-e328-4b4d-97ae-d9ae5ed0e7ab")
 	)
 	(text "Status LEDs"
 		(exclude_from_sim no)
@@ -1211,7 +1258,7 @@
 		(uuid "fd0a2c72-3d21-4721-85b9-d83bad66644b")
 	)
 	(junction
-		(at 115.57 93.98)
+		(at 107.95 93.98)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "0d552593-625d-4c94-89cd-b554c7a6be25")
@@ -1223,16 +1270,28 @@
 		(uuid "177501ad-f958-4c90-862b-98aa7f3de6af")
 	)
 	(junction
-		(at 118.11 81.28)
+		(at 110.49 81.28)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "2176c335-98af-4c88-a17a-24b6c6e2a6cd")
+	)
+	(junction
+		(at 107.95 139.7)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "2bd14db1-ca3b-447c-81f2-835d0b62bb4b")
 	)
 	(junction
 		(at 220.98 82.55)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "3fa3c218-640c-4735-b1b7-f1c48f06cac6")
+	)
+	(junction
+		(at 110.49 156.21)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "89d83615-6cea-4090-9a7f-9768bc778965")
 	)
 	(junction
 		(at 267.97 82.55)
@@ -1332,6 +1391,16 @@
 	)
 	(wire
 		(pts
+			(xy 110.49 152.4) (xy 110.49 156.21)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2171502b-d0e4-4423-848c-27b76fe0fadc")
+	)
+	(wire
+		(pts
 			(xy 267.97 144.78) (xy 267.97 147.32)
 		)
 		(stroke
@@ -1402,7 +1471,17 @@
 	)
 	(wire
 		(pts
-			(xy 118.11 81.28) (xy 140.97 81.28)
+			(xy 107.95 156.21) (xy 110.49 156.21)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5bfb7838-988a-40c9-b697-2969cdcac0a6")
+	)
+	(wire
+		(pts
+			(xy 110.49 81.28) (xy 133.35 81.28)
 		)
 		(stroke
 			(width 0)
@@ -1422,7 +1501,17 @@
 	)
 	(wire
 		(pts
-			(xy 115.57 93.98) (xy 118.11 93.98)
+			(xy 107.95 139.7) (xy 107.95 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5fb1a431-fc75-4882-95f2-54cce552bdf5")
+	)
+	(wire
+		(pts
+			(xy 107.95 93.98) (xy 110.49 93.98)
 		)
 		(stroke
 			(width 0)
@@ -1432,7 +1521,7 @@
 	)
 	(wire
 		(pts
-			(xy 115.57 93.98) (xy 115.57 96.52)
+			(xy 107.95 93.98) (xy 107.95 96.52)
 		)
 		(stroke
 			(width 0)
@@ -1452,7 +1541,7 @@
 	)
 	(wire
 		(pts
-			(xy 118.11 92.71) (xy 118.11 93.98)
+			(xy 110.49 92.71) (xy 110.49 93.98)
 		)
 		(stroke
 			(width 0)
@@ -1479,6 +1568,26 @@
 			(type default)
 		)
 		(uuid "797b12d0-792c-4c1a-ba3a-3785ff1cd432")
+	)
+	(wire
+		(pts
+			(xy 110.49 156.21) (xy 138.43 156.21)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7d5a7e32-a7db-4bf1-af34-2236fbc8b9e8")
+	)
+	(wire
+		(pts
+			(xy 110.49 142.24) (xy 110.49 139.7)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "870b3fc8-e355-4a44-a26d-a235362d1093")
 	)
 	(bus
 		(pts
@@ -1562,7 +1671,7 @@
 	)
 	(wire
 		(pts
-			(xy 118.11 81.28) (xy 118.11 82.55)
+			(xy 110.49 81.28) (xy 110.49 82.55)
 		)
 		(stroke
 			(width 0)
@@ -1612,6 +1721,16 @@
 	)
 	(wire
 		(pts
+			(xy 107.95 152.4) (xy 107.95 156.21)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bbe68a94-8e0d-4025-84cb-6d668c052095")
+	)
+	(wire
+		(pts
 			(xy 220.98 144.78) (xy 267.97 144.78)
 		)
 		(stroke
@@ -1652,7 +1771,7 @@
 	)
 	(wire
 		(pts
-			(xy 115.57 81.28) (xy 115.57 82.55)
+			(xy 107.95 81.28) (xy 107.95 82.55)
 		)
 		(stroke
 			(width 0)
@@ -1662,7 +1781,17 @@
 	)
 	(wire
 		(pts
-			(xy 115.57 81.28) (xy 118.11 81.28)
+			(xy 107.95 137.16) (xy 107.95 139.7)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cf611ea6-2c0b-4c54-bad0-444c125a7538")
+	)
+	(wire
+		(pts
+			(xy 107.95 81.28) (xy 110.49 81.28)
 		)
 		(stroke
 			(width 0)
@@ -1682,7 +1811,7 @@
 	)
 	(wire
 		(pts
-			(xy 115.57 92.71) (xy 115.57 93.98)
+			(xy 107.95 92.71) (xy 107.95 93.98)
 		)
 		(stroke
 			(width 0)
@@ -1732,6 +1861,16 @@
 	)
 	(wire
 		(pts
+			(xy 107.95 139.7) (xy 110.49 139.7)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f48d4fd4-e2d3-494c-b2b8-60b553aa8df7")
+	)
+	(wire
+		(pts
 			(xy 220.98 143.51) (xy 220.98 144.78)
 		)
 		(stroke
@@ -1761,7 +1900,7 @@
 		(uuid "134f412f-9a35-4c84-8d33-77c9bb0bbe7a")
 	)
 	(label "RESET_B"
-		(at 138.43 81.28 180)
+		(at 130.81 81.28 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1800,6 +1939,16 @@
 		)
 		(uuid "db4151e3-e48f-42fe-9f86-c2b2ce8ca8b2")
 	)
+	(label "H7_BOOT0"
+		(at 135.89 156.21 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "df20cfc3-6fab-47a5-97e6-a0df403a116e")
+	)
 	(label "LED_MAIN_GREEN_B"
 		(at 201.93 127 0)
 		(effects
@@ -1809,6 +1958,17 @@
 			(justify left bottom)
 		)
 		(uuid "ed621ca1-76e0-4989-9612-2298de1d2ded")
+	)
+	(hierarchical_label "H7_BOOT0"
+		(shape output)
+		(at 138.43 156.21 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "3e6fbfa8-07af-4c4f-84b6-0389d272ebea")
 	)
 	(hierarchical_label "{LED_MAIN}"
 		(shape input)
@@ -1823,7 +1983,7 @@
 	)
 	(hierarchical_label "RESET_B"
 		(shape output)
-		(at 140.97 81.28 0)
+		(at 133.35 81.28 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2242,7 +2402,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 115.57 96.52 0)
+		(at 107.95 96.52 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -2253,7 +2413,7 @@
 		(fields_autoplaced yes)
 		(uuid "53b03898-72af-4be7-828a-3e590872ac1c")
 		(property "Reference" "#PWR0202"
-			(at 115.57 102.87 0)
+			(at 107.95 102.87 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2264,7 +2424,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 115.57 101.6 0)
+			(at 107.95 101.6 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2275,7 +2435,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 115.57 96.52 0)
+			(at 107.95 96.52 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2286,7 +2446,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 115.57 96.52 0)
+			(at 107.95 96.52 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2297,7 +2457,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 115.57 96.52 0)
+			(at 107.95 96.52 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2575,6 +2735,215 @@
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/61244771-3375-4ca0-9ad8-b7d5d30ff1b6"
 					(reference "D902")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "0_Switch:SW_Tactile_PTS815SJM250")
+		(at 110.49 147.32 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "8cd5815d-51ac-458a-a97c-78dc2965328a")
+		(property "Reference" "B902"
+			(at 111.76 146.05 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "PTS815SJM250SMTRLFS"
+			(at 111.76 148.59 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "0_Switch:SW_Push_SPST_NO_CK_PTS815_4.2x3.2mm_H2.5mm"
+			(at 102.87 147.32 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 102.87 147.32 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Tactile switch, SPST-NO, 4.2x3.2mm"
+			(at 116.84 147.32 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C2689510"
+			(at 110.49 147.32 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "C&K"
+			(at 110.49 147.32 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "PTS815SJM250SMTRLFS"
+			(at 110.49 147.32 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
+			(at 110.49 147.32 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "3"
+			(uuid "0023c9dc-f88a-4c0c-a9dc-95492f723f25")
+		)
+		(pin "2"
+			(uuid "aaecd2a3-8647-482b-a37b-0155cfbfb7ec")
+		)
+		(pin "1"
+			(uuid "00c5161e-b102-4510-b087-41e7dc4611ce")
+		)
+		(pin "4"
+			(uuid "cd849998-ce0a-4a2f-aa5d-15ae780c9c50")
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/61244771-3375-4ca0-9ad8-b7d5d30ff1b6"
+					(reference "B902")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 107.95 137.16 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "8dc7689b-c2b5-4385-b6c6-3882e3563793")
+		(property "Reference" "#PWR0903"
+			(at 107.95 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 107.95 133.35 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 107.95 137.16 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 107.95 137.16 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 107.95 137.16 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "e1c42b8e-eeac-4e23-a241-71325935aa69")
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/61244771-3375-4ca0-9ad8-b7d5d30ff1b6"
+					(reference "#PWR0903")
 					(unit 1)
 				)
 			)
@@ -3295,7 +3664,7 @@
 	)
 	(symbol
 		(lib_id "0_Switch:SW_Tactile_PTS815SJM250")
-		(at 118.11 87.63 90)
+		(at 110.49 87.63 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3306,7 +3675,7 @@
 		(fields_autoplaced yes)
 		(uuid "e10fbcab-4822-498c-a198-5896e3751bfb")
 		(property "Reference" "B901"
-			(at 119.38 86.36 90)
+			(at 111.76 86.36 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3317,7 +3686,7 @@
 			)
 		)
 		(property "Value" "PTS815SJM250SMTRLFS"
-			(at 119.38 88.9 90)
+			(at 111.76 88.9 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3328,7 +3697,7 @@
 			)
 		)
 		(property "Footprint" "0_Switch:SW_Push_SPST_NO_CK_PTS815_4.2x3.2mm_H2.5mm"
-			(at 110.49 87.63 0)
+			(at 102.87 87.63 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3339,7 +3708,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 110.49 87.63 0)
+			(at 102.87 87.63 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3349,8 +3718,8 @@
 				)
 			)
 		)
-		(property "Description" "single pole normally-open tactile switch"
-			(at 124.46 87.63 0)
+		(property "Description" "Tactile switch, SPST-NO, 4.2x3.2mm"
+			(at 116.84 87.63 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3361,7 +3730,7 @@
 			)
 		)
 		(property "LCSC" "C2689510"
-			(at 118.11 87.63 0)
+			(at 110.49 87.63 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3372,7 +3741,7 @@
 			)
 		)
 		(property "MFR" "C&K"
-			(at 118.11 87.63 0)
+			(at 110.49 87.63 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3383,7 +3752,7 @@
 			)
 		)
 		(property "MFR.P/N" "PTS815SJM250SMTRLFS"
-			(at 118.11 87.63 0)
+			(at 110.49 87.63 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3394,7 +3763,7 @@
 			)
 		)
 		(property "STATUS" "CHECKED"
-			(at 118.11 87.63 90)
+			(at 110.49 87.63 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)

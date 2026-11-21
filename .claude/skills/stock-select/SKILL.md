@@ -2,11 +2,12 @@
 name: stock-select
 description: >-
   Finds and filters electronic parts that can be sourced from DigiKey, Mouser,
-  LCSC, or the JLCPCB Parts Library. Use when the user asks for in-stock parts,
-  supplier-specific alternatives, availability, price breaks, MOQ, or JLCPCB
-  assembly-ready parts. Not for engineering fit or a price table for known
-  part numbers.
-argument-hint: "[function | MPN | requirements] [supplier] [quantity]"
+  LCSC, or the JLCPCB Parts Library, and builds a price, stock and lead-time
+  table for known part numbers. Use when the user asks for in-stock parts,
+  supplier-specific alternatives, availability, price breaks, MOQ, JLCPCB
+  assembly-ready parts, or a price or stock comparison table. Not for
+  engineering fit. Does not order anything.
+argument-hint: "[function | MPN | requirements] [supplier] [quantity] | table <MPN> [<MPN> ...] | table add <MPN>"
 ---
 
 # Stock-Based Component Selection
@@ -14,6 +15,23 @@ argument-hint: "[function | MPN | requirements] [supplier] [quantity]"
 Find a shortlist of parts that can be bought now. This skill covers **supplier
 stock and purchase constraints**, not the electrical design. Search by the
 requirement, not by a preferred manufacturer, part number or category.
+
+## Evidence baseline
+
+- Label each significant claim `VERIFIED` (named evidence: CAD data, a
+  calculation or an official source), `ASSUMED` (assumption stated),
+  `ESTIMATED` (method and margin stated) or `NOT_VERIFIED` (evidence missing
+  or check not run).
+- Datasheet, schematic and PCB PDFs are not read, by any tool. Project report
+  PDFs may be read.
+- Datasheet values come from the user, official manufacturer web pages, or
+  NotebookLM answers with cited text. Query an existing notebook without
+  asking. Adding a source or creating a notebook uploads a file and needs the
+  user's approval. With no source, the value is `NOT_VERIFIED`.
+- KiCad design and library files are read-only. Propose changes; do not apply
+  them.
+- If the project has `.claude/rules/engineering.md` and `pdf.md`, follow them;
+  they are the full policy.
 
 ## Scope and boundaries
 
@@ -91,3 +109,54 @@ Context: <MPN A>, qty 10, ship to <region>, DigiKey + LCSC + JLCPCB, checked YYY
 <MPN A> | JLCPCB <code> | Extended, stock 0 for PCBA                     | REJECTED for assembly
 Next:    recheck LCSC stock before ordering; JLCPCB assembly needs another part or consignment.
 ```
+
+## Table mode: price and stock for known part numbers
+
+Use it when the user gives part numbers and wants a comparison table (`table
+<MPN> ...`), or adds a part to an existing one (`table add <MPN>`). It
+compares sourcing only; it does not find parts or judge fit.
+
+Rules (on top of the ones above):
+- Never invent stock, price or lead time. A value not seen is `NOT_VERIFIED`;
+  leave no blank. A page that times out or shows no listing data is
+  `NOT_VERIFIED`, not "not stocked".
+- Put the date, region, currency and quantity above the table.
+- Search only the suppliers the user names; a supplier they drop stays out of
+  the table and the notes. Prefer the supplier product page over snippets and
+  aggregators, and say in the row when a value came from a snippet.
+- Compare at the same quantity. If a supplier has no break there, give the
+  nearest one and say so. Flag independent brokers; their traceability is
+  `NOT_VERIFIED`.
+- Keep price cells short; conflicts and long notes go below the table.
+- Write the file only when asked, in the KiCad project's existing documents
+  folder (near the `.kicad_pro`); if there is none or more than one, ask once.
+  Keep one file per topic and update it.
+- Pad the first column of every table to its longest cell, with matching
+  separator dashes; leave the other columns unpadded.
+
+Steps: get the part numbers, quantity, region and whether JLCPCB assembly is
+needed (state assumptions). Search each exact MPN at each supplier. Fill qty 1
+and qty 10 prices, stock, lead time, SKU and MOQ; show both readings and mark
+`NOT_VERIFIED` when two sources conflict. Adding a part adds a column and
+leaves the others unchanged. End with the rows that need a live check before
+buying.
+
+```text
+Date: YYYY-MM-DD | Region: ... | Currency: ... | Qty: ...
+
+| Detail            | <MPN 1> | <MPN 2> | (new P/N) |
+| ----------------- | --- | --- | --- |
+| DigiKey SKU       | ... | ... | |
+| DigiKey stock     | 0 | 18,395 | |
+| DigiKey qty 1     | $4.86 | $5.87 | |
+| DigiKey qty 10    | $4.17 | $5.06 | |
+| DigiKey lead time | 45 weeks | ... | |
+| LCSC SKU          | C... | `NOT_VERIFIED` | |
+| LCSC stock        | 1,875 | `NOT_VERIFIED` | |
+| Notes             | page fetch, conflict | ... | |
+```
+
+Part numbers go across the top in the same order as the spec table
+(`component-select` table mode); supplier details go down the side, repeated
+for each supplier the user names. An optional second table in the same layout
+gives the best verified in-stock supplier, its stock and price.
