@@ -1,6 +1,6 @@
 # AO-Horizon team website
 
-Static site for the team. Pages: Overview, Block diagram (three views), Pinout, Decisions, Open items, Checklist, Spec history, Traceability, Power budget and Showcase (the board 3D model; renders and photos come later).
+Static site for the team. Pages: Overview, About this site, Block diagram (three views), Pinout, Decisions, Open items, Checklist, Spec history, Traceability, Power budget and Showcase (the board 3D model; renders and photos come later).
 
 The design records in `hardware/AO-Horizon/documents/design/` stay the source of truth. The site reads them at build time and adds no values of its own.
 
@@ -14,7 +14,7 @@ npm ci
 npm run dev      # http://localhost:5173/AeroOptix-Horizon/
 npm run build    # extract + check + type-check + build to dist/
 npm run preview  # serve dist/ under /AeroOptix-Horizon/
-npm run test:ui  # browser checks on dist/, after build (local only)
+npm run test:ui  # browser checks on dist/, after build (also in CI)
 npm run drift    # report only: site text that may have drifted from the spec
 ```
 
@@ -36,7 +36,7 @@ npm run drift    # report only: site text that may have drifted from the spec
 | Block positions | `src/data/places.ts` | hand-written drawing data |
 | Traceability | the data above | built in the browser (`src/features/trace/matrix.ts`), not by the script: one row per requirement ID with the DEC, OPEN, task (Req cell) and diagram items that cite it |
 
-The extracted JSON (`meta`, `ids`, `pins`, `progress`, `history`, `power`) goes to `src/data/generated/`. It is git-ignored and rebuilt on every `dev` and `build`. The script throws when a table or heading it needs is missing, so a record that changes shape fails the build instead of showing `TBD`.
+The extracted JSON (`meta`, `ids`, `pins`, `progress`, `history`, `power`) goes to `src/data/generated/`. It is git-ignored and rebuilt on every `dev` and `build`. `meta`, `ids`, `pins` and `progress` are read by every page, so `vite.config.ts` bundles them into one `records` chunk that caches apart from the code; `history` and `power` load with their own pages. The script throws when a table or heading it needs is missing, so a record that changes shape fails the build instead of showing `TBD`.
 
 ## Checks (`scripts/check-data.ts`)
 
@@ -62,7 +62,7 @@ For a DEC row only Topic and Selected option count, and history phrases such as 
 
 ## Browser checks (`tests/ui.ts`)
 
-`npm run test:ui` serves `dist/` and opens it in the installed Microsoft Edge (through `playwright-core`; no browser download). It lists every failure and exits 1 when:
+`npm run test:ui` serves `dist/` and opens it through `playwright-core`: in the installed Microsoft Edge locally (no browser download), in Playwright's bundled Chromium when `CI` is set. `UI_BROWSER` overrides the channel (for example `UI_BROWSER=chrome`). It lists every failure and exits 1 when:
 
 - a page throws an error, in dark or light: every page, plus linked rows (`?id=`), filters and an Interface view
 - a drawn line is not straight on screen, in dark or light
@@ -76,7 +76,7 @@ For a DEC row only Topic and Selected option count, and history phrases such as 
 - an opened table row has cells that are not top-aligned
 - the Power budget page does not draw one bar per Rail summary row
 
-It takes about 5 to 12 minutes and prints `test:ui: OK` on a pass. CI does not run it, because CI has no Edge. Google Fonts are fetched once per run and then served from memory. If they cannot be fetched, the run warns that label checks used fallback fonts.
+It takes about 5 to 12 minutes locally (about 2 minutes in CI) and prints `test:ui: OK` on a pass. `.github/workflows/web-test.yml` runs it on pushes to `dev` and PRs to `main` that touch `web/`, the design records or the root `README.md`, and by hand. Google Fonts are fetched once per run and then served from memory. If they cannot be fetched, the run warns that label checks used fallback fonts.
 
 ## Editing the diagram
 
@@ -96,7 +96,7 @@ It takes about 5 to 12 minutes and prints `test:ui: OK` on a pass. CI does not r
 
 GitHub Pages serves `dist/` under `/AeroOptix-Horizon/` (`base` in `vite.config.ts`). The router uses hash URLs (`#/diagram?level=board`), so deep links work without server rewrites.
 
-`.github/workflows/pages.yml` builds and deploys on every push to `main` that touches `web/`, the design records or the root `README.md`, so a merged record change shows on the site without any edit here. The Overview footer and the sidebar show the commit the live site was built from.
+`.github/workflows/pages.yml` builds and deploys on every push to `main` that touches `web/`, the design records or the root `README.md`, so a merged record change shows on the site without any edit here. It builds only; the browser checks run in `web-test.yml`. The Overview footer and the sidebar show the commit the live site was built from.
 
 ## Template and licences
 
