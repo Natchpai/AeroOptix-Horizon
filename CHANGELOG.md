@@ -127,6 +127,14 @@ Notable changes to this hardware project are documented here.
 - DEC-087 to DEC-091 (specification rev 0.71, human owner, 2026-11-20): D709 BAT54XV2T1G flyback diode from the GPS1 buzzer line (Q701 drain) to `+5V`; R315 10 kΩ pull-down on F100 PA12; U302 clock margins, D807 on the 6 V rail and the U303 and U601 pin maps accepted as they are.
 - `AO-HORIZON_SW_NOTES_EN.md` rev 0.1: board notes for the software team (H743 LED config, PA9 VBUS input, IST8310 soft reset, BMP581 INT, F100 PA12).
 - DEC-092 and DEC-093 (specification rev 0.72, human owner, 2026-11-20): the SiK V3 is the 100 mW or 500 mW model on 5 V; the servo plug contact rating and the servo tolerance of the 12.9 V D807 clamp are accepted without data.
+- Library (`c35d164`, 2026-11-20, human owner): hidden MFR and MFR.P/N on the 20 placed, fully specified library symbols; LCSC stays on schematic instances only. `e136618` refreshed the placed symbols from the library.
+- PCB (`a70e6cc`, 2026-11-20, human owner): 269 footprints imported, a 4-layer stackup (F.Cu, In1.Cu, In2.Cu, B.Cu) and board rules (0.1 mm track and clearance, 0.6 mm via, 0.25 mm copper to edge). No routing. Drawn, not decided (OPEN-040, specification rev 0.80).
+- DEC-094 (specification rev 0.74, human owner, 2026-11-21): I2C2 pull-ups R501 and R502 5.1 kΩ kept; bus at 400 kHz or less (IST8310 limit); bus capacitance about 45 pF, `ESTIMATED`.
+- DEC-095 (specification rev 0.76, human owner, 2026-11-21): BOOT0 push button B902 (PTS815SJM250SMTRLFS, same as B901) from `+3V3` to H743 BOOT0 on a new `H7_BOOT0` sheet pin, R202 10 kΩ to `GND`; F100 BOOT0 keeps its 10 kΩ pull-down, PB2 (BOOT1) has no resistor.
+- DEC-096 (specification rev 0.77, human owner, 2026-11-21): magnetometer U503 placed as far as possible from L101, L102, CN101 and the servo bus; C507 within 5 mm of the C1 pin.
+- DEC-097 (specification rev 0.79, human owner, 2026-11-21): second KEMET T495C686M016ATE250 68 µF (C804) on `+6V`; on-board bulk 156 µF nominal.
+- Pin allocation rev 0.30 section 6: review record signed off by the human owner (2026-11-21).
+- OPEN-040 (specification rev 0.80): PCB stackup and board rules drawn, not decided (P3-010).
 
 ### Changed
 
@@ -234,6 +242,13 @@ Notable changes to this hardware project are documented here.
 - Schematic (2026-11-20): D709 and R315 drawn by the human owner; Claude filled the empty `Rate` field on 57 capacitors at the human owner's request (50V on GCM155R71H104KE02D and GRM1555C1H103JE01D, 16V on GRM188Z71C225KE43D and GRM188Z71C475KE21D, from the Murata voltage code), with KiCad closed. Netlist unchanged apart from `Rate`; `kicad-cli` ERC 0 violations. Spec 0.71 and checklist 0.64 also record DEC-087 to DEC-091, OPEN-021, OPEN-023, OPEN-028, P2-022, P3-002 and P3-007; pin allocation rev 0.28 (PA12); `todo.md` INFO items closed except the LED Datasheet fields.
 - Schematic (2026-11-20, human owner): Datasheet field filled on D902, D903, D905 and D906. Specification rev 0.72 and checklist rev 0.65: DEC-092, DEC-093, OPEN-021, OPEN-023 (CN101 confirmed by the human owner; GPS V1 and SiK V3 pinouts match, from Holybro's official images read by Claude), P2-015 done, P2-016. Software notes rev 0.2 (SW-7, SiK flow control off). `todo.md` has no open items.
 - Project phase DRAFT to PRELIMINARY, declared by the human owner on 2026-11-20 (README status, phase record and workflow diagram; spec rev 0.73 "Hardware phase" row). Not a verification or approval.
+- Website (`5d0924e`, 2026-11-20): synced to specification rev 0.73; the System view I2C2 tap reads the IST8310 at 0x0C.
+- Library (`49df921`, 2026-11-20): symbol descriptions in one pattern; no new ratings.
+- Schematic (`b6748cf`, 2026-11-21): blocks moved on `conn-peripherals`; coordinates only.
+- Schematic (`3c111fc`, 2026-11-21): resistor references renumbered without gaps, R203 to R212 to R202 to R211 and R308 to R315 to R306 to R313; values and nets unchanged. The servo-rail sense 100 nF is now C805 (map in specification rev 0.75).
+- Checklist gate P1 (Allocation) closed by the human owner on 2026-11-21: mapping `ALLOCATED`, not `VERIFIED`; bench items moved to P4-002 and P4-005, P1-017 deferred to P2-005 (checklist rev 0.67).
+- Open items (specification rev 0.73 to 0.78, 2026-11-21): OPEN-001, OPEN-010, OPEN-032 and OPEN-039 closed; OPEN-004, OPEN-009, OPEN-011, OPEN-017, OPEN-021, OPEN-023, OPEN-026, OPEN-028 and OPEN-031 re-pointed to P2-005, P3 and P4. No open item needs schematic work.
+- `AO-HORIZON_SW_NOTES_EN.md` rev 0.3: PA12 pull-down is now R313 (was R315).
 
 ### Fixed
 
@@ -252,6 +267,9 @@ Notable changes to this hardware project are documented here.
 - The board LEDs were switched by N-FETs, so they were active high against IF-047; since the 11:38 save they are active low.
 - B901 reset button: the old `SW_Tactile_4SMD` pin map put `RESET_B` on pin 2 and `GND` on pin 1, which the PTS815SJM250SMTRLFS joins inside, so `RESET_B` was tied to `GND`. The 2026-11-19 12:49 save (`SW_Tactile_PTS815SJM250`, `RESET_B` on pins 1 and 2, `GND` on 3 and 4) fixes it; pad pairs from the human owner.
 - `CUI_microSD_MSD-1-A` footprint pad names (commit `f40784c`, 2026-11-20): CD to 9 and G1 to G4 to SH, so SD1 pin 9 (`H7_SDMMC1_DET`) and the shield (`GND`) now get their nets (`VERIFIED`, `kicad-cli` netlist).
+- Library (`5e6553b`, 2026-11-20): SAMTEC_TSW-104-08-F-T-RA linked `0_Conn_Header`, which is not in `fp-lib-table`; it now links `0_Conn_PinHeader`.
+- Library (`0d7ace1`, 2026-11-20): `TestPoint_Pad_D2.0mm` silk 0.15 mm and fab text 0.1 mm.
+- Stale text in the checklist and specification (2026-11-21): P1-014 still asked to accept the U302 margins already accepted by DEC-089; P1-001 named pin allocation rev 0.26 and an old servo split; the checklist header named spec rev 0.72.
 
 ### Removed
 
@@ -265,6 +283,7 @@ Notable changes to this hardware project are documented here.
 - Stale rows in the design records: GPS2 and FlySky loads and the "barometer 2 not chosen" row in the power budget, the BMP390 and BMM150 columns in the barometer sourcing table (kept as one history line), and done items in `what-next.md` and the barometer record.
 - Q901 to Q903 LED driver FETs and their resistors, and the parked DNP TVS diodes D105 and D106 (2026-11-19 11:38 save).
 - The checklist open-item tracker table (OI-001 to OI-040): it repeated the spec section 8.2 rows. History is in Git.
+- R202 (DNP BOOT0 pull-up, H743) and the F100 PB2 pull-downs R306 and R307 (2026-11-21, DEC-095).
 
 ### Verification
 
@@ -303,3 +322,5 @@ Notable changes to this hardware project are documented here.
 - Checks run by Claude on 2026-11-20 against the saved 13:37, 13:47 and 13:49 files (uncommitted, KiCad open): `kicad-cli` netlist diffs between saves, `kicad-cli` ERC (0 violations on the 13:49 save), the `progress-update` preflight, the LCSC C60488 product page (title names RC0402FR-072KL) and the PX4 v1.16.2 source for the px4io-v2 and fmu-v6c LED code (`board_config.h`, `px4io.cpp`, `led.c`, `Commander.cpp`). ERC on the 13:37 save run by the human owner (`ERC.rpt`, 0 errors, 0 warnings). LED currents and data sheets not checked. Not a DRC, review or bench test.
 - `sch-review` of `mcu-main-fc` and `mcu-io` by Claude on 2026-11-20 (commit `6b01a14`, KiCad closed): `sch-inspect` local-net on U201 and U301 (all 148 pins connected), `kicad-cli` netlist, NotebookLM (DS12110 Rev 11, AN4879, DocID16455 Rev 9, RM0041, cited), PX4 v1.16.2 source and LCSC pages for C85858, C576485 and C389010. A targeted review, not a PASS. The 14:21 save was checked with a `kicad-cli` netlist diff and ERC (0 violations); `ERC.rpt` is from the 13:37 save. Not DRC, a human review or a bench test.
 - Read-only checks run by Claude on 2026-11-20 against the 14:29 to 14:57 saves (uncommitted, KiCad open): `kicad-cli` netlist diffs between saves and `kicad-cli` ERC on the 14:57 save (0 violations); a `sch-review` of `sensor-imu`, `sensor-navigation` and `conn-usb-debug` and a footprint check of the ICM-45686 and ICP-20100 by Claude subagents (NotebookLM: DS-000489 r1.1, DS-000416 r1.3, BMP581 DS004-13, IST8310 V1.2 and V1.8); Claude re-checked the IST8310 RSTN, ICM-45686 pin 7, BMP581 INT and ICP-20100 INT citations. The ST USBLC6-2 page timed out, so the U601 pinout is `NOT_VERIFIED`. Not a human review; DRC not run.
+- ERC of the whole schematic, run by the human owner on 2026-11-21: 10:50 on the 10:46 save and 11:18 on the 11:12 save, 0 errors and 0 warnings each, only the SPICE model check ignored (`AO-Horizon-erc.rpt`). Not a proof of correctness.
+- Read-only checks run by Claude on 2026-11-21 against the saved files: `sch-inspect` project-net on I2C2, CN601, U601, U201 pin 94, B902, U301 pins 20 and 44, `+6V` and `+3V3A`; value-and-net comparison of all 18 renumbered resistors before and after (0 mismatches); symbol-field scan of all 267 BOM parts; `pcb-inspect` summary of the 08:42 PCB save; `progress-update` preflight since `e7c831f`. Datasheet values via NotebookLM with citations (DS12110, RM0433, RM0041, ICP-20100, BMP581, IST8310, TPS2121, TPS735) and the ti.com SN74LVC1G34 and lcsc.com C2689510 pages. DRC not run.
