@@ -1,6 +1,6 @@
 # AO-Horizon team website
 
-Static site for the team. Pages: Overview, About this site, Block diagram (three views), Pinout, Decisions, Open items, Checklist, Spec history, Traceability, Power budget and Showcase (the board 3D model; renders and photos come later).
+Static site for the team. Pages: Overview, About this site, Block diagram (three views), Pinout (as a table or by peripheral), Decisions, Open items, Checklist (filter by gate, state and owner), Spec history, Traceability, Power budget and Showcase (the board 3D model; renders and photos come later).
 
 The design records in `hardware/AO-Horizon/documents/design/` stay the source of truth. The site reads them at build time and adds no values of its own.
 
@@ -75,6 +75,11 @@ For a DEC row only Topic and Selected option count, and history phrases such as 
 - the next-action task chip or the Overview revision chip does not open its row
 - an opened table row has cells that are not top-aligned
 - the Power budget page does not draw one bar per Rail summary row
+- a Decisions Date cell is wider than its cell, two pages share a tab title, or the diagram view tabs do not fit at 390 px
+- a light-theme badge (OPEN, DONE, ESTIMATED, NOT_VERIFIED) or the sidebar PRELIMINARY text is below 4.5:1 contrast
+- a "Mentioned in" chip does not open its revision (DEC-030 to 0.21, DEC-013 to 0.10), or a failed notes load does not show the reload note
+- the Checklist owner filter shows the wrong row count, a gate blocker list differs from the records or lists a closed item, or an unknown `?owner=` or `?status=` shows no pressed chip
+- the Pinout By peripheral view does not list every H743 pin once or select a clicked pin, or the filter finds different pins in Table and By peripheral
 
 It takes about 5 to 12 minutes locally (about 2 minutes in CI) and prints `test:ui: OK` on a pass. `.github/workflows/web-test.yml` runs it on pushes to `dev` and PRs to `main` that touch `web/`, the design records or the root `README.md`, and by hand. Google Fonts are fetched once per run and then served from memory. If they cannot be fetched, the run warns that label checks used fallback fonts.
 

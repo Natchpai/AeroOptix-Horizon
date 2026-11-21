@@ -2,7 +2,7 @@
 
 **Updated:** 2026-11-22
 
-**Status:** live on GitHub Pages. Pages: Overview, About this site, Block diagram, Pinout, Decisions, Open items, Checklist, Spec history, Traceability, Power budget, Showcase. The engineer approved the Pinout page and the five pages added on 2026-11-21, reviewed the Block diagram, and merged the About page, Overview cards, CI test and layout fixes (PR #58, deployed from `6bed2d9`). Hand-written diagram text is synced to spec rev 0.87 and pin allocation rev 0.31.
+**Status:** live on GitHub Pages. Pages: Overview, About this site, Block diagram, Pinout, Decisions, Open items, Checklist, Spec history, Traceability, Power budget, Showcase. The engineer approved the Pinout page and the five pages added on 2026-11-21, reviewed the Block diagram, and merged the About page, Overview cards, CI test and layout fixes (PR #58, deployed from `6bed2d9`). Hand-written diagram text is synced to spec rev 0.87 and pin allocation rev 0.31. The 2026-11-22 run (`c437c20` to `e90818a`) is on `dev`, waiting for a PR to `main`: tab titles, small logo files, light-theme contrast, sidebar fade, "Mentioned in" revisions, Checklist owner filter and gate blockers, Pinout by peripheral, prettier and knip cleanup, and bug-hunt fixes. Each change is in `log.md`.
 
 Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in `README.md`. History is in Git (`git log -- web`).
 
@@ -11,6 +11,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 - **Live site:** https://natchpai.github.io/AeroOptix-Horizon/
 - **Deploy:** `.github/workflows/pages.yml`, on a push to `main` that touches `web/`, the design docs or `README.md`; it can also be started by hand. It builds only.
 - **CI browser test:** `.github/workflows/web-test.yml` runs `npm run test:ui` in Playwright's bundled Chromium on pushes to `dev` and PRs to `main` (same paths), and by hand. About 4 minutes in all, 2 of them the test.
+- **Change log:** `log.md`, one entry per change: what changed, why, and the files.
 - **Merging:** `main` needs linear history, so PRs from `dev` are squash-merged. After each PR, merge `main` into `dev`.
 - **What the build reads** (`scripts/extract-docs.ts`). A missing heading, table or column fails the build, and the old site stays up.
   - Spec: every ID row, the header, and every section 9 change note (`history.json`; `meta.specChanges` keeps the last 5, `meta.specRevisions` the revision and date of each for Ctrl+K).
@@ -26,12 +27,20 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 - **Links between pages.** An ID chip opens its site row: DEC on Decisions, OPEN on Open items, a requirement kind on Traceability; other kinds (REF) open the spec on GitHub. A task chip opens Checklist, a revision chip Spec history. Ctrl+K results do the same. On an ID's own page the ID column chip is `plain`, so the row click opens it and the filter stays.
 - **`?id=` beats filters.** On every table page a linked row shows even when a filter (or "hide closed") would hide it.
 - **Revision URLs.** Revisions 0.1 and 0.10 both exist, and the router reads a typed `?rev=0.10` as the number 0.1. Site links keep the string (`?rev=%220.10%22`); `test:ui` checks it.
+- **Tab titles.** `SiteHeader` sets `document.title` to "<page> · AeroOptix-Horizon" from its `pageTitle` prop, or from `title` when it is a string; the diagram adds the view name. It goes back to the site name on unmount.
+- **Logos.** The sidebar, the Overview hero and the favicons use small copies: the flame at 256 px (`AeroOptix_v2_*_theme_256.png`), the nP mark at 128 px (`np_*_theme_128.png`). The full-size originals stay in `public/images/`.
+- **Light-theme colours.** The light status, muted and primary values in `theme.css` (`:root`) are darker, so status and evidence text passes WCAG AA (4.5:1) on its background, tints included. Dark is unchanged. IN_PROGRESS and ESTIMATED use `--primary`, not `--brand` (3.0:1 in light).
+- **Sidebar fade.** While nav links sit hidden below the sidebar's bottom edge, `data-fade` on `SidebarContent` turns on a CSS mask over the last 2.5rem. It goes away at the bottom of the list, and is off in icon mode.
+- **"Mentioned in"** on opened Decisions, Open items and Traceability rows lists the spec revisions whose change note names the ID. The ID must match whole, and a range such as "IF-030 to IF-043" is not expanded. The notes JSON is a lazy chunk, loaded when the first row opens (`src/lib/history-mentions.ts`). If it fails (after a deploy the old hashed chunk is gone), the row says "Could not load the change notes." with a Reload page button.
+- **Checklist owner filter** (`?owner=`): an Owner cell is split on "," and "+", so "Team + Hardware" counts under both. A `?owner=` or `?status=` value no chip names shows as a pressed chip with count 0; a click clears it.
+- **Gate blockers.** Under each gate that is not DONE, the Gates card lists the OPEN rows (not closed or removed) whose "Owner / next action" names a task of that gate. Task IDs are found with the shared `TASK_ID` from `src/features/open-items/cites.ts`.
 - **Open items** show the full description only in the opened row: OPEN-023 is about 4,600 characters.
 - **Traceability** is built in the browser (`src/features/trace/matrix.ts`), report only. Flags: no task names the requirement in Req; no live DEC row and no diagram item cites it. Removed rows are never flagged. On 2026-11-21: 3 without a task (CMP-010 to CMP-012; CMP-010 is in the P1-014 task text but not its Req) and 29 without a decision or diagram item.
 - **Power budget** draws one bullet bar per Rail summary row, each on its own scale; values are never recomputed. A load links to its Power view block when the block's part number is in the load name or its refs share an ID with the row's Ref. The rail colours fail the dataviz validator as a categorical set (light: 6 V against 5 V; dark: 3.3 V against 3.3 V_IMU, protan), so every bar also carries its rail name and numbers.
 - **Diagram on a phone** (canvas under 640 px): a view that would fit below zoom 0.35 opens centred on its start block (FC, Main MCU or the power mux) at 0.35.
 - **Diagram fit and minimap:** from 1024 px the fit (and the fit button) keeps a 200 px strip on the right free, so the bottom-right minimap covers no block.
-- **Pinout layout:** the package and the pin details (or, with no pin picked, a per-bus pin count from 1280 px) sit side by side; the pin tables run full width below. Picking a table row scrolls the details into view.
+- **Pinout layout:** the package and the pin details (or, with no pin picked, a per-bus pin count from 1280 px) sit side by side; the pin tables run full width below. Picking a table row scrolls the details into view. "By peripheral" (`?view=peripheral`) swaps the table for one box per peripheral; the group is the start of the signal text (`src/features/pinout/peripherals.ts`), and a pin pick or MCU switch keeps the view. Both views filter with the one `pinMatches`. Function, DS and Plan text render with `MdText`; the package pin hover titles drop the backticks, since the SVG export clones them.
+- **knip** ignores exports used in their own file (`ignoreExportsUsedInFile: true`), which covers the per-view arrays in `topology.ts`.
 - **Bundle:** the Ctrl+K menu loads when the browser is idle or on first open. `meta`, `ids`, `pins` and `progress` JSON form the `records` chunk (406 kB, 86 kB gzip), which every page needs; the old 593 kB `search-provider` chunk was mostly this data, so the first load fell only from 228 to 215 kB gzip. The remaining Vite size warning is `model-viewer`, loaded only on the Showcase.
 - **Showcase** shows `web/public/models/ao-horizon.glb` with `@google/model-viewer`. The KiCad GLB sets only a base colour per material, so `fixMaterials()` sets metallic and roughness by colour; lighting is `legacy`, `neutral` tone mapping, exposure 1. The engineer re-exports the GLB after layout changes (a PCB output) and commits it:
   `"C:\Program Files\KiCad\10.0\bin\kicad-cli.exe" pcb export glb --subst-models --include-silkscreen --include-soldermask -o web/public/models/ao-horizon.glb hardware/AO-Horizon/AO-Horizon.kicad_pcb`
@@ -51,6 +60,12 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - ID chips open their site page instead of GitHub.
   - Declined: keyboard access to table rows (Tab, Enter, Space).
   - Claude may decide and build site improvements and commit and push them to `dev` without asking (engineer, later the same day). PRs to `main` still need the engineer.
+- **2026-11-22:**
+  - Look changes approved: light-theme contrast and the sidebar footer fade.
+  - Not done: the phone header and the Overview order on a phone ("the phone not critical").
+  - Features approved: "Mentioned in" revisions, gate blockers, Pinout by peripheral, Checklist owner filter.
+  - Keep `log.md` as the change record ("what change, what edit").
+  - For this run only: commit, push, the PR, and a merge to `main` if there are no conflicts.
 
 | Rail or bus | Bus id | Light | Dark |
 |---|---|---|---|
@@ -70,17 +85,24 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - diagram lines straight and labels clear (dark and light); SVG exports valid with plain colours; readable phone zoom; same-tab hash links;
   - table pages: opened-row cells top-aligned; ID chips open their site row, and a chip in a closed history row opens that row;
   - Ctrl+K: DEC-050, OPEN-023, closed OPEN-001, PWR-011, task P3-007, revision 0.10;
-  - next-action task chip and Overview revision chip open their rows; one Power budget bar per Rail summary row.
+  - next-action task chip and Overview revision chip open their rows; one Power budget bar per Rail summary row;
+  - Decisions Date cells hold their text; every page has its own tab title; the diagram view tabs fit at 390 px;
+  - light-theme contrast: OPEN, DONE, ESTIMATED and NOT_VERIFIED badges and the sidebar PRELIMINARY text at least 4.5:1;
+  - "Mentioned in" chips (DEC-030 to 0.21, DEC-013 to 0.10) open their Spec history rows; a blocked notes chunk shows the reload note;
+  - Checklist: owner chip and `?owner=` row counts; gate blocker lists match `ids.json` and `progress.json` (OPEN-004 under P3, no closed item) and a chip opens its row; an unknown `?owner=` or `?status=` shows a pressed chip;
+  - Pinout: By peripheral lists every H743 pin once and a SPI1_SCK click selects it; "Debug" and "not checked" find the same pins in both views.
+- **`npm run format:check`** and **`npx knip`** pass (both failed at `b2b5b3c`).
 
-**Verified 2026-11-21:** `npm run build` and `npm run test:ui` (local Edge) pass on `aafaded`; the CI `test:ui` run passed on `b1c0696`, the PR #58 head; the Pages deploy of `6bed2d9` succeeded. `npm run check` OK, `npm run drift` 24 findings. Fault injection: removing IF-001 from `b-link` fails `npm run check`; a `0x0E` magnetometer tap shows in `npm run drift`.
+**Verified 2026-11-22:** `npm run build`, `npm run lint` (0 errors, 6 warnings), `npm run format:check`, `npx knip` and the full `npm run test:ui` (local Edge) pass on `e90818a`. `npm run drift` 24 findings, unchanged. Earlier (2026-11-21): the CI `test:ui` run passed on `b1c0696`, the PR #58 head; the Pages deploy of `6bed2d9` succeeded. Fault injection: removing IF-001 from `b-link` fails `npm run check`; a `0x0E` magnetometer tap shows in `npm run drift`.
 
-**Not verified:** every block and link text against the spec (`npm run drift` lists 24 unreviewed findings); SVG exports opened in Inkscape, PowerPoint or Word; the newer `test:ui` checks were seen passing only, never failing on a broken build.
+**Not verified:** every block and link text against the spec (`npm run drift` lists 24 unreviewed findings); SVG exports opened in Inkscape, PowerPoint or Word; the 2026-11-21 `test:ui` checks were seen passing only, never failing on a broken build. Of the 2026-11-22 checks, the contrast, "Mentioned in", owner filter, gate blocker, peripheral view, unknown chip and Pinout filter checks were also seen failing on the build before their change (`log.md`).
 
 ## Next steps
 
 - [ ] Engineer reviews the Traceability flag lists (3 no task, 29 no decision or diagram).
 - [ ] Engineer reviews the `npm run drift` list (24 findings) and decides which site texts to fix.
 - [ ] Re-export the board GLB once the parts are placed.
+- [ ] After the squash merge of this run's PR, merge `main` into `dev` (see Merging).
 - [x] Plan B note on the Power view power mux block (DEC-108, OPEN-041), 2026-11-21.
 - [x] Check and deploy the 2026-11-21 site changes (PR #58, merged 2026-11-21).
 
@@ -116,3 +138,6 @@ Dropped from the list (2026-11-21), so later sessions do not propose them again:
 - `block_diagram.kicad_sch` still says F103 (P2-014, an engineer item). The site does not use it.
 - Renders and photos on the Showcase are still placeholders.
 - On a phone the pin tables scroll sideways inside their card, and wrapped Function text (NRST) makes some rows tall.
+- `?id=` with an unknown ID selects nothing and shows no notice.
+- Long Plan text in the F100 reserved table scrolls sideways inside the table.
+- At 390 px the header page name is cut short by the search box (the phone layout is not critical, per the engineer).
