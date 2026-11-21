@@ -1,7 +1,7 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.34
-**Updated:** 2026-11-19
+**Revision:** 0.35
+**Updated:** 2026-11-21
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012), the 5 V input is a TPS2121 power mux with a 1.5 A limit (DEC-029, DEC-030) and the `+3V3A` LDO is TPS73533DRBR (DEC-027). No other rail, regulator or protection part is approved. Not a verification record.
 **Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006 (closed), OPEN-011, OPEN-021 (servo load, was OPEN-007), OPEN-024 (closed), OPEN-025 (closed; bench check P4-012), OPEN-028. Decisions: DEC-007, DEC-010, DEC-011, DEC-012, DEC-018, DEC-019, DEC-053, DEC-054, DEC-025, DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-039, DEC-040, DEC-043, DEC-044, DEC-048, DEC-055, DEC-058, DEC-059. Checklist tasks: P0-017 (done), P2-010.
 **Decision owner:** Hardware
@@ -16,6 +16,7 @@ Source keys used below:
 - **IMU rec**: `AO-HORIZON_IMU_SELECTION_EN.md` (datasheet values extracted by agy, `NOT_VERIFIED`).
 - **Snippet**: search-result text of a PDF datasheet. Not opened, always `NOT_VERIFIED`.
 - **TI**: ti.com product pages and HTML datasheets (TPS62142: SLVSAJ0F Rev. F; TPS735: SBVS087M), fetched 2026-10-18 and 2026-10-19.
+- **TDK and iSentek text**: ICM-45686 DS-000489 Rev 1.1, ICP-20100 DS-000416 Rev 1.3, BMP581 Rev 1.13 and IST8310 V1.8, read as NotebookLM source fulltext (2026-11-21).
 - **TI mux**: TPS212x datasheet SLVSEA3F (August 2020), NotebookLM notebook `TPS212x 2.8-V to 22-V Priority Power MUX with Seamless Switchover` (added by the human owner), read as source fulltext.
 
 Fetches to st.com, invensense.tdk.com, te.com and en.benewake.com failed on 2026-10-18 (`getaddrinfo EAI_AGAIN`). The rows that depend on them are `TBD`.
@@ -56,12 +57,12 @@ Typical or average current per load. Peak current listed where known. "TBD" mean
 
 | Load | Qty | Current each | Peak | Source | Label |
 | ---- | --- | ------------ | ---- | ------ | ----- |
-| ICM-45686, 6-axis low-noise, 6400 Hz | 2 | 0.44 mA | TBD | IMU rec (DS Table 3) | `NOT_VERIFIED` |
-| ICP-20100 VDD | 1 | TBD | TBD | Not read | `NOT_VERIFIED` |
-| BMP581 VDD | 1 | TBD | TBD | Not read | `NOT_VERIFIED` |
-| IST8310 AVDD | 1 | TBD | TBD | Not read | `NOT_VERIFIED` |
+| ICM-45686, 6-axis low-noise, 6400 Hz | 2 | 0.44 mA typ (0.42 mA at 1600 Hz) | Not stated | DS-000489 Rev 1.1 Table 3 (VDD 1.8 V, characterization) | `VERIFIED` for the table condition; at 3.3 V `NOT_VERIFIED` |
+| ICP-20100 | 1 | 0.25 mA typ, highest mode (MODE4); MODE0 0.211 mA, MODE1 0.222 mA; standby 2.65 µA | Not stated | DS-000416 Rev 1.3 Table 2 and Table 5 | `VERIFIED` for the table condition |
+| BMP581 | 1 | 0.075 mA typ, 0.08 mA max (high resolution, 30 Hz) | 0.26 mA max | BMP581 Rev 1.13 Table 4 | `VERIFIED` for the table condition |
+| IST8310 | 1 | 1.2 mA typ at 200 sps, 0.32 mA at 50 sps; standby 10 µA | Not stated | IST8310 V1.8 3.3 (AVDD 2.8 V, DVDD 1.8 V) | `VERIFIED` at 2.8 V; at 3.3 V `NOT_VERIFIED` |
 
-Since DEC-043 (2026-11-12), this rail feeds the VDD pins of all sensors. VDDIO (IST8310 DVDD) stays on the 3.3 V rail, so the sensor I/O current stays in the 3.3 V row.
+Since DEC-043 (2026-11-12), this rail feeds the VDD pins of all sensors. VDDIO (IST8310 DVDD) stays on the 3.3 V rail. None of the four datasheets splits the current between VDD and VDDIO, so each row above books the whole device current on this rail (an upper bound for VDD, `ESTIMATED`). The I/O share on the 3.3 V rail is not stated and is bounded by the same values.
 
 ### 3.3 V
 
@@ -69,9 +70,9 @@ Since DEC-043 (2026-11-12), this rail feeds the VDD pins of all sensors. VDDIO (
 | ---- | --- | ------------ | ---- | ------ | ----- |
 | STM32H743VIT6 | 1 | 220 mA typ at Tj 25 °C; 436 mA max at Tj 85 °C, 546 mA max at Tj 105 °C (Run mode, 480 MHz VOS0, code from flash, cache on, all peripherals enabled, LDO on) | Same | ST DS12110 Rev 11 Table 120 (NotebookLM notebook `STM32H743VI`, cited_text, 2026-11-03) | `VERIFIED` for the table condition; the firmware clock and peripheral use are `ASSUMED` |
 | STM32F100C8T6B | 1 | 15.4 mA max at 24 MHz, all peripherals on, code from Flash, TA 85 °C | Not stated | F1 value-line DS Table 12 (NotebookLM) | `VERIFIED` for the table condition (8 MHz external clock with PLL); at a 24 MHz HSE without PLL `ESTIMATED` as no higher |
-| ICP-20100 | 1 | TBD | TBD | invensense.tdk.com unreachable | `NOT_VERIFIED` |
-| BMP581 (barometer 2, DEC-010) | 1 | TBD | TBD | Not read yet (NotebookLM notebook `BMP581`) | `NOT_VERIFIED` |
-| IST8310 (magnetometer, DEC-011) | 1 | 1.2 mA at 200 sps, 0.32 mA at 50 sps (typ, AVDD 2.8 V) | Not stated | IST8310 DS V1.2, 4.3 (NotebookLM) | `VERIFIED` at 2.8 V; at 3.3 V `NOT_VERIFIED` |
+| ICP-20100 VDDIO | 1 | Not stated; at most 0.25 mA (device total, 3.3 V_IMU row) | Not stated | DS-000416 Rev 1.3 Table 2 | `ESTIMATED` upper bound |
+| BMP581 (barometer 2, DEC-010) VDDIO | 1 | Not stated; at most 0.08 mA (device total, 3.3 V_IMU row) | 0.26 mA max | BMP581 Rev 1.13 Table 4 | `ESTIMATED` upper bound |
+| IST8310 (magnetometer, DEC-011) DVDD | 1 | Not stated; at most 1.2 mA at 200 sps (device total, 3.3 V_IMU row) | Not stated | IST8310 V1.8 3.3 | `ESTIMATED` upper bound; at 3.3 V `NOT_VERIFIED` |
 | Clock oscillators U202 (ECS-2520MV-160-CN-TR, 16 MHz) and U302 (ASDDV-24.000MHZ-LC-T, 24 MHz), type decided 2026-11-14 (spec DEC-044), part numbers decided (DEC-048), data checked against the MCU HSE limits (spec CMP-010) | 2 | U202 6.0 mA max (3.3 V, up to 19 MHz); U302 4.0 mA max (3.3 V, 20 to 30 MHz); both into 15 pF | Not stated | ECS-2520MV and Abracon ASDDV datasheets via NotebookLM | `VERIFIED` |
 | I2C pull-ups | TBD | TBD | - | Depends on P1-003 | `TBD` |
 | LEDs: 3 board (IF-047), 3 px4io, safety LED (IF-049) | 7 | TBD (set by the resistors) | - | Resistors not chosen | `TBD` |
@@ -110,8 +111,8 @@ The 4 motor outputs (IF-040 to IF-043) carry only the signal and GND to one Tekk
 
 | Rail | Known subtotal | Missing | Budget | Margin | Label |
 | ---- | -------------- | ------- | ------ | ------ | ----- |
-| 3.3 V_IMU | 0.88 mA (2 × 0.44 mA, IMUs only) | IMU peak; ICP-20100, BMP581 and IST8310 VDD currents (DEC-043) | TBD. 500 mA, TPS73533DRBR (DEC-027, TI SBVS087M 5.3). | TBD | `ESTIMATED` from `NOT_VERIFIED` inputs |
-| 3.3 V | about 244 mA typ (design current about 0.6 A maximum, DEC-040; L101 1.2 A rating, distributor `NOT_VERIFIED`, allows about 0.5 A buck input); about 460 mA with the H743 at its Tj 85 °C maximum, about 570 mA at Tj 105 °C (H743, F100 max 15.4 mA, IST8310, D104 about 2.5 mA, and an assumed 5 mA for the barometers and pull-ups); U202 and U302 add up to 10 mA max, not yet in these sums | ICP-20100, BMP581, pull-ups and px4io LEDs not read | 2 A, TPS62142RGTR (DEC-012, TI SLVSAJ0F) | TBD | `ESTIMATED` from partial inputs |
+| 3.3 V_IMU | about 2.4 mA typ (2 × 0.44 + 0.25 + 0.08 + 1.2 mA), about 2.6 mA with the BMP581 0.26 mA peak; whole device currents, so an upper bound for the VDD pins | IMU and IST8310 peaks not stated; currents at 3.3 V not stated | 500 mA, TPS73533DRBR (DEC-027, TI SBVS087M 5.3) | over 99 % | `ESTIMATED` from `VERIFIED` table values |
+| 3.3 V | about 244 mA typ (design current about 0.6 A maximum, DEC-040; L101 1.2 A rating, distributor `NOT_VERIFIED`, allows about 0.5 A buck input); about 460 mA with the H743 at its Tj 85 °C maximum, about 570 mA at Tj 105 °C (H743, F100 max 15.4 mA, IST8310, D104 about 2.5 mA, and an assumed 5 mA for the barometers and pull-ups); U202 and U302 add up to 10 mA max, not yet in these sums | Pull-ups and px4io LEDs; the ICP-20100 and BMP581 I/O share is within the assumed 5 mA in the subtotal | 2 A, TPS62142RGTR (DEC-012, TI SLVSAJ0F) | TBD | `ESTIMATED` from partial inputs |
 | 5 V | Board: about 190 to 215 mA typ, 360 to 400 mA with the H743 at its Tj 85 °C maximum, 445 to 495 mA at Tj 105 °C (3.3 V load through the buck at an assumed 85 % efficiency, 5.0 and 4.5 V in, plus D103 and the LDO). External: about 435 mA (SiK radio 100, FS-iA6B 50 placeholder, GPS 100, MS4525DO 5, TF-Luna 150, buzzer 30 mA; DEC-053, human owner). Total about 625 to 650 mA typ, 880 to 930 mA hot worst case | Telemetry 2 (no device planned) | 2 A source (PWR-010); power mux limit 1.0 / 1.5 / 2.0 A with 80.6 kΩ (DEC-030, TI mux, `VERIFIED`) | TBD | `ESTIMATED` from partial inputs |
 | 6 V (on the board) | none | All servo loads | 10 A cont., 15 A inst. (PWR-011), UBEC and XT30 input | TBD | `TBD` |
 
