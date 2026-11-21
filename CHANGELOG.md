@@ -249,6 +249,7 @@ Notable changes to this hardware project are documented here.
 - Checklist gate P1 (Allocation) closed by the human owner on 2026-11-21: mapping `ALLOCATED`, not `VERIFIED`; bench items moved to P4-002 and P4-005, P1-017 deferred to P2-005 (checklist rev 0.67).
 - Open items (specification rev 0.73 to 0.78, 2026-11-21): OPEN-001, OPEN-010, OPEN-032 and OPEN-039 closed; OPEN-004, OPEN-009, OPEN-011, OPEN-017, OPEN-021, OPEN-023, OPEN-026, OPEN-028 and OPEN-031 re-pointed to P2-005, P3 and P4. No open item needs schematic work.
 - `AO-HORIZON_SW_NOTES_EN.md` rev 0.3: PA12 pull-down is now R313 (was R315).
+- Specification rev 0.81 and checklist rev 0.69 (2026-11-21, no new decisions): P2-021 (power-sheet resistor fields) done by the human owner, 1 % tolerance still `ASSUMED`; P2-016 cites DEC-097 and stays open for the copper and servo GND join (OPEN-021); P4-011 adds the PWM boot-state check from DEC-073 (`NOT_VERIFIED`). No KiCad file changed.
 
 ### Fixed
 

@@ -4,7 +4,7 @@
 | -------------------- |---|
 | Project              | AeroOptix-Horizon |
 | Document owner       | Human engineering owner (TBD) |
-| Document revision    | 0.80 |
+| Document revision    | 0.81 |
 | Last updated         | 2026-11-21 |
 | Design tool          | KiCad 10 (saved files written by eeschema 10.0) |
 | Hardware phase       | PRELIMINARY (declared by the human owner, 2026-11-20) |
@@ -692,6 +692,7 @@ DEC-020 to DEC-022 come from the software team's answers to the integration ques
 | 0.78     | 2026-11-21 | Schematic OPEN items before PCB design. Closed: OPEN-010 (all BOM parts have MFR, MFR.P/N and LCSC; "i chose it all"), OPEN-032 and OPEN-039 (INFO names accepted, "Accept as drawn"). Checked: OPEN-011 `+3V3A` load and output capacitor, OPEN-021 no on-board back-feed into 5 V, OPEN-034 SN74LVC1G34 input tolerance (ti.com). Re-pointed to P2-005, P3 and P4 (human owner: "Yes, re-point all"): OPEN-004, OPEN-009, OPEN-011, OPEN-017, OPEN-021, OPEN-023, OPEN-026, OPEN-028, OPEN-031. OPEN-021 bulk: more bulk wanted ("Add more bulk"), change proposal pending. No design change. | Pending human review |
 | 0.79     | 2026-11-21 | Added DEC-097 (second 68 µF T495C686M016ATE250, C804, on `+6V`; human owner: "use option A, same as C803"). OPEN-021 bulk item settled; the 100 nF sense capacitor is now C805 (noted in 4.2 and DEC-066). | Pending human review |
 | 0.80     | 2026-11-21 | No new decisions. `progress-update` since `e7c831f`: added 5.2 "PCB state" and OPEN-040 for the stackup and board rules drawn in `a70e6cc` (drawn, not decided); added the 2026-11-20 library changes to 4.6; rewrote the verdict for the closed P1 gate, the 11:18 ERC and the items closed in rev 0.78. | Pending human review |
+| 0.81     | 2026-11-21 | No new decisions. `progress-update light` review of open items and tasks (checklist rev 0.69): P2-016 now cites DEC-097 (C804 bulk) and stays open for the copper and GND join (OPEN-021); P4-011 adds the PWM boot-state check from DEC-073; P2-021 set to DONE by the human owner ("DONE, 1 % stays ASSUMED"). No KiCad file changed. | Pending human review |
 
 ## Current verdict
 

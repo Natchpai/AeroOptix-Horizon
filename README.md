@@ -9,7 +9,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.80, 2026-11-21): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.81, 2026-11-21): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -92,7 +92,7 @@ State of the saved KiCad files (2026-11-21 11:12 save, commit `3c111fc`). Sheets
 
 | Area | State |
 |---|---|
-| Power sheet | Drawn; human ERC and a `sch-review` of the 2026-11-03 save are under Verification; LCSC codes on all resistors; PR1, CP2 and OV bottom resistors 5.1 kΩ, OV trip 5.51 to 6.21 V (DEC-055); MFR, MFR.P/N and LCSC filled on R101 to R115 (P2-021, waiting for confirmation). |
+| Power sheet | Drawn; human ERC and a `sch-review` of the 2026-11-03 save are under Verification; LCSC codes on all resistors; PR1, CP2 and OV bottom resistors 5.1 kΩ, OV trip 5.51 to 6.21 V (DEC-055); MFR, MFR.P/N and LCSC filled on R101 to R115 (P2-021 done 2026-11-21; 1 % tolerance `ASSUMED`). |
 | MCU sheets | In capture; one shared reset with one button decided; B901 PTS815SJM250SMTRLFS checked against LCSC C2689510, reset bench check open (DEC-046, OPEN-026); BOOT0 push button B902 to `+3V3` with R202 10 kΩ to `GND`, and F100 PB2 (BOOT1) without a resistor (DEC-095); separate NRST nets for each MCU behind D201 and D301, joined at B901 (DEC-074); board LEDs driven straight from the pins, active low, 220 Ω (DEC-067); F100 px4io LEDs (blue, red, green) and 10 kΩ pull-ups on PA10 and PB11 (DEC-079); microSD 10 kΩ pull-ups on CMD and DAT0 to DAT3, no card detect (DEC-078), 100 nF and 2.2 µF at the card supply (DEC-081); oscillator parts decided and their data meets both MCU HSE bypass limits (DEC-048, CMP-010); LCSC codes match the part numbers (CMP-010); U302 clock margins accepted (DEC-089); VREF+ tied to VDDA with 2.2 µF (DEC-049, DEC-063); all allocated pins labelled with DEC-052 net names and every sheet pin matching its label; the INFO names accepted as drawn (OPEN-032 closed); resistors renumbered without gaps (spec rev 0.75); 22 Ω and 10 nF on the ADC inputs and the servo-rail divider on `conn-actuator` decided (DEC-066). |
 | Sensor sheets | In capture with all five sensors; IST8310 at 0x0C as strapped (DEC-047, closes OPEN-027). ICM-45686 RESV pin 7 not connected (DEC-082); BMP581 INT through 10 kΩ to `GND`, ICP-20100 INT not connected (DEC-083); ICP-20100 power-up order accepted, bench check (DEC-085). I2C2 pull-ups R501 and R502 5.1 kΩ kept, bus at 400 kHz (DEC-094); U503 placed as far as possible from the power parts (DEC-096). |
 | USB and debug sheet | In capture; MFR, MFR.P/N and LCSC on every BOM part (OPEN-010 closed); CN602 (H743) JST-SH 6-pin in the Pixhawk Debug Mini order, no NRST, reset by B901 (DEC-065); F100 debug on test pads TP601 to TP606, with TP605 on `RESET_B` (DEC-075); USB-C CC resistors 5.1 kΩ; USB nets checked and no `VBUS` back-feed through U101 (P1-006); VBUS sense on PA9 through a 5.1 kΩ / 10 kΩ divider, so PA9 stays under 4 V when the MCU is unpowered (DEC-080); USB ESD is the ST USBLC6-2SC6, LCSC C7519 (DEC-084). |
