@@ -462,6 +462,7 @@ async function main() {
         'trace?flag=task',
         'power',
         'showcase',
+        'about',
       ]) {
         const v = await open(browser, route, { theme })
         for (const e of v.errors) fail(`/${route} ${theme}`, `page error: ${e}`)
@@ -561,6 +562,7 @@ async function main() {
         'trace?id=IF-010',
         'power',
         'showcase',
+        'about',
       ]) {
         const v = await open(browser, route, { width: 390, theme })
         const where = `/${route} at 390 px ${theme}`

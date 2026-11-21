@@ -8,6 +8,7 @@ import {
   FileText,
   GitBranch,
   History,
+  Info,
   LayoutDashboard,
   ListChecks,
   Network,
@@ -21,7 +22,10 @@ export const sidebarData: SidebarData = {
   navGroups: [
     {
       title: 'Project',
-      items: [{ title: 'Overview', url: '/', icon: LayoutDashboard }],
+      items: [
+        { title: 'Overview', url: '/', icon: LayoutDashboard },
+        { title: 'About this site', url: '/about', icon: Info },
+      ],
     },
     {
       title: 'Design',

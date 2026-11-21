@@ -16,6 +16,7 @@ import {
   FileClock,
   Gauge,
   History,
+  Info,
   ListChecks,
   Microchip,
   Network,
@@ -171,6 +172,14 @@ const explore = [
     search: {},
     icon: BatteryCharging,
     color: 'var(--rail-6v)',
+  },
+  {
+    title: 'About this site',
+    text: 'Phases, evidence labels, spec ID kinds and the record behind each page.',
+    to: '/about',
+    search: {},
+    icon: Info,
+    color: 'var(--brand)',
   },
 ] as const
 
