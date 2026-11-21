@@ -9,8 +9,9 @@
  * a next-action task chip opens its Checklist row, and an Overview
  * revision chip and a Decisions "Mentioned in" revision chip open their
  * Spec history rows, the Checklist owner chip filters its rows and a gate
- * blocker chip opens its Open items row, the Power budget page
- * draws one bar per Rail summary row, every Decisions Date cell holds
+ * blocker chip opens its Open items row, the Pinout "By peripheral" view
+ * lists every H743 pin once and a SPI1 pin click selects it, the Power
+ * budget page draws one bar per Rail summary row, every Decisions Date cell holds
  * its text inside the cell, every page has its own browser tab title, the
  * diagram view tabs fit at phone width, and light-theme status and evidence
  * badges have AA contrast.
@@ -730,6 +731,53 @@ async function gateBlockers(browser: Browser) {
   await v.close()
 }
 
+/**
+ * The Pinout "By peripheral" view lists every H743 pin of pins.json exactly
+ * once, and a click on the SPI1_SCK pin selects it as a table row click does.
+ */
+async function peripheralView(browser: Browser) {
+  const where = 'Pinout by peripheral'
+  const rows = generated('pins.json').h743 as { pin: string; signal: string }[]
+  const v = await open(browser, 'pinout?mcu=h743&view=peripheral')
+  const shown = await v.page.evaluate(() =>
+    [
+      ...document.querySelectorAll<HTMLElement>('[data-peripheral] [data-pin]'),
+    ].map((b) => b.dataset.pin ?? '')
+  )
+  const missing = rows.map((r) => r.pin).filter((p) => !shown.includes(p))
+  if (
+    shown.length !== rows.length ||
+    new Set(shown).size !== shown.length ||
+    missing.length
+  )
+    fail(
+      where,
+      `lists ${shown.length} pins (${new Set(shown).size} unique), not ` +
+        `the ${rows.length} rows; missing: ${missing.join(', ') || 'none'}`
+    )
+  const sck = rows.find((r) => r.signal === 'SPI1_SCK')
+  if (!sck) fail(where, 'pins.json has no SPI1_SCK row')
+  else
+    try {
+      await v.page.click(`[data-peripheral="SPI1"] [data-pin="${sck.pin}"]`, {
+        timeout: 5000,
+      })
+      await v.page.waitForTimeout(800)
+      const [hash, detail] = await v.page.evaluate(() => [
+        location.hash,
+        document.getElementById('pin-detail')?.textContent ?? '',
+      ])
+      if (!hash.includes(`pin=${sck.pin}`))
+        fail(where, `${sck.pin} click went to ${hash}`)
+      if (!detail.startsWith(sck.pin))
+        fail(where, `pin details show "${detail.slice(0, 20)}"`)
+    } catch {
+      fail(where, `no ${sck.pin} pin under SPI1`)
+    }
+  for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+}
+
 /** Click an export button; the file must be valid SVG with plain colours. */
 async function svgExport(page: Page, button: string, where: string) {
   const download = page.waitForEvent('download', { timeout: 15000 })
@@ -767,6 +815,7 @@ async function main() {
         'diagram?level=power',
         'pinout?mcu=h743',
         'pinout?mcu=f100',
+        'pinout?mcu=h743&view=peripheral',
         'decisions',
         'decisions?id=DEC-050',
         'open',
@@ -822,6 +871,7 @@ async function main() {
     await mentionedInChips(browser)
     await ownerFilter(browser)
     await gateBlockers(browser)
+    await peripheralView(browser)
     await powerBars(browser)
     await decisionDatesFit(browser)
     await lightContrast(browser)
@@ -879,6 +929,7 @@ async function main() {
         'diagram?level=power',
         'pinout?mcu=h743',
         'pinout?mcu=f100',
+        'pinout?mcu=h743&view=peripheral',
         'decisions?id=DEC-050',
         'open?id=OPEN-023',
         'open?closed=true&id=OPEN-001',

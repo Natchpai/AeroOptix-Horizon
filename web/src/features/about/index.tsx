@@ -375,7 +375,9 @@ export function AboutPage() {
                   history, Traceability, Pinout) have a text filter. A linked
                   row always shows, even when a filter would hide it. The
                   Checklist also filters by gate, state and owner, and under
-                  each open gate lists the open items that name its tasks.
+                  each open gate lists the open items that name its tasks. The
+                  Pinout can also list its pins by peripheral (SPI1, USART6
+                  ...).
                 </li>
                 <li>
                   The footer of the Overview names the commit and date the site

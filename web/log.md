@@ -181,3 +181,32 @@ One entry per change: what changed, why, and which files were edited.
     checks, and `checklist?owner=Software` in the page-load list. Both
     fail on the build before this change.
   - `log.md`: this entry.
+
+## 2026-11-22 T9: Pinout grouped by peripheral
+
+- What: the "Allocated pins" card on the Pinout page has a view toggle,
+  Table or By peripheral. By peripheral lists the pins in one small box
+  per peripheral instance (USART1, I2C2, SPI1, TIM5, SDMMC1, OTG_FS,
+  ADC1 ...), then "GPIO and EXTI" and "Debug, reset, clock, boot". The
+  group name is the start of the signal text. Each box shows the name,
+  the pin count and one row per pin: pin, the rest of the signal (SCK,
+  CH1 (AF2)) and the function, as written in the record. Groups sort by
+  kind (UART/USART, I2C, SPI, TIM, SDMMC, OTG_FS, ADC, GPIO, debug), then
+  by number; pins by signal. The box colour is the existing bus colour.
+  A pin click selects it like a table row (`?pin=`, details scroll into
+  view). The view is kept in `?view=peripheral`, so a pin pick and the
+  MCU switch keep it. The text filter works in both views. A signal that
+  fits no group would go to an "Other" box (none today).
+- Why: so the firmware team sees one peripheral's pins together. The
+  site only regroups record rows; it adds no values.
+- Files:
+  - `src/features/pinout/peripherals.ts`: new grouping helper.
+  - `src/features/pinout/index.tsx`: view toggle, `PeripheralList`,
+    `view` kept on pin pick and MCU switch.
+  - `src/routes/_site/pinout.tsx`: `view` search param.
+  - `src/features/about/index.tsx`: one sentence under "Finding things".
+  - `tests/ui.ts`: new `peripheralView` check (every H743 pin once, a
+    SPI1_SCK click selects the pin), `pinout?mcu=h743&view=peripheral` in
+    the page-load and phone-width lists. The check fails on the build
+    before this change.
+  - `log.md`: this entry.
