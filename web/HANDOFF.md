@@ -1,10 +1,8 @@
 # Handoff: team website
 
-**Updated:** 2026-11-21
+**Updated:** 2026-11-22
 
-**Status:** live on GitHub Pages. Pages: Overview, About this site, Block diagram, Pinout, Decisions, Open items, Checklist, Spec history, Traceability, Power budget, Showcase. The engineer approved the Pinout page and the five pages added on 2026-11-21, and reviewed the Block diagram. Hand-written diagram text is synced to spec rev 0.87 and pin allocation rev 0.31.
-
-**Waiting for the engineer (2026-11-21, on `dev`, not yet on `main`):** improvement ideas 1 to 5 and next step 5 were built by Claude on the engineer's go-ahead to decide site improvements without asking: Overview cards for every page, Power view blocks link to the Power budget, lazy Ctrl+K menu and a `records` data chunk, the About page, `test:ui` in CI, the Plan B note on the power mux block, and two layout fixes (pinout table full width, diagram fit keeps the minimap corner free). The look of the About page and the new Overview cards is not yet approved by the engineer.
+**Status:** live on GitHub Pages. Pages: Overview, About this site, Block diagram, Pinout, Decisions, Open items, Checklist, Spec history, Traceability, Power budget, Showcase. The engineer approved the Pinout page and the five pages added on 2026-11-21, reviewed the Block diagram, and merged the About page, Overview cards, CI test and layout fixes (PR #58, deployed from `6bed2d9`). Hand-written diagram text is synced to spec rev 0.87 and pin allocation rev 0.31.
 
 Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in `README.md`. History is in Git (`git log -- web`).
 
@@ -74,34 +72,40 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - Ctrl+K: DEC-050, OPEN-023, closed OPEN-001, PWR-011, task P3-007, revision 0.10;
   - next-action task chip and Overview revision chip open their rows; one Power budget bar per Rail summary row.
 
-**Verified 2026-11-21:** `npm run build` and `npm run test:ui` (local Edge) pass on `dev` (`aafaded`); the CI `test:ui` run passed on `cee2e16`. `npm run check` OK, `npm run drift` 24 findings (the Plan B note added none). Screenshots of the Overview, About, Pinout and the three diagram views at 1440 and 390 px, dark and light, checked by Claude, not yet by the engineer. Fault injection: removing IF-001 from `b-link` fails `npm run check`; a `0x0E` magnetometer tap shows in `npm run drift`.
+**Verified 2026-11-21:** `npm run build` and `npm run test:ui` (local Edge) pass on `aafaded`; the CI `test:ui` run passed on `b1c0696`, the PR #58 head; the Pages deploy of `6bed2d9` succeeded. `npm run check` OK, `npm run drift` 24 findings. Fault injection: removing IF-001 from `b-link` fails `npm run check`; a `0x0E` magnetometer tap shows in `npm run drift`.
 
 **Not verified:** every block and link text against the spec (`npm run drift` lists 24 unreviewed findings); SVG exports opened in Inkscape, PowerPoint or Word; the newer `test:ui` checks were seen passing only, never failing on a broken build.
 
 ## Next steps
 
-1. Engineer reviews the Traceability flag lists (3 no task, 29 no decision or diagram).
-2. Engineer reviews the `npm run drift` list (24 findings) and decides which site texts to fix.
-3. Re-export the board GLB once the parts are placed.
-4. Engineer checks the 2026-11-21 site changes on `dev` (About page, Overview cards, pinout layout), then a PR from `dev` to `main` deploys them.
-5. Keep `topology.ts` in step with the spec; `npm run check` flags a new IF row on no link.
+- [ ] Engineer reviews the Traceability flag lists (3 no task, 29 no decision or diagram).
+- [ ] Engineer reviews the `npm run drift` list (24 findings) and decides which site texts to fix.
+- [ ] Re-export the board GLB once the parts are placed.
+- [x] Plan B note on the Power view power mux block (DEC-108, OPEN-041), 2026-11-21.
+- [x] Check and deploy the 2026-11-21 site changes (PR #58, merged 2026-11-21).
+
+**Always:** keep `topology.ts` in step with the spec; `npm run check` flags a new IF row on no link.
 
 **Later, when the data exists:** connector pinout pages after OPEN-023 gives the far-end pins (this also fills the Interface view `TBD`s); the BOM page (below).
 
 **Adding a table page:** copy the Decisions page (`src/features/decisions/index.tsx`, the shortest): a route in `src/routes/_site/` with `validateSearch`, a TanStack table drawn by `RecordTable`, a sidebar item in `src/components/layout/data/sidebar-data.ts`, an Overview Explore card, a row in the About page `pages` list, and `tests/ui.ts` page-load and 390 px entries. A new record field needs an extractor change and a type in `src/data/types.ts`. A new route file needs one `npx vite build` before `tsc` knows it (the router plugin writes `routeTree.gen.ts`). Process: build, `npm run build` and `npm run test:ui` pass, screenshots at 1440 and 390 px in both themes, then commit.
 
-## Improvement ideas (not approved)
+## Improvement ideas
 
-The engineer picks; nothing here is decided.
+The engineer picks open ideas; nothing open is decided.
 
-- **BOM page** (`/bom`), once the engineer exports a BOM from KiCad and commits it (a schematic output, so a human step; the site never reads `.kicad_sch`).
+- [x] Overview cards for every page; the Open items tile links to `/open` (2026-11-21).
+- [x] Power view blocks link to the Power budget (2026-11-21).
+- [x] Lazy Ctrl+K menu and a `records` data chunk (2026-11-21).
+- [x] `test:ui` in CI with bundled Chromium (2026-11-21).
+- [x] About page (2026-11-21).
+- [x] Pinout table full width; diagram fit keeps the minimap corner free (2026-11-21).
+- [ ] **BOM page** (`/bom`), once the engineer exports a BOM from KiCad and commits it (a schematic output, so a human step; the site never reads `.kicad_sch`).
     - One row per part: references, quantity, value, footprint, `MFR`, `MFR.P/N`, `LCSC`, DNP (for example D105 and D106, Plan B, DEC-108). Filter by text, group and DNP.
     - The detail row links the part to its diagram blocks (part number in a block's `sub`, as the Power budget does) and to the DEC rows that name it.
     - Report-only flags: a fitted part without `MFR.P/N` or `LCSC`.
     - The extractor reads the exported file and fails the build on a missing column, like the other records. Stock and price stay off the page: supplier pages are JavaScript-rendered, so those values would be `NOT_VERIFIED`.
     - Before building: agree the export format (CSV columns) and where the file lives with the engineer.
-
-Done on 2026-11-21 (so later sessions do not propose them again): Overview cards for the table pages, Power view to Power budget links, lazy Ctrl+K menu, `test:ui` in CI, the About page.
 
 Dropped from the list (2026-11-21), so later sessions do not propose them again: record revision drift check (`/progress-update` keeps revisions in step); a Traceability toggle for task text (fix the Req cell instead, as for CMP-010 in P1-014); re-stepped rail colours (the engineer's choice); a copy-link button (the address bar already holds `?id=`); evidence badges on more pages; a progress-over-time chart; recent decisions on the Overview (Spec history covers it); full-text search (works against the bundle-size idea); a print view.
 
