@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { getRouteApi, Link as RouterLink } from '@tanstack/react-router'
 import {
   type ColumnDef,
+  type FilterFn,
   type SortingState,
   flexRender,
   getCoreRowModel,
@@ -45,10 +46,19 @@ import { DataTableColumnHeader } from '@/components/data-table'
 import { IdChip } from '@/components/id-chip'
 import { Main } from '@/components/layout/main'
 import { SiteHeader } from '@/components/layout/site-header'
+import { MdText } from '@/components/md-text'
 import { PackageView } from './package-view'
-import { type PeripheralGroup, peripheralGroups } from './peripherals'
+import {
+  type PeripheralGroup,
+  peripheralGroups,
+  pinMatches,
+} from './peripherals'
 
 const route = getRouteApi('/_site/pinout')
+
+/** The table filter: the same match as the By peripheral view. */
+const pinFilter: FilterFn<PinRow> = (row, _col, value: string) =>
+  pinMatches(row.original, value)
 
 export function PinoutPage() {
   const search = route.useSearch()
@@ -257,13 +267,15 @@ function PinDetail({
         </Button>
       </CardHeader>
       <CardContent className='space-y-3 text-sm'>
-        <div>{row.function}</div>
+        <div>
+          <MdText text={row.function} />
+        </div>
         <div className='flex flex-wrap items-center gap-1'>
           {row.refs.map((r) => (
             <IdChip key={r} id={r} />
           ))}
           <span className='ms-2 text-xs text-muted-foreground'>
-            DS check: {row.ds || '-'}
+            DS check: <MdText text={row.ds || '-'} />
           </span>
         </div>
         <div className='flex flex-wrap gap-2'>
@@ -360,7 +372,7 @@ function PinTable({
         ),
         cell: ({ row }) => (
           <span className='block min-w-48 whitespace-normal'>
-            {row.original.function}
+            <MdText text={row.original.function} />
           </span>
         ),
       },
@@ -383,7 +395,7 @@ function PinTable({
         enableSorting: false,
         cell: ({ row }) => (
           <span className='block min-w-32 text-xs whitespace-normal text-muted-foreground'>
-            {row.original.ds}
+            <MdText text={row.original.ds} />
           </span>
         ),
       },
@@ -397,27 +409,22 @@ function PinTable({
     state: { sorting, globalFilter: filter },
     onSortingChange: setSorting,
     onGlobalFilterChange: setFilter,
-    globalFilterFn: 'includesString',
+    globalFilterFn: pinFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   })
 
-  const groups = useMemo(() => {
-    const q = filter.trim().toLowerCase()
-    return peripheralGroups(pins[mcu])
-      .map((g) => ({
-        ...g,
-        rows: g.rows.filter(
-          ({ row }) =>
-            !q ||
-            [g.name, row.pin, row.signal, row.function, ...row.refs].some((t) =>
-              t.toLowerCase().includes(q)
-            )
-        ),
-      }))
-      .filter((g) => g.rows.length)
-  }, [mcu, filter])
+  const groups = useMemo(
+    () =>
+      peripheralGroups(pins[mcu])
+        .map((g) => ({
+          ...g,
+          rows: g.rows.filter(({ row }) => pinMatches(row, filter)),
+        }))
+        .filter((g) => g.rows.length),
+    [mcu, filter]
+  )
   const shown = groups.reduce((n, g) => n + g.rows.length, 0)
 
   return (
@@ -560,7 +567,7 @@ function PeripheralList({
                       <span className='font-mono text-xs'>{label}</span>
                       <span className='text-muted-foreground'>
                         {' · '}
-                        {row.function}
+                        <MdText text={row.function} />
                       </span>
                     </span>
                   </button>
@@ -600,9 +607,11 @@ function ReservedTable() {
                   <TableCell className='ps-6 font-mono font-semibold'>
                     {r.pins.join(', ')}
                   </TableCell>
-                  <TableCell>{r.function}</TableCell>
+                  <TableCell>
+                    <MdText text={r.function} />
+                  </TableCell>
                   <TableCell className='text-muted-foreground'>
-                    {r.plan}
+                    <MdText text={r.plan} />
                   </TableCell>
                 </TableRow>
               ))}

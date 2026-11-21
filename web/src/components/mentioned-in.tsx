@@ -3,6 +3,7 @@ import { Link } from '@tanstack/react-router'
 import type { SpecChange } from '@/data'
 import { loadHistory, mentionsOf } from '@/lib/history-mentions'
 import { detailLabel } from '@/lib/record-rows'
+import { Button } from '@/components/ui/button'
 
 /** Chips shown before "+N more". */
 const FIRST = 12
@@ -11,14 +12,20 @@ const FIRST = 12
  * "Mentioned in": the spec revisions whose change note names `id`, newest
  * first, each a revision chip that opens its row on Spec history. For the
  * detail rows of Decisions, Open items and Traceability. The notes load
- * when the first row opens.
+ * when the first row opens. If they fail to load, a note offers a page
+ * reload: after a deploy the old notes chunk is gone, so a retry alone would
+ * fail again.
  */
 export function MentionedIn({ id }: { id: string }) {
   const [history, setHistory] = useState<SpecChange[]>()
+  const [failed, setFailed] = useState(false)
   const [all, setAll] = useState(false)
   useEffect(() => {
     let live = true
-    loadHistory().then((h) => live && setHistory(h))
+    loadHistory().then(
+      (h) => live && setHistory(h),
+      () => live && setFailed(true)
+    )
     return () => {
       live = false
     }
@@ -31,7 +38,19 @@ export function MentionedIn({ id }: { id: string }) {
       <p className='text-xs text-muted-foreground'>
         Spec change notes that name this ID; ranges are not expanded.
       </p>
-      {!history ? (
+      {failed ? (
+        <div className='flex flex-wrap items-center gap-2 text-xs text-muted-foreground'>
+          <span>Could not load the change notes.</span>
+          <Button
+            variant='outline'
+            size='sm'
+            className='h-6 px-2 text-xs'
+            onClick={() => location.reload()}
+          >
+            Reload page
+          </Button>
+        </div>
+      ) : !history ? (
         <p className='text-xs text-muted-foreground'>Loading…</p>
       ) : !found.length ? (
         <p className='text-xs text-muted-foreground'>

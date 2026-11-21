@@ -9,8 +9,11 @@
  * a next-action task chip opens its Checklist row, and an Overview
  * revision chip and a Decisions "Mentioned in" revision chip open their
  * Spec history rows, the Checklist owner chip filters its rows and a gate
- * blocker chip opens its Open items row, the Pinout "By peripheral" view
- * lists every H743 pin once and a SPI1 pin click selects it, the Power
+ * blocker chip opens its Open items row (OPEN-004 under P3, no closed item
+ * listed), an unknown ?owner= or ?status= shows a pressed chip that clears
+ * it, "Mentioned in" shows a reload note when the notes chunk fails, the
+ * Pinout "By peripheral" view lists every H743 pin once and a SPI1 pin click
+ * selects it, the Pinout filter finds the same pins in both views, the Power
  * budget page draws one bar per Rail summary row, every Decisions Date cell holds
  * its text inside the cell, every page has its own browser tab title, the
  * diagram view tabs fit at phone width, and light-theme status and evidence
@@ -20,10 +23,11 @@
  * Playwright channel (default `msedge` locally; `chromium` when CI is set).
  * Exits 1 and lists every failure.
  */
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import {
   chromium,
   type Browser,
+  type BrowserContext,
   type Page,
   type Route,
 } from 'playwright-core'
@@ -67,7 +71,12 @@ async function serveFont(route: Route) {
 async function open(
   browser: Browser,
   route: string,
-  opts: { width?: number; theme?: 'dark' | 'light' } = {}
+  opts: {
+    width?: number
+    theme?: 'dark' | 'light'
+    /** Runs on the new context before the page loads (routes, init scripts). */
+    setup?: (ctx: BrowserContext) => Promise<unknown>
+  } = {}
 ) {
   const ctx = await browser.newContext({
     viewport: { width: opts.width ?? 1440, height: 900 },
@@ -84,6 +93,7 @@ async function open(
   // tsx compiles the page-side functions with esbuild's __name helper
   await ctx.addInitScript('window.__name = (f) => f')
   await ctx.route(FONTS, serveFont)
+  await opts.setup?.(ctx)
   const page = await ctx.newPage()
   const errors: string[] = []
   page.on('pageerror', (e) => errors.push(e.message))
@@ -411,36 +421,43 @@ async function powerBars(browser: Browser) {
 
 /**
  * Every page sets its own browser tab title, ending with the site name, also
- * after moving between pages in one tab.
+ * after moving between pages in one tab. The titles are fixed here, so the
+ * check waits for the exact title instead of a fixed time, and a wrong title
+ * fails as clearly as a late one.
  */
 async function pageTitles(browser: Browser) {
   const where = 'tab titles'
   const v = await open(browser, '')
   const seen = new Map<string, string>()
-  for (const route of [
-    '',
-    'diagram?level=system',
-    'diagram?level=board',
-    'diagram?level=power',
-    'diagram?level=board&link=b-link',
-    'pinout?mcu=h743',
-    'pinout?mcu=f100',
-    'decisions',
-    'open',
-    'checklist',
-    'history',
-    'trace',
-    'power',
-    'showcase',
-    'about',
+  for (const [route, page] of [
+    ['', 'Overview'],
+    ['diagram?level=system', 'Block diagram · Overview'],
+    ['diagram?level=board', 'Block diagram · System'],
+    ['diagram?level=power', 'Block diagram · Power'],
+    ['diagram?level=board&link=b-link', 'Block diagram · Interface'],
+    ['pinout?mcu=h743', 'Pinout · STM32H743VIT6'],
+    ['pinout?mcu=f100', 'Pinout · STM32F100C8T6B'],
+    ['decisions', 'Decisions'],
+    ['open', 'Open items'],
+    ['checklist', 'Checklist'],
+    ['history', 'Spec history'],
+    ['trace', 'Traceability'],
+    ['power', 'Power budget'],
+    ['showcase', 'Showcase'],
+    ['about', 'About this site'],
   ]) {
+    const want = `${page} · AeroOptix-Horizon`
     await v.page.evaluate((h) => {
       location.hash = h
     }, `#/${route}`)
-    await v.page.waitForTimeout(800)
+    try {
+      await v.page.waitForFunction((t) => document.title === t, want, {
+        timeout: 10000,
+      })
+    } catch {
+      fail(where, `/${route} title is "${await v.page.title()}", not "${want}"`)
+    }
     const title = await v.page.title()
-    if (!title.endsWith('AeroOptix-Horizon'))
-      fail(where, `/${route} title "${title}" does not end with the site name`)
     const other = seen.get(title)
     if (other !== undefined)
       fail(where, `/${route} has the same title as /${other}: "${title}"`)
@@ -664,6 +681,40 @@ async function ownerFilter(browser: Browser) {
 }
 
 /**
+ * A Checklist link with an owner or status no chip names still shows the
+ * filter: a pressed chip with that value and count 0, and a click on it
+ * removes the filter and lists every task again.
+ */
+async function unknownChipFilters(browser: Browser) {
+  const total = Object.keys(generated('progress.json').tasks).length
+  for (const [key, value, group] of [
+    ['owner', 'Nobody', 'Owner'],
+    ['status', 'WAITING', 'Status'],
+  ]) {
+    const where = `Checklist ?${key}=${value}`
+    const v = await open(browser, `checklist?${key}=${value}`)
+    const chip = v.page
+      .locator(`[aria-label="${group}"] button[aria-pressed="true"]`)
+      .filter({ hasText: new RegExp(`^${value}\\s*0$`) })
+    try {
+      await chip.click({ timeout: 5000 })
+      await v.page.waitForTimeout(500)
+      const [hash, rows] = await v.page.evaluate(() => [
+        location.hash,
+        document.querySelectorAll('tbody tr[id^="row-"]').length,
+      ])
+      if (String(hash).includes(`${key}=`))
+        fail(where, `chip click left ${hash}`)
+      if (rows !== total) fail(where, `shows ${rows} rows, not all ${total}`)
+    } catch {
+      fail(where, `no pressed "${value} 0" chip in the ${group} row`)
+    }
+    for (const e of v.errors) fail(where, `page error: ${e}`)
+    await v.close()
+  }
+}
+
+/**
  * Under each open gate the Checklist lists the open items whose "Owner /
  * next action" names one of the gate's tasks; a chip opens its Open items row.
  */
@@ -707,6 +758,16 @@ async function gateBlockers(browser: Browser) {
   )
   if (JSON.stringify(got) !== JSON.stringify(want))
     fail(where, `shown ${JSON.stringify(got)}, not ${JSON.stringify(want)}`)
+  // fixed points, in case the computation above drifts with the page code
+  if (!got.P3?.includes('OPEN-004'))
+    fail(where, `OPEN-004 is not listed under P3: ${JSON.stringify(got.P3)}`)
+  const closed = new Set(
+    ids.filter((s) => s.kind === 'OPEN' && s.closed).map((s) => s.id)
+  )
+  if (!closed.has('OPEN-001')) fail(where, 'ids.json: OPEN-001 is not closed')
+  for (const [g, shown] of Object.entries(got))
+    for (const id of shown)
+      if (id && closed.has(id)) fail(where, `closed ${id} is listed under ${g}`)
   const [gate, list] = Object.entries(want)[0] ?? []
   if (gate && list) {
     const id = list[0]
@@ -775,6 +836,85 @@ async function peripheralView(browser: Browser) {
       fail(where, `no ${sck.pin} pin under SPI1`)
     }
   for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+}
+
+/**
+ * When the change notes chunk fails to load (an old tab after a deploy),
+ * "Mentioned in" says so and offers a page reload, with no page error or
+ * unhandled rejection. Recovery is not checked: the chunk stays blocked.
+ */
+async function mentionedInFails(browser: Browser) {
+  const where = 'Mentioned in, notes chunk blocked'
+  const dir = new URL('../dist/assets/', import.meta.url)
+  // the notes JSON chunk is named history-<hash>.js like the Spec history
+  // page chunk; it is the one that holds the data
+  const chunk = readdirSync(dir).find(
+    (f) =>
+      /^history-.*\.js$/.test(f) &&
+      readFileSync(new URL(f, dir), 'utf8').includes('"revision":"')
+  )
+  if (!chunk) return fail(where, 'no history notes chunk in dist/assets')
+  const v = await open(browser, 'decisions?id=DEC-030', {
+    setup: async (ctx) => {
+      await ctx.route(`**/assets/${chunk}`, (r) => r.abort())
+      await ctx.addInitScript(() => {
+        const w = window as unknown as { __rejections: string[] }
+        w.__rejections = []
+        addEventListener('unhandledrejection', (e) =>
+          w.__rejections.push(String(e.reason))
+        )
+      })
+    },
+  })
+  const row = v.page.locator('tr', { hasText: 'Mentioned in' })
+  try {
+    await row
+      .getByText('Could not load the change notes.', { exact: true })
+      .waitFor({ timeout: 5000 })
+  } catch {
+    fail(where, 'no "Could not load the change notes." note')
+  }
+  if (!(await row.getByRole('button', { name: 'Reload page' }).count()))
+    fail(where, 'no "Reload page" button')
+  const rejections = await v.page.evaluate(
+    () => (window as unknown as { __rejections: string[] }).__rejections
+  )
+  for (const r of rejections) fail(where, `unhandled rejection: ${r}`)
+  for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+}
+
+/**
+ * The Pinout filter finds the same H743 pins in Table and in By peripheral,
+ * also for text only one view used to search (a group name, the DS check).
+ */
+async function pinFilterSame(browser: Browser) {
+  const v = await open(browser, 'pinout?mcu=h743')
+  for (const q of ['Debug', 'not checked']) {
+    const where = `Pinout filter "${q}"`
+    try {
+      await v.page.getByLabel('Filter pins').fill(q, { timeout: 5000 })
+      await v.page.getByRole('button', { name: 'Table', exact: true }).click()
+      await v.page.waitForTimeout(300)
+      const table = await v.page.evaluate(
+        () => document.querySelectorAll('tbody tr').length
+      )
+      await v.page
+        .getByRole('button', { name: 'By peripheral', exact: true })
+        .click()
+      await v.page.waitForTimeout(300)
+      const groups = await v.page.evaluate(
+        () => document.querySelectorAll('[data-peripheral] [data-pin]').length
+      )
+      if (!table) fail(where, 'the table shows no pins')
+      if (table !== groups)
+        fail(where, `Table shows ${table} pins, By peripheral ${groups}`)
+    } catch (e) {
+      fail(where, `could not run: ${(e as Error).message.split('\n')[0]}`)
+    }
+  }
+  for (const e of v.errors) fail('Pinout filter', `page error: ${e}`)
   await v.close()
 }
 
@@ -869,9 +1009,12 @@ async function main() {
     await taskChipOpensRow(browser)
     await revChipOpensRow(browser)
     await mentionedInChips(browser)
+    await mentionedInFails(browser)
     await ownerFilter(browser)
+    await unknownChipFilters(browser)
     await gateBlockers(browser)
     await peripheralView(browser)
+    await pinFilterSame(browser)
     await powerBars(browser)
     await decisionDatesFit(browser)
     await lightContrast(browser)

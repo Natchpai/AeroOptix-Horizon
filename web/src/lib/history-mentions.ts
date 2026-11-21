@@ -8,11 +8,17 @@ import type { SpecChange } from '@/data'
 
 let notes: Promise<SpecChange[]> | undefined
 
-/** Every change note, newest first (the order the extractor writes). */
+/**
+ * Every change note, newest first (the order the extractor writes). A failed
+ * load is not cached, so the next call tries again.
+ */
 export function loadHistory(): Promise<SpecChange[]> {
-  notes ??= import('@/data/generated/history.json').then(
-    (m) => m.default as SpecChange[]
-  )
+  notes ??= import('@/data/generated/history.json')
+    .then((m) => m.default as SpecChange[])
+    .catch((e) => {
+      notes = undefined
+      throw e
+    })
   return notes
 }
 

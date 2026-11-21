@@ -44,6 +44,25 @@ function groupOf(signal: string): { name: string; rank: number } {
   return { name: OTHER_GROUP, rank: 9 }
 }
 
+/**
+ * The Pinout text filter, the same in Table and By peripheral: `query`
+ * (trimmed, any case) is part of the pin, package pin number, signal,
+ * function, a ref, the DS check or the peripheral group name.
+ */
+export function pinMatches(row: PinRow, query: string): boolean {
+  const q = query.trim().toLowerCase()
+  if (!q) return true
+  return [
+    row.pin,
+    String(row.number ?? ''),
+    row.signal,
+    row.function,
+    ...row.refs,
+    row.ds,
+    groupOf(row.signal).name,
+  ].some((t) => t.toLowerCase().includes(q))
+}
+
 const num = (name: string) => Number(name.match(/\d+$/)?.[0] ?? 0)
 
 export function peripheralGroups(rows: PinRow[]): PeripheralGroup[] {

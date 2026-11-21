@@ -128,6 +128,20 @@ export function ChecklistPage() {
   // Each chip row counts the tasks the other filters leave.
   const forStates = tasks.filter((t) => byGate(t) && byOwner(t))
   const forOwners = tasks.filter((t) => byGate(t) && byStatus(t))
+  // A ?status= or ?owner= value no chip names (an old or mistyped link)
+  // still shows as a pressed chip, so the filter is visible and one click
+  // clears it.
+  const otherStatus =
+    search.status && !allTaskStates.some((s) => s.key === search.status)
+      ? {
+          ...taskState(search.status),
+          n: forStates.filter((t) => t.status === search.status).length,
+        }
+      : undefined
+  const otherOwner =
+    search.owner && !ownerNames.includes(search.owner)
+      ? search.owner
+      : undefined
 
   const columns = useMemo<ColumnDef<Task>[]>(
     () => [
@@ -384,6 +398,22 @@ export function ChecklistPage() {
                   </Button>
                 )
               })}
+              {otherStatus && (
+                <Button
+                  variant='outline'
+                  size='sm'
+                  aria-pressed
+                  className={chip(true)}
+                  onClick={() => set({ status: undefined })}
+                >
+                  <span
+                    className='size-2 rounded-sm'
+                    style={{ background: otherStatus.color }}
+                  />
+                  {otherStatus.label}
+                  <span className='text-muted-foreground'>{otherStatus.n}</span>
+                </Button>
+              )}
             </div>
             <div className='flex flex-wrap gap-1.5' aria-label='Owner'>
               <Button
@@ -415,6 +445,18 @@ export function ChecklistPage() {
                   </Button>
                 )
               })}
+              {otherOwner && (
+                <Button
+                  variant='outline'
+                  size='sm'
+                  aria-pressed
+                  className={chip(true)}
+                  onClick={() => set({ owner: undefined })}
+                >
+                  {otherOwner}
+                  <span className='text-muted-foreground'>0</span>
+                </Button>
+              )}
             </div>
           </CardHeader>
           <CardContent className='px-0'>

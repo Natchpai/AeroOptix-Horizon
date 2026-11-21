@@ -240,3 +240,46 @@ One entry per change: what changed, why, and which files were edited.
   - `knip.config.ts`: `ignoreExportsUsedInFile: true`, one ignore entry
     removed.
   - `log.md`: this entry.
+
+## 2026-11-22 T11: bug-hunt fixes
+
+- What: six small fixes from the bug hunt.
+  - "Mentioned in" no longer shows "Loading…" forever when the change
+    notes chunk fails to load. It shows "Could not load the change
+    notes." and a "Reload page" button. A failed load is not cached, and
+    the rejection is handled, so no unhandled rejection reaches the page.
+  - The Pinout filter uses one match for Table and By peripheral: pin,
+    package pin number, signal, function, refs, DS check and peripheral
+    group name, any case. "Debug" now gives 8 pins in both views (was 2
+    and 8), "not checked" 13 in both (was 13 and 0).
+  - The Checklist shows a pressed chip for a `?owner=` or `?status=`
+    value no chip names, with its count (0). A click clears the filter.
+  - Pinout record text renders `code` and **bold** with `MdText`: the
+    function in the table, the By peripheral list, the px4io reserved
+    table and the pin details; the DS column and the pin details DS
+    check; the reserved table Plan column. The package pin hover titles
+    drop the backticks and stay plain text, since the SVG export clones
+    the on-screen package with them; no CSS or HTML reaches the file.
+  - `tests/ui.ts`: the tab title check waits for each page's exact title
+    (up to 10 s) instead of a fixed 800 ms. The gate blocker check also
+    asserts OPEN-004 under P3 and no closed OPEN item under any gate.
+- Why: bugs found in the bug hunt. A retry alone would not fix the notes
+  load: after a deploy the old hashed chunk is gone, so the page must
+  reload. The site adds no values.
+- Files:
+  - `src/lib/history-mentions.ts`: `loadHistory` drops a failed promise.
+  - `src/components/mentioned-in.tsx`: error note and reload button.
+  - `src/features/pinout/peripherals.ts`: new `pinMatches`.
+  - `src/features/pinout/index.tsx`: table `globalFilterFn` and the
+    groups both use `pinMatches`; `MdText` for function, DS and Plan
+    text.
+  - `src/features/pinout/package-view.tsx`: pin titles without
+    backticks (`plain`).
+  - `src/features/checklist/index.tsx`: chips for unknown owner and
+    status values.
+  - `tests/ui.ts`: new `mentionedInFails` (notes chunk blocked),
+    `unknownChipFilters` (`?owner=Nobody`, `?status=WAITING`) and
+    `pinFilterSame` ("Debug", "not checked") checks, which fail on the
+    build before this change; `pageTitles` and `gateBlockers` as above;
+    `open()` takes a `setup` hook for routes and init scripts.
+  - `log.md`: this entry.

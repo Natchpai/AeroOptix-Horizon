@@ -18,6 +18,12 @@ type Props = {
  * numbers run counter-clockwise, as on ST LQFP drawings. Only pins in the
  * allocation table get a name; the rest show their number only.
  */
+/**
+ * Record text without its Markdown code marks. Pin titles stay plain text:
+ * they are hover text here and go into the SVG export as they are.
+ */
+const plain = (s: string) => s.replace(/`/g, '')
+
 export function PackageView({ mcu, selected, onPick }: Props) {
   const info = mcuInfo[mcu]
   const n = info.pinCount / 4
@@ -151,7 +157,9 @@ export function PackageView({ mcu, selected, onPick }: Props) {
           >
             <title>
               {row
-                ? `#${p.num} ${row.pin} · ${row.signal} · ${row.function}`
+                ? plain(
+                    `#${p.num} ${row.pin} · ${row.signal} · ${row.function}`
+                  )
                 : `#${p.num} not allocated`}
             </title>
             <rect
