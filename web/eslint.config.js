@@ -8,10 +8,7 @@ import tseslint from 'typescript-eslint'
 export default defineConfig(
   { ignores: ['dist', 'src/components/ui', 'src/routeTree.gen.ts'] },
   {
-    extends: [
-      js.configs.recommended,
-      ...tseslint.configs.recommended,
-    ],
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,

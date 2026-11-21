@@ -210,3 +210,33 @@ One entry per change: what changed, why, and which files were edited.
     the page-load and phone-width lists. The check fails on the build
     before this change.
   - `log.md`: this entry.
+
+## 2026-11-22 T5: prettier and knip cleanup
+
+- What: `npm run format:check` and `npx knip` now pass. Prettier
+  reformatted three files (whitespace and line endings only). Unused
+  template helpers were removed: `useFont`, `sleep`, `getPageNumbers`
+  and `getDisplayNameInitials`; nothing imported them. Names used only
+  in their own file lost `export`: `NavItem`, `LaidEdge`, `GPIO_GROUP`,
+  `DEBUG_GROUP`, `OTHER_GROUP`. knip now ignores exports used in their
+  own file (`ignoreExportsUsedInFile: true`), which covers the per-view
+  arrays in `topology.ts`, and `src/tanstack-table.d.ts` left the knip
+  ignore list (knip hint). The object form `{ variable: true }` did not
+  clear the topology arrays, so the option is the plain `true`.
+- Why: so both checks can run clean and catch new issues. No behaviour
+  change.
+- Files:
+  - `eslint.config.js`, `README.md`, `src/components/md-text.tsx`:
+    prettier only (`md-text.tsx` had CRLF line endings; the content is
+    the same as in Git).
+  - `src/context/font-provider.tsx`: `useFont` and its `useContext`
+    import removed.
+  - `src/lib/utils.ts`: `sleep`, `getPageNumbers`,
+    `getDisplayNameInitials` removed; `cn` stays.
+  - `src/components/layout/types.ts`: `NavItem` no longer exported.
+  - `src/features/diagram/layout.ts`: `LaidEdge` no longer exported.
+  - `src/features/pinout/peripherals.ts`: the three group name
+    constants no longer exported.
+  - `knip.config.ts`: `ignoreExportsUsedInFile: true`, one ignore entry
+    removed.
+  - `log.md`: this entry.

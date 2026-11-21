@@ -26,10 +26,10 @@ const KINDS: [RegExp, number][] = [
   [/^ADC/, 6],
 ]
 
-export const GPIO_GROUP = 'GPIO and EXTI'
-export const DEBUG_GROUP = 'Debug, reset, clock, boot'
+const GPIO_GROUP = 'GPIO and EXTI'
+const DEBUG_GROUP = 'Debug, reset, clock, boot'
 /** Only shown when a signal fits no other group (none do today). */
-export const OTHER_GROUP = 'Other'
+const OTHER_GROUP = 'Other'
 
 function groupOf(signal: string): { name: string; rank: number } {
   const m = signal.match(PERIPHERAL)
