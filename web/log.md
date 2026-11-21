@@ -28,3 +28,27 @@ One entry per change: what changed, why, and which files were edited.
     greyed; header reads "N of 109 rows (103 live, 6 removed, greyed)".
   - `tests/ui.ts`: new `decisionDatesFit` check at 1440 px, run from `main`,
     and listed in the file header.
+
+## 2026-11-22 T3: page titles and diagram tabs on phones
+
+- What: every page now sets its own browser tab title, "<page> ·
+  AeroOptix-Horizon" (diagram views add the view name, for example "Block
+  diagram · System · AeroOptix-Horizon"). The static meta description no
+  longer names a phase. Below the sm breakpoint the diagram view tabs hide
+  their L0/L1/L2 hints, so all four tabs fit at 390 px. Two new browser
+  checks: tab titles are distinct and end with the site name, and the view
+  tabs fit at 390 px.
+- Why: every tab read "AeroOptix-Horizon", the description said "Draft"
+  while the README phase is PRELIMINARY, and "Interface L2" ran off the
+  right edge on phones.
+- Files:
+  - `src/components/layout/site-header.tsx`: sets `document.title` from a
+    new `pageTitle` prop, or from `title` when it is a string; resets it to
+    the site name on unmount.
+  - `src/features/diagram/index.tsx`: passes `pageTitle` with the view
+    name; `data-view-tabs` on the tab group; level hints `hidden sm:inline`.
+  - `index.html`: description drops "Draft, not for fabrication."; Prettier
+    split the two icon `<link>` tags over several lines.
+  - `tests/ui.ts`: new `pageTitles` check, new `viewTabsFit` check in the
+    390 px diagram loop, file header updated.
+  - `log.md`: this entry.

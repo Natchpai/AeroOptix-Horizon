@@ -8,8 +8,9 @@
  * decision or an open item (open or closed) opens its row on its page,
  * a next-action task chip opens its Checklist row, and an Overview
  * revision chip opens its Spec history row, the Power budget page
- * draws one bar per Rail summary row, and every Decisions Date cell holds
- * its text inside the cell.
+ * draws one bar per Rail summary row, every Decisions Date cell holds
+ * its text inside the cell, every page has its own browser tab title, and
+ * the diagram view tabs fit at phone width.
  *
  * Run after `npm run build`: `npm run test:ui`. Set UI_BROWSER to pick a
  * Playwright channel (default `msedge` locally; `chromium` when CI is set).
@@ -169,6 +170,23 @@ async function noSideScroll(page: Page, where: string) {
     window.innerWidth,
   ])
   if (sw > w) fail(where, `scrolls sideways (${sw} px wide at ${w} px)`)
+}
+
+/** The diagram view tabs fit inside their row and the viewport. */
+async function viewTabsFit(page: Page, where: string) {
+  const out = await page.evaluate(() => {
+    const tabs = document.querySelector('[data-view-tabs]')
+    if (!tabs) return ['no view tabs']
+    const edge = Math.min(
+      window.innerWidth,
+      tabs.parentElement!.getBoundingClientRect().right
+    )
+    return [...tabs.querySelectorAll('button')]
+      .map((b) => ({ name: b.textContent, right: b.getBoundingClientRect().right }))
+      .filter((b) => b.right > edge + 0.5)
+      .map((b) => `tab "${b.name}" ends at ${b.right} px, past ${edge} px`)
+  })
+  for (const o of out) fail(where, o)
 }
 
 /** At phone width a diagram opens at a readable zoom (canvas.tsx READABLE). */
@@ -387,6 +405,47 @@ async function powerBars(browser: Browser) {
   }
 }
 
+/**
+ * Every page sets its own browser tab title, ending with the site name, also
+ * after moving between pages in one tab.
+ */
+async function pageTitles(browser: Browser) {
+  const where = 'tab titles'
+  const v = await open(browser, '')
+  const seen = new Map<string, string>()
+  for (const route of [
+    '',
+    'diagram?level=system',
+    'diagram?level=board',
+    'diagram?level=power',
+    'diagram?level=board&link=b-link',
+    'pinout?mcu=h743',
+    'pinout?mcu=f100',
+    'decisions',
+    'open',
+    'checklist',
+    'history',
+    'trace',
+    'power',
+    'showcase',
+    'about',
+  ]) {
+    await v.page.evaluate((h) => {
+      location.hash = h
+    }, `#/${route}`)
+    await v.page.waitForTimeout(800)
+    const title = await v.page.title()
+    if (!title.endsWith('AeroOptix-Horizon'))
+      fail(where, `/${route} title "${title}" does not end with the site name`)
+    const other = seen.get(title)
+    if (other !== undefined)
+      fail(where, `/${route} has the same title as /${other}: "${title}"`)
+    seen.set(title, route)
+  }
+  for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+}
+
 /** Every Decisions Date cell holds its text inside the cell, at 1440 px. */
 async function decisionDatesFit(browser: Browser) {
   const where = '/decisions date cells'
@@ -536,6 +595,7 @@ async function main() {
     await revChipOpensRow(browser)
     await powerBars(browser)
     await decisionDatesFit(browser)
+    await pageTitles(browser)
     await openRowTopAligned(browser)
     await chipsOpenSitePages(browser)
 
@@ -604,7 +664,10 @@ async function main() {
         const v = await open(browser, route, { width: 390, theme })
         const where = `/${route} at 390 px ${theme}`
         await noSideScroll(v.page, where)
-        if (route.startsWith('diagram')) await readableZoom(v.page, where)
+        if (route.startsWith('diagram')) {
+          await readableZoom(v.page, where)
+          await viewTabsFit(v.page, where)
+        }
         await v.close()
       }
   } finally {
