@@ -52,3 +52,27 @@ One entry per change: what changed, why, and which files were edited.
   - `tests/ui.ts`: new `pageTitles` check, new `viewTabsFit` check in the
     390 px diagram loop, file header updated.
   - `log.md`: this entry.
+
+## 2026-11-22 T4: smaller logo files
+
+- What: new small copies of the four logo PNGs (flame 256 x 256 px, nP
+  128 x 91 px, transparency kept), made with Edge canvas at high smoothing
+  quality. The sidebar, the Overview hero and the two favicon links now use
+  them. The original PNGs stay in `public/images/`.
+- Why: the logos show at 16 to 80 px, but each page fetched about 1.5 MB of
+  3000 x 3000 and 2800 x 2000 px PNGs (both theme variants load, one is
+  hidden with CSS). Image bytes on the Overview, dark and light, measured
+  in the built site: 1,723,079 B before, 47,305 B after (4 logo files plus
+  the light flame fetched again as favicon; the 4 distinct files went from
+  1,567,391 B to 35,719 B). Screenshots at 1440 px look the same, still
+  sharp. The favicon hrefs were already fine: Vite rewrites `/images/...`
+  to `/AeroOptix-Horizon/images/...`.
+- Files:
+  - `public/images/AeroOptix_v2_dark_theme_256.png` (new, 11,624 B)
+  - `public/images/AeroOptix_v2_light_theme_256.png` (new, 11,586 B)
+  - `public/images/np_dark_theme_128.png` (new, 6,254 B)
+  - `public/images/np_light_theme_128.png` (new, 6,255 B)
+  - `src/components/brand-logo.tsx`: `BrandLogo` and `CoopLogo` use the
+    small files.
+  - `index.html`: the two icon links use the small flame files.
+  - `log.md`: this entry.

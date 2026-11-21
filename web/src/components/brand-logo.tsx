@@ -34,8 +34,8 @@ function ThemedImage({
 export function BrandLogo({ className }: { className?: string }) {
   return (
     <ThemedImage
-      light='AeroOptix_v2_light_theme.png'
-      dark='AeroOptix_v2_dark_theme.png'
+      light='AeroOptix_v2_light_theme_256.png'
+      dark='AeroOptix_v2_dark_theme_256.png'
       alt='AeroOptix logo'
       className={className}
     />
@@ -46,8 +46,8 @@ export function BrandLogo({ className }: { className?: string }) {
 export function CoopLogo({ className }: { className?: string }) {
   return (
     <ThemedImage
-      light='np_light_theme.png'
-      dark='np_dark_theme.png'
+      light='np_light_theme_128.png'
+      dark='np_dark_theme_128.png'
       alt='nP'
       className={className}
     />
