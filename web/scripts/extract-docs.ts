@@ -451,7 +451,13 @@ const meta = {
   specRevisions,
   build: { commit: commit(), date: new Date().toISOString().slice(0, 10) },
   boardModel: boardModel(),
-  sources: { spec: SPEC, pins: PINS, readme: README, checklist: CHECKLIST },
+  sources: {
+    spec: SPEC,
+    pins: PINS,
+    readme: README,
+    checklist: CHECKLIST,
+    power: POWER,
+  },
   generatedFrom: 'saved Markdown records in the repository',
 }
 

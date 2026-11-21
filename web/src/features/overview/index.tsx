@@ -10,17 +10,22 @@ import {
 } from '@/data'
 import {
   ArrowRight,
+  BatteryCharging,
   CircleAlert,
   Cpu,
   FileClock,
   Gauge,
+  History,
+  Info,
   ListChecks,
   Microchip,
   Network,
   ScrollText,
+  Waypoints,
   Workflow,
   Zap,
 } from 'lucide-react'
+import { REQ_KINDS } from '@/lib/spec-ids'
 import { cn } from '@/lib/utils'
 import {
   Card,
@@ -40,6 +45,11 @@ const openList = Object.values(ids).filter(
   (s) => s.kind === 'OPEN' && !s.closed
 )
 const sensors = blocksAt('board').filter((b) => b.kind === 'sensor')
+const taskList = Object.values(progress.tasks)
+const tasksDone = taskList.filter((t) => t.status === 'DONE').length
+const liveReqs = Object.values(ids).filter(
+  (s) => REQ_KINDS.includes(s.kind) && !s.removed
+).length
 
 const stats = [
   {
@@ -69,8 +79,9 @@ const stats = [
     hint: 'OPEN-xxx rows in the spec',
     icon: CircleAlert,
     color: 'var(--status-open)',
+    to: '/open',
   },
-]
+] as const
 
 const explore = [
   {
@@ -122,6 +133,54 @@ const explore = [
     icon: ScrollText,
     color: 'var(--status-decided)',
   },
+  {
+    title: 'Open items',
+    text: `The ${openList.length} open OPEN rows, with owner and next action. Closed ones on request.`,
+    to: '/open',
+    search: {},
+    icon: CircleAlert,
+    color: 'var(--status-open)',
+  },
+  {
+    title: 'Checklist',
+    text: `${tasksDone} of ${taskList.length} tasks done. Every task by gate, owner and status.`,
+    to: '/checklist',
+    search: {},
+    icon: ListChecks,
+    color: 'var(--bus-i2c)',
+  },
+  {
+    title: 'Spec history',
+    text: `All ${meta.specRevisions.length} change notes of the spec, newest first.`,
+    to: '/history',
+    search: {},
+    icon: History,
+    color: 'var(--bus-sdmmc)',
+  },
+  {
+    title: 'Traceability',
+    text: `${liveReqs} requirements against the tasks, decisions and diagram items that cite them.`,
+    to: '/trace',
+    search: {},
+    icon: Waypoints,
+    color: 'var(--bus-usb)',
+  },
+  {
+    title: 'Power budget',
+    text: 'Load per rail against its limit, from the power budget record.',
+    to: '/power',
+    search: {},
+    icon: BatteryCharging,
+    color: 'var(--rail-6v)',
+  },
+  {
+    title: 'About this site',
+    text: 'Phases, evidence labels, spec ID kinds and the record behind each page.',
+    to: '/about',
+    search: {},
+    icon: Info,
+    color: 'var(--brand)',
+  },
 ] as const
 
 const ext = { target: '_blank', rel: 'noreferrer' } as const
@@ -162,28 +221,35 @@ export function Overview() {
         {/* Stats */}
         <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
           {stats.map((s) => (
-            <Card key={s.title} className='gap-2'>
-              <CardHeader className='flex flex-row items-center justify-between pb-0'>
-                <CardTitle className='text-sm font-medium text-muted-foreground'>
-                  {s.title}
-                </CardTitle>
-                <span
-                  className='flex size-8 items-center justify-center rounded-lg'
-                  style={{
-                    color: s.color,
-                    background: `color-mix(in oklab, ${s.color} 15%, transparent)`,
-                  }}
-                >
-                  <s.icon className='size-4' />
-                </span>
-              </CardHeader>
-              <CardContent>
-                <div className='text-lg font-bold tracking-tight'>
-                  {s.value}
-                </div>
-                <p className='text-xs text-muted-foreground'>{s.hint}</p>
-              </CardContent>
-            </Card>
+            <StatLink key={s.title} to={'to' in s ? s.to : undefined}>
+              <Card
+                className={cn(
+                  'h-full gap-2',
+                  'to' in s && 'transition-colors group-hover:border-primary/60'
+                )}
+              >
+                <CardHeader className='flex flex-row items-center justify-between pb-0'>
+                  <CardTitle className='text-sm font-medium text-muted-foreground'>
+                    {s.title}
+                  </CardTitle>
+                  <span
+                    className='flex size-8 items-center justify-center rounded-lg'
+                    style={{
+                      color: s.color,
+                      background: `color-mix(in oklab, ${s.color} 15%, transparent)`,
+                    }}
+                  >
+                    <s.icon className='size-4' />
+                  </span>
+                </CardHeader>
+                <CardContent>
+                  <div className='text-lg font-bold tracking-tight'>
+                    {s.value}
+                  </div>
+                  <p className='text-xs text-muted-foreground'>{s.hint}</p>
+                </CardContent>
+              </Card>
+            </StatLink>
           ))}
         </div>
 
@@ -452,6 +518,22 @@ function BuildStamp() {
       )}{' '}
       on {meta.build.date}.
     </>
+  )
+}
+
+/** A stat tile with a page of its own links to it. */
+function StatLink({
+  to,
+  children,
+}: {
+  to?: '/open'
+  children: React.ReactNode
+}) {
+  if (!to) return <div>{children}</div>
+  return (
+    <Link to={to} className='group'>
+      {children}
+    </Link>
   )
 }
 

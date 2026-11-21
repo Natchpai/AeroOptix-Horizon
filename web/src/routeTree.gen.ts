@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SiteRouteRouteImport } from './routes/_site/route'
 import { Route as errors404RouteImport } from './routes/(errors)/404'
 import { Route as SiteIndexRouteImport } from './routes/_site/index'
+import { Route as SiteAboutRouteImport } from './routes/_site/about'
 import { Route as SiteChecklistRouteImport } from './routes/_site/checklist'
 import { Route as SiteDecisionsRouteImport } from './routes/_site/decisions'
 import { Route as SiteDiagramRouteImport } from './routes/_site/diagram'
@@ -34,6 +35,11 @@ const errors404Route = errors404RouteImport.update({
 const SiteIndexRoute = SiteIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
+const SiteAboutRoute = SiteAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => SiteRouteRoute,
 } as any)
 const SiteChecklistRoute = SiteChecklistRouteImport.update({
@@ -85,6 +91,7 @@ const SiteTraceRoute = SiteTraceRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof SiteIndexRoute
   '/404': typeof errors404Route
+  '/about': typeof SiteAboutRoute
   '/checklist': typeof SiteChecklistRoute
   '/decisions': typeof SiteDecisionsRoute
   '/diagram': typeof SiteDiagramRoute
@@ -97,6 +104,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/404': typeof errors404Route
+  '/about': typeof SiteAboutRoute
   '/checklist': typeof SiteChecklistRoute
   '/decisions': typeof SiteDecisionsRoute
   '/diagram': typeof SiteDiagramRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_site': typeof SiteRouteRouteWithChildren
   '/(errors)/404': typeof errors404Route
+  '/_site/about': typeof SiteAboutRoute
   '/_site/checklist': typeof SiteChecklistRoute
   '/_site/decisions': typeof SiteDecisionsRoute
   '/_site/diagram': typeof SiteDiagramRoute
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/404'
+    | '/about'
     | '/checklist'
     | '/decisions'
     | '/diagram'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/404'
+    | '/about'
     | '/checklist'
     | '/decisions'
     | '/diagram'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_site'
     | '/(errors)/404'
+    | '/_site/about'
     | '/_site/checklist'
     | '/_site/decisions'
     | '/_site/diagram'
@@ -192,6 +204,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof SiteIndexRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
+    '/_site/about': {
+      id: '/_site/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof SiteAboutRouteImport
       parentRoute: typeof SiteRouteRoute
     }
     '/_site/checklist': {
@@ -261,6 +280,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface SiteRouteRouteChildren {
+  SiteAboutRoute: typeof SiteAboutRoute
   SiteChecklistRoute: typeof SiteChecklistRoute
   SiteDecisionsRoute: typeof SiteDecisionsRoute
   SiteDiagramRoute: typeof SiteDiagramRoute
@@ -274,6 +294,7 @@ interface SiteRouteRouteChildren {
 }
 
 const SiteRouteRouteChildren: SiteRouteRouteChildren = {
+  SiteAboutRoute: SiteAboutRoute,
   SiteChecklistRoute: SiteChecklistRoute,
   SiteDecisionsRoute: SiteDecisionsRoute,
   SiteDiagramRoute: SiteDiagramRoute,
