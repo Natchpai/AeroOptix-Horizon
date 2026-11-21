@@ -1,10 +1,9 @@
-import { Fragment, useEffect, useMemo, useState } from 'react'
-import { getRouteApi, Link as RouterLink } from '@tanstack/react-router'
+import { useMemo, useState } from 'react'
+import { getRouteApi } from '@tanstack/react-router'
 import {
   type ColumnDef,
   type FilterFn,
   type SortingState,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
@@ -12,6 +11,7 @@ import {
 } from '@tanstack/react-table'
 import { type Task, meta, progress, sourceUrl } from '@/data'
 import { ChevronDown, ChevronRight } from 'lucide-react'
+import { detailLabel, useScrollToRow } from '@/lib/record-rows'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -22,18 +22,11 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { Main } from '@/components/layout/main'
 import { SiteHeader } from '@/components/layout/site-header'
 import { MdText } from '@/components/md-text'
+import { RecordTable, SiteRowList } from '@/components/record-table'
 import { SpecText } from '@/components/spec-text'
 import {
   GateBar,
@@ -62,8 +55,7 @@ const rowText: FilterFn<Task> = (row, _col, value: string) => {
   )
 }
 
-const label =
-  'text-xs font-semibold tracking-wide text-muted-foreground uppercase'
+const label = detailLabel
 
 export function ChecklistPage() {
   const search = route.useSearch()
@@ -171,18 +163,7 @@ export function ChecklistPage() {
     getFilteredRowModel: getFilteredRowModel(),
   })
 
-  // A link such as ?id=P3-007 scrolls its row into view once.
-  useEffect(() => {
-    if (!search.id) return
-    const t = setTimeout(
-      () =>
-        document
-          .getElementById(`row-${search.id}`)
-          ?.scrollIntoView({ block: 'start' }),
-      50
-    )
-    return () => clearTimeout(t)
-  }, [search.id])
+  useScrollToRow(search.id)
 
   const rows = table.getRowModel().rows
   const chip = (on: boolean) =>
@@ -346,85 +327,17 @@ export function ChecklistPage() {
             </div>
           </CardHeader>
           <CardContent className='px-0'>
-            <div className='overflow-x-auto'>
-              <Table className='sm:table-fixed'>
-                <TableHeader>
-                  {table.getHeaderGroups().map((hg) => (
-                    <TableRow key={hg.id}>
-                      {hg.headers.map((h) => (
-                        <TableHead
-                          key={h.id}
-                          className={cn(
-                            'first:ps-6',
-                            h.column.columnDef.meta?.className,
-                            h.column.columnDef.meta?.thClassName
-                          )}
-                        >
-                          {flexRender(
-                            h.column.columnDef.header,
-                            h.getContext()
-                          )}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {rows.map((r) => {
-                    const open = r.original.id === search.id
-                    return (
-                      <Fragment key={r.id}>
-                        <TableRow
-                          id={`row-${r.original.id}`}
-                          onClick={() => toggle(r.original.id)}
-                          data-state={open ? 'selected' : undefined}
-                          className={cn(
-                            'cursor-pointer scroll-mt-20 align-top data-[state=selected]:bg-primary/10',
-                            r.original.status === 'N/A' &&
-                              'text-muted-foreground'
-                          )}
-                        >
-                          {r.getVisibleCells().map((c) => (
-                            <TableCell
-                              key={c.id}
-                              className={cn(
-                                'py-2 whitespace-normal first:ps-6',
-                                c.column.columnDef.meta?.className
-                              )}
-                            >
-                              {flexRender(
-                                c.column.columnDef.cell,
-                                c.getContext()
-                              )}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                        {open && (
-                          <TableRow className='bg-primary/5 hover:bg-primary/5'>
-                            <TableCell
-                              colSpan={columns.length}
-                              className='px-6 py-3 whitespace-normal'
-                            >
-                              <TaskDetail task={r.original} />
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </Fragment>
-                    )
-                  })}
-                  {!rows.length && (
-                    <TableRow>
-                      <TableCell
-                        colSpan={columns.length}
-                        className='px-6 py-6 text-center text-sm text-muted-foreground'
-                      >
-                        No tasks match.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+            <RecordTable
+              table={table}
+              openId={search.id}
+              getId={(t) => t.id}
+              onToggle={toggle}
+              detail={(t) => <TaskDetail task={t} />}
+              rowClassName={(t) =>
+                t.status === 'N/A' && 'text-muted-foreground'
+              }
+              empty='No tasks match.'
+            />
           </CardContent>
         </Card>
       </Main>
@@ -465,31 +378,11 @@ function TaskDetail({ task }: { task: Task }) {
       </div>
       <div className='min-w-0 space-y-2'>
         <div className={label}>Open items</div>
-        {open.length ? (
-          <ul className='space-y-1'>
-            {open.map((o) => (
-              <li key={o.id} className='flex items-baseline gap-1.5'>
-                <RouterLink
-                  to='/open'
-                  search={{ id: o.id }}
-                  className={cn(
-                    'w-20 shrink-0 font-mono text-xs text-primary hover:underline',
-                    o.closed && 'line-through opacity-60'
-                  )}
-                >
-                  {o.id}
-                </RouterLink>
-                <span className='min-w-0 truncate text-xs text-muted-foreground'>
-                  <MdText text={o.fields['Description'] ?? ''} />
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className='text-xs text-muted-foreground'>
-            No open item names this task.
-          </p>
-        )}
+        <SiteRowList
+          rows={open}
+          text={(o) => o.fields['Description'] ?? ''}
+          none='No open item names this task.'
+        />
       </div>
     </div>
   )

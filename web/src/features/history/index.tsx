@@ -1,8 +1,9 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
 import { type SpecChange, meta, sourceUrl } from '@/data'
 import historyJson from '@/data/generated/history.json'
 import { ChevronDown, ChevronRight } from 'lucide-react'
+import { useScrollToRow } from '@/lib/record-rows'
 import { cn } from '@/lib/utils'
 import {
   Card,
@@ -53,18 +54,7 @@ export function HistoryPage() {
     )
   }, [filter, search.rev])
 
-  // A link such as ?rev=0.86 scrolls its row into view once.
-  useEffect(() => {
-    if (!search.rev) return
-    const t = setTimeout(
-      () =>
-        document
-          .getElementById(`rev-${search.rev}`)
-          ?.scrollIntoView({ block: 'start' }),
-      50
-    )
-    return () => clearTimeout(t)
-  }, [search.rev])
+  useScrollToRow(search.rev, 'rev-')
 
   return (
     <>

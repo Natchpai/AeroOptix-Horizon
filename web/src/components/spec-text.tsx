@@ -15,7 +15,7 @@ const LABEL_COLOR: Record<string, string> = {
 }
 
 /** An evidence label as a small coloured badge; the word is always shown. */
-export function EvidenceLabel({ label }: { label: string }) {
+function EvidenceLabel({ label }: { label: string }) {
   const color = LABEL_COLOR[label] ?? 'var(--muted-foreground)'
   return (
     <span

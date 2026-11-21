@@ -1,10 +1,9 @@
-import { Fragment, useEffect, useMemo, useState } from 'react'
-import { getRouteApi, Link as RouterLink } from '@tanstack/react-router'
+import { useMemo, useState } from 'react'
+import { getRouteApi } from '@tanstack/react-router'
 import {
   type ColumnDef,
   type FilterFn,
   type SortingState,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
@@ -22,7 +21,7 @@ import {
   sourceUrl,
 } from '@/data'
 import { ChevronDown, ChevronRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { detailLabel, useScrollToRow } from '@/lib/record-rows'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -32,20 +31,17 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { IdChip } from '@/components/id-chip'
 import { Main } from '@/components/layout/main'
 import { SiteHeader } from '@/components/layout/site-header'
 import { MdText } from '@/components/md-text'
-import { TaskChip } from '@/components/task-status'
+import {
+  DiagramItemList,
+  RecordTable,
+  SiteRowList,
+  TaskRowList,
+} from '@/components/record-table'
 import { tasksNaming } from './cites'
 
 const route = getRouteApi('/_site/open')
@@ -72,8 +68,6 @@ for (const s of others)
   for (const id of new Set(s.text.match(/\bOPEN-\d{3}\b/g) ?? []))
     citedBy.set(id, [...(citedBy.get(id) ?? []), s])
 
-const levelName = { system: 'Overview', board: 'System', power: 'Power' }
-
 /** The filter searches the whole row (description, impact, owner). */
 const rowText: FilterFn<SpecId> = (row, _col, value: string) => {
   const q = value.trim().toLowerCase()
@@ -83,9 +77,6 @@ const rowText: FilterFn<SpecId> = (row, _col, value: string) => {
     `${s.id} ${Object.values(s.fields).join(' ')}`.toLowerCase().includes(q)
   )
 }
-
-const label =
-  'text-xs font-semibold tracking-wide text-muted-foreground uppercase'
 
 export function OpenItemsPage() {
   const search = route.useSearch()
@@ -126,10 +117,8 @@ export function OpenItemsPage() {
             ) : (
               <ChevronRight className='size-3.5 text-muted-foreground' />
             )}
-            {/* the chip opens GitHub; it should not also toggle the row */}
-            <span onClick={(e) => e.stopPropagation()}>
-              <IdChip id={row.original.id} />
-            </span>
+            {/* its own page: the row click opens it, so no link */}
+            <IdChip id={row.original.id} plain />
           </span>
         ),
       },
@@ -188,18 +177,7 @@ export function OpenItemsPage() {
     getFilteredRowModel: getFilteredRowModel(),
   })
 
-  // A link such as ?id=OPEN-023 scrolls its row into view once.
-  useEffect(() => {
-    if (!search.id) return
-    const t = setTimeout(
-      () =>
-        document
-          .getElementById(`row-${search.id}`)
-          ?.scrollIntoView({ block: 'start' }),
-      50
-    )
-    return () => clearTimeout(t)
-  }, [search.id])
+  useScrollToRow(search.id)
 
   const rows = table.getRowModel().rows
 
@@ -252,85 +230,20 @@ export function OpenItemsPage() {
             </div>
           </CardHeader>
           <CardContent className='px-0'>
-            <div className='overflow-x-auto'>
-              <Table className='sm:table-fixed'>
-                <TableHeader>
-                  {table.getHeaderGroups().map((hg) => (
-                    <TableRow key={hg.id}>
-                      {hg.headers.map((h) => (
-                        <TableHead
-                          key={h.id}
-                          className={cn(
-                            'first:ps-6',
-                            h.column.columnDef.meta?.className,
-                            h.column.columnDef.meta?.thClassName
-                          )}
-                        >
-                          {flexRender(
-                            h.column.columnDef.header,
-                            h.getContext()
-                          )}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {rows.map((r) => {
-                    const open = r.original.id === search.id
-                    return (
-                      <Fragment key={r.id}>
-                        <TableRow
-                          id={`row-${r.original.id}`}
-                          onClick={() => toggle(r.original.id)}
-                          data-state={open ? 'selected' : undefined}
-                          className={cn(
-                            'cursor-pointer scroll-mt-20 align-top data-[state=selected]:bg-primary/10',
-                            r.original.closed && 'text-muted-foreground'
-                          )}
-                        >
-                          {r.getVisibleCells().map((c) => (
-                            <TableCell
-                              key={c.id}
-                              className={cn(
-                                'py-2 whitespace-normal first:ps-6',
-                                c.column.columnDef.meta?.className
-                              )}
-                            >
-                              {flexRender(
-                                c.column.columnDef.cell,
-                                c.getContext()
-                              )}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                        {open && (
-                          <TableRow className='bg-primary/5 hover:bg-primary/5'>
-                            <TableCell
-                              colSpan={columns.length}
-                              className='px-6 py-3 whitespace-normal'
-                            >
-                              <OpenDetail row={r.original} />
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </Fragment>
-                    )
-                  })}
-                  {!rows.length && (
-                    <TableRow>
-                      <TableCell
-                        colSpan={columns.length}
-                        className='px-6 py-6 text-center text-sm text-muted-foreground'
-                      >
-                        No items match.
-                        {!search.closed && ' Closed items are hidden.'}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+            <RecordTable
+              table={table}
+              openId={search.id}
+              getId={(s) => s.id}
+              onToggle={toggle}
+              detail={(s) => <OpenDetail row={s} />}
+              rowClassName={(s) => s.closed && 'text-muted-foreground'}
+              empty={
+                <>
+                  No items match.
+                  {!search.closed && ' Closed items are hidden.'}
+                </>
+              }
+            />
           </CardContent>
         </Card>
       </Main>
@@ -339,23 +252,20 @@ export function OpenItemsPage() {
 }
 
 function OpenDetail({ row }: { row: SpecId }) {
-  const used = usedOn.get(row.id) ?? []
   const cited = citedBy.get(row.id) ?? []
-  const decs = cited.filter((s) => s.kind === 'DEC')
   const rest = cited.filter((s) => s.kind !== 'DEC')
-  const tasks = tasksNaming(row)
   return (
     <div className='grid gap-4 text-sm lg:grid-cols-[minmax(0,1fr)_18rem]'>
       <div className='min-w-0 space-y-2'>
-        <div className={label}>Description</div>
+        <div className={detailLabel}>Description</div>
         <p className='leading-relaxed [overflow-wrap:anywhere]'>
           <MdText text={row.fields['Description'] || '-'} />
         </p>
-        <div className={label}>Owner / next action</div>
+        <div className={detailLabel}>Owner / next action</div>
         <p className='leading-relaxed [overflow-wrap:anywhere]'>
           <MdText text={row.fields['Owner / next action'] || '-'} />
         </p>
-        <div className={label}>Impact</div>
+        <div className={detailLabel}>Impact</div>
         <p className='leading-relaxed [overflow-wrap:anywhere]'>
           <MdText text={row.fields['Impact'] || '-'} />
         </p>
@@ -370,82 +280,23 @@ function OpenDetail({ row }: { row: SpecId }) {
       </div>
       <div className='min-w-0 space-y-4'>
         <div className='space-y-2'>
-          <div className={label}>Checklist tasks</div>
-          {tasks.length ? (
-            <ul className='space-y-1'>
-              {tasks.map((t) => (
-                <li key={t.id} className='flex items-baseline gap-1.5'>
-                  <span className='w-16 shrink-0'>
-                    <TaskChip id={t.id} />
-                  </span>
-                  <span className='min-w-0 truncate text-xs text-muted-foreground'>
-                    <MdText text={t.task} />
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className='text-xs text-muted-foreground'>None.</p>
-          )}
+          <div className={detailLabel}>Checklist tasks</div>
+          <TaskRowList tasks={tasksNaming(row)} />
         </div>
         <div className='space-y-2'>
-          <div className={label}>On the diagram</div>
-          {used.length ? (
-            <ul className='space-y-1'>
-              {used.map((item) => {
-                const isLink = 'from' in item
-                return (
-                  <li key={item.id} className='flex items-baseline gap-1.5'>
-                    <span className='w-16 shrink-0 text-xs text-muted-foreground'>
-                      {levelName[item.level]}
-                    </span>
-                    <RouterLink
-                      to='/diagram'
-                      search={
-                        isLink
-                          ? { level: item.level, link: item.id }
-                          : { level: item.level, block: item.id }
-                      }
-                      className='min-w-0 [overflow-wrap:anywhere] text-primary hover:underline'
-                    >
-                      {isLink ? `${item.label} (link)` : item.label}
-                    </RouterLink>
-                  </li>
-                )
-              })}
-            </ul>
-          ) : (
-            <p className='text-xs text-muted-foreground'>
-              Not drawn on any diagram view.
-            </p>
-          )}
+          <div className={detailLabel}>On the diagram</div>
+          <DiagramItemList items={usedOn.get(row.id) ?? []} />
         </div>
         <div className='space-y-2'>
-          <div className={label}>Decisions that name it</div>
-          {decs.length ? (
-            <ul className='space-y-1'>
-              {decs.map((d) => (
-                <li key={d.id} className='flex items-baseline gap-1.5'>
-                  <RouterLink
-                    to='/decisions'
-                    search={{ id: d.id }}
-                    className='w-16 shrink-0 font-mono text-xs text-primary hover:underline'
-                  >
-                    {d.id}
-                  </RouterLink>
-                  <span className='min-w-0 truncate text-xs text-muted-foreground'>
-                    {idTitle(d.id)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className='text-xs text-muted-foreground'>None.</p>
-          )}
+          <div className={detailLabel}>Decisions that name it</div>
+          <SiteRowList
+            rows={cited.filter((s) => s.kind === 'DEC')}
+            text={(d) => idTitle(d.id)}
+          />
         </div>
         {rest.length > 0 && (
           <div className='space-y-2'>
-            <div className={label}>Other spec rows</div>
+            <div className={detailLabel}>Other spec rows</div>
             <div className='flex flex-wrap gap-1'>
               {rest.map((s) => (
                 <IdChip key={s.id} id={s.id} />

@@ -131,6 +131,8 @@ export type Meta = {
   openSection: string
   /** Last 5 spec change notes (section 9), newest first */
   specChanges: SpecChange[]
+  /** Revision and date of every change note, newest first (for search) */
+  specRevisions: { revision: string; date: string }[]
   /** Commit and date the site was built from */
   build: { commit: string; date: string }
   /** Board GLB for the Showcase (web/public), or null when not exported */

@@ -193,6 +193,8 @@ const specHistory = changeTable.rows
   .reverse()
 if (!specHistory.length) throw new Error('spec: section 9 change notes table is empty')
 const specChanges = specHistory.slice(0, 5)
+// revision and date of every note, for Ctrl+K (the full text stays in history.json)
+const specRevisions = specHistory.map((c) => ({ revision: c.revision, date: c.date }))
 
 // heading number of the OPEN rows, e.g. "8.2 Open questions ..." -> "8.2"
 const openSection =
@@ -446,6 +448,7 @@ const meta = {
   ioMcu: readmeSpec('IO MCU'),
   openSection,
   specChanges,
+  specRevisions,
   build: { commit: commit(), date: new Date().toISOString().slice(0, 10) },
   boardModel: boardModel(),
   sources: { spec: SPEC, pins: PINS, readme: README, checklist: CHECKLIST },

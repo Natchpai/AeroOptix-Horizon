@@ -1,5 +1,22 @@
 import { ids } from '@/data'
 
+/** Spec ID kinds that are requirements (the rows of the Traceability page). */
+export const REQ_KINDS = [
+  'SYS',
+  'MCU',
+  'IF',
+  'SEN',
+  'PWR',
+  'SAF',
+  'FUN',
+  'ENV',
+  'CMP',
+  'MEC',
+  'PCB',
+  'MFG',
+  'TST',
+]
+
 const pad = (n: number, width: number) => String(n).padStart(width, '0')
 
 /**

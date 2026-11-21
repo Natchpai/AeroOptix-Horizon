@@ -8,24 +8,7 @@ import {
   links,
   progress,
 } from '@/data'
-import { idsIn } from '@/lib/spec-ids'
-
-/** Spec ID kinds that are requirements (the rows of the trace table). */
-export const REQ_KINDS = [
-  'SYS',
-  'MCU',
-  'IF',
-  'SEN',
-  'PWR',
-  'SAF',
-  'FUN',
-  'ENV',
-  'CMP',
-  'MEC',
-  'PCB',
-  'MFG',
-  'TST',
-]
+import { REQ_KINDS, idsIn } from '@/lib/spec-ids'
 
 export type TraceRow = {
   req: SpecId
