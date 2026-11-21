@@ -25,7 +25,7 @@ npm run drift    # report only: site text that may have drifted from the spec
 | Data | Source | How |
 |---|---|---|
 | Spec IDs (IF, DEC, OPEN, SEN, PWR ...) | `AO-HORIZON_SPEC_EN.md` | `scripts/extract-docs.ts`, every table row whose first cell is an ID |
-| MCU pins | `AO-HORIZON_PIN_ALLOCATION_EN.md` | same script, the H743, F100 and F100-reserved tables |
+| MCU pins | `AO-HORIZON_PIN_ALLOCATION_EN.md` | same script, the H743, F100 and F100-reserved tables; a row with Signal `-` (a pin whose function was removed, such as PC0 and PC1 by DEC-107) is skipped, so the pin shows as free |
 | Spec change notes (last 5) | `AO-HORIZON_SPEC_EN.md` section 9 | same script |
 | Phase, board and spec revision, key features, MCU part numbers | root `README.md` | same script, `Specifications` table for the MCUs |
 | Gate progress and current next action | `AO-HORIZON_EXECUTION_CHECKLIST_EN.md` | same script, `Gate summary` table, every `P<n>-<nnn>` task row, `Current next action` paragraph |

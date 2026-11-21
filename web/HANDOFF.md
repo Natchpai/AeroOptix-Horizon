@@ -2,7 +2,7 @@
 
 **Updated:** 2026-11-21
 
-**Status:** live on GitHub Pages. The engineer approved the Pinout page and reviewed the Block diagram. Text is synced to spec rev 0.83.
+**Status:** live on GitHub Pages. The engineer approved the Pinout page and reviewed the Block diagram. Text is synced to spec rev 0.86 (DEC-106 actuator headers, DEC-107 no H743 battery ADC) and pin allocation rev 0.31.
 
 Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in `README.md`. Earlier history is in Git (`git log -- web`).
 
