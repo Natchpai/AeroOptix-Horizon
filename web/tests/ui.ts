@@ -274,6 +274,31 @@ async function taskChipOpensRow(browser: Browser) {
   await v.close()
 }
 
+/** In an opened table row every cell is top-aligned, so the ID stays at the top. */
+async function openRowTopAligned(browser: Browser) {
+  for (const route of [
+    'decisions?id=DEC-050',
+    'open?id=OPEN-023',
+    'checklist?id=P3-007',
+    'history?rev=0.86',
+    'trace?id=IF-010',
+  ]) {
+    const where = `/${route} cell alignment`
+    const v = await open(browser, route)
+    const bad = await v.page.evaluate(() => {
+      const row = document.querySelector('tr[data-state=selected]')
+      if (!row) return ['no selected row']
+      return [...row.querySelectorAll('td')]
+        .map((td, i) => [i, getComputedStyle(td).verticalAlign] as const)
+        .filter(([, a]) => a !== 'top')
+        .map(([i, a]) => `cell ${i} is ${a}`)
+    })
+    for (const b of bad) fail(where, b)
+    for (const e of v.errors) fail(where, `page error: ${e}`)
+    await v.close()
+  }
+}
+
 /** The Power budget page draws one bar per Rail summary row, in both themes. */
 async function powerBars(browser: Browser) {
   const summary = JSON.parse(
@@ -404,6 +429,7 @@ async function main() {
     await taskChipOpensRow(browser)
     await revChipOpensRow(browser)
     await powerBars(browser)
+    await openRowTopAligned(browser)
 
     // diagram drawing, with nothing and with a block selected
     for (const route of [

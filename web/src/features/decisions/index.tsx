@@ -266,7 +266,7 @@ export function DecisionsPage() {
                             <TableCell
                               key={c.id}
                               className={cn(
-                                'py-2 whitespace-normal first:ps-6',
+                                'py-2 align-top whitespace-normal first:ps-6',
                                 c.column.columnDef.meta?.className
                               )}
                             >
