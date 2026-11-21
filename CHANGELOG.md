@@ -259,6 +259,8 @@ Notable changes to this hardware project are documented here.
 - Specification rev 0.86 and checklist rev 0.74 (2026-11-21): DEC-106, DEC-107, DEC-023, DEC-066, IF-048, spec 4.7 (P2-010), OPEN-031, P2-009, P2-010, P2-016, P2-018, P2-023 (done), P3-002, P3-003, P3-007, P3-010, P4-002, REF-04; power budget rev 0.36 (rail tolerance, thermal margin); pin allocation rev 0.31 (PC0, PC1 unused); schematic review record rev 0.3, signed by the human owner; P2 gate closed by the human owner; see the change-note.
 - Schematic (not committed, 2026-11-21 16:08 save): `sensor-navigation` strap resistors R503 to R511 removed, net ties NT501 and NT502 added (DEC-099). Netclass rule areas (ESC, SERVO, GPS1, PPM, DBG, ANALOG, I2C2, SPI) on six sheets, no rules set; drawn, not decided. Nets unchanged by the rule areas.
 - `AO-HORIZON_BARO_MAG_SELECTION_EN.md` rev 0.14: ICP-20100 address selection row (AD0 low gives 0x63, cited).
+- Schematic (2026-11-21 19:22 save, human owner): DNP Plan B diodes D105 and D106 MBR230LSFT1G on `power_supplies`, `PM02_5V` and `VBUS` to `+5V` (DEC-108); new project symbol `0_Diode:MBR230LSFT1G`.
+- Specification rev 0.87 and checklist rev 0.75 (2026-11-21): DEC-108, OPEN-041, P3-012, REF-04; power budget rev 0.37 (Plan B note); see the change-note.
 
 ### Fixed
 
