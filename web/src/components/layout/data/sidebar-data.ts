@@ -1,5 +1,6 @@
 import { REPO_URL, meta, sourceUrl } from '@/data'
 import {
+  BatteryCharging,
   BookOpen,
   Boxes,
   CircleAlert,
@@ -47,6 +48,7 @@ export const sidebarData: SidebarData = {
         { title: 'Checklist', url: '/checklist', icon: ListChecks },
         { title: 'Spec history', url: '/history', icon: History },
         { title: 'Traceability', url: '/trace', icon: Waypoints },
+        { title: 'Power budget', url: '/power', icon: BatteryCharging },
       ],
     },
     {

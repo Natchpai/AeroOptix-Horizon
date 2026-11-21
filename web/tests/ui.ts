@@ -6,7 +6,8 @@
  * a hash link changed in an open tab shows the new view, and Ctrl+K on a
  * decision or an open item (open or closed) opens its row on its page,
  * a next-action task chip opens its Checklist row, and an Overview
- * revision chip opens its Spec history row.
+ * revision chip opens its Spec history row, and the Power budget page
+ * draws one bar per Rail summary row.
  *
  * Run after `npm run build`: `npm run test:ui`. Local only (CI has no Edge).
  * Exits 1 and lists every failure.
@@ -273,6 +274,33 @@ async function taskChipOpensRow(browser: Browser) {
   await v.close()
 }
 
+/** The Power budget page draws one bar per Rail summary row, in both themes. */
+async function powerBars(browser: Browser) {
+  const summary = JSON.parse(
+    readFileSync(
+      new URL('../src/data/generated/power.json', import.meta.url),
+      'utf8'
+    )
+  ).summary as { rail: string }[]
+  for (const theme of ['dark', 'light'] as const) {
+    const where = `/power bars ${theme}`
+    const v = await open(browser, 'power', { theme })
+    const bars = await v.page.evaluate(() =>
+      [...document.querySelectorAll('[data-rail-bar]')].map((e) => ({
+        rail: (e as HTMLElement).dataset.railBar ?? '',
+        width: e.getBoundingClientRect().width,
+      }))
+    )
+    const want = summary.map((s) => s.rail).join(', ')
+    const got = bars.map((b) => b.rail).join(', ')
+    if (got !== want) fail(where, `bars are [${got}], not [${want}]`)
+    for (const b of bars)
+      if (b.width < 100) fail(where, `${b.rail} bar is ${b.width} px wide`)
+    for (const e of v.errors) fail(where, `page error: ${e}`)
+    await v.close()
+  }
+}
+
 /** A revision chip on the Overview opens its row on Spec history. */
 async function revChipOpensRow(browser: Browser) {
   const where = 'Overview revision chip'
@@ -349,6 +377,7 @@ async function main() {
         'trace',
         'trace?id=IF-010',
         'trace?flag=task',
+        'power',
         'showcase',
       ]) {
         const v = await open(browser, route, { theme })
@@ -374,6 +403,7 @@ async function main() {
     await searchOpensRow(browser, 'OPEN-001', '/open')
     await taskChipOpensRow(browser)
     await revChipOpensRow(browser)
+    await powerBars(browser)
 
     // diagram drawing, with nothing and with a block selected
     for (const route of [
@@ -433,6 +463,7 @@ async function main() {
         'history?rev=0.86',
         'trace',
         'trace?id=IF-010',
+        'power',
         'showcase',
       ]) {
         const v = await open(browser, route, { width: 390, theme })

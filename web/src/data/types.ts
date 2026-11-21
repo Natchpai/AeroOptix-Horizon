@@ -185,3 +185,39 @@ export type SpecChange = {
   approvedBy: string
   line: number
 }
+
+/** A table from a design record, cells as written there. */
+export type RecordTable = {
+  heading: string
+  headers: string[]
+  rows: { cells: string[]; line: number }[]
+}
+
+/** One row of the power budget "Rail summary" table; numbers in mA. */
+export type RailSummary = {
+  rail: string
+  /** null where the record says TBD */
+  typical: number | null
+  worst: number | null
+  limit: number
+  limitFrom: string
+  label: string
+  line: number
+}
+
+/** The power budget record, as `power.json` holds it. */
+export type Power = {
+  file: string
+  revision: string
+  updated: string
+  summary: RailSummary[]
+  /** Section 3, one table per rail */
+  loads: RecordTable[]
+  loadsLine: number
+  totals: RecordTable
+  totalsLine: number
+  tolerances: RecordTable
+  tolerancesLine: number
+  thermal: RecordTable
+  thermalLine: number
+}

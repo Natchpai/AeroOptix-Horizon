@@ -18,6 +18,7 @@ import { Route as SiteDiagramRouteImport } from './routes/_site/diagram'
 import { Route as SiteHistoryRouteImport } from './routes/_site/history'
 import { Route as SiteOpenRouteImport } from './routes/_site/open'
 import { Route as SitePinoutRouteImport } from './routes/_site/pinout'
+import { Route as SitePowerRouteImport } from './routes/_site/power'
 import { Route as SiteShowcaseRouteImport } from './routes/_site/showcase'
 import { Route as SiteTraceRouteImport } from './routes/_site/trace'
 
@@ -65,6 +66,11 @@ const SitePinoutRoute = SitePinoutRouteImport.update({
   path: '/pinout',
   getParentRoute: () => SiteRouteRoute,
 } as any)
+const SitePowerRoute = SitePowerRouteImport.update({
+  id: '/power',
+  path: '/power',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
 const SiteShowcaseRoute = SiteShowcaseRouteImport.update({
   id: '/showcase',
   path: '/showcase',
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/history': typeof SiteHistoryRoute
   '/open': typeof SiteOpenRoute
   '/pinout': typeof SitePinoutRoute
+  '/power': typeof SitePowerRoute
   '/showcase': typeof SiteShowcaseRoute
   '/trace': typeof SiteTraceRoute
 }
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/history': typeof SiteHistoryRoute
   '/open': typeof SiteOpenRoute
   '/pinout': typeof SitePinoutRoute
+  '/power': typeof SitePowerRoute
   '/showcase': typeof SiteShowcaseRoute
   '/trace': typeof SiteTraceRoute
   '/': typeof SiteIndexRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/_site/history': typeof SiteHistoryRoute
   '/_site/open': typeof SiteOpenRoute
   '/_site/pinout': typeof SitePinoutRoute
+  '/_site/power': typeof SitePowerRoute
   '/_site/showcase': typeof SiteShowcaseRoute
   '/_site/trace': typeof SiteTraceRoute
   '/_site/': typeof SiteIndexRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/history'
     | '/open'
     | '/pinout'
+    | '/power'
     | '/showcase'
     | '/trace'
   fileRoutesByTo: FileRoutesByTo
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/history'
     | '/open'
     | '/pinout'
+    | '/power'
     | '/showcase'
     | '/trace'
     | '/'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/_site/history'
     | '/_site/open'
     | '/_site/pinout'
+    | '/_site/power'
     | '/_site/showcase'
     | '/_site/trace'
     | '/_site/'
@@ -224,6 +236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitePinoutRouteImport
       parentRoute: typeof SiteRouteRoute
     }
+    '/_site/power': {
+      id: '/_site/power'
+      path: '/power'
+      fullPath: '/power'
+      preLoaderRoute: typeof SitePowerRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
     '/_site/showcase': {
       id: '/_site/showcase'
       path: '/showcase'
@@ -248,6 +267,7 @@ interface SiteRouteRouteChildren {
   SiteHistoryRoute: typeof SiteHistoryRoute
   SiteOpenRoute: typeof SiteOpenRoute
   SitePinoutRoute: typeof SitePinoutRoute
+  SitePowerRoute: typeof SitePowerRoute
   SiteShowcaseRoute: typeof SiteShowcaseRoute
   SiteTraceRoute: typeof SiteTraceRoute
   SiteIndexRoute: typeof SiteIndexRoute
@@ -260,6 +280,7 @@ const SiteRouteRouteChildren: SiteRouteRouteChildren = {
   SiteHistoryRoute: SiteHistoryRoute,
   SiteOpenRoute: SiteOpenRoute,
   SitePinoutRoute: SitePinoutRoute,
+  SitePowerRoute: SitePowerRoute,
   SiteShowcaseRoute: SiteShowcaseRoute,
   SiteTraceRoute: SiteTraceRoute,
   SiteIndexRoute: SiteIndexRoute,

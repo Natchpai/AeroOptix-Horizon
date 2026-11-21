@@ -2,7 +2,7 @@
 
 **Updated:** 2026-11-21
 
-**Status:** live on GitHub Pages. The engineer approved the Pinout page and the Open items, Checklist and Spec history page looks, and reviewed the Block diagram. Text is synced to spec rev 0.86 (DEC-106 actuator headers, DEC-107 no H743 battery ADC) and pin allocation rev 0.31.
+**Status:** live on GitHub Pages. The engineer approved the Pinout page and the Open items, Checklist, Spec history, Traceability and Power budget page looks, and reviewed the Block diagram. Text is synced to spec rev 0.86 (DEC-106 actuator headers, DEC-107 no H743 battery ADC) and pin allocation rev 0.31.
 
 Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in `README.md`. Earlier history is in Git (`git log -- web`).
 
@@ -15,7 +15,8 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - the spec: every ID row, the header, and every change note (`history.json`; the Overview shows the last 5);
   - the pin allocation: H743, F100 and F100-reserved tables;
   - the checklist: `Gate summary`, every task row (ID, Task, Req, Owner, Status, Evidence) and `Current next action`. A task table without one of those columns fails the build;
-  - the root `README.md`: phase, revisions, key features, MCUs.
+  - the root `README.md`: phase, revisions, key features, MCUs;
+  - the power budget (`power.json`): the section 4 `### Rail summary` table (numbers in mA; `TBD` stays empty, any other text fails the build), the section 3 load tables, and the section 4, 5 and 11 tables.
   - A missing heading or table fails the build, and the old site stays up.
 - **Hand-written:** blocks and links in `src/data/topology.ts`, and positions in `src/data/places.ts`.
 
@@ -58,6 +59,11 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - Flags (report only, never a build failure): **No task** (no task Req names it) and **No decision or diagram** (no live DEC row and no diagram item). Removed rows are never flagged. On 2026-11-21: 3 without a task (CMP-010 to CMP-012; CMP-010 is in the P1-014 task text but not its Req) and 29 without a decision or diagram item.
   - Filters: kind (`?kind=PWR`), flag (`?flag=task` or `?flag=link`; the summary cards also toggle it), text (`?q=`); `?id=IF-010` opens a row even when a filter hides it.
   - The opened row shows every field of the requirement, its spec line, and the decisions, open items, tasks and diagram items, each linking to its page.
+- **Power budget** (`/power`): from `AO-HORIZON_POWER_BUDGET_EN.md`, values as written with their evidence labels, never recomputed.
+  - **Rail load against limit:** one bullet bar per Rail summary row, each on its own scale (small multiples, no shared axis): typical solid, worst case lighter, limit a tick. Hover for values; a "Table view" repeats the numbers. A worst case above the limit shows an icon and text (6 V: 13,200 against 10,000 mA).
+  - The Rail summary table was added to the record by the engineer's approval (power budget rev 0.38, 2026-11-21). Limits: 3.3 V_IMU 500 mA (TPS73533), 3.3 V 600 mA (`+3V3` design current, DEC-040; the buck IC's 2 A is not the limit, engineer), 5 V 1000 mA (TPS2121 minimum limit), 6 V 10,000 mA (UBEC continuous).
+  - Bar colours are the rail colours. The dataviz validator fails them as a categorical palette (light: 6 V against 5 V; dark: 3.3 V against 3.3 V_IMU for protan), so the page never relies on colour: every bar has its rail name, and the numbers are written under it.
+  - Sections 3 (loads per rail), 4 (totals), 5 (tolerances) and 11 (thermal) as tables. Evidence labels show as coloured badges with the word (`SpecText labels`). A load links to its Power view block when the block's part number is in the load name or its refs share a spec ID with the row's Ref.
 - **Search:** Ctrl+K over pins, signals, blocks and spec IDs (not checklist tasks). A DEC result opens it on the Decisions page and an OPEN result on the Open items page; other IDs open their spec row on GitHub.
 - **SVG export:** on each diagram view and each package card. The export uses native SVG with hex colours, plus a footer with the spec revision, the phase, "not for fabrication" and the date.
 - **Showcase:** a 3D board viewer (`@google/model-viewer` 4.4.0 with `three` 0.183.x), loaded only on this page. It shows `web/public/models/ao-horizon.glb` with its board revision, export date (last commit of the file), KiCad version, size, a "not for fabrication" tag and a GLB download. Without the file the page says "No board model yet".
@@ -122,7 +128,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - no sideways scroll at 390 px in both themes;
   - a readable phone zoom;
   - same-tab hash links;
-  - the Decisions, Open items, Checklist, Spec history and Traceability pages (both themes, 390 px), Ctrl+K on DEC-050, OPEN-023 and the closed OPEN-001, a next-action task chip opening its Checklist row, and an Overview revision chip (and `0.10`) opening its Spec history row.
+  - the Decisions, Open items, Checklist, Spec history, Traceability and Power budget pages (both themes, 390 px), one Power budget bar per Rail summary row, Ctrl+K on DEC-050, OPEN-023 and the closed OPEN-001, a next-action task chip opening its Checklist row, and an Overview revision chip (and `0.10`) opening its Spec history row.
 
 ## Verified (2026-11-21)
 
@@ -130,7 +136,8 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 - Open items page screenshots at 1440 and 390 px, dark and light; the engineer approved the look.
 - Checklist page: `npm run build` and `npm run test:ui` pass; screenshots at 1440 and 390 px, dark and light; the engineer approved the look.
 - Spec history page: `npm run build` and `npm run test:ui` pass; screenshots at 1440 and 390 px, dark and light; the engineer approved the look.
-- Traceability page: `npm run build` and `npm run test:ui` pass; screenshots at 1440 and 390 px, dark and light. The look is not yet approved. The no-task list was cross-checked by hand against the checklist Req cells.
+- Traceability page: `npm run build` and `npm run test:ui` pass; screenshots at 1440 and 390 px, dark and light; the engineer approved the look. The no-task list was cross-checked by hand against the checklist Req cells.
+- Power budget page: `npm run build` and `npm run test:ui` pass; screenshots at 1440 and 390 px, dark and light; the engineer approved the look.
 - **Fault injection:**
   - Removing IF-001 from `b-link` makes `npm run check` fail on IF-001.
   - Setting the magnetometer tap to `0x0E` makes `npm run drift` list it.
@@ -145,7 +152,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 
 ## Next steps
 
-1. New pages: see "Next pages (plan, 2026-11-21)" below. Pages 1 (Open items), 2 (Checklist), 4 (Spec history) and 3 (Traceability) are built; the engineer reviews the Traceability look and its flag lists, then page 5 (Power budget) is next.
+1. New pages: see "Next pages (plan, 2026-11-21)" below. All five pages are built: Open items, Checklist, Spec history, Traceability and Power budget. The Traceability flag lists may still need the engineer's review. Then: "Later, when the data exists".
 2. Engineer reviews the `npm run drift` list (24 findings) and decides which site texts to fix.
 3. Re-export the board GLB once the parts are placed on the board.
 4. Keep `topology.ts` in step with the spec. `npm run check` flags a new IF row that is on no link.
@@ -153,7 +160,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 
 ## Next pages (plan, 2026-11-21)
 
-The engineer asked for these pages. Pages 1 to 4 are built (2026-11-21); page 5 is not built yet.
+The engineer asked for these pages. All five pages are built (2026-11-21).
 
 **Pattern for each page** (copy the Decisions page, `src/features/decisions/index.tsx`):
 - route `src/routes/_site/<page>.tsx` with `validateSearch` (`q`, `id`);
@@ -196,7 +203,7 @@ Order: 1 and 2 first (cheap, most asked), then 4, 3, 5.
 4. **Spec history** (`/history`), **built 2026-11-21** (see "What the site does").
    - The full section 9 change-note table (revision, date, description, approved by), newest first, with search. Spec IDs in the text become `IdChip`s.
    - **Extractor:** `specChanges` keeps only the last 5 (`extract-docs.ts`, `.slice(-5)`). Add `specHistory` with every row, and keep `specChanges` for the Overview.
-5. **Power budget** (`/power`)
+5. **Power budget** (`/power`), **built 2026-11-21** (see "What the site does").
    - From `AO-HORIZON_POWER_BUDGET_EN.md`:
      - section 3 load tables per rail (3.3 V_IMU, 3.3 V, 5 V, 6 V servo);
      - section 4 totals;
@@ -210,6 +217,33 @@ Order: 1 and 2 first (cheap, most asked), then 4, 3, 5.
 Later, when the data exists:
 - **Connector pinout pages**, after OPEN-023 gives the far-end pins. This also fills the Interface view `TBD`s.
 - **BOM page**, from a BOM file the engineer exports.
+
+## Improvement ideas (proposed 2026-11-21, not approved)
+
+Claude's list after building the five pages. The engineer picks; nothing here is decided. Rough order: cheap fixes first.
+
+Declined by the engineer (2026-11-21): keyboard access to table rows (Tab, Enter, Space on the row).
+
+**Fixes (small, no design choice):**
+1. **Top-align table cells.** `TableCell` in `src/components/ui/table.tsx` has `align-middle`, which beats the row's `align-top`. Spec history, Traceability and Power budget set `align-top` per cell; Decisions, Open items and Checklist still centre the ID in a tall opened row.
+2. **One shared table page.** The five pages repeat the same pattern (filter in the URL, row toggle, scroll to `?id=`, detail row, empty state). A shared component or hook would cut about 150 lines per page and keep fix 1 in one place.
+
+**Linking (the site now has a page for most IDs):**
+3. **ID chips open the site page.** `IdChip` opens GitHub for every ID. DEC could open `/decisions`, OPEN `/open`, requirement IDs `/trace`, with GitHub kept as a small link in each detail row. This changes every page, so it needs the engineer's OK.
+4. **Ctrl+K for tasks, revisions and requirements.** Search covers spec IDs but not `Pn-xxx` tasks or spec revisions; a requirement result could open its Traceability row.
+5. **Overview cards for the new pages.** The Explore grid shows six cards; Open items, Checklist, Traceability and Power budget are only in the sidebar. The Open items stat tile could link to `/open`.
+6. **Diagram detail panel links.** A block or link panel lists its spec IDs; DEC, OPEN and requirement IDs could open the new pages, and Power view rail and regulator blocks could link to `/power`.
+
+**Checks (report only, like `npm run drift`):**
+7. **Record revision drift.** The checklist header names the spec revision it follows ("Requirements authority: ... rev 0.87"), and the spec and power budget cite each other's revisions. A check could list records that point to an older revision than the one the site reads.
+8. **Traceability rule option.** A toggle to count task text, not only Req (CMP-010 is in the P1-014 text but not its Req).
+9. **Run `test:ui` in CI** with Playwright's bundled Chromium instead of the local Edge, so a PR shows the browser checks.
+
+**Look and speed:**
+10. **Rail colours.** The dataviz validator fails the rail colours as a categorical set (light: 6 V against 5 V; dark: 3.3 V against 3.3 V_IMU for protan vision). The pages never rely on colour alone, but a re-stepped set would help the Power view. The engineer picked these colours, so any change is theirs.
+11. **Bundle size.** The `search-provider` chunk is about 545 kB (Vite warns). Loading the Ctrl+K index on first open would speed up the first page load.
+12. **Copy link** button in each opened row, since `?id=` links are the main way to share a row.
+13. **Evidence badges elsewhere.** `SpecText labels` colours `VERIFIED` and the other labels; the Checklist evidence column and the Decisions notes could use it too.
 
 ## Known gaps
 
