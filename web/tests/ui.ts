@@ -1,7 +1,9 @@
 /**
  * Browser checks on the built site, in the installed Microsoft Edge:
  * pages load, diagram lines are straight, link labels are clear, SVG
- * exports are plain valid SVG, and phone width has no sideways scroll.
+ * exports are plain valid SVG, phone width has no sideways scroll and opens
+ * diagrams at a readable zoom, the light theme passes the same checks, and
+ * a hash link changed in an open tab shows the new view.
  *
  * Run after `npm run build`: `npm run test:ui`. Local only (CI has no Edge).
  * Exits 1 and lists every failure.
@@ -162,6 +164,64 @@ async function noSideScroll(page: Page, where: string) {
   if (sw > w) fail(where, `scrolls sideways (${sw} px wide at ${w} px)`)
 }
 
+/** At phone width a diagram opens at a readable zoom (canvas.tsx READABLE). */
+async function readableZoom(page: Page, where: string) {
+  const zoom = await page.evaluate(() => {
+    const t = getComputedStyle(
+      document.querySelector('.react-flow__viewport')!
+    ).transform
+    return Number(t.match(/matrix\(([^,]+)/)?.[1] ?? 1)
+  })
+  if (zoom < 0.34) fail(where, `opens at zoom ${zoom.toFixed(2)}, below 0.35`)
+}
+
+/**
+ * Same-tab links: change the hash in an open tab, as pasting a URL does, and
+ * check that the page shows the new view, not the old one.
+ */
+async function sameTabLinks(browser: Browser) {
+  const v = await open(browser, 'diagram?level=system')
+  const go = async (hash: string) => {
+    await v.page.evaluate((h) => {
+      location.hash = h
+    }, hash)
+    await v.page.waitForTimeout(1200)
+  }
+  const state = () =>
+    v.page.evaluate(() => ({
+      blocks: [...document.querySelectorAll('.react-flow__node-block')].map(
+        (e) => (e as HTMLElement).dataset.id
+      ),
+      selected: [...document.querySelectorAll('.react-flow__node.selected')].map(
+        (e) => (e as HTMLElement).dataset.id
+      ),
+      pinRow:
+        document.querySelector('tr[data-state=selected]')?.textContent ?? '',
+      text: document.querySelector('main')?.textContent ?? '',
+    }))
+  const where = 'same-tab link'
+
+  await go('#/diagram?level=board&block=h743')
+  let s = await state()
+  if (!s.blocks.includes('j-gps') || s.blocks.includes('fc'))
+    fail(where, 'level=board did not replace the Overview')
+  if (!s.selected.includes('h743')) fail(where, 'block=h743 is not selected')
+
+  await go('#/diagram?level=power')
+  s = await state()
+  if (!s.blocks.includes('pw-r5v') || s.blocks.includes('j-gps'))
+    fail(where, 'level=power did not replace the System view')
+  if (s.selected.length) fail(where, `power view keeps a selection: ${s.selected}`)
+
+  await go('#/pinout?mcu=f100&pin=PA8')
+  s = await state()
+  if (!s.text.includes('LQFP48')) fail(where, 'mcu=f100 did not open the F100 pinout')
+  if (!s.pinRow.includes('PA8')) fail(where, 'pin=PA8 is not the selected row')
+
+  for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+}
+
 /** Click an export button; the file must be valid SVG with plain colours. */
 async function svgExport(page: Page, button: string, where: string) {
   const download = page.waitForEvent('download', { timeout: 15000 })
@@ -188,20 +248,35 @@ async function main() {
   })
   const browser = await chromium.launch({ channel: 'msedge' })
   try {
-    // pages load without errors
+    // pages load without errors, both themes
+    for (const theme of ['dark', 'light'] as const)
+      for (const route of [
+        '',
+        'diagram?level=system',
+        'diagram?level=board',
+        'diagram?level=board&link=b-link',
+        'diagram?level=power',
+        'pinout?mcu=h743',
+        'pinout?mcu=f100',
+      ]) {
+        const v = await open(browser, route, { theme })
+        for (const e of v.errors) fail(`/${route} ${theme}`, `page error: ${e}`)
+        await v.close()
+      }
+
+    // light theme: the three views draw the same way as in dark
     for (const route of [
-      '',
       'diagram?level=system',
       'diagram?level=board',
-      'diagram?level=board&link=b-link',
       'diagram?level=power',
-      'pinout?mcu=h743',
-      'pinout?mcu=f100',
     ]) {
-      const v = await open(browser, route)
-      for (const e of v.errors) fail(`/${route}`, `page error: ${e}`)
+      const v = await open(browser, route, { theme: 'light' })
+      await straightLines(v.page, `/${route} light`)
+      await clearLabels(v.page, `/${route} light`)
       await v.close()
     }
+
+    await sameTabLinks(browser)
 
     // diagram drawing, with nothing and with a block selected
     for (const route of [
@@ -243,12 +318,22 @@ async function main() {
         await v.close()
       }
 
-    // phone width
-    for (const route of ['', 'diagram?level=board', 'pinout?mcu=h743']) {
-      const v = await open(browser, route, { width: 390 })
-      await noSideScroll(v.page, `/${route} at 390 px`)
-      await v.close()
-    }
+    // phone width, both themes
+    for (const theme of ['dark', 'light'] as const)
+      for (const route of [
+        '',
+        'diagram?level=system',
+        'diagram?level=board',
+        'diagram?level=power',
+        'pinout?mcu=h743',
+        'pinout?mcu=f100',
+      ]) {
+        const v = await open(browser, route, { width: 390, theme })
+        const where = `/${route} at 390 px ${theme}`
+        await noSideScroll(v.page, where)
+        if (route.startsWith('diagram')) await readableZoom(v.page, where)
+        await v.close()
+      }
   } finally {
     await browser.close()
     await server.close()

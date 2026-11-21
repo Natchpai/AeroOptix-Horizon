@@ -1,116 +1,124 @@
 # Handoff: team website
 
 **Updated:** 2026-11-21
-**Status:** Clickable mockup, live on GitHub Pages. The engineer approved the Pinout page and reviewed the Block diagram for size and labels. Rail colours, SVG export, the record-driven Overview (progress, spec changes, next action, build stamp) and the IO MCU layout are live (PR #20, squash commit `2fd8638`).
+
+**Status:** live on GitHub Pages. The engineer approved the Pinout page and reviewed the Block diagram. Text is synced to spec rev 0.83.
+
+Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in `README.md`. Earlier history is in Git (`git log -- web`).
 
 ## Where things are
 
-- Live site: https://natchpai.github.io/AeroOptix-Horizon/
-- Code: `web/`, merged to `main` in PR #18 (squash commit `e7def40`). Deploy: `.github/workflows/pages.yml`, on push to `main` when `web/`, the design docs or `README.md` change; it can also be started by hand.
-- What the build reads, so a merge to `main` updates the site with no code change:
-  - spec: every ID row (open items, decisions, interfaces), the header (revision, date) and the last 5 rows of section 9 change notes
-  - pin allocation: the H743, F100 and F100-reserved tables
-  - execution checklist: `Gate summary`, every `P<n>-<nnn>` task status, `Current next action`
-  - root `README.md`: phase, board revision, baseline, KiCad, key features, `Main MCU` and `IO MCU`
-  - `extract-docs` throws when one of these is missing, so a changed record layout fails the build and the old site stays up.
-- Still hand-written: blocks and links (`topology.ts`) and their positions (`places.ts`).
-- Pages is enabled with source "GitHub Actions". The first run failed because Pages was not enabled yet; the re-run passed.
-- Branches: the `main` ruleset requires linear history, so PRs from `dev` are squash-merged (or rebased); a merge commit is not allowed. Each squash leaves `dev` without `main`'s new commit, and the next PR can show conflicts on files the squash touched (PR #30). After each PR, merge `main` into `dev`; last done after PR #30 (`ff2130e`, 2026-10-29).
+- **Live site:** https://natchpai.github.io/AeroOptix-Horizon/
+- **Deploy:** `.github/workflows/pages.yml`, on a push to `main` that touches `web/`, the design docs or `README.md`. It can also be started by hand.
+- **Merging:** `main` needs linear history, so PRs from `dev` are squash-merged. After each PR, merge `main` into `dev`.
+- **What the build reads** (`scripts/extract-docs.ts`), so a merged record change updates the site:
+  - the spec: every ID row, the header, and the last 5 change notes;
+  - the pin allocation: H743, F100 and F100-reserved tables;
+  - the checklist: `Gate summary`, task status and `Current next action`;
+  - the root `README.md`: phase, revisions, key features, MCUs.
+  - A missing heading or table fails the build, and the old site stays up.
+- **Hand-written:** blocks and links in `src/data/topology.ts`, and positions in `src/data/places.ts`.
 
 ## What the site does
 
-- Overview: phase, revisions, key features, open OPEN items, and (engineer's request, 2026-10-24) gate progress per checklist gate with a stacked task bar, the checklist's current next action (one numbered line per sentence or list item, words unchanged; task IDs link to their checklist row and take their status colour), the last 5 spec change notes, and a build stamp (commit and date, also in the sidebar). Order, from `lg` up: Progress (left half) beside Recent spec changes (right half), then the next action at full width, then Key features beside Open items. Below `lg` the cards stack.
-- **View names (engineer, 2026-10-26):** the outer view was renamed Board ("board mean overview system, system mean how to connect in board"), then **Overview** (L0, URL id `system`); the inner view is **System** (L1, URL id `board`). Only the labels changed; the ids stayed so old links work. History below uses the names of its date.
-- **Equal spacing (engineer, 2026-10-26):** link ends on one side of a block are spaced equally and centred, first asked for the PM02D on the Overview, then for every block. `bundles` in `places.ts` count as one end (servo PWM group with the rail-sense line, Overview FC-to-servos pair). `npm run check` enforces it. To meet it, the Overview PM02D now sends the battery down to the PDB (PDB under the PM02D), and the Power view columns were re-spaced: the +5V bar is centred on the LDO line, the +3V3 bar on the buck line.
-- **Overview zones (engineer, 2026-10-26):** the Overview now shows the board ports. Each device line starts at its port (`o-*` blocks, refs copied from the spec rows of the matching System view connectors); the FC block has no lines. Zones: one In board (PCB) zone with the FC and its ports (power module conn, XT30 6 V in and servo headers left of the FC; Tel1, Tel2, GPS1, air-data, TF-Luna, USB-C, microSD slot, debug and ESC headers right of it), then Out board: power (battery, PM02D, PDB, UBEC), Out board: devices, Out board: actuators. Link ids are unchanged (`s-fc-*`), so old links still open.
-- **System view zones (engineer, 2026-10-26):** I2C2 is one line out of the H743 to a bus bar, which taps Baro 1, Baro 2 and the magnetometer (addresses on the taps, from the pin allocation). Blocks sit in titled zones: Connectors (right column: Tel1, Tel2, power module, air-data, TF-Luna, ESC, GPS1, servo headers), USB and debug (USB-C, H743 debug, F100 SWD pads, kept apart at the engineer's request) and On-board I/O (top: microSD, spare pads, LEDs, buzzer). Connectors have small corners and a tab on the cable side; parts with no cable are the new kind `io`. GPS1 is tall so it faces both MCUs; the F100 sits centred under the H743 and its SWD pads are on its left. `npm run check` tests the zone boxes.
-- Block Diagram: Overview (L0) and System (L1) views, hand-placed, every link straight. Click a block for its detail panel; click a link label for the Interface view (L2): each signal with the MCU pin at each end, far end `TBD`.
-- Power view (L1, engineer's request, 2026-10-26): power only, left to right: battery, PM02D (tall, `PM02_5V` out at the top, battery out at the bottom), the TPS2121 power mux with USB-C above it, the +5V bar, the buck, LDO, UBEC and XT30, the +3V3 bar, then grouped loads (Main MCU, IO MCU, baro × 2 + mag, IMU × 2, 5 V external ports, 8 servos, 4 ESCs). Feeds the records do not give (3.3 V to the MCUs, and the battery chain) are candidate; the LDO block is solid since its part was decided (TPS73533DRBR, DEC-027; updated 2026-11-02). Rail bars stand upright, 120 px wide, so the name fits. Since 2026-11-02 (spec rev 0.23) the eFuse block is the power mux `pw-pmux` ("Power mux, 1.5 A", TPS2121RUX, DEC-029 to DEC-034): the PM02D feeds IN1, USB-C feeds IN2 from above, and the mux alone feeds the +5V bar. The battery and PM02D moved down 60 px so the mux line sits on the +5V bar centre (560). `npm run build`, `npm run test:ui`, eslint and prettier pass; a 1440 px dark screenshot was checked.
-- **Sensor rail (DEC-043, spec rev 0.34, 2026-11-12):** the LDO feeds both sensor blocks on `+3V3A` (VDD); the old candidate `+3V3` line to baro and mag is gone. VDDIO on `+3V3` is in the block notes only, since a second line per sensor block cannot stay straight past the `+3V3` bar (engineer chose "VDD lines only"). To fit, the LDO is 180 px tall and centred on 560 (lines at 515 and 605), the `+3V3` bar is 130 to 470, and the H743 and F100 sit 85 px either side of the buck line (215, 385). `npm run build` and the UI checks pass (run on Playwright Chromium, not Edge); 1440 and 390 px dark screenshots checked.
-- **RC, telemetry and ESC (DEC-053, DEC-054, spec rev 0.57, 2026-11-19):** the build failed because F100 PA8 (RC IN, IF-038) was on no link. Overview: the ELRS receiver is now the telemetry radio (Holybro SiK V3, block `sik`, link `s-fc-sik`); new RC IN port `o-rcin` under Tel2 with the FS-iA6B receiver `rx` (link `s-fc-rc`, PPM); the ports and devices below moved down 92 px, the actuators and the PDB ESC line 92 px lower (PDB 782 px tall, centred on 771). ESC blocks on the Overview and Power view show one Tekko32 F4 4in1 50A. System view: new `j-rcin` between GPS1 and the ESC headers, link `b-rcin` (`TIM1_CH1, PPM`); the F100 is 872 px tall for four right-side ends 200 apart centred on 1336, so it is no longer close to square; the engineer kept this shape (2026-11-19). Power view: RC IN added to the 5 V external ports. No PDB (DEC-054, spec rev 0.58, engineer 2026-11-19): the PM02D battery output feeds the 4in1 ESC pads and the UBEC sits on the same pads. Overview: the ESC (`esc`) takes the old PDB place in the power zone (renamed "Out board: power and ESC"), with candidate links `s-pm-esc` and `s-esc-ubec`; the ESC headers `o-esc` moved left of the FC, between the XT30 and the servo headers (servo headers 60 px lower), so `s-fc-esc` runs straight at 530. Power view: the ESC takes the PDB place (`pw-pm-esc`, `pw-esc-ubec`); UBEC, XT30 and servos 50 px lower, on its centre line (960). `npm run build` passes; `npm run test:ui` passes on Playwright Chromium (no Edge on this Mac); 1440 px dark screenshots of the Overview and System views checked.
-- **No board buzzer (DEC-068, spec rev 0.61, 2026-11-19):** the System view block `buzzer` is now "Buzzer driver" (Q701, to GPS1), refs IF-046 and DEC-068, open OPEN-023; same place and `TIM3_CH3` line. A line from it to GPS1 is not drawn: it would need a second H743-to-GPS1 end and a re-spaced right column. `npm run build` and `npm run test:ui` pass (Playwright Chromium, no Edge on this Mac); 1440 px dark screenshot checked.
-- **Spec 0.66 to 0.73 sync (2026-11-20, text only, no position change):** the System view I2C2 tap to the magnetometer now reads `0x0C` (DEC-047; it still said `0x0E`). GPS is the Holybro M10/M9N GPS V1 (DEC-070). New notes and refs on Tel1 radio (DEC-092), USB-C (DEC-080, DEC-084), microSD (DEC-078, DEC-081), F100 debug test pads (DEC-075), spare pads (DEC-069, DEC-073, DEC-076), buzzer driver with D709 (DEC-087) and board LEDs (DEC-067; the F100 px4io LEDs of DEC-079 are named in the note, not drawn). Power view: the sensor power-up notes follow OPEN-011 and DEC-085. Power module note: CN101 pin order confirmed. `MdText` lets long code words wrap (`overflow-wrap: anywhere`), because a long footprint name in OPEN-004 made the Overview scroll sideways at 390 px. Phase PRELIMINARY comes from the README. `npm run build` and `npm run test:ui` pass (Playwright Chromium, via a temporary copy of `tests/ui.ts` without the `msedge` channel; no Edge on this Mac).
-- **Spec 0.74 to 0.83 sync (2026-11-21, text only, no position change):** the System view RC IN note gives the CN706 pin order, pin 1 PPM, pin 2 +5V, pin 3 GND (DEC-098; it still pointed to OPEN-034 item 6a). DEC-098 added to both RC IN blocks; DEC-099 (direct address ties, addresses unchanged) on the three I2C2 taps; DEC-094 and DEC-099 on the I2C2 bus. `npm run build` and `npm run test:ui` pass (installed Edge, Windows).
-- Pinout: LQFP100 / LQFP48 package views and pin tables; a pin links back to its diagram link.
-- Showcase: placeholder.
-- Ctrl+K search over pins, signals, blocks and spec IDs.
-- SVG export (engineer's request, 2026-10-24): "Export SVG" on the System and Board views, "SVG" on each pinout package card. Native SVG (rect, line, text; no `foreignObject`), in the current site theme, with a title and a footer (spec revision, phase, "not for fabrication", export date). Diagrams are drawn from the same `placedLayout` as the canvas (`src/features/diagram/export-svg.ts`); the package view is the on-screen SVG with colours written out as hex (`src/features/pinout/export-svg.ts`). Shared helpers: `src/lib/svg-export.ts`.
+- **Overview:** phase, revisions, key features and open OPEN items. Also gate progress (stacked bars), the checklist next action, the last 5 spec change notes and a build stamp.
+- **Block diagram:**
+  - **Overview** (L0, id `system`): the PCB as one In board zone with its ports, and Out board zones for power and ESC, devices and actuators.
+  - **System** (L1, id `board`): the blocks inside the board, in zones (Connectors, USB and debug, On-board I/O). I2C2 is drawn as a bus bar.
+  - **Power** (L1, id `power`): source to load, left to right. A candidate feed is faded.
+  - **Interface** (L2): click a link label to see each signal with its MCU pin. The far end shows `TBD`.
+  - Click a block for its detail panel.
+  - On a phone (canvas under 640 px), a view that would fit below zoom 0.35 opens centred on its start block at 0.35: FC, Main MCU, or the power mux.
+- **Pinout:** LQFP100 and LQFP48 package views and pin tables. A pin links to its diagram link.
+- **Search:** Ctrl+K over pins, signals, blocks and spec IDs.
+- **SVG export:** on each diagram view and each package card. The export uses native SVG with hex colours, plus a footer with the spec revision, the phase, "not for fabrication" and the date.
+- **Showcase:** placeholder.
 
-## Decisions the engineer made (2026-10-24)
+## Engineer decisions
 
-- GitHub Pages hosting; the site is public with the repo.
-- Template: satnaing/shadcn-admin (chosen over the ThemeSelection templates).
-- Dark theme, with blue and navy accents from the nP mark (the engineer's co-op logo).
-- Logos (engineer's request, 2026-10-24): the team AeroOptix flame (`AeroOptix_v2_light_theme.png` / `AeroOptix_v2_dark_theme.png`, 1468 px square, sized by the engineer) is the main logo in the sidebar, the Overview hero and the tab icon. The nP mark is a small "In co-op with" credit in the sidebar footer. The theme colours did not change.
-- Diagram: straight lines, wide spacing, no shared line ends, no crossings. No Mermaid. The ELK auto-layout was tried and dropped for hand placement (`src/data/places.ts`).
-- Mockup first, then deploy (done).
-- Pinout page: OK as it is.
-- Block diagram, Board view only: Main MCU block 720x640 (was 900x700), Buzzer moved from the top edge to the left edge, XT30 above the servo headers. The System view keeps its FC block size.
-- Actuator outputs (2026-11-16, spec DEC-050 and DEC-051): the F100 drives the ESCs (MAIN 1 to 4) and the flaperons and ruddervators (MAIN 5 to 8); H743 TIM5 drives the tilt servos (AUX 1 to 4); no DShot. System view: the F100 is 400x672 with three right-side ends 200 px apart (safety line, 4 ESC lines to `j-esc`, 4 surface lines plus rail sense to `j-servo`); new `j-aux` (Tilt servo headers × 4) takes the old ESC slot on the H743 right side with one `TIM5 × 4` line, because the spec does not say which tilt servo is on which AUX output. The F100 SWD pads moved down to stay level with the F100 centre. Overview: the ESC and servo port labels show the MAIN and AUX numbers; the links are `PWM × 4` and `PWM × 8`. The oscillator pin rows (DEC-044, DEC-045) are in `pinsNotOnDiagram`. The bullets below describe the 2026-10-24 layout where it differs.
-- Board view, IO MCU area (engineer's request, 2026-10-24):
-  - The F100 block is square, 400x400.
-  - Servo headers are one tall block, 200x300, so "Servo headers × 8" shows in full.
-  - One PWM line per servo output (IF-030 to IF-037), labelled with its timer channel from the spec, 28 px apart. The rail-sense line is set apart below them.
-  - The F100 SWD pads moved under the F100, so XT30 and the servo headers are the only blocks on its right. The +3V3 rail bar moved down to make room.
-  - Any small block at least 120 px tall is drawn as a centred column (icon, then name, then sub-line). This also applies to the PDB on the System view.
-- Center blocks (MCUs, FC): icon and text centered, larger type. Other block and link text larger; blocks are 200x60.
-- Link labels must not cover a block, another label or another line. Parallel pairs: labels centered on horizontal pairs, beside the line on vertical pairs (`layout.ts`).
-- Power rails: one colour per rail. Battery is red (danger), +6V orange, +5V yellow, +3.3V fuchsia, +3.3VA indigo. Power lines are 5 px (signals 2.75 px) and never dashed; a candidate power line is faded to 45 % instead.
-- Line and border weight (engineer's request, 2026-10-24, +1 px on each): block border 2 px, signal line 2.75 px (3 → 4 px selected), power line 5 px (5.5 → 6.5 px selected), end dot 7 px. All sizes are in `src/features/diagram/style.ts`, read by the canvas, the SVG export and the legend. The border sits inside the block, so `block-node.tsx` offsets each handle by the border width to keep the lines exactly straight.
-- +3.3V and GPIO colours (engineer's requests): on 2026-10-24 +3.3V and GPIO swapped colours (+3.3V pink, GPIO blue). On 2026-10-25 GPIO went back to pink, and +3.3V took fuchsia, since blue is kept for high-speed buses (SPI, USB). +3.3VA unchanged.
+- **2026-10-24:**
+  - GitHub Pages; the site is public with the repo.
+  - shadcn-admin template.
+  - Dark theme with nP blue and navy.
+  - The AeroOptix flame is the main logo, and nP is a small co-op credit.
+  - Straight lines with hand placement (no Mermaid, no ELK).
+  - Pinout page OK as it is.
+- **2026-10-24 to 25:**
+  - One colour per power rail (table below).
+  - Power lines 5 px, never dashed; a candidate is faded.
+  - Line and border weights are in `style.ts`.
+- **2026-10-26:**
+  - View names: Overview, System, Power. Only the labels changed, the ids did not.
+  - Link ends are equally spaced and centred.
+  - Zones on the Overview and the System view.
+  - Power parts are shown on the Power view only.
+- **2026-11-16:**
+  - Actuator outputs follow DEC-050 and DEC-051: F100 MAIN 1 to 8, H743 TIM5 AUX 1 to 4.
+- **2026-11-19:**
+  - No PDB (DEC-054): the ESC takes its place.
+  - The F100 block stays tall (872 px) to fit four right-side ends.
+- **2026-11-21:**
+  - The drift check only reports.
+  - The Showcase uses a GLB the engineer exports.
+  - Try the buzzer-to-GPS1 layout (F100 shift) and show screenshots first.
 
-  | Rail or bus | Bus id | Light | Dark |
-  |---|---|---|---|
-  | Battery (6S) | `batt` | `#dc2626` | `#ef4444` |
-  | +6V | `v6` | `#ea580c` | `#f97316` |
-  | +5V (incl. `+VIN`, VBUS) | `v5` | `#ca8a04` | `#facc15` |
-  | +3.3V | `v3v3` | `#c026d3` (was `#db2777`) | `#e879f9` (was `#f472b6`) |
-  | +3.3VA | `v3v3a` | `#4f46e5` | `#818cf8` |
-  | GPIO (signal) | `gpio` | `#db2777` (back to the old colour, 2026-10-25) | `#f472b6` (back to the old colour, 2026-10-25) |
+| Rail or bus | Bus id | Light | Dark |
+|---|---|---|---|
+| Battery (6S) | `batt` | `#dc2626` | `#ef4444` |
+| +6V | `v6` | `#ea580c` | `#f97316` |
+| +5V (incl. `+VIN`, VBUS) | `v5` | `#ca8a04` | `#facc15` |
+| +3.3V | `v3v3` | `#c026d3` | `#e879f9` |
+| +3.3VA | `v3v3a` | `#4f46e5` | `#818cf8` |
+| GPIO (signal) | `gpio` | `#db2777` | `#f472b6` |
 
-  Power blocks that output one rail take its colour (`rail` field in `topology.ts`: battery, PDB, UBEC, eFuse, buck, LDO, rail bars). PM02D keeps the kind colour, since it outputs two rails. The GPIO colour also shows on the Pinout page.
+## Checks
 
-## Verified
+- **`npm run check`** (part of the build) covers:
+  - spec IDs exist;
+  - no removed rows are used as refs on blocks or links;
+  - every pin row is on a link or in `pinsNotOnDiagram`;
+  - every live IF row is on a link or in `ifNotOnLink`;
+  - the drawing rules.
+- **`npm run drift`** (report only) lists hard words in block and link text (hex addresses, part numbers, pins) that the cited spec rows do not contain, and `open` lists that name a closed OPEN item.
+  - For DEC rows, only Topic and Selected option count.
+  - History phrases ("replaces the 0x0E") are ignored.
+- **`npm run test:ui`** (local, Edge, about 4 minutes) covers:
+  - page errors in both themes;
+  - straight lines and clear labels in dark and light;
+  - SVG export;
+  - no sideways scroll at 390 px in both themes;
+  - a readable phone zoom;
+  - same-tab hash links.
 
-- `npm run check`: OK (43 blocks, 57 links, 67 pins on links; 50 links before the servo lines were split). It fails, as intended, on a fake spec ID and on a block moved out of line.
-- `npm ci` + `npm run build` on a fresh clone of `dev`.
-- Pins spot-checked against the pin allocation record: H743 PE8 UART7_TX #38, H743 PA5 SPI1_SCK #29, F100 PA2 USART2_TX #12.
-- Screenshots at 1440 px and 390 px: no horizontal scroll. The live Board view renders.
-- After `6d00f58`: `npm run check` and `npm run build` pass. A headless Edge script measured every link label on both views, also with a block selected (bold labels): no label overlaps a block, a label or a line. That script is now `npm run test:ui` (see below).
-- `npm run test:ui` (2026-10-24): passes in about 1.5 minutes. It fails, as intended, on a broken attribute in the SVG dot markup (all 4 diagram exports reported as invalid XML). Moving the servo headers 40 px down makes `npm run check` report all 8 PWM lines as bent. Both faults were put back.
-- Code review (2026-10-24) found and fixed: the legend drew 2 px / 4 px line samples and the old dash after the +1 px change; SVG block corners were 8 px against 10 px on the canvas; a misplaced comment in `layout.ts`.
+## Verified (2026-11-21)
 
-- Record-driven Overview: `npm run build` passes. The extracted gate counts match a separate count of the checklist (P0 17 done of 22; P1 0 of 15 plus 1 N/A; P2 0 of 18; P3 0 of 11; P4 0 of 11). A copy of the records with `Gate summary` renamed makes `extract-docs` fail. `GITHUB_SHA` sets the build stamp. Screenshots at 1440 and 390 px, dark and light: no horizontal scroll.
-- Live after PR #20: the deploy passed and the sidebar shows `Build 2fd8638`, the merge commit, so the CI build stamp works. The Progress card, the 8 servo lines and Export SVG are on the live site.
-- Light-theme +6V changed from `#c2410c` to `#ea580c` (engineer's request, 2026-10-24): the old one looked like Battery red. `#ea580c` was compared with `#f97316` on the System view; `#f97316` drifts toward the +5V amber and its 12 px label reads weaker on white (about 2.8:1 against white, `#ea580c` about 3.6:1).
-
-- 2026-10-26, second pass (engineer's requests): view names swapped; power parts removed from the System (L1) view (the `+5V` and `+3V3` bars, eFuse, buck, LDO, XT30 and their lines), USB-C moved level with the F100, the power module port drawn tall so its name shows in full; the Board (L0) power chain runs left to right (battery, PM02D, PDB, UBEC); the Power view splits the sensors into IMU × 2 on `+3V3A` (DEC-025, decided) and baro × 2 + mag on `+3V3` (candidate). `npm run check` (55 blocks, 65 links), `npm run build` and `npm run test:ui` pass; screenshots of all three views at 1440 px dark and light, and the Overview with the new Power card.
-- Power view (2026-10-26): `npm run check` passes (61 blocks, 74 links), `npm run build` and `npm run test:ui` pass with the Power view in the page-error, straight-line, label-overlap (4 states) and SVG-export lists. Headless Edge screenshots at 1440 px (dark and light) show every name and sub in full. At 390 px the view is tiny on first load, as the Board view is.
+- `npm run build` passes, and so does `npm run test:ui` (installed Edge, Windows).
+- **Fault injection:**
+  - Removing IF-001 from `b-link` makes `npm run check` fail on IF-001.
+  - Setting the magnetometer tap to `0x0E` makes `npm run drift` list it.
+- **390 px first-load zoom:** it was 0.15 to 0.17 (Power was clipped). It is now 0.35 on all three views. Screenshots were checked.
+- Light theme was checked by screenshot on the Pinout page and the System view at 1440 px.
 
 ## Not verified
 
-- Light theme on the pinout page.
-- Every block and link text against the spec: only spot checks were done. `topology.ts` is hand-written.
-- Same-tab deep links: pasting a new `#/…` URL into an open tab was not tested (a fresh load works).
-- SVG export: all 8 files (4 views × 2 themes) were downloaded in headless Edge from the production build, parse as valid SVG, contain no CSS variables, `color-mix` or classes, and render correctly in Edge. Opening them in Inkscape, PowerPoint or Word was not tested. Text uses Inter and JetBrains Mono when installed, else the generic sans-serif and monospace.
+- Every block and link text against the spec. `npm run drift` gives leads only; its current list (24 findings) is not yet reviewed.
+- SVG exports opened in Inkscape, PowerPoint or Word.
+- The new phone-zoom and same-tab checks were not shown failing on a broken build. Only their passing run was seen.
 
 ## Next steps
 
-1. Engineer reviews the rest of the live site (Overview, Interface view, detail panel, search) and lists changes.
-2. Engineer checks fuchsia +3.3V on screen: it sits between GPIO pink and UART purple.
-3. Done 2026-10-26: the root `README.md` links the site (Overview, Documentation, repository tree) and `CHANGELOG.md` records it. The eFuse block now also names `CMP-008` (spec rev 0.15).
-4. Keep `topology.ts` in step with the spec as it changes. The build check catches IDs that no longer exist, but not new interfaces: add them by hand.
-5. Showcase, once there is a PCB: a 3D viewer (`@google/model-viewer` with a GLB from KiCad 10; the exact `kicad-cli` export command is `NOT_VERIFIED`), then renders and photos in `web/public/`.
+1. Engineer reviews the `npm run drift` list and decides which site texts to fix.
+2. Decisions page (Batch 2), buzzer-to-GPS1 line (Batch 3) and Showcase 3D viewer (Batch 4), per the plan of 2026-11-21.
+3. Keep `topology.ts` in step with the spec. `npm run check` now flags a new IF row that is on no link.
 
-## Known gaps in the content
+## Known gaps
 
-- Far-end pins (sensor and connector pins) and connector pinouts are not in the records (OPEN-023), so the Interface view shows `TBD` there.
-- Which rail feeds each sensor is not drawn: only the `ASSUMED` 3.3 V feeds to the MCUs are, as candidate (dashed) links.
-- The F100 reserved pins have no package pin numbers in the record, so they appear in a table only, not on the package view.
-- The KiCad `block_diagram.kicad_sch` still says F103 (P2-014, the engineer's item); the site does not use it.
-- At 390 px the System (L1) and Power views are tiny on first load; the canvas zoom controls work.
-- Light theme on the new diagram layout is not checked.
+- Far-end pins and connector pinouts are not in the records (OPEN-023), so the Interface view shows `TBD`.
+- F100 reserved pins have no package pin numbers, so they are in a table only.
+- `block_diagram.kicad_sch` still says F103 (P2-014, an engineer item). The site does not use it.
+- The pinout table rows from pin 22 down are very tall at 1440 px (seen 2026-11-21, not changed).
+- The minimap covers the right end of the Surface servo headers block at 1440 px on the System view.
 
-## Preview in VS Code
+## Preview
 
-`cd web`, `npm run dev`, then `Ctrl+Shift+P` > **Simple Browser: Show** and open `http://localhost:5173/AeroOptix-Horizon/#/diagram?level=board`. The page reloads on save.
+Run `npm run dev`, then open `http://localhost:5173/AeroOptix-Horizon/#/diagram?level=board`.

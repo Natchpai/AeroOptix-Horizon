@@ -15,6 +15,7 @@ npm run dev      # http://localhost:5173/AeroOptix-Horizon/
 npm run build    # extract + check + type-check + build to dist/
 npm run preview  # serve dist/ under /AeroOptix-Horizon/
 npm run test:ui  # browser checks on dist/, after build (local only)
+npm run drift    # report only: site text that may have drifted from the spec
 ```
 
 `npm run check` re-reads the docs and checks the hand-written data on its own.
@@ -38,25 +39,36 @@ The extracted JSON goes to `src/data/generated/`. It is git-ignored and rebuilt 
 
 The build fails when:
 
-- a spec ID in the topology is not in the spec, or is a removed row
+- a spec ID in the topology is not in the spec, or a block or link cites a removed row
 - a pin row is used by no link (rows that are not drawn are listed in `pinsNotOnDiagram` with a reason)
+- a live IF row in the spec is on no link (rows that are not drawn are listed in `ifNotOnLink` with a reason), or an `ifNotOnLink` entry is unknown, removed or on a link
 - a pin or package pin number is assigned twice
 - a block has no position, or two blocks are closer than 24 px
 - a link is not one straight line, runs through another block, or crosses another link
 - the link ends on one side of a block are not equally spaced, or not centred on that side
 - a zone lists an unknown block, holds a block it does not list, or comes within 24 px of another zone
 
+## Drift report (`scripts/drift.ts`)
+
+`npm run drift` never fails. It lists two kinds of finding:
+
+- hard words in block and link text (hex addresses, part numbers, pin and peripheral names) that are in none of the spec rows the item cites
+- items whose `open` list names a closed OPEN item
+
+For a DEC row only Topic and Selected option count, and history phrases such as "replaces the 0x0E" are ignored. A finding is a lead: check the spec row, then fix the text by hand.
+
 ## Browser checks (`tests/ui.ts`)
 
 `npm run test:ui` serves `dist/` and opens it in the installed Microsoft Edge (through `playwright-core`; no browser download). It lists every failure and exits 1 when:
 
-- a page throws an error (Overview, the Board, System and Power views, an Interface view, both pinouts)
-- a drawn line is not straight on screen
-- a link label covers a block, another label or another line, with no block selected and with five blocks selected in turn
+- a page throws an error, in dark or light (Overview, the three diagram views, an Interface view, both pinouts)
+- a drawn line is not straight on screen, in dark or light
+- a link label covers a block, another label or another line: with no block selected, with blocks selected in turn, and in light theme
 - an SVG export (4 views, dark and light) is not valid XML, or still holds CSS (`var(`, `color-mix`, `oklab`, `class=`)
-- a page scrolls sideways at 390 px
+- a page scrolls sideways at 390 px (dark and light), or a diagram view opens there below zoom 0.35
+- a hash link changed in an open tab (as when a URL is pasted) does not show the new view, block selection or pin
 
-It takes about 2 minutes. CI does not run it, because CI has no Edge. Google Fonts are fetched once per run and then served from memory. If they cannot be fetched, the run warns that label checks used fallback fonts.
+It takes about 4 minutes. CI does not run it, because CI has no Edge. Google Fonts are fetched once per run and then served from memory. If they cannot be fetched, the run warns that label checks used fallback fonts.
 
 ## Editing the diagram
 

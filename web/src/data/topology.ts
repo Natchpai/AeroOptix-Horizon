@@ -785,7 +785,7 @@ export const boardLinks: Link[] = [
     to: 'f100',
     bus: 'uart',
     label: 'USART6 ↔ USART2, 1.5 Mb/s',
-    refs: ['IF-024', 'DEC-015'],
+    refs: ['IF-024', 'IF-001', 'DEC-015'],
     pins: [
       { mcu: 'h743', refs: ['IF-024'] },
       { mcu: 'f100', refs: ['IF-024'] },
@@ -1303,6 +1303,19 @@ export const pinsNotOnDiagram: {
   { mcu: 'f100', refs: ['DEC-044'], reason: 'CMOS oscillator' },
   { mcu: 'f100', refs: ['DEC-045'], reason: 'OSC_OUT not used (HSE bypass)' },
   { mcu: 'f100', refs: ['P1-014'], reason: 'Boot select' },
+]
+
+/**
+ * Live IF rows that no diagram link cites, with the reason. `npm run check`
+ * fails on any other live IF row that is on no link, and on an entry here
+ * that is unknown, removed or now on a link.
+ */
+export const ifNotOnLink: { id: string; reason: string }[] = [
+  {
+    id: 'IF-023',
+    reason:
+      'SWD summary row; the SWD links cite IF-045 (H743) and IF-051 (F100)',
+  },
 ]
 
 export const blocks: Block[] = [...systemBlocks, ...boardBlocks, ...powerBlocks]

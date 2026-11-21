@@ -9,6 +9,7 @@ import {
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
+  useStore,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { useTheme } from '@/context/theme-provider'
@@ -19,6 +20,20 @@ import { LinkEdge, type LinkEdgeType } from './link-edge'
 import { ZoneNode, type ZoneNodeType } from './zone-node'
 
 const nodeTypes = { block: BlockNode, zone: ZoneNode }
+
+/**
+ * Phone widths: below NARROW px a whole view fits only at an unreadable
+ * zoom. If the fit is under READABLE, the view opens centred on its start
+ * block at READABLE zoom instead; pan or use the fit button to see the rest.
+ */
+const NARROW = 640
+const READABLE = 0.35
+const FIT = { padding: 0.05, maxZoom: 1 }
+const startBlock: Record<Level, string> = {
+  system: 'fc',
+  board: 'h743',
+  power: 'pw-pmux',
+}
 const edgeTypes = { link: LinkEdge }
 
 type CanvasProps = {
@@ -47,7 +62,9 @@ function CanvasInner({
   onPane,
 }: CanvasProps) {
   const { resolvedTheme } = useTheme()
-  const { fitView } = useReactFlow()
+  const { fitView, setCenter } = useReactFlow()
+  const paneW = useStore((s) => s.width)
+  const paneH = useStore((s) => s.height)
   const laid = useMemo(
     () =>
       placedLayout(
@@ -60,14 +77,28 @@ function CanvasInner({
     [level]
   )
 
-  // Fit once per level, after the new layout is on screen.
+  // Fit when the level changes and when the pane is measured or resized
+  // (the first fit could run before the pane had its final size).
   useEffect(() => {
-    const t = setTimeout(
-      () => fitView({ padding: 0.05, maxZoom: 1, duration: 300 }),
-      30
-    )
+    if (!paneW || !paneH) return
+    const t = setTimeout(() => {
+      if (paneW < NARROW) {
+        const xs = laid.nodes.flatMap((n) => [n.x, n.x + n.w])
+        const ys = laid.nodes.flatMap((n) => [n.y, n.y + n.h])
+        const w = Math.max(...xs) - Math.min(...xs)
+        const h = Math.max(...ys) - Math.min(...ys)
+        const zoom = Math.min(paneW / w, paneH / h) * (1 - 2 * FIT.padding)
+        const start = laid.nodes.find((n) => n.block.id === startBlock[level])
+        if (zoom < READABLE && start)
+          return setCenter(start.x + start.w / 2, start.y + start.h / 2, {
+            zoom: READABLE,
+            duration: 300,
+          })
+      }
+      fitView({ ...FIT, duration: 300 })
+    }, 30)
     return () => clearTimeout(t)
-  }, [laid, fitView])
+  }, [laid, level, paneW, paneH, fitView, setCenter])
 
   // Neighbours of the selected block stay bright; the rest dims.
   const focus = useMemo(() => {
