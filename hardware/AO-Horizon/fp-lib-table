@@ -21,4 +21,5 @@
 	(lib (name "0_Conn_AMASS") (type "KiCad") (uri "${KIPRJMOD}/library/footprints/0_Conn_AMASS.pretty") (options "") (descr ""))
 	(lib (name "0_MountingHole") (type "KiCad") (uri "${KIPRJMOD}/library/footprints/0_MountingHole.pretty") (options "") (descr ""))
 	(lib (name "0_TestPoint") (type "KiCad") (uri "${KIPRJMOD}/library/footprints/0_TestPoint.pretty") (options "") (descr ""))
+	(lib (name "0_NetTie") (type "KiCad") (uri "${KIPRJMOD}/library/footprints/0_NetTie.pretty") (options "") (descr ""))
 )

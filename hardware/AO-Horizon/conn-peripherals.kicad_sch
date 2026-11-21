@@ -6191,6 +6191,26 @@
 		(dnp no)
 		(polyline
 			(pts
+				(xy 246.38 107.315) (xy 306.07 107.315) (xy 306.07 115.57) (xy 327.66 115.57) (xy 327.66 100.33)
+				(xy 246.38 100.33)
+			)
+			(stroke
+				(width 0)
+				(type dash)
+			)
+			(fill
+				(type none)
+			)
+			(uuid "a31d2e2f-1eee-4e95-9d72-a4e6defa1fe6")
+		)
+	)
+	(rule_area
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(polyline
+			(pts
 				(xy 99.06 48.26) (xy 99.06 59.69) (xy 142.24 59.69) (xy 142.24 48.26)
 			)
 			(stroke
@@ -6201,6 +6221,25 @@
 				(type none)
 			)
 			(uuid "c1ea7010-e5db-4a20-b6c8-850ebad409a2")
+		)
+	)
+	(rule_area
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(polyline
+			(pts
+				(xy 252.73 205.105) (xy 297.18 205.105) (xy 297.18 199.39) (xy 252.73 199.39)
+			)
+			(stroke
+				(width 0)
+				(type dash)
+			)
+			(fill
+				(type none)
+			)
+			(uuid "e724394e-db45-4578-9326-9a8bd1804f97")
 		)
 	)
 	(netclass_flag ""
@@ -6263,6 +6302,76 @@
 		)
 		(property "Component Class" ""
 			(at 99.06 -6.985 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
+	)
+	(netclass_flag ""
+		(length 2.54)
+		(shape round)
+		(at 252.73 199.39 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "be0b56b6-ebc0-47b4-b54a-dfa35bf5bde4")
+		(property "Netclass" "PPM"
+			(at 253.4285 196.85 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Component Class" ""
+			(at -68.58 15.24 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
+	)
+	(netclass_flag ""
+		(length 2.54)
+		(shape round)
+		(at 246.38 100.33 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "cfde7c8d-3d3a-41dd-bed7-4a63621506f9")
+		(property "Netclass" "GPS1"
+			(at 247.0785 97.79 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Component Class" ""
+			(at -35.56 6.35 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
