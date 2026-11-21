@@ -261,6 +261,7 @@ export function ChecklistPage() {
                 </CardDescription>
               </div>
               <Input
+                aria-label='Filter tasks'
                 placeholder='Filter: ERC, OPEN-023, Human…'
                 value={filter}
                 onChange={(e) => set({ q: e.target.value || undefined })}

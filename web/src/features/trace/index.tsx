@@ -38,6 +38,9 @@ const route = getRouteApi('/_site/trace')
 
 const noTask = traceRows.filter((r) => r.noTask)
 const noLink = traceRows.filter((r) => r.noLink)
+/** Removed rows stay in the table, greyed, but are not counted as live. */
+const live = traceRows.filter((r) => !r.req.removed).length
+const removed = traceRows.length - live
 
 const label = detailLabel
 
@@ -119,8 +122,8 @@ export function TracePage() {
           {[
             {
               title: 'Requirements',
-              value: traceRows.filter((r) => !r.req.removed).length,
-              hint: `${traceRows.filter((r) => r.req.removed).length} removed rows not counted`,
+              value: live,
+              hint: `Live rows; ${removed} removed rows are listed greyed`,
               flag: undefined,
             },
             {
@@ -183,10 +186,12 @@ export function TracePage() {
               <div>
                 <CardTitle className='text-base'>Trace table</CardTitle>
                 <CardDescription>
-                  {rows.length} of {traceRows.length} requirement rows
+                  {rows.length} of {traceRows.length} rows ({live} live,{' '}
+                  {removed} removed, greyed)
                 </CardDescription>
               </div>
               <Input
+                aria-label='Filter requirements'
                 placeholder='Filter: USB, 6S, IF-040…'
                 value={filter}
                 onChange={(e) => set({ q: e.target.value || undefined })}

@@ -222,6 +222,7 @@ export function OpenItemsPage() {
                 {search.closed ? 'Hide closed' : 'Show closed'}
               </Button>
               <Input
+                aria-label='Filter open items'
                 placeholder='Filter: UBEC, P3-007, OPEN-023…'
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}

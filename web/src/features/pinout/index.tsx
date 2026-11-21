@@ -396,6 +396,7 @@ function PinTable({
           </CardDescription>
         </div>
         <Input
+          aria-label='Filter pins'
           placeholder='Filter: PA5, SPI1, IF-010…'
           value={filter}
           onChange={(e) => setFilter(e.target.value)}

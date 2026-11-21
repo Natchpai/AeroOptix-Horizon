@@ -7,8 +7,9 @@
  * a hash link changed in an open tab shows the new view, and Ctrl+K on a
  * decision or an open item (open or closed) opens its row on its page,
  * a next-action task chip opens its Checklist row, and an Overview
- * revision chip opens its Spec history row, and the Power budget page
- * draws one bar per Rail summary row.
+ * revision chip opens its Spec history row, the Power budget page
+ * draws one bar per Rail summary row, and every Decisions Date cell holds
+ * its text inside the cell.
  *
  * Run after `npm run build`: `npm run test:ui`. Set UI_BROWSER to pick a
  * Playwright channel (default `msedge` locally; `chromium` when CI is set).
@@ -386,6 +387,38 @@ async function powerBars(browser: Browser) {
   }
 }
 
+/** Every Decisions Date cell holds its text inside the cell, at 1440 px. */
+async function decisionDatesFit(browser: Browser) {
+  const where = '/decisions date cells'
+  const v = await open(browser, 'decisions')
+  const date = await v.page.evaluate(() => {
+    const ths = [...document.querySelectorAll('thead th')]
+    return ths.findIndex((th) => th.textContent?.trim() === 'Date')
+  })
+  if (date < 0) fail(where, 'no Date column')
+  const wide = await v.page.evaluate((col) => {
+    const out: string[] = []
+    for (const tr of document.querySelectorAll('tbody tr[id^="row-"]')) {
+      const td = tr.children[col] as HTMLElement | undefined
+      if (!td) continue
+      const box = td.getBoundingClientRect()
+      const pad = parseFloat(getComputedStyle(td).paddingRight)
+      const right = Math.max(
+        ...[...td.querySelectorAll('*')].map(
+          (e) => e.getBoundingClientRect().right
+        ),
+        box.left
+      )
+      if (td.scrollWidth > td.clientWidth || right > box.right - pad + 0.5)
+        out.push(`${tr.id}: "${td.textContent}" is wider than its cell`)
+    }
+    return out
+  }, date)
+  for (const w of wide) fail(where, w)
+  for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+}
+
 /** A revision chip on the Overview opens its row on Spec history. */
 async function revChipOpensRow(browser: Browser) {
   const where = 'Overview revision chip'
@@ -502,6 +535,7 @@ async function main() {
     await taskChipOpensRow(browser)
     await revChipOpensRow(browser)
     await powerBars(browser)
+    await decisionDatesFit(browser)
     await openRowTopAligned(browser)
     await chipsOpenSitePages(browser)
 
