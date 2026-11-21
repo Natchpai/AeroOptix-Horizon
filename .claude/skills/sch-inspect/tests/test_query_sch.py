@@ -975,5 +975,140 @@ class QuerySchRegression(unittest.TestCase):
                 self.call('net', 'SIG_A', project=root)
 
 
+
+FIXTURE = Path(__file__).resolve().parent / 'fixtures' / 'netlist_small'
+
+
+class NetlistCommands(unittest.TestCase):
+    """netlist and netlist-compare against a real KiCad 10.0.8 XML export.
+
+    fixtures/netlist_small: a root sheet and one child sheet joined by the bus
+    D[0..1], plus the global label COM. netlist_small.xml is the unchanged
+    `kicad-cli sch export netlist --format kicadxml` output of it, except the
+    <source> path and <date>, which were made machine-neutral.
+    """
+
+    def run_cli(self, *args, ok=True):
+        cmd = [sys.executable, str(SCRIPT), *args, '--project', str(FIXTURE / 'netlist_small.kicad_sch')]
+        done = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=180)
+        if ok:
+            self.assertEqual(done.returncode, 0, done.stderr)
+            return json.loads(done.stdout)
+        self.assertEqual(done.returncode, 2, done.stdout)
+        error = json.loads(done.stderr)
+        self.assertEqual(error['verification'], 'NOT_VERIFIED')
+        return error
+
+    def module(self):
+        spec = importlib.util.spec_from_file_location('_query_sch_netlist', SCRIPT)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    def test_netlist_lookup_by_net_and_reference(self):
+        r = self.run_cli('netlist', 'D0', '--netlist', str(FIXTURE / 'netlist_small.xml'))
+        self.assertEqual(r['verification'], 'KICAD_NETLIST_EVIDENCE')
+        self.assertEqual([(n['reference'], n['pin_number']) for n in r['results'][0]['nodes']],
+                         [('R1', '1'), ('R3', '1')])
+        self.assertEqual(r['results'][0]['netlist_tool'], 'Eeschema 10.0.8')
+        refs = self.run_cli('netlist', 'R1', '--netlist', str(FIXTURE / 'netlist_small.xml'))['results']
+        self.assertEqual({x['net_name'] for x in refs}, {'/D0', 'COM'})
+        self.assertTrue(all(x['matched_by'] == 'reference' for x in refs))
+        missing = self.run_cli('netlist', 'NOPE', '--netlist', str(FIXTURE / 'netlist_small.xml'))['results']
+        self.assertEqual(missing[0]['status'], 'NET_OR_REFERENCE_NOT_FOUND')
+
+    def test_compare_matches_kicad_on_bus_and_global(self):
+        r = self.run_cli('netlist-compare', '--netlist', str(FIXTURE / 'netlist_small.xml'))
+        self.assertEqual(r['verification'], 'KICAD_NETLIST_COMPARISON')
+        summary = r['results'][0]
+        self.assertEqual(summary['status'], 'NETLIST_COMPARISON_SUMMARY')
+        self.assertEqual((summary['multi_pin_kicad_nets_compared'], summary['pins_compared'],
+                          summary['differences']), (3, 8, 0))
+        self.assertEqual(summary['instance_count'], 2)
+
+    def test_compare_reports_split_and_merged(self):
+        text = (FIXTURE / 'netlist_small.xml').read_text(encoding='utf-8')
+        # Move R3 pin 1 from /D0 to /D1 in the KiCad netlist only.
+        moved = text.replace('<node ref="R3" pin="1"', '<node ref="R3" pin="9"', 1)
+        moved = moved.replace('<node ref="R2" pin="1"',
+                              '<node ref="R3" pin="1" pintype="passive"/><node ref="R2" pin="1"', 1)
+        with tempfile.TemporaryDirectory() as tmp:
+            f = Path(tmp) / 'moved.xml'
+            f.write_text(moved, encoding='utf-8')
+            r = self.run_cli('netlist-compare', '--netlist', str(f))
+        kinds = {(d['kind'], d.get('kicad_net') or d.get('sch_inspect_net')) for d in r['results'][1:]}
+        self.assertIn(('split', '/D1'), kinds)  # KiCad joins R2.1, R4.1 and R3.1
+        self.assertTrue(any(k == 'merged' for k, _ in kinds))  # sch-inspect joins R1.1 and R3.1
+        self.assertEqual(r['results'][0]['differences'], len(r['results']) - 1)
+
+    def test_errors_are_json(self):
+        self.run_cli('summary', '--netlist', str(FIXTURE / 'netlist_small.xml'), ok=False)
+        self.run_cli('netlist-compare', 'D0', '--netlist', str(FIXTURE / 'netlist_small.xml'), ok=False)
+        self.run_cli('netlist', '--netlist', str(FIXTURE / 'netlist_small.xml'), ok=False)
+        with tempfile.TemporaryDirectory() as tmp:
+            bad = Path(tmp) / 'bad.xml'
+            bad.write_text('<nope/>', encoding='utf-8')
+            error = self.run_cli('netlist', 'D0', '--netlist', str(bad), ok=False)
+            self.assertIn('not a KiCad XML netlist', error['error'])
+
+    def test_find_kicad_cli_order_and_failure(self):
+        mod = self.module()
+        with tempfile.TemporaryDirectory() as tmp:
+            fake = Path(tmp) / 'kicad-cli'
+            fake.write_text('', encoding='utf-8')
+            with mock.patch.dict(os.environ, {'KICAD_CLI': str(fake)}):
+                self.assertEqual(mod.find_kicad_cli(), str(fake))
+                self.assertEqual(mod.find_kicad_cli(str(fake)), str(fake))
+        with mock.patch.dict(os.environ, {'KICAD_CLI': ''}), \
+                mock.patch.object(mod.shutil, 'which', return_value=None), \
+                mock.patch.object(mod.glob, 'glob', return_value=[]), \
+                mock.patch.object(mod.sys, 'platform', 'linux'):
+            with self.assertRaises(mod.QueryError):
+                mod.find_kicad_cli()
+
+    def test_export_netlist_uses_temp_folder(self):
+        mod = self.module()
+        xml_text = (FIXTURE / 'netlist_small.xml').read_text(encoding='utf-8')
+        seen = {}
+
+        def fake_run(cmd, **kw):
+            out = Path(cmd[cmd.index('-o') + 1])
+            seen['out'], seen['target'] = out, Path(cmd[-1])
+            seen['copied'] = sorted(p.name for p in seen['target'].parent.iterdir())
+            out.write_text(xml_text, encoding='utf-8')
+            return subprocess.CompletedProcess(cmd, 0, '', '')
+        sheets = [FIXTURE / 'netlist_small.kicad_sch', FIXTURE / 'child.kicad_sch']
+        with mock.patch.object(mod.subprocess, 'run', side_effect=fake_run):
+            self.assertEqual(mod.export_netlist(FIXTURE / 'netlist_small.kicad_sch', 'kicad-cli', sheets), xml_text)
+        self.assertFalse(seen['out'].exists())  # temp folder removed
+        self.assertNotEqual(seen['target'].parent, FIXTURE)  # kicad-cli runs on a copy
+        self.assertEqual(seen['copied'], ['child.kicad_sch', 'netlist_small.kicad_pro', 'netlist_small.kicad_sch'])
+        with mock.patch.object(mod.subprocess, 'run',
+                               return_value=subprocess.CompletedProcess([], 1, '', 'load error')):
+            with self.assertRaises(mod.QueryError):
+                mod.export_netlist(FIXTURE / 'netlist_small.kicad_sch', 'kicad-cli')
+
+    def test_live_kicad_cli_export(self):
+        mod = self.module()
+        try:
+            mod.find_kicad_cli()
+        except mod.QueryError:
+            self.skipTest('kicad-cli not installed')
+        # Run on a copy, so a stray file from an earlier run cannot hide a write.
+        with tempfile.TemporaryDirectory() as tmp:
+            proj = Path(tmp) / 'p'
+            proj.mkdir()
+            for name in ('netlist_small.kicad_sch', 'child.kicad_sch', 'netlist_small.kicad_pro'):
+                (proj / name).write_bytes((FIXTURE / name).read_bytes())
+            before = {q.name: q.stat().st_mtime_ns for q in proj.iterdir()}
+            done = subprocess.run([sys.executable, str(SCRIPT), 'netlist-compare', '--project',
+                                   str(proj / 'netlist_small.kicad_sch')],
+                                  capture_output=True, text=True, encoding='utf-8', timeout=180)
+            self.assertEqual(done.returncode, 0, done.stderr)
+            self.assertEqual(json.loads(done.stdout)['results'][0]['differences'], 0)
+            # kicad-cli writes a .kicad_prl next to a project without one: it must run on a temp copy
+            self.assertEqual({q.name: q.stat().st_mtime_ns for q in proj.iterdir()}, before)
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

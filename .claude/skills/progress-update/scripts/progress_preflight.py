@@ -15,7 +15,7 @@ sch-inspect for nets and power sources.
 Usage:
     python -I progress_preflight.py [--project <file.kicad_pro>] [--since <ref>]
         [--spec <md>] [--checklist <md>] [--id-prefixes DEC,OPEN,...]
-        [--open-prefix OPEN] [--tracker-prefix OI]
+        [--open-prefix OPEN] [--dec-prefix DEC] [--tracker-prefix OI]
         [--pin-text SYMBOL=fulltext.txt ...] [--findings-only]
 """
 from __future__ import annotations
@@ -33,10 +33,10 @@ from urllib.parse import unquote
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from list_symbols import LCSC_KEYS, children, first, head, parse  # noqa: E402
+import register  # noqa: E402
 
 EM_DASH = "\u2014"
 MPN_KEYS = ("MPN", "Manufacturer Part Number", "Manufacturer_Part_Number", "MFR Part #", "Part Number")
-ROW_ID_RE = re.compile(r"(?m)^\|\s*([A-Z][A-Z0-9]*-\d+)\s*\|")
 LINK_RE = re.compile(r"\]\(<?([^)>\s]+)>?(?:\s+\"[^\"]*\")?\)")
 VAR_RE = re.compile(r"\$\{([A-Za-z0-9_]+)\}")
 STOCK_VAR_RE = re.compile(r"KICAD(\d+)_(3DMODEL|FOOTPRINT|SYMBOL|TEMPLATE)_DIR")
@@ -314,7 +314,7 @@ def check_docs(repo: Path, since: str, mds: list[str], untracked: set, spec: Pat
         finds.append(["MINOR", "em_dash", "*.md", f"{em} added lines contain an em dash"])
     defined = set()
     if spec and spec.exists():
-        defined = set(ROW_ID_RE.findall(spec.read_text(encoding="utf-8")))
+        defined = register.records(spec.read_text(encoding="utf-8"), open_prefix).ids()
     if id_prefixes:
         prefixes = sorted(id_prefixes)
     else:
@@ -355,22 +355,19 @@ def check_docs(repo: Path, since: str, mds: list[str], untracked: set, spec: Pat
         elif spec and spec.exists():
             # No tracker table: the spec's open-item table is the register, and
             # each open row must name a checklist task (first-column ID there).
-            cl_text = checklist.read_text(encoding="utf-8")
+            cl_reg = register.records(checklist.read_text(encoding="utf-8"), open_prefix)
             # Only active tasks count: a DONE or N/A (merged, retired) row closes nothing.
-            tasks = set()
-            for m in re.finditer(r"(?m)^\|\s*([A-Z][A-Z0-9]*-\d+)\s*\|(.*)$", cl_text):
-                if not {c.strip() for c in m.group(2).split("|")} & {"DONE", "N/A"}:
-                    tasks.add(m.group(1))
+            tasks = {i for i, r in cl_reg.kind("task").items()
+                     if not r.cells.get("status", "").strip("` ").startswith(("DONE", "N/A"))}
             open_rows = 0
-            for m in re.finditer(rf"(?m)^\|\s*({re.escape(open_prefix)}-\d+)\s*\|(.*)$",
-                                 spec.read_text(encoding="utf-8")):
-                cells = [c.strip() for c in m.group(2).rstrip().rstrip("|").split("|")]
-                if cells and (cells[0].startswith("Closed") or cells[-1].startswith("Closed")):
+            for oid, r in register.records(spec.read_text(encoding="utf-8"), open_prefix).kind("open").items():
+                if r.cells.get("desc", "").startswith("Closed") or r.cells.get("owner", "").startswith("Closed"):
                     continue
                 open_rows += 1
-                if not any(re.search(rf"\b{re.escape(t)}\b", m.group(2)) for t in tasks):
-                    no_tracker.append(m.group(1))
-                    finds.append(["MINOR", "open_without_task", m.group(1),
+                body = " | ".join(r.raw[1:])
+                if not any(re.search(rf"\b{re.escape(t)}\b", body) for t in tasks):
+                    no_tracker.append(oid)
+                    finds.append(["MINOR", "open_without_task", oid,
                                   "open item names no checklist task, and the checklist has no "
                                   f"{tracker_prefix} table"])
             tracker = f"no {tracker_prefix} table; {open_rows} open spec rows checked for a checklist task"
@@ -397,19 +394,6 @@ REF_RANGE_RE = re.compile(r"\b([A-Z]{1,3})(\d+)\s+(?:to|-)\s+(?:\1)?(\d+)\b")
 REF_RE = re.compile(r"\b([A-Z]{1,3})(\d{1,4})\b")
 UNANNOTATED_RE = re.compile(r"\b([A-Z]{1,3})\?")
 SENTENCE_SPLIT_RE = re.compile(r"(?<=[.;])\s+|\n")
-
-
-def table_rows(text: str, ncells: int, id_re: str = r"[A-Z][A-Z0-9]*-\d+") -> list[list[str]]:
-    """Markdown table rows whose first cell matches id_re and that have ncells cells."""
-    rows = []
-    for line in text.splitlines():
-        m = re.match(rf"^\|\s*({id_re})\s*\|", line)
-        if not m:
-            continue
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) == ncells:
-            rows.append(cells)
-    return rows
 
 
 def section(text: str, heading: str) -> str:
@@ -456,6 +440,27 @@ def named_refs(clause: str, refs: set) -> set:
     return out
 
 
+ITEM_CITE_RE = re.compile(r"\b([A-Z][A-Z0-9]*-\d+)(\s+items?\s+\d+(?:\s*(?:,|and|to)\s*\d+)*)?")
+ROW_ITEM_RE = re.compile(r"\bitems?\s+(\d+(?:\s*(?:,|and|to)\s*\d+)*)|\((\d{1,2})\)")
+
+
+def item_cites(text: str) -> dict:
+    """{id: item numbers} for each ID whose every cite in text names items."""
+    seen: dict = {}
+    for m in ITEM_CITE_RE.finditer(text):
+        nums = set(re.findall(r"\d+", m.group(2))) if m.group(2) else None
+        prev = seen.get(m.group(1), set())
+        seen[m.group(1)] = None if nums is None or prev is None else prev | nums
+    return {i: n for i, n in seen.items() if n}
+
+
+def row_items(text: str) -> set:
+    out = set()
+    for a, b in ROW_ITEM_RE.findall(text):
+        out |= set(re.findall(r"\d+", a or b))
+    return out
+
+
 def review_items(spec_text: str, checklist_text: str, readme_text: str | None,
                  refs: set | None, fields: dict | None, rev_of,
                  open_prefix: str = "OPEN", dec_prefix: str = "DEC") -> tuple[list, int]:
@@ -470,19 +475,24 @@ def review_items(spec_text: str, checklist_text: str, readme_text: str | None,
     def add(rule, item, reason):
         finds.append(["INFO", f"review:{rule}", item, reason])
 
-    # --- parse
+    # --- parse (register.py reads columns by header name, then by position)
+    spec_reg = register.records(spec_text, open_prefix, dec_prefix)
+    cl_reg = register.records(checklist_text, open_prefix, dec_prefix)
     opens = {}  # id -> (desc, owner, full row text, closed)
-    for c in table_rows(spec_text, 4, rf"{re.escape(open_prefix)}-\d+"):
-        closed = c[1].startswith("Closed") or c[3].startswith("Closed")
-        opens[c[0]] = (c[1], c[3], " | ".join(c), closed)
-    decs = {}  # id -> (date, cited ids)
-    for c in table_rows(spec_text, 5, rf"{re.escape(dec_prefix)}-\d+"):
-        decs[c[0]] = (newest_date(c[-1]) or newest_date(" ".join(c)), set(ANY_ID_RE.findall(" ".join(c[1:]))))
+    for i, r in spec_reg.kind("open").items():
+        desc, owner = r.cells.get("desc", ""), r.cells.get("owner", "")
+        opens[i] = (desc, owner, r.text, desc.startswith("Closed") or owner.startswith("Closed"))
+    decs = {}  # id -> (date, cited ids, {cited id: item numbers, when every cite names items})
+    for i, r in spec_reg.kind("dec").items():
+        body = " | ".join(r.raw[1:])
+        decs[i] = (newest_date(r.cells.get("date", "")) or newest_date(r.text),
+                   set(ANY_ID_RE.findall(body)), item_cites(body))
     tasks = {}  # id -> (task text, status, evidence, full row)
-    for c in table_rows(checklist_text, 6):
-        if STATUS_RE.match(c[4]):
-            tasks[c[0]] = (c[1], c[4], c[5], " | ".join(c))
-    gates = {c[0]: c[-1] for c in table_rows(checklist_text, 4, r"[A-Z][A-Z0-9]*")}
+    for i, r in cl_reg.kind("task").items():
+        st = r.cells.get("status", "").strip("` ")
+        if STATUS_RE.match(st):
+            tasks[i] = (r.cells.get("task", ""), st, r.cells.get("evidence", ""), r.text)
+    gates = {i: r.cells.get("status", "") for i, r in cl_reg.kind("gate").items()}
 
     def task_closed(tid):
         return tid in tasks and tasks[tid][1].startswith(CLOSED_STATUS)
@@ -507,8 +517,13 @@ def review_items(spec_text: str, checklist_text: str, readme_text: str | None,
         if not nd:
             return []
         cited = set(ANY_ID_RE.findall(row_text))
-        return sorted(d for d, (date, ids) in decs.items()
-                      if date and date >= nd and ids & targets and d not in cited)
+        named = row_items(row_text)
+
+        def hits(ids, items):
+            # a cite that names items ("OPEN-031 item 5") only counts for a row that names one of them
+            return any(t not in items or items[t] & named for t in ids & targets)
+        return sorted(d for d, (date, ids, items) in decs.items()
+                      if date and date >= nd and d not in cited and hits(ids, items))
     for oid in open_ids:
         for d in newer_decs(opens[oid][2], {oid}):
             add("newer_dec", oid, f"{d} ({decs[d][0]}) cites {oid}; the row does not cite {d}")
@@ -658,6 +673,7 @@ def main() -> int:
     ap.add_argument("--id-prefixes", type=lambda s: [x for x in s.split(",") if x], default=[],
                     help="spec ID prefixes, comma-separated; default: short or zero-padded IDs in table rows")
     ap.add_argument("--open-prefix", default="OPEN", help="spec ID prefix of open items (default OPEN)")
+    ap.add_argument("--dec-prefix", default="DEC", help="spec ID prefix of decisions (default DEC)")
     ap.add_argument("--tracker-prefix", default="OI", help="checklist row prefix that tracks open items (default OI)")
     ap.add_argument("--pin-text", action="append", default=[], metavar="SYMBOL=FILE",
                     help="datasheet fulltext (e.g. NotebookLM source fulltext) to match pin rows against")
@@ -715,10 +731,11 @@ def main() -> int:
                 m = REV_HEADER_RE.search(f.read_text(encoding="utf-8")) if f and f.exists() else None
                 return m.group(1) if m else None
             readme = repo / "README.md"
+            spec_text, cl_text = spec.read_text(encoding="utf-8"), checklist.read_text(encoding="utf-8")
             rows, checked = review_items(
-                spec.read_text(encoding="utf-8"), checklist.read_text(encoding="utf-8"),
-                readme.read_text(encoding="utf-8") if readme.exists() else None,
-                ctx.refs, ctx.fields, rev_of, args.open_prefix)
+                spec_text, cl_text, readme.read_text(encoding="utf-8") if readme.exists() else None,
+                ctx.refs, ctx.fields, rev_of, args.open_prefix, args.dec_prefix)
+            rows += register.lint(spec_text, cl_text, rev_of, args.open_prefix, args.dec_prefix)
             finds.extend(rows)
             review = {"items_checked": checked, "findings": len(rows),
                       "readme": "README.md" if readme.exists() else "MISSING"}

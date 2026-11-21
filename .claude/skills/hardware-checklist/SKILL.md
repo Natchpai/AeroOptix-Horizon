@@ -10,6 +10,23 @@ Track the work and evidence needed to close each gate of a hardware or PCB proje
 
 Human engineers keep authority over decisions, approvals, and gate closure.
 
+## Evidence baseline
+
+- Label each significant claim `VERIFIED` (named evidence: CAD data, a
+  calculation or an official source), `ASSUMED` (assumption stated),
+  `ESTIMATED` (method and margin stated) or `NOT_VERIFIED` (evidence missing
+  or check not run).
+- Datasheet, schematic and PCB PDFs are not read, by any tool. Project report
+  PDFs may be read.
+- Datasheet values come from the user, official manufacturer web pages, or
+  NotebookLM answers with cited text. Query an existing notebook without
+  asking. Adding a source or creating a notebook uploads a file and needs the
+  user's approval. With no source, the value is `NOT_VERIFIED`.
+- KiCad design and library files are read-only. Propose changes; do not apply
+  them.
+- If the project has `.claude/rules/engineering.md` and `pdf.md`, follow them;
+  they are the full policy.
+
 ## Template
 
 - Use `assets/execution_checklist_template.md` when creating a new checklist.
@@ -64,11 +81,12 @@ Report ID coverage and topic coverage separately. ID coverage is a script or exa
 7. **Deferred work.** Mark non-hardware or later work `DEFERRED` and say who owns it. Say if it does not block the gate.
 8. **Open items.** The specification's open-item table is the register. Each open row there names its owner and the checklist task that closes it. The checklist does not keep a second register: one line that points to the spec section is enough. A new open item that no task covers gets a new task. If the specification has no open-item table, keep one short register in the checklist that points to the spec's open-item IDs, without copying their descriptions.
 9. **Unknowns.** Use `TBD`. Do not guess owners, dates, or evidence.
+10. **Task rows hold the present, not the history.** A task cell has three parts: the task statement, the current state (what is drawn, decided or measured, with spec IDs), and `Left:` with what still closes it. Dated history ("drawn in the 11:38 save, then ...") goes into the spec change-note, not the task cell. Aim for 600 characters or less; `progress-update` preflight lists longer cells as `long_task` (INFO). When a task changes, rewrite the current state and `Left:` instead of appending.
 
 ## Keep it short
 
 - Define status values once. Do not repeat them per row.
-- One task per row. Keep the task to one sentence.
+- One task per row. Keep the task statement to one sentence (rule 10 covers the rest of the cell).
 - Table format: pad the first column of every table to the width of its longest cell (header included), so the source lines up. Match the dashes in the separator row to that width. Leave the other columns unpadded.
 - Use tables. Remove a column only if it is empty in every row.
 - Do not repeat the same fact in the checkpoint, the gate rows, and the specification. State it once.

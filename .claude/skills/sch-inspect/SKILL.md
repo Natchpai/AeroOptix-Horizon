@@ -6,17 +6,35 @@ description: >-
   Use when the user asks to inspect, trace, or explain schematic circuits,
   connections, or functional blocks. Targeted, read-only; it extracts evidence
   and does not judge the design.
-argument-hint: "[summary | components [--sheet <name>] [--prefix <p>] | component <ref> | pins <ref> | local-net <ref> | hier-net <ref> | connected-pins <ref> | project-net <ref> --pin <n> | net <name> | bus [name] | instances | sheet <name>]"
+argument-hint: "[summary | components [--sheet <name>] [--prefix <p>] | component <ref> | pins <ref> | local-net <ref> | hier-net <ref> | connected-pins <ref> | project-net <ref> --pin <n> | net <name> | bus [name] | instances | sheet <name> | netlist <net|ref> | netlist-compare]"
 ---
 
 # Schematic Inspection (KiCad 10)
+
+## Evidence baseline
+
+- Label each significant claim `VERIFIED` (named evidence: CAD data, a
+  calculation or an official source), `ASSUMED` (assumption stated),
+  `ESTIMATED` (method and margin stated) or `NOT_VERIFIED` (evidence missing
+  or check not run).
+- Datasheet, schematic and PCB PDFs are not read, by any tool. Project report
+  PDFs may be read.
+- Datasheet values come from the user, official manufacturer web pages, or
+  NotebookLM answers with cited text. Query an existing notebook without
+  asking. Adding a source or creating a notebook uploads a file and needs the
+  user's approval. With no source, the value is `NOT_VERIFIED`.
+- KiCad design and library files are read-only. Propose changes; do not apply
+  them.
+- If the project has `.claude/rules/engineering.md` and `pdf.md`, follow them;
+  they are the full policy.
 
 ## Rules
 - Treat `.kicad_sch`, `.kicad_pro`, libraries, and all other CAD files as
   read-only. Do not create indexes, reports, caches, or other files unless asked.
 - Start from the requested sheet or instance; read the least data needed. Do not
-  default to a full-project scan, and do not export or ingest a whole-project
-  netlist as the inspection method or as a fallback.
+  default to a full-project scan. Use the netlist commands only when the user
+  asks for a netlist check; do not use them as the normal inspection method
+  or as a silent fallback.
 - Never imply a parser, resolver, or ERC check ran if it has not. Report a tool
   failure instead of guessing.
 - Text search, matching net labels, nearby wires, or an empty result is not
@@ -53,6 +71,13 @@ Resolve the script and project paths first; do not assume the working directory.
 - `bus <name>` takes a bus label or sheet pin name (`{SPI}`, `D[0..7]`,
   `P{A B}`) or an alias name (`SPI` also matches `{SPI}`). Without a name it
   lists every bus name and alias.
+- `netlist` and `netlist-compare` read KiCad's own netlist. Run them only
+  when the user asks for a netlist check or a check against KiCad. They run
+  `kicad-cli sch export netlist --format kicadxml` on the saved root sheet
+  and write the export to a temporary folder only. `--kicad-cli <path>` picks
+  the binary (default: the `KICAD_CLI` variable, then `PATH`, then the usual
+  install folders); `--netlist <file.xml>` reads an export the user made and
+  runs nothing.
 
 | Command | Purpose |
 |---|---|
@@ -68,6 +93,8 @@ Resolve the script and project paths first; do not assume the working directory.
 | `project-net <ref> --pin <n>` | Connectivity evidence across instances, global labels, power nets. |
 | `net <name>` | The same evidence, started from a label or power symbol name. |
 | `bus [name]` | Bus members, the sheets each member reaches, and its pins; no name lists buses and aliases. |
+| `netlist <net|ref>` | KiCad netlist nodes of a net (full name or last path part), or every net on a reference. |
+| `netlist-compare` | Every multi-pin KiCad net against the `project-net` graph; lists the nets where the pin sets differ. |
 
 Examples (root file `Top.kicad_sch`):
 - `component U103 --project Top.kicad_sch`
@@ -75,6 +102,7 @@ Examples (root file `Top.kicad_sch`):
 - `net +5V --project Top.kicad_sch`
 - `components --sheet "Power State" --prefix U --project Top.kicad_sch`
 - `bus "{SPI}" --project Top.kicad_sch`
+- `netlist-compare --project Top.kicad_sch` (only when asked for a KiCad netlist check)
 
 Policy: prefer `component`, `pins`, or `local-net`; use `hier-net` or
 `connected-pins` when hierarchy matters; use `project-net` only when
@@ -150,6 +178,18 @@ Report the scope actually reached, not the one requested, if expansion failed.
   entry.
 - `components` returns one row per component and sheet instance. A
   `warnings` entry says when `--sheet` matched no sheet instance.
+- `netlist <target>` returns `KICAD_NETLIST_NET` rows (`net_name`,
+  `matched_by` net or reference, `nodes` with reference, pin number, pin
+  function and type, `netlist_tool`, `netlist_source`), or
+  `NET_OR_REFERENCE_NOT_FOUND`.
+- `netlist-compare` returns `NETLIST_COMPARISON_SUMMARY` first (nets and pins
+  compared, `differences`), then one `NETLIST_DIFFERENCE` per mismatch:
+  `kind: split` (KiCad joins pins that `sch-inspect` keeps apart or misses:
+  `pins_missing_in_sch_inspect`) or `kind: merged` (`sch-inspect` joins pins
+  that KiCad keeps apart). A difference is a finding to read in KiCad, not
+  proof that either tool is wrong. Zero differences is `VERIFIED` evidence
+  that the `project-net` graph matches KiCad for every multi-pin net of the
+  saved files, not that the design is correct.
 - `verification` is set by the command. No value means the design was
   verified:
 
@@ -162,6 +202,8 @@ Report the scope actually reached, not the one requested, if expansion failed.
   | `connected-pins` | `PARENT_CONNECTED_PINS_GEOMETRY_ONLY` |
   | `project-net`, `net`, `bus` | `INSTANCE_AWARE_PROJECT_EVIDENCE_ONLY` |
   | `instances` | `HIERARCHICAL_INSTANCE_DISCOVERY_ONLY` |
+  | `netlist` | `KICAD_NETLIST_EVIDENCE` |
+  | `netlist-compare` | `KICAD_NETLIST_COMPARISON` |
   | any error | `NOT_VERIFIED` |
 
 - `limitations` is also set by the command; report the lines it prints.
@@ -207,8 +249,8 @@ Report the scope actually reached, not the one requested, if expansion failed.
 - Complex symbol inheritance and hidden connectivity may stay unresolved.
 - If a trustworthy parser is unavailable, limit work to transparent observations
   from the target sheet and mark pin-to-net and cross-sheet claims `NOT_VERIFIED`.
-  If project-wide proof is essential, say so and ask before using any other route
-  (for example `kicad-cli` netlist export).
+  If project-wide proof is essential, say so and offer `netlist-compare` (it
+  runs `kicad-cli`); run it only when the user agrees.
 
 ## Response format
 - **Target & scope:** file, sheet instance, object; `LOCAL` / `HIERARCHICAL` / `GLOBAL`.

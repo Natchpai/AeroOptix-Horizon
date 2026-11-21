@@ -1,15 +1,23 @@
 #!/usr/bin/env python3
-"""Read-only KiCad schematic discovery and conservative local, hierarchical, project net and bus evidence (v1.2.0).
+"""Read-only KiCad schematic discovery and conservative local, hierarchical, project net and bus evidence (v1.3.0).
 
-Python 3.10+ standard library only. Never modifies project files.
+Python 3.10+ standard library only. Never modifies project files. The
+netlist commands run kicad-cli (or read an export the user made) and write
+the export to a temporary folder only.
 """
 from __future__ import annotations
 
 import argparse
+import glob
 import json
+import os
+import shutil
+import subprocess
 import sys
 import math
 import re
+import tempfile
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
@@ -33,6 +41,11 @@ PROJECT_NET_LIMITS = [
     'Complex symbol inheritance, hidden connectivity, and ambiguous unit instances may be unresolved',
     _BUS_LIMIT,
     'Starting reference with pins on multiple separate nets needs a pin-specific query']
+
+_NETLIST_LIMITS = [
+    "Read from KiCad's own netlist export of the saved files; unsaved editor changes are not included",
+    'kicad-cli runs only for the netlist commands, which the user asks for; --netlist reads an export the user made',
+    'Power and flag symbols (#PWR, #FLG) are not netlist nodes']
 
 # One entry per command: the top-level `verification` value and `limitations`
 # it prints. SKILL.md documents these values; a test keeps the two in sync.
@@ -68,6 +81,11 @@ MODES = {
         'Hierarchical sheet instance discovery only; no electrical connectivity or pin-net verification',
         'Lists sheet instances, not the components or references inside each instance',
         'Sheets that are missing or outside the project directory are not expanded']},
+    'netlist': {'verification': 'KICAD_NETLIST_EVIDENCE', 'limitations': _NETLIST_LIMITS},
+    'netlist-compare': {'verification': 'KICAD_NETLIST_COMPARISON', 'limitations': _NETLIST_LIMITS + [
+        'Compares component pin sets only; net names differ by design (KiCad uses full sheet paths)',
+        'Nets with one component pin (unconnected pins) are not compared',
+        'A difference is a finding to read in KiCad, not proof that either tool is wrong']},
 }
 
 
@@ -1510,6 +1528,151 @@ def discover(root: Path, max_files: int):
     return data, missing, outside
 
 
+# ---------------------------------------------------------------------------
+# KiCad netlist (kicad-cli export) and comparison with the project graph
+# ---------------------------------------------------------------------------
+
+def find_kicad_cli(explicit=None):
+    """Path of kicad-cli: --kicad-cli, then KICAD_CLI, then PATH, then the usual install folders."""
+    candidates = [explicit, os.environ.get('KICAD_CLI'), shutil.which('kicad-cli')]
+    if sys.platform == 'win32':
+        roots = [os.environ.get('ProgramFiles', r'C:\Program Files'), r'C:\Program Files']
+        for r in dict.fromkeys(roots):
+            candidates += sorted(glob.glob(os.path.join(r, 'KiCad', '*', 'bin', 'kicad-cli.exe')), reverse=True)
+    elif sys.platform == 'darwin':
+        candidates.append('/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli')
+    for c in candidates:
+        if c and Path(c).is_file():
+            return str(c)
+    raise QueryError('kicad-cli not found: pass --kicad-cli PATH, set KICAD_CLI, '
+                     'or give an exported KiCad XML netlist with --netlist')
+
+
+def export_netlist(root, cli, sheets=()):
+    """Run kicad-cli on a temp copy of the saved sheets and project file.
+
+    kicad-cli writes a .kicad_prl next to a project that has none, so it never
+    runs on the project folder itself. `sheets` are the discovered sheet files;
+    each is copied to the same path relative to the root sheet's folder.
+    """
+    base = Path(root).resolve().parent
+    with tempfile.TemporaryDirectory(prefix='sch-inspect-') as tmp:
+        work = Path(tmp) / 'project'
+        for src in {Path(root).resolve(), *(Path(s).resolve() for s in sheets),
+                    Path(root).resolve().with_suffix('.kicad_pro')}:
+            try:
+                rel = src.relative_to(base)
+            except ValueError:
+                continue  # outside the project folder: discover() skips it too
+            if src.is_file():
+                (work / rel).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(src, work / rel)
+        out = Path(tmp) / 'netlist.xml'
+        target = work / Path(root).resolve().relative_to(base)
+        try:
+            proc = subprocess.run([cli, 'sch', 'export', 'netlist', '--format', 'kicadxml', '-o', str(out), str(target)],
+                                  capture_output=True, text=True, timeout=120)
+        except subprocess.TimeoutExpired:
+            raise QueryError('kicad-cli netlist export timed out after 120 s')
+        if proc.returncode != 0 or not out.is_file():
+            raise QueryError(f'kicad-cli netlist export failed (exit {proc.returncode}): '
+                             f'{(proc.stderr or proc.stdout).strip()[:300]}')
+        return out.read_text(encoding='utf-8')
+
+
+def parse_netlist(text):
+    """(tool, nets) from a KiCad XML netlist (`kicad-cli sch export netlist --format kicadxml`)."""
+    try:
+        root = ET.fromstring(text)
+    except ET.ParseError as exc:
+        raise QueryError(f'not a KiCad XML netlist: {exc}')
+    if root.tag != 'export':
+        raise QueryError('not a KiCad XML netlist: root element is not <export>')
+    nets = []
+    for net in root.iter('net'):
+        nodes = [{'reference': n.get('ref'), 'pin_number': n.get('pin'),
+                  'pin_function': n.get('pinfunction') or '', 'pin_type': n.get('pintype') or ''}
+                 for n in net.iter('node')]
+        nets.append({'net_name': net.get('name') or '', 'code': net.get('code'), 'nodes': nodes})
+    return (root.findtext('design/tool') or '').strip(), nets
+
+
+def load_netlist(root, data, netlist_file=None, cli=None):
+    if netlist_file:
+        return parse_netlist(Path(netlist_file).read_text(encoding='utf-8')), f'file {netlist_file}'
+    exe = find_kicad_cli(cli)
+    return parse_netlist(export_netlist(root, exe, [d['file'] for d in data])), f'kicad-cli {exe}'
+
+
+def netlist_lookup(nets, target, tool, source, limit):
+    """Nets whose name is the target (full or last path part), else every net on a reference."""
+    def short(name):
+        return name.rsplit('/', 1)[-1]
+    named = [n for n in nets if target in (n['net_name'], short(n['net_name']))]
+    by_ref = [] if named else [n for n in nets if any(x['reference'] == target for x in n['nodes'])]
+    hits = named or by_ref
+    if not hits:
+        return [{'status': 'NET_OR_REFERENCE_NOT_FOUND', 'target': target,
+                 'netlist_tool': tool, 'netlist_source': source}]
+    return [{'status': 'KICAD_NETLIST_NET', 'net_name': n['net_name'], 'matched_by': 'net' if named else 'reference',
+             'nodes': n['nodes'][:limit], 'node_count': len(n['nodes']), 'nodes_truncated': len(n['nodes']) > limit,
+             'netlist_tool': tool, 'netlist_source': source} for n in hits]
+
+
+def netlist_compare(root, data, nets, tool, source, limit, max_instances):
+    """Compare KiCad's nets with the project graph as two partitions of component pins.
+
+    split:  KiCad joins pins that the project graph keeps on separate nets (or misses).
+    merged: the project graph joins pins that KiCad keeps on separate nets.
+    """
+    instances, _, graph, details, _ = build_project_graph(root, data, max_instances)
+    graph_net_of, graph_nets, seen = {}, [], set()
+    for key in sorted(details, key=lambda k: (instances[k[0]]['path'], str(k[1]))):
+        if key in seen:
+            continue
+        reached = reach(graph, key)
+        seen |= reached
+        pins = {(p['reference'], str(p['pin_number'])) for g in reached for p in details[g]['components']
+                if p['reference'] and not str(p['reference']).startswith('#')}
+        if not pins:
+            continue
+        names = sorted({x for g in reached for f in ('labels', 'global', 'hier', 'power') for x in details[g][f]})
+        gid = len(graph_nets)
+        graph_nets.append({'pins': pins, 'names': names})
+        for pin in pins:
+            graph_net_of.setdefault(pin, set()).add(gid)
+    kicad_net_of, compared, diffs = {}, [], []
+    for n in nets:
+        pins = {(x['reference'], str(x['pin_number'])) for x in n['nodes']
+                if x['reference'] and not x['reference'].startswith('#')}
+        for pin in pins:
+            kicad_net_of.setdefault(pin, set()).add(n['net_name'])
+        if len(pins) >= 2:
+            compared.append((n['net_name'], pins))
+
+    def label(gids):
+        return [', '.join(graph_nets[g]['names']) or f'(unnamed net {g})' for g in sorted(gids)]
+    for name, pins in compared:
+        gids = set().union(*(graph_net_of.get(p, set()) for p in pins))
+        missing = sorted(p for p in pins if p not in graph_net_of)
+        if len(gids) > 1 or missing:
+            diffs.append({'status': 'NETLIST_DIFFERENCE', 'kind': 'split', 'kicad_net': name,
+                          'sch_inspect_nets': label(gids),
+                          'pins': [f'{r}.{p}' for r, p in sorted(pins)][:limit],
+                          'pins_missing_in_sch_inspect': [f'{r}.{p}' for r, p in missing][:limit]})
+    for gid, g in enumerate(graph_nets):
+        kicad = set().union(*(kicad_net_of.get(p, set()) for p in g['pins']))
+        if len(kicad) > 1:
+            diffs.append({'status': 'NETLIST_DIFFERENCE', 'kind': 'merged', 'sch_inspect_net': label({gid})[0],
+                          'kicad_nets': sorted(kicad)[:limit],
+                          'pins': [f'{r}.{p}' for r, p in sorted(g['pins'])][:limit]})
+    summary = {'status': 'NETLIST_COMPARISON_SUMMARY', 'netlist_tool': tool, 'netlist_source': source,
+               'kicad_nets': len(nets), 'multi_pin_kicad_nets_compared': len(compared),
+               'pins_compared': sum(len(p) for _, p in compared), 'sch_inspect_nets': len(graph_nets),
+               'differences': len(diffs), 'instance_count': len(instances)}
+    return [summary] + diffs
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('mode', choices=list(MODES))
@@ -1520,6 +1683,8 @@ def main(argv=None):
     ap.add_argument('--pin', help='pin number for project-net; necessary when a component has multiple nets')
     ap.add_argument('--sheet', help='components only: keep one sheet (name, file name or file stem)')
     ap.add_argument('--prefix', help='components only: keep references with this letter prefix, for example U')
+    ap.add_argument('--kicad-cli', help='netlist commands only: path of kicad-cli (default: KICAD_CLI, PATH, install folders)')
+    ap.add_argument('--netlist', help='netlist commands only: read this KiCad XML netlist instead of running kicad-cli')
     args = ap.parse_args(argv)
     _FILES.clear()
     # Print UTF-8 JSON whatever the console code page is. A legacy code page
@@ -1538,13 +1703,23 @@ def main(argv=None):
             raise QueryError('--sheet and --prefix are only supported with components')
         if args.mode == 'components' and args.target:
             raise QueryError('components takes --sheet and --prefix, not a target')
-        if args.mode not in ('summary', 'instances', 'components', 'bus') and not args.target:
+        if (args.kicad_cli or args.netlist) and not args.mode.startswith('netlist'):
+            raise QueryError('--kicad-cli and --netlist are only supported with netlist and netlist-compare')
+        if args.mode == 'netlist-compare' and args.target:
+            raise QueryError('netlist-compare compares every net and takes no target')
+        if args.mode not in ('summary', 'instances', 'components', 'bus', 'netlist-compare') and not args.target:
             raise QueryError(f'{args.mode} requires a target')
         root = root_file(args.project)
         data, missing, outside = discover(root, args.max_files)
         records = []
         warnings = []
-        if args.mode == 'net':
+        if args.mode in ('netlist', 'netlist-compare'):
+            (tool, nets), source = load_netlist(root, data, args.netlist, args.kicad_cli)
+            if args.mode == 'netlist':
+                records = netlist_lookup(nets, args.target, tool, source, args.limit)
+            else:
+                records = netlist_compare(root, data, nets, tool, source, args.limit, args.max_files)
+        elif args.mode == 'net':
             records = net_connections(root, data, args.target, args.limit, args.max_files)
         elif args.mode == 'bus':
             records, warnings = bus_connections(root, data, args.target, args.limit, args.max_files)
