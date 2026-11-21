@@ -2,7 +2,7 @@
 
 **Updated:** 2026-11-21
 
-**Status:** live on GitHub Pages. The engineer approved the Pinout page and reviewed the Block diagram. Text is synced to spec rev 0.86 (DEC-106 actuator headers, DEC-107 no H743 battery ADC) and pin allocation rev 0.31.
+**Status:** live on GitHub Pages. The engineer approved the Pinout page and the Open items page look, and reviewed the Block diagram. Text is synced to spec rev 0.86 (DEC-106 actuator headers, DEC-107 no H743 battery ADC) and pin allocation rev 0.31.
 
 Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in `README.md`. Earlier history is in Git (`git log -- web`).
 
@@ -37,7 +37,12 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - Click a row for the full decision, the notes, the spec line and links to the diagram blocks and links that cite it.
   - On a phone only ID and topic show; the decision and date move into the opened row.
   - It is also an Overview card and a sidebar item.
-- **Search:** Ctrl+K over pins, signals, blocks and spec IDs. A DEC result opens it on the Decisions page; other IDs open their spec row on GitHub.
+- **Open items** (`/open`): every `OPEN-xxx` row of the spec. Open rows first; **Show closed** adds the closed ones (`?closed=true`). `?q=` filters, `?id=OPEN-xxx` opens a row, and a closed `id` shows even with closed rows hidden.
+  - A row shows the ID, description and owner (both clamped to 2 lines) and how many diagram items cite it. On a phone only ID and description show.
+  - The opened row, full width, shows the full description, owner, impact, spec line, the diagram blocks and links that cite it, the DEC rows whose text names it (links to the Decisions page) and other spec rows that name it.
+  - The full text is not shown in the table cell: OPEN-023 is about 4,600 characters and made the row too tall.
+  - The Overview open-items card links here ("All open items" and each description). It is also a sidebar item.
+- **Search:** Ctrl+K over pins, signals, blocks and spec IDs. A DEC result opens it on the Decisions page and an OPEN result on the Open items page; other IDs open their spec row on GitHub.
 - **SVG export:** on each diagram view and each package card. The export uses native SVG with hex colours, plus a footer with the spec revision, the phase, "not for fabrication" and the date.
 - **Showcase:** a 3D board viewer (`@google/model-viewer` 4.4.0 with `three` 0.183.x), loaded only on this page. It shows `web/public/models/ao-horizon.glb` with its board revision, export date (last commit of the file), KiCad version, size, a "not for fabrication" tag and a GLB download. Without the file the page says "No board model yet".
   - **Lighting:** the KiCad GLB sets only a base colour per material, so glTF reads every material as rough metal and the board looks grey and flat. On load, `fixMaterials()` sorts materials by colour (solder mask, silkscreen, gold, tin, plastic) and sets metallic and roughness. Lighting is the `legacy` environment with `neutral` tone mapping, exposure 1 and full shadow, picked from screenshots on 2026-11-21.
@@ -101,11 +106,12 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - no sideways scroll at 390 px in both themes;
   - a readable phone zoom;
   - same-tab hash links;
-  - the Decisions page (both themes, 390 px) and Ctrl+K on a DEC ID.
+  - the Decisions and Open items pages (both themes, 390 px), and Ctrl+K on DEC-050, OPEN-023 and the closed OPEN-001.
 
 ## Verified (2026-11-21)
 
-- `npm run build` passes, and so does `npm run test:ui` (installed Edge, Windows).
+- `npm run build` passes, and so does `npm run test:ui` (installed Edge, Windows), with the Open items page.
+- Open items page screenshots at 1440 and 390 px, dark and light; the engineer approved the look.
 - **Fault injection:**
   - Removing IF-001 from `b-link` makes `npm run check` fail on IF-001.
   - Setting the magnetometer tap to `0x0E` makes `npm run drift` list it.
@@ -120,7 +126,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 
 ## Next steps
 
-1. New pages: see "Next pages (plan, 2026-11-21)" below. Start with pages 1 and 2.
+1. New pages: see "Next pages (plan, 2026-11-21)" below. Page 1 (Open items) is built; page 2 (Checklist) is next.
 2. Engineer reviews the `npm run drift` list (24 findings) and decides which site texts to fix.
 3. Re-export the board GLB once the parts are placed on the board.
 4. Keep `topology.ts` in step with the spec. `npm run check` flags a new IF row that is on no link.
@@ -128,7 +134,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 
 ## Next pages (plan, 2026-11-21)
 
-The engineer asked for these pages. They are not built yet.
+The engineer asked for these pages. Page 1 is built (2026-11-21); the others are not built yet.
 
 **Pattern for each page** (copy the Decisions page, `src/features/decisions/index.tsx`):
 - route `src/routes/_site/<page>.tsx` with `validateSearch` (`q`, `id`);
@@ -148,7 +154,7 @@ Data comes from `src/data/generated/*.json`, written by `scripts/extract-docs.ts
 
 Order: 1 and 2 first (cheap, most asked), then 4, 3, 5.
 
-1. **Open items** (`/open`)
+1. **Open items** (`/open`), **built 2026-11-21** (see "What the site does"). Left: add checklist tasks to the opened row after page 2's extractor change.
    - All OPEN rows from `ids.json` (`kind === 'OPEN'`; fields Description, Impact, Owner / next action; `closed`). Open rows first, with a toggle to show closed rows.
    - The detail row shows the full text and "cited by": diagram blocks and links (`refs`, `open`), DEC rows whose text names the ID, and checklist tasks (after page 2's extractor change).
    - Ctrl+K: an OPEN result opens `/open?id=`, as DEC does in `src/components/command-menu.tsx`.

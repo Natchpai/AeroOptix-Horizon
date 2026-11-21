@@ -247,7 +247,16 @@ export function Overview() {
 
           <Card className='lg:col-span-4'>
             <CardHeader>
-              <CardTitle>Open items</CardTitle>
+              <div className='flex items-center gap-2'>
+                <CardTitle>Open items</CardTitle>
+                <Link
+                  to='/open'
+                  className='group ms-auto flex items-center gap-1 text-xs text-primary hover:underline'
+                >
+                  All open items
+                  <ArrowRight className='size-3.5 transition-transform group-hover:translate-x-0.5' />
+                </Link>
+              </div>
               <CardDescription>
                 Still open in the{' '}
                 <a
@@ -266,9 +275,13 @@ export function Overview() {
                   <li key={o.id} className='flex gap-3 py-2 first:pt-0'>
                     <IdChip id={o.id} className='mt-0.5 h-fit' />
                     <div className='min-w-0'>
-                      <p className='line-clamp-2'>
+                      <Link
+                        to='/open'
+                        search={{ id: o.id }}
+                        className='line-clamp-2 hover:text-primary'
+                      >
                         <MdText text={o.fields['Description'] ?? ''} />
-                      </p>
+                      </Link>
                       <p className='text-xs text-muted-foreground'>
                         {o.fields['Owner / next action']}
                       </p>

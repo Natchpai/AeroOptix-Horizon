@@ -4,7 +4,7 @@
  * exports are plain valid SVG, phone width has no sideways scroll and opens
  * diagrams at a readable zoom, the light theme passes the same checks, and
  * a hash link changed in an open tab shows the new view, and Ctrl+K on a
- * decision opens it on the Decisions page.
+ * decision or an open item (open or closed) opens its row on its page.
  *
  * Run after `npm run build`: `npm run test:ui`. Local only (CI has no Edge).
  * Exits 1 and lists every failure.
@@ -223,20 +223,20 @@ async function sameTabLinks(browser: Browser) {
   await v.close()
 }
 
-/** Ctrl+K on a DEC ID opens its row on the Decisions page, in the same tab. */
-async function searchOpensDecision(browser: Browser) {
-  const where = 'Ctrl+K DEC-050'
+/** Ctrl+K on a spec ID opens its row on the site page, in the same tab. */
+async function searchOpensRow(browser: Browser, id: string, page: string) {
+  const where = `Ctrl+K ${id}`
   const v = await open(browser, '')
   await v.page.keyboard.press('Control+k')
-  await v.page.getByPlaceholder(/Search pins/).fill('DEC-050')
+  await v.page.getByPlaceholder(/Search pins/).fill(id)
   await v.page.waitForTimeout(300)
-  // Links and pins citing DEC-050 can rank above the spec row, so pick the
+  // Links and pins citing the ID can rank above the spec row, so pick the
   // row in the Spec IDs group instead of pressing Enter on the top hit.
   await v.page
     .locator('[cmdk-group]')
     .filter({ hasText: 'Spec IDs' })
     .locator('[cmdk-item]')
-    .filter({ hasText: /^DEC-050/ })
+    .filter({ hasText: new RegExp(`^${id}`) })
     .first()
     .click()
   await v.page.waitForTimeout(1000)
@@ -244,9 +244,9 @@ async function searchOpensDecision(browser: Browser) {
     location.hash,
     document.querySelector('tr[data-state=selected]')?.id ?? '',
   ])
-  if (!hash.includes('decisions') || !hash.includes('DEC-050'))
+  if (!hash.includes(page) || !hash.includes(id))
     fail(where, `went to ${hash || 'nowhere'}`)
-  if (row !== 'row-DEC-050') fail(where, `selected row is "${row}"`)
+  if (row !== `row-${id}`) fail(where, `selected row is "${row}"`)
   for (const e of v.errors) fail(where, `page error: ${e}`)
   await v.close()
 }
@@ -289,6 +289,9 @@ async function main() {
         'pinout?mcu=f100',
         'decisions',
         'decisions?id=DEC-050',
+        'open',
+        'open?id=OPEN-023',
+        'open?closed=true',
         'showcase',
       ]) {
         const v = await open(browser, route, { theme })
@@ -309,7 +312,9 @@ async function main() {
     }
 
     await sameTabLinks(browser)
-    await searchOpensDecision(browser)
+    await searchOpensRow(browser, 'DEC-050', 'decisions')
+    await searchOpensRow(browser, 'OPEN-023', '/open')
+    await searchOpensRow(browser, 'OPEN-001', '/open')
 
     // diagram drawing, with nothing and with a block selected
     for (const route of [
@@ -362,6 +367,8 @@ async function main() {
         'pinout?mcu=h743',
         'pinout?mcu=f100',
         'decisions?id=DEC-050',
+        'open?id=OPEN-023',
+        'open?closed=true&id=OPEN-001',
         'showcase',
       ]) {
         const v = await open(browser, route, { width: 390, theme })

@@ -2,6 +2,7 @@ import { REPO_URL, meta, sourceUrl } from '@/data'
 import {
   BookOpen,
   Boxes,
+  CircleAlert,
   Cpu,
   FileText,
   GitBranch,
@@ -39,6 +40,7 @@ export const sidebarData: SidebarData = {
           ],
         },
         { title: 'Decisions', url: '/decisions', icon: ScrollText },
+        { title: 'Open items', url: '/open', icon: CircleAlert },
       ],
     },
     {
