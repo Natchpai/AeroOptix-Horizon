@@ -39,14 +39,6 @@
 		(color 0 0 0 0)
 		(uuid "f93c93d9-6f95-4816-80f5-8d58fa88a9e8")
 	)
-	(no_connect
-		(at 190.5 78.74)
-		(uuid "a3eeca16-c66c-44cd-a526-14b9518af074")
-	)
-	(no_connect
-		(at 190.5 76.2)
-		(uuid "dfba1307-e376-4203-95e4-7483fec1e215")
-	)
 	(wire
 		(pts
 			(xy 231.14 167.64) (xy 231.14 180.34)
@@ -716,8 +708,8 @@
 		)
 	)
 	(sheet
-		(at 190.5 73.66)
-		(size 38.1 96.52)
+		(at 190.5 80.01)
+		(size 38.1 90.17)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -732,7 +724,7 @@
 		)
 		(uuid "398ca7b7-7738-4225-954b-67f201e2f059")
 		(property "Sheetname" "MCU - Main FC"
-			(at 190.5 72.6944 0)
+			(at 190.5 79.0444 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -906,16 +898,6 @@
 				(justify left)
 			)
 		)
-		(pin "BATT_V_INP10" input
-			(at 190.5 76.2 180)
-			(uuid "b0eab74f-7114-4edf-ac15-68f36ae2af3b")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
 		(pin "RNG_UART8_RX" input
 			(at 228.6 128.27 0)
 			(uuid "0d902eaf-a9f5-4559-98a5-fab7f85c9808")
@@ -1044,16 +1026,6 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
-			)
-		)
-		(pin "BATT_I_INP11" input
-			(at 190.5 78.74 180)
-			(uuid "49ef0a6b-b41c-4973-b125-6e8943ccfd61")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
 			)
 		)
 		(pin "H7_BOOT0" input
