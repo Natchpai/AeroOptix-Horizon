@@ -2,4 +2,4 @@
 
 This directory is reserved for design verification records, checklists, and reports.
 
-It is intentionally empty until verification records are added. This README keeps the directory visible in Git.
+Records: `AO-Horizon-erc.rpt` (ERC report) and `AO-HORIZON_SCH_REVIEW_RECORD_EN.md` (schematic review per sheet, checklist P2-009).
