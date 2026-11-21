@@ -9,8 +9,9 @@ import {
   links,
   linkForPin,
   mcuInfo,
+  meta,
   pins,
-  sourceUrl,
+  progress,
 } from '@/data'
 import {
   ArrowRight,
@@ -19,10 +20,13 @@ import {
   ChevronRight,
   Cpu,
   FileText,
+  History,
   Laptop,
+  ListChecks,
   Moon,
   Sun,
 } from 'lucide-react'
+import { REQ_KINDS } from '@/lib/spec-ids'
 import { useSearch } from '@/context/search-provider'
 import { useTheme } from '@/context/theme-provider'
 import {
@@ -39,10 +43,11 @@ import { ScrollArea } from './ui/scroll-area'
 
 const isExternal = (url: string) => /^https?:\/\//.test(url)
 
-/** Spec IDs worth searching for; the other kinds stay in the spec. */
-const searchable = Object.values(ids).filter((s) =>
-  ['IF', 'DEC', 'OPEN', 'SEN', 'PWR', 'FUN'].includes(s.kind)
+/** Spec IDs that have a site page: decisions, open items, requirements. */
+const searchable = Object.values(ids).filter(
+  (s) => s.kind === 'DEC' || s.kind === 'OPEN' || REQ_KINDS.includes(s.kind)
 )
+const tasks = Object.values(progress.tasks)
 
 export function CommandMenu() {
   const navigate = useNavigate()
@@ -59,7 +64,7 @@ export function CommandMenu() {
 
   return (
     <CommandDialog modal open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder='Search pins, signals, blocks, IF/DEC/OPEN IDs…' />
+      <CommandInput placeholder='Search pins, signals, blocks, spec IDs, tasks, revisions…' />
       <CommandList>
         <ScrollArea type='hover' className='h-96 pe-1'>
           <CommandEmpty>No results found.</CommandEmpty>
@@ -197,17 +202,12 @@ export function CommandMenu() {
                 value={`${s.id} ${idTitle(s.id)}`}
                 onSelect={() =>
                   runCommand(() =>
-                    // decisions and open items open on their own site
-                    // page; the other kinds open their spec row on GitHub
+                    // each kind opens its row on its site page
                     s.kind === 'DEC'
                       ? navigate({ to: '/decisions', search: { id: s.id } })
                       : s.kind === 'OPEN'
                         ? navigate({ to: '/open', search: { id: s.id } })
-                        : window.open(
-                            sourceUrl(s.file, s.line),
-                            '_blank',
-                            'noreferrer'
-                          )
+                        : navigate({ to: '/trace', search: { id: s.id } })
                   )
                 }
               >
@@ -221,6 +221,51 @@ export function CommandMenu() {
                     closed
                   </span>
                 )}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+
+          <CommandGroup heading='Checklist tasks'>
+            {tasks.map((t) => (
+              <CommandItem
+                key={t.id}
+                value={`${t.id} ${t.task}`}
+                onSelect={() =>
+                  runCommand(() =>
+                    navigate({ to: '/checklist', search: { id: t.id } })
+                  )
+                }
+              >
+                <ListChecks className='size-3.5' />
+                <span className='w-16 font-mono text-xs font-semibold'>
+                  {t.id}
+                </span>
+                <span className='truncate text-xs'>{t.task}</span>
+                <span className='ms-auto font-mono text-[10px] text-muted-foreground'>
+                  {t.status}
+                </span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+
+          <CommandGroup heading='Spec revisions'>
+            {meta.specRevisions.map((c) => (
+              <CommandItem
+                key={c.revision}
+                value={`rev ${c.revision} ${c.date}`}
+                onSelect={() =>
+                  runCommand(() =>
+                    navigate({ to: '/history', search: { rev: c.revision } })
+                  )
+                }
+              >
+                <History className='size-3.5' />
+                <span className='font-mono text-xs font-semibold'>
+                  rev {c.revision}
+                </span>
+                <span className='ms-auto font-mono text-[10px] text-muted-foreground'>
+                  {c.date}
+                </span>
               </CommandItem>
             ))}
           </CommandGroup>

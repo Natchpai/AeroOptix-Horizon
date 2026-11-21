@@ -226,30 +226,42 @@ async function sameTabLinks(browser: Browser) {
   await v.close()
 }
 
-/** Ctrl+K on a spec ID opens its row on the site page, in the same tab. */
-async function searchOpensRow(browser: Browser, id: string, page: string) {
+/**
+ * Ctrl+K on an ID opens its row on the site page, in the same tab. `item`
+ * is the start of the result text, `row` the id of the row it must select.
+ */
+async function searchOpensRow(
+  browser: Browser,
+  id: string,
+  page: string,
+  group = 'Spec IDs',
+  item = id,
+  row = `row-${id}`
+) {
   const where = `Ctrl+K ${id}`
   const v = await open(browser, '')
   await v.page.keyboard.press('Control+k')
   await v.page.getByPlaceholder(/Search pins/).fill(id)
   await v.page.waitForTimeout(300)
-  // Links and pins citing the ID can rank above the spec row, so pick the
-  // row in the Spec IDs group instead of pressing Enter on the top hit.
+  // Links and pins citing the ID can rank above it, so pick the result in
+  // its group instead of pressing Enter on the top hit.
+  const escaped = item.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  // a bare ID must not match a longer one; other items end in other text
+  const end = item === id ? '(?![\\d])' : ''
   await v.page
     .locator('[cmdk-group]')
-    .filter({ hasText: 'Spec IDs' })
+    .filter({ hasText: group })
     .locator('[cmdk-item]')
-    .filter({ hasText: new RegExp(`^${id}`) })
+    .filter({ hasText: new RegExp(`^${escaped}${end}`) })
     .first()
     .click()
   await v.page.waitForTimeout(1000)
-  const [hash, row] = await v.page.evaluate(() => [
+  const [hash, selected] = await v.page.evaluate(() => [
     location.hash,
     document.querySelector('tr[data-state=selected]')?.id ?? '',
   ])
-  if (!hash.includes(page) || !hash.includes(id))
-    fail(where, `went to ${hash || 'nowhere'}`)
-  if (row !== `row-${id}`) fail(where, `selected row is "${row}"`)
+  if (!hash.includes(page)) fail(where, `went to ${hash || 'nowhere'}`)
+  if (selected !== row) fail(where, `selected row is "${selected}"`)
   for (const e of v.errors) fail(where, `page error: ${e}`)
   await v.close()
 }
@@ -472,6 +484,17 @@ async function main() {
     await searchOpensRow(browser, 'DEC-050', 'decisions')
     await searchOpensRow(browser, 'OPEN-023', '/open')
     await searchOpensRow(browser, 'OPEN-001', '/open')
+    await searchOpensRow(browser, 'PWR-011', '/trace')
+    await searchOpensRow(browser, 'P3-007', '/checklist', 'Checklist tasks')
+    // 0.10 and 0.1 both exist; the result must open 0.10
+    await searchOpensRow(
+      browser,
+      '0.10',
+      '/history',
+      'Spec revisions',
+      'rev 0.10',
+      'rev-0.10'
+    )
     await taskChipOpensRow(browser)
     await revChipOpensRow(browser)
     await powerBars(browser)
