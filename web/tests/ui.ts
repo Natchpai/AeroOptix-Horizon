@@ -346,6 +346,9 @@ async function main() {
         'checklist?gate=P3&status=OPEN',
         'history',
         'history?rev=0.86',
+        'trace',
+        'trace?id=IF-010',
+        'trace?flag=task',
         'showcase',
       ]) {
         const v = await open(browser, route, { theme })
@@ -428,6 +431,8 @@ async function main() {
         'checklist',
         'checklist?id=P3-007',
         'history?rev=0.86',
+        'trace',
+        'trace?id=IF-010',
         'showcase',
       ]) {
         const v = await open(browser, route, { width: 390, theme })

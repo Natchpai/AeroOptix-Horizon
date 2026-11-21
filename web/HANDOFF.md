@@ -53,6 +53,11 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - Rows show revision, date, the note (clamped to 3 lines) and who approved it. Spec IDs and task IDs in the note are chips. Click a row to open it in place, with a link to its spec line; in a closed row a chip click opens the row.
   - `?rev=` opens a revision even when the filter hides it. Revisions 0.1 and 0.10 both exist, and the router reads a typed `?rev=0.10` as the number 0.1. Site links keep the string (`?rev=%220.10%22`), and `test:ui` checks that 0.10 opens 0.10.
   - The Overview "Recent spec changes" card links here ("Full history" and each revision chip).
+- **Traceability** (`/trace`): one row per requirement ID (kinds `SYS MCU IF SEN PWR SAF FUN ENV CMP MEC PCB MFG TST`, 109 rows, 6 removed), built in the browser from `ids.json`, `progress.json` and `topology.ts` (`src/features/trace/matrix.ts`). No extractor change.
+  - Counts per row: DEC rows that name it in Topic or Selected option, OPEN rows that name it anywhere, checklist tasks with it in Req, and diagram items with it in `refs`. Ranges such as "IF-030 to IF-043" count for every existing ID in them.
+  - Flags (report only, never a build failure): **No task** (no task Req names it) and **No decision or diagram** (no live DEC row and no diagram item). Removed rows are never flagged. On 2026-11-21: 3 without a task (CMP-010 to CMP-012; CMP-010 is in the P1-014 task text but not its Req) and 29 without a decision or diagram item.
+  - Filters: kind (`?kind=PWR`), flag (`?flag=task` or `?flag=link`; the summary cards also toggle it), text (`?q=`); `?id=IF-010` opens a row even when a filter hides it.
+  - The opened row shows every field of the requirement, its spec line, and the decisions, open items, tasks and diagram items, each linking to its page.
 - **Search:** Ctrl+K over pins, signals, blocks and spec IDs (not checklist tasks). A DEC result opens it on the Decisions page and an OPEN result on the Open items page; other IDs open their spec row on GitHub.
 - **SVG export:** on each diagram view and each package card. The export uses native SVG with hex colours, plus a footer with the spec revision, the phase, "not for fabrication" and the date.
 - **Showcase:** a 3D board viewer (`@google/model-viewer` 4.4.0 with `three` 0.183.x), loaded only on this page. It shows `web/public/models/ao-horizon.glb` with its board revision, export date (last commit of the file), KiCad version, size, a "not for fabrication" tag and a GLB download. Without the file the page says "No board model yet".
@@ -117,7 +122,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - no sideways scroll at 390 px in both themes;
   - a readable phone zoom;
   - same-tab hash links;
-  - the Decisions, Open items, Checklist and Spec history pages (both themes, 390 px), Ctrl+K on DEC-050, OPEN-023 and the closed OPEN-001, a next-action task chip opening its Checklist row, and an Overview revision chip (and `0.10`) opening its Spec history row.
+  - the Decisions, Open items, Checklist, Spec history and Traceability pages (both themes, 390 px), Ctrl+K on DEC-050, OPEN-023 and the closed OPEN-001, a next-action task chip opening its Checklist row, and an Overview revision chip (and `0.10`) opening its Spec history row.
 
 ## Verified (2026-11-21)
 
@@ -125,6 +130,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 - Open items page screenshots at 1440 and 390 px, dark and light; the engineer approved the look.
 - Checklist page: `npm run build` and `npm run test:ui` pass; screenshots at 1440 and 390 px, dark and light; the engineer approved the look.
 - Spec history page: `npm run build` and `npm run test:ui` pass; screenshots at 1440 and 390 px, dark and light; the engineer approved the look.
+- Traceability page: `npm run build` and `npm run test:ui` pass; screenshots at 1440 and 390 px, dark and light. The look is not yet approved. The no-task list was cross-checked by hand against the checklist Req cells.
 - **Fault injection:**
   - Removing IF-001 from `b-link` makes `npm run check` fail on IF-001.
   - Setting the magnetometer tap to `0x0E` makes `npm run drift` list it.
@@ -139,7 +145,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 
 ## Next steps
 
-1. New pages: see "Next pages (plan, 2026-11-21)" below. Pages 1 (Open items), 2 (Checklist) and 4 (Spec history) are built; page 3 (Traceability) is next.
+1. New pages: see "Next pages (plan, 2026-11-21)" below. Pages 1 (Open items), 2 (Checklist), 4 (Spec history) and 3 (Traceability) are built; the engineer reviews the Traceability look and its flag lists, then page 5 (Power budget) is next.
 2. Engineer reviews the `npm run drift` list (24 findings) and decides which site texts to fix.
 3. Re-export the board GLB once the parts are placed on the board.
 4. Keep `topology.ts` in step with the spec. `npm run check` flags a new IF row that is on no link.
@@ -147,7 +153,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 
 ## Next pages (plan, 2026-11-21)
 
-The engineer asked for these pages. Pages 1, 2 and 4 are built (2026-11-21); pages 3 and 5 are not built yet.
+The engineer asked for these pages. Pages 1 to 4 are built (2026-11-21); page 5 is not built yet.
 
 **Pattern for each page** (copy the Decisions page, `src/features/decisions/index.tsx`):
 - route `src/routes/_site/<page>.tsx` with `validateSearch` (`q`, `id`);
@@ -178,7 +184,7 @@ Order: 1 and 2 first (cheap, most asked), then 4, 3, 5.
    - Gate rows show the exit criterion and the stacked bar from the Overview `ProgressCard`.
    - **Extractor:** `progress.tasks` keeps only `{status, line}` today. Add `task`, `req`, `owner` and `evidence` from the task tables (header `| ID | Task | Req | Owner | Status | Evidence required / link |` under `## P<n>: ...`).
    - The Overview next-action task links go to `/checklist?id=` instead of GitHub.
-3. **Traceability** (`/trace`)
+3. **Traceability** (`/trace`), **built 2026-11-21** (see "What the site does").
    - One row per requirement ID (kinds `SYS MCU IF SEN PWR SAF FUN ENV CMP MEC PCB MFG TST`). Columns:
      - DEC rows citing it (in Topic or Selected option);
      - OPEN rows citing it;

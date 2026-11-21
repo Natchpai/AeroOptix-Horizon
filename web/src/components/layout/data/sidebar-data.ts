@@ -12,6 +12,7 @@ import {
   Network,
   ScrollText,
   Sparkles,
+  Waypoints,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -45,6 +46,7 @@ export const sidebarData: SidebarData = {
         { title: 'Open items', url: '/open', icon: CircleAlert },
         { title: 'Checklist', url: '/checklist', icon: ListChecks },
         { title: 'Spec history', url: '/history', icon: History },
+        { title: 'Traceability', url: '/trace', icon: Waypoints },
       ],
     },
     {

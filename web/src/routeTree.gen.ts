@@ -19,6 +19,7 @@ import { Route as SiteHistoryRouteImport } from './routes/_site/history'
 import { Route as SiteOpenRouteImport } from './routes/_site/open'
 import { Route as SitePinoutRouteImport } from './routes/_site/pinout'
 import { Route as SiteShowcaseRouteImport } from './routes/_site/showcase'
+import { Route as SiteTraceRouteImport } from './routes/_site/trace'
 
 const SiteRouteRoute = SiteRouteRouteImport.update({
   id: '/_site',
@@ -69,6 +70,11 @@ const SiteShowcaseRoute = SiteShowcaseRouteImport.update({
   path: '/showcase',
   getParentRoute: () => SiteRouteRoute,
 } as any)
+const SiteTraceRoute = SiteTraceRouteImport.update({
+  id: '/trace',
+  path: '/trace',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof SiteIndexRoute
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/open': typeof SiteOpenRoute
   '/pinout': typeof SitePinoutRoute
   '/showcase': typeof SiteShowcaseRoute
+  '/trace': typeof SiteTraceRoute
 }
 export interface FileRoutesByTo {
   '/404': typeof errors404Route
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/open': typeof SiteOpenRoute
   '/pinout': typeof SitePinoutRoute
   '/showcase': typeof SiteShowcaseRoute
+  '/trace': typeof SiteTraceRoute
   '/': typeof SiteIndexRoute
 }
 export interface FileRoutesById {
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/_site/open': typeof SiteOpenRoute
   '/_site/pinout': typeof SitePinoutRoute
   '/_site/showcase': typeof SiteShowcaseRoute
+  '/_site/trace': typeof SiteTraceRoute
   '/_site/': typeof SiteIndexRoute
 }
 export interface FileRouteTypes {
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/open'
     | '/pinout'
     | '/showcase'
+    | '/trace'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/404'
@@ -127,6 +137,7 @@ export interface FileRouteTypes {
     | '/open'
     | '/pinout'
     | '/showcase'
+    | '/trace'
     | '/'
   id:
     | '__root__'
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/_site/open'
     | '/_site/pinout'
     | '/_site/showcase'
+    | '/_site/trace'
     | '/_site/'
   fileRoutesById: FileRoutesById
 }
@@ -219,6 +231,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteShowcaseRouteImport
       parentRoute: typeof SiteRouteRoute
     }
+    '/_site/trace': {
+      id: '/_site/trace'
+      path: '/trace'
+      fullPath: '/trace'
+      preLoaderRoute: typeof SiteTraceRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
   }
 }
 
@@ -230,6 +249,7 @@ interface SiteRouteRouteChildren {
   SiteOpenRoute: typeof SiteOpenRoute
   SitePinoutRoute: typeof SitePinoutRoute
   SiteShowcaseRoute: typeof SiteShowcaseRoute
+  SiteTraceRoute: typeof SiteTraceRoute
   SiteIndexRoute: typeof SiteIndexRoute
 }
 
@@ -241,6 +261,7 @@ const SiteRouteRouteChildren: SiteRouteRouteChildren = {
   SiteOpenRoute: SiteOpenRoute,
   SitePinoutRoute: SitePinoutRoute,
   SiteShowcaseRoute: SiteShowcaseRoute,
+  SiteTraceRoute: SiteTraceRoute,
   SiteIndexRoute: SiteIndexRoute,
 }
 
