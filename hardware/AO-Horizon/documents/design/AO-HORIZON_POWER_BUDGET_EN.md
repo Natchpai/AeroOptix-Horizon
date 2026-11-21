@@ -1,6 +1,6 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.37
+**Revision:** 0.38
 **Updated:** 2026-11-21
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012), the 5 V input is a TPS2121 power mux with a 1.5 A limit (DEC-029, DEC-030) and the `+3V3A` LDO is TPS73533DRBR (DEC-027). No other rail, regulator or protection part is approved. Not a verification record.
 **Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006 (closed), OPEN-011, OPEN-021 (servo load, was OPEN-007), OPEN-024 (closed), OPEN-025 (closed; bench check P4-012), OPEN-028, OPEN-041. Decisions: DEC-007, DEC-010, DEC-011, DEC-012, DEC-018, DEC-019, DEC-053, DEC-054, DEC-025, DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-039, DEC-040, DEC-043, DEC-044, DEC-048, DEC-055, DEC-058, DEC-059, DEC-108. Checklist tasks: P0-017 (done), P2-010 (calculations in sections 5 and 11).
@@ -129,6 +129,17 @@ The subtotals are far from complete. Do not use them to size a regulator. The MC
 | Bench USB-C port above 1 A (DEC-038) | as the PM02D row: the 1.0 A minimum mux limit sets the room | as the PM02D row |
 
 With the loads in section 3 (SiK radio 100, FS-iA6B 50 placeholder, GPS 100, MS4525DO 5, TF-Luna 150, buzzer 30 mA, about 435 mA; DEC-053), the PM02D or a bench USB-C port above 1 A has about 350 mA left typical and about 70 mA in the hot worst case (`ESTIMATED`, 2026-11-19; was about 400 and 120 mA with ELRS on 2026-11-03). If the FS-iA6B draws more than the 50 mA placeholder, the hot worst-case room shrinks by the same amount (OPEN-034).
+
+### Rail summary
+
+One number per cell, in mA, copied from the totals table and section 3 above (the upper end where they give a range). The team website draws its power bars from this table. It is not for sizing a regulator; the rows above keep the conditions.
+
+| Rail | Typical load (mA) | Worst-case load (mA) | Limit (mA) | Limit from | Label |
+| ---- | ----------------- | -------------------- | ---------- | ---------- | ----- |
+| 3.3 V_IMU | 2.4 | 2.6 | 500 | TPS73533DRBR rating (DEC-027) | `ESTIMATED` |
+| 3.3 V | 244 | 570 | 600 | `+3V3` design current (DEC-040); the TPS62142RGTR is rated 2 A | `ESTIMATED` |
+| 5 V | 650 | 930 | 1000 | TPS2121 minimum current limit (DEC-030) | `ESTIMATED` |
+| 6 V (on the board) | TBD | 13200 | 10000 | UBEC continuous rating (PWR-011) | `ESTIMATED` (worst case: all 8 servos stalled) |
 
 ## 5. Rail tolerances (PWR-013)
 
