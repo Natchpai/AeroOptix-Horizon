@@ -6669,6 +6669,17 @@
 				)
 			)
 		)
+		(property "STATUS" "CHECKED"
+			(at 241.3 186.69 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "e69e5fae-5768-460e-b040-fd79e0824b2b")
 		)
