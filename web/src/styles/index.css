@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+
+/* The board GLB (Showcase) is binary; scanning it for class names makes the
+   build run out of memory. */
+@source not '../../public/models';
 @import './theme.css';
 
 @custom-variant dark (&:is(.dark *));

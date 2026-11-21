@@ -289,6 +289,7 @@ async function main() {
         'pinout?mcu=f100',
         'decisions',
         'decisions?id=DEC-050',
+        'showcase',
       ]) {
         const v = await open(browser, route, { theme })
         for (const e of v.errors) fail(`/${route} ${theme}`, `page error: ${e}`)
@@ -361,6 +362,7 @@ async function main() {
         'pinout?mcu=h743',
         'pinout?mcu=f100',
         'decisions?id=DEC-050',
+        'showcase',
       ]) {
         const v = await open(browser, route, { width: 390, theme })
         const where = `/${route} at 390 px ${theme}`
