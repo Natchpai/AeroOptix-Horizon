@@ -16,6 +16,29 @@ import { BrandLogo, CoopLogo } from '@/components/brand-logo'
 import { sidebarData } from './data/sidebar-data'
 import { NavGroup } from './nav-group'
 
+/**
+ * Callback ref: sets `data-fade` on the sidebar content while nav links sit
+ * hidden below its bottom edge, so a CSS mask can fade them out above the
+ * footer. A ref, not an effect, so it also runs when the mobile sheet opens.
+ */
+function fadeWhenMore(el: HTMLDivElement | null) {
+  if (!el) return
+  const update = () => {
+    const more = el.scrollTop + el.clientHeight < el.scrollHeight - 1
+    el.toggleAttribute('data-fade', more)
+  }
+  update()
+  el.addEventListener('scroll', update, { passive: true })
+  // a sub-menu opening changes the children's size, not the box's
+  const ro = new ResizeObserver(update)
+  ro.observe(el)
+  for (const child of el.children) ro.observe(child)
+  return () => {
+    el.removeEventListener('scroll', update)
+    ro.disconnect()
+  }
+}
+
 export function AppSidebar() {
   const { collapsible, variant } = useLayout()
   const { setOpenMobile } = useSidebar()
@@ -40,7 +63,10 @@ export function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent
+        ref={fadeWhenMore}
+        className='group-data-[collapsible=icon]:[mask-image:none]! data-fade:[mask-image:linear-gradient(to_bottom,black_calc(100%-2.5rem),transparent)]'
+      >
         {sidebarData.navGroups.map((props) => (
           <NavGroup key={props.title} {...props} />
         ))}

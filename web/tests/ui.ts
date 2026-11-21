@@ -9,8 +9,9 @@
  * a next-action task chip opens its Checklist row, and an Overview
  * revision chip opens its Spec history row, the Power budget page
  * draws one bar per Rail summary row, every Decisions Date cell holds
- * its text inside the cell, every page has its own browser tab title, and
- * the diagram view tabs fit at phone width.
+ * its text inside the cell, every page has its own browser tab title, the
+ * diagram view tabs fit at phone width, and light-theme status and evidence
+ * badges have AA contrast.
  *
  * Run after `npm run build`: `npm run test:ui`. Set UI_BROWSER to pick a
  * Playwright channel (default `msedge` locally; `chromium` when CI is set).
@@ -478,6 +479,76 @@ async function decisionDatesFit(browser: Browser) {
   await v.close()
 }
 
+/**
+ * Light theme: a few status and evidence badges have WCAG AA contrast
+ * (4.5:1) against the background they sit on, tints included. The sidebar
+ * phase text sits on a 10% tint of its own colour, the worst case. The
+ * badges are the bordered spans in `main`.
+ */
+async function lightContrast(browser: Browser) {
+  const cases: [string, string, string[]][] = [
+    ['checklist', 'main span.border', ['OPEN', 'DONE']],
+    ['power', 'main span.border', ['ESTIMATED', 'NOT_VERIFIED']],
+    ['power', '[data-sidebar=footer] span', ['PRELIMINARY']],
+  ]
+  for (const [route, selector, words] of cases) {
+    const where = `/${route} light contrast`
+    const v = await open(browser, route, { theme: 'light' })
+    const found = await v.page.evaluate(([selector, words]) => {
+      const cv = document.createElement('canvas')
+      cv.width = cv.height = 1
+      const g = cv.getContext('2d', { willReadFrequently: true })!
+      // paints the colours in order on one pixel and reads the result
+      const paint = (colors: string[]) => {
+        g.clearRect(0, 0, 1, 1)
+        for (const c of colors) {
+          g.fillStyle = '#000'
+          g.fillStyle = c
+          g.fillRect(0, 0, 1, 1)
+        }
+        return [...g.getImageData(0, 0, 1, 1).data]
+      }
+      const lum = (c: number[]) => {
+        const [r, gr, b] = c.map((v) => {
+          v /= 255
+          return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
+        })
+        return 0.2126 * r + 0.7152 * gr + 0.0722 * b
+      }
+      const out: Record<string, number> = {}
+      for (const el of document.querySelectorAll<HTMLElement>(selector)) {
+        const word = el.textContent?.trim() ?? ''
+        if (!words.includes(word) || word in out || el.children.length)
+          continue
+        if (el.getBoundingClientRect().width < 2) continue
+        // background layers up to the first opaque one
+        const layers: string[] = []
+        for (let e: Element | null = el; e; e = e.parentElement) {
+          const bg = getComputedStyle(e).backgroundColor
+          const a = paint([bg])[3]
+          if (a === 0) continue
+          layers.unshift(bg)
+          if (a === 255) break
+        }
+        if (paint(layers)[3] !== 255) layers.unshift('#ffffff')
+        const bg = lum(paint(layers))
+        const fg = lum(paint([...layers, getComputedStyle(el).color]))
+        out[word] =
+          (Math.max(fg, bg) + 0.05) / (Math.min(fg, bg) + 0.05)
+      }
+      return out
+    }, [selector, words] as const)
+    for (const w of words) {
+      const ratio = found[w]
+      if (ratio === undefined) fail(where, `no visible "${w}" text`)
+      else if (ratio < 4.5)
+        fail(where, `"${w}" contrast is ${ratio.toFixed(2)}:1, below 4.5:1`)
+    }
+    for (const e of v.errors) fail(where, `page error: ${e}`)
+    await v.close()
+  }
+}
+
 /** A revision chip on the Overview opens its row on Spec history. */
 async function revChipOpensRow(browser: Browser) {
   const where = 'Overview revision chip'
@@ -595,6 +666,7 @@ async function main() {
     await revChipOpensRow(browser)
     await powerBars(browser)
     await decisionDatesFit(browser)
+    await lightContrast(browser)
     await pageTitles(browser)
     await openRowTopAligned(browser)
     await chipsOpenSitePages(browser)

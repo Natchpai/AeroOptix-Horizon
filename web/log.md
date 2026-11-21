@@ -76,3 +76,47 @@ One entry per change: what changed, why, and which files were edited.
     small files.
   - `index.html`: the two icon links use the small flame files.
   - `log.md`: this entry.
+
+## 2026-11-22 T6: light-theme contrast and sidebar fade
+
+- What: darker light-theme values for the status, muted and primary
+  colours, so status and evidence text passes WCAG AA (4.5:1) on the
+  background it sits on, tints included:
+  - `--status-open` `#d97706` to `#a34a0c`
+  - `--status-decided` `#16a34a` to `#15773a`
+  - `--status-candidate` `#64748b` to `#5a697f`
+  - `--muted-foreground` `#5b6b85` to `#55647d`
+  - `--primary` `#2e78bd` to `#2a6fae`
+
+  The ESTIMATED evidence badge now uses `--primary` instead of `--brand`
+  (`#529ad6` in light, 3.0:1). In dark both are `#529ad6`, so dark looks
+  the same. Dark values, rails and bus colours are unchanged.
+
+  The sidebar nav list now fades out over its last 2.5rem (CSS mask) while
+  links sit hidden below it; the fade goes away when the list is scrolled
+  to the bottom or fits. Not in icon mode.
+- Why: in light, OPEN, PRELIMINARY and open ID chips measured 2.6 to
+  3.2:1, DONE and VERIFIED 3.3:1, ESTIMATED 3.0:1; muted text in the
+  sidebar footer box 4.36:1, "Current next action" 4.11:1, deferred task
+  chips 4.22:1. Lowest after, measured in the built site on Overview, Open
+  items, Checklist, Spec history, Power budget and Decisions: open 4.61,
+  decided 5.63, candidate 4.95, muted 4.66, primary 4.68 (ESTIMATED 5.27).
+  The worst case is open and muted text in the sidebar footer box, a 10%
+  tint of `--status-open`. At 1440 x 900 with a sub-menu open, the footer
+  box cut "Design records" or "Specification" in half with no cue that the
+  list scrolls.
+- Files:
+  - `src/styles/theme.css`: the five light (`:root`) values above.
+  - `src/components/spec-text.tsx`: ESTIMATED uses `var(--primary)`.
+  - `src/components/task-status.tsx`: the IN_PROGRESS task colour uses
+    `var(--primary)` instead of `var(--brand)` (3.0:1 in light), as for
+    ESTIMATED. No IN_PROGRESS task shows today.
+  - `src/components/layout/app-sidebar.tsx`: `fadeWhenMore` callback ref
+    sets `data-fade` on `SidebarContent` (scroll listener plus
+    ResizeObserver, so sub-menus and the mobile sheet work); the mask
+    classes on `SidebarContent`.
+  - `tests/ui.ts`: new `lightContrast` check (OPEN, DONE, ESTIMATED,
+    NOT_VERIFIED badges and the sidebar PRELIMINARY text, light theme,
+    at least 4.5:1). With the old colours injected it fails at 2.57 to
+    3.30:1.
+  - `log.md`: this entry.
