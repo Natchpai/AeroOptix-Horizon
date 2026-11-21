@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import { MdText } from '@/components/md-text'
 
 /** Checklist task states, in bar order. N/A tasks are left out of bars. */
-export const taskStates = [
+const taskStates = [
   { key: 'DONE', label: 'Done', color: 'var(--status-decided)' },
   { key: 'IN_PROGRESS', label: 'In progress', color: 'var(--brand)' },
   { key: 'BLOCKED', label: 'Blocked', color: 'var(--destructive)' },

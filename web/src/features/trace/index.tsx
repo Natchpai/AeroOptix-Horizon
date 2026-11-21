@@ -1,7 +1,8 @@
-import { useEffect, useMemo } from 'react'
-import { getRouteApi, Link as RouterLink } from '@tanstack/react-router'
+import { useMemo } from 'react'
+import { getRouteApi } from '@tanstack/react-router'
 import { idTitle, meta, sourceUrl } from '@/data'
 import { ChevronDown, ChevronRight } from 'lucide-react'
+import { detailLabel, useScrollToRow } from '@/lib/record-rows'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -24,19 +25,20 @@ import { IdChip } from '@/components/id-chip'
 import { Main } from '@/components/layout/main'
 import { SiteHeader } from '@/components/layout/site-header'
 import { MdText } from '@/components/md-text'
+import {
+  DiagramItemList,
+  SiteRowList,
+  TaskRowList,
+} from '@/components/record-table'
 import { SpecText } from '@/components/spec-text'
-import { TaskChip } from '@/components/task-status'
 import { REQ_KINDS, type TraceRow, traceRows } from './matrix'
 
 const route = getRouteApi('/_site/trace')
 
-const levelName = { system: 'Overview', board: 'System', power: 'Power' }
-
 const noTask = traceRows.filter((r) => r.noTask)
 const noLink = traceRows.filter((r) => r.noLink)
 
-const label =
-  'text-xs font-semibold tracking-wide text-muted-foreground uppercase'
+const label = detailLabel
 
 function Flag({ children }: { children: string }) {
   return (
@@ -84,18 +86,7 @@ export function TracePage() {
     )
   }, [filter, search.id, search.kind, search.flag])
 
-  // A link such as ?id=IF-010 scrolls its row into view once.
-  useEffect(() => {
-    if (!search.id) return
-    const t = setTimeout(
-      () =>
-        document
-          .getElementById(`row-${search.id}`)
-          ?.scrollIntoView({ block: 'start' }),
-      50
-    )
-    return () => clearTimeout(t)
-  }, [search.id])
+  useScrollToRow(search.id)
 
   const chip = (on: boolean) =>
     cn('h-7 px-2.5 text-xs', on && 'border-primary/60 bg-primary/10')
@@ -380,7 +371,6 @@ function TraceTableRow({
 
 function TraceDetail({ row }: { row: TraceRow }) {
   const { req } = row
-  const none = <p className='text-xs text-muted-foreground'>None.</p>
   return (
     <div className='grid gap-4 text-sm lg:grid-cols-[minmax(0,1fr)_22rem]'>
       <div className='min-w-0 space-y-2'>
@@ -405,104 +395,22 @@ function TraceDetail({ row }: { row: TraceRow }) {
       <div className='min-w-0 space-y-4'>
         <div className='space-y-2'>
           <div className={label}>Decisions</div>
-          {row.decisions.length ? (
-            <ul className='space-y-1'>
-              {row.decisions.map((d) => (
-                <li key={d.id} className='flex items-baseline gap-1.5'>
-                  <RouterLink
-                    to='/decisions'
-                    search={{ id: d.id }}
-                    className={cn(
-                      'w-16 shrink-0 font-mono text-xs text-primary hover:underline',
-                      d.removed && 'line-through opacity-60'
-                    )}
-                  >
-                    {d.id}
-                  </RouterLink>
-                  <span className='min-w-0 truncate text-xs text-muted-foreground'>
-                    <MdText text={idTitle(d.id)} />
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            none
-          )}
+          <SiteRowList rows={row.decisions} text={(d) => idTitle(d.id)} />
         </div>
         <div className='space-y-2'>
           <div className={label}>Open items</div>
-          {row.open.length ? (
-            <ul className='space-y-1'>
-              {row.open.map((o) => (
-                <li key={o.id} className='flex items-baseline gap-1.5'>
-                  <RouterLink
-                    to='/open'
-                    search={{ id: o.id }}
-                    className={cn(
-                      'w-16 shrink-0 font-mono text-xs text-primary hover:underline',
-                      o.closed && 'line-through opacity-60'
-                    )}
-                  >
-                    {o.id}
-                  </RouterLink>
-                  <span className='min-w-0 truncate text-xs text-muted-foreground'>
-                    <MdText text={o.fields['Description'] ?? ''} />
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            none
-          )}
+          <SiteRowList
+            rows={row.open}
+            text={(o) => o.fields['Description'] ?? ''}
+          />
         </div>
         <div className='space-y-2'>
           <div className={label}>Checklist tasks</div>
-          {row.tasks.length ? (
-            <ul className='space-y-1'>
-              {row.tasks.map((t) => (
-                <li key={t.id} className='flex items-baseline gap-1.5'>
-                  <span className='w-16 shrink-0'>
-                    <TaskChip id={t.id} />
-                  </span>
-                  <span className='min-w-0 truncate text-xs text-muted-foreground'>
-                    <MdText text={t.task} />
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            none
-          )}
+          <TaskRowList tasks={row.tasks} />
         </div>
         <div className='space-y-2'>
           <div className={label}>On the diagram</div>
-          {row.diagram.length ? (
-            <ul className='space-y-1'>
-              {row.diagram.map((item) => {
-                const isLink = 'from' in item
-                return (
-                  <li key={item.id} className='flex items-baseline gap-1.5'>
-                    <span className='w-16 shrink-0 text-xs text-muted-foreground'>
-                      {levelName[item.level]}
-                    </span>
-                    <RouterLink
-                      to='/diagram'
-                      search={
-                        isLink
-                          ? { level: item.level, link: item.id }
-                          : { level: item.level, block: item.id }
-                      }
-                      className='min-w-0 [overflow-wrap:anywhere] text-primary hover:underline'
-                    >
-                      {isLink ? `${item.label} (link)` : item.label}
-                    </RouterLink>
-                  </li>
-                )
-              })}
-            </ul>
-          ) : (
-            none
-          )}
+          <DiagramItemList items={row.diagram} none='None.' />
         </div>
       </div>
     </div>

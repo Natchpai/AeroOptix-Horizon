@@ -162,9 +162,10 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 
 The engineer asked for these pages. All five pages are built (2026-11-21).
 
-**Pattern for each page** (copy the Decisions page, `src/features/decisions/index.tsx`):
+**Pattern for each page** (see the Decisions page, `src/features/decisions/index.tsx`, the shortest one):
 - route `src/routes/_site/<page>.tsx` with `validateSearch` (`q`, `id`);
-- the TanStack table with the `rowText` filter, `meta.className` for phone columns, a detail row on click and a `usedOn` map;
+- the TanStack table with the `rowText` filter and `meta.className` for phone columns, drawn by `RecordTable` (`src/components/record-table.tsx`: rows, detail row, empty text); `useScrollToRow`, `detailLabel` and `levelName` from `src/lib/record-rows.ts`;
+- detail lists from the same file: `DiagramItemList`, `SiteRowList` (DEC and OPEN rows linking to their site page) and `TaskRowList`;
 - `IdChip` and `MdText`;
 - a sidebar item in `src/components/layout/data/sidebar-data.ts`;
 - `tests/ui.ts` page-load and 390 px entries in both themes.
@@ -224,27 +225,24 @@ Claude's list after building the five pages. The engineer picks; nothing here is
 
 Declined by the engineer (2026-11-21): keyboard access to table rows (Tab, Enter, Space on the row).
 
-Done 2026-11-21: top-aligned cells in opened rows on all five table pages (`test:ui` checks it).
-
-**Fixes (small, no design choice):**
-1. **One shared table page.** The five pages repeat the same pattern (filter in the URL, row toggle, scroll to `?id=`, detail row, empty state). A shared component or hook would cut about 150 lines per page and keep page fixes in one place.
+Done 2026-11-21: top-aligned cells in opened rows on all five table pages (`test:ui` checks it); one shared table and detail lists (`RecordTable` and friends; the five pages went from about 2,040 to 1,570 lines plus 270 shared, no visible change except DEC and OPEN IDs in detail lists now share one width).
 
 **Linking (the site now has a page for most IDs):**
-2. **ID chips open the site page.** `IdChip` opens GitHub for every ID. DEC could open `/decisions`, OPEN `/open`, requirement IDs `/trace`, with GitHub kept as a small link in each detail row. This changes every page, so it needs the engineer's OK.
-3. **Ctrl+K for tasks, revisions and requirements.** Search covers spec IDs but not `Pn-xxx` tasks or spec revisions; a requirement result could open its Traceability row.
-4. **Overview cards for the new pages.** The Explore grid shows six cards; Open items, Checklist, Traceability and Power budget are only in the sidebar. The Open items stat tile could link to `/open`.
-5. **Diagram detail panel links.** A block or link panel lists its spec IDs; DEC, OPEN and requirement IDs could open the new pages, and Power view rail and regulator blocks could link to `/power`.
+1. **ID chips open the site page.** `IdChip` opens GitHub for every ID. DEC could open `/decisions`, OPEN `/open`, requirement IDs `/trace`, with GitHub kept as a small link in each detail row. This changes every page, so it needs the engineer's OK.
+2. **Ctrl+K for tasks, revisions and requirements.** Search covers spec IDs but not `Pn-xxx` tasks or spec revisions; a requirement result could open its Traceability row.
+3. **Overview cards for the new pages.** The Explore grid shows six cards; Open items, Checklist, Traceability and Power budget are only in the sidebar. The Open items stat tile could link to `/open`.
+4. **Diagram detail panel links.** A block or link panel lists its spec IDs; DEC, OPEN and requirement IDs could open the new pages, and Power view rail and regulator blocks could link to `/power`.
 
 **Checks (report only, like `npm run drift`):**
-6. **Record revision drift.** The checklist header names the spec revision it follows ("Requirements authority: ... rev 0.87"), and the spec and power budget cite each other's revisions. A check could list records that point to an older revision than the one the site reads.
-7. **Traceability rule option.** A toggle to count task text, not only Req (CMP-010 is in the P1-014 text but not its Req).
-8. **Run `test:ui` in CI** with Playwright's bundled Chromium instead of the local Edge, so a PR shows the browser checks.
+5. **Record revision drift.** The checklist header names the spec revision it follows ("Requirements authority: ... rev 0.87"), and the spec and power budget cite each other's revisions. A check could list records that point to an older revision than the one the site reads.
+6. **Traceability rule option.** A toggle to count task text, not only Req (CMP-010 is in the P1-014 text but not its Req).
+7. **Run `test:ui` in CI** with Playwright's bundled Chromium instead of the local Edge, so a PR shows the browser checks.
 
 **Look and speed:**
-9. **Rail colours.** The dataviz validator fails the rail colours as a categorical set (light: 6 V against 5 V; dark: 3.3 V against 3.3 V_IMU for protan vision). The pages never rely on colour alone, but a re-stepped set would help the Power view. The engineer picked these colours, so any change is theirs.
-10. **Bundle size.** The `search-provider` chunk is about 545 kB (Vite warns). Loading the Ctrl+K index on first open would speed up the first page load.
-11. **Copy link** button in each opened row, since `?id=` links are the main way to share a row.
-12. **Evidence badges elsewhere.** `SpecText labels` colours `VERIFIED` and the other labels; the Checklist evidence column and the Decisions notes could use it too.
+8. **Rail colours.** The dataviz validator fails the rail colours as a categorical set (light: 6 V against 5 V; dark: 3.3 V against 3.3 V_IMU for protan vision). The pages never rely on colour alone, but a re-stepped set would help the Power view. The engineer picked these colours, so any change is theirs.
+9. **Bundle size.** The `search-provider` chunk is about 545 kB (Vite warns). Loading the Ctrl+K index on first open would speed up the first page load.
+10. **Copy link** button in each opened row, since `?id=` links are the main way to share a row.
+11. **Evidence badges elsewhere.** `SpecText labels` colours `VERIFIED` and the other labels; the Checklist evidence column and the Decisions notes could use it too.
 
 ## Known gaps
 

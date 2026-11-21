@@ -1,10 +1,9 @@
-import { Fragment, useEffect, useMemo, useState } from 'react'
-import { getRouteApi, Link as RouterLink } from '@tanstack/react-router'
+import { useMemo, useState } from 'react'
+import { getRouteApi } from '@tanstack/react-router'
 import {
   type ColumnDef,
   type FilterFn,
   type SortingState,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
@@ -21,6 +20,7 @@ import {
   sourceUrl,
 } from '@/data'
 import { ChevronDown, ChevronRight } from 'lucide-react'
+import { detailLabel, useScrollToRow } from '@/lib/record-rows'
 import { cn } from '@/lib/utils'
 import {
   Card,
@@ -30,19 +30,12 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { IdChip } from '@/components/id-chip'
 import { Main } from '@/components/layout/main'
 import { SiteHeader } from '@/components/layout/site-header'
 import { MdText } from '@/components/md-text'
+import { DiagramItemList, RecordTable } from '@/components/record-table'
 
 const route = getRouteApi('/_site/decisions')
 
@@ -54,8 +47,6 @@ const usedOn = new Map<string, (Block | Link)[]>()
 for (const item of [...blocks, ...links])
   for (const r of new Set([...item.refs, ...(item.open ?? [])]))
     if (r.startsWith('DEC-')) usedOn.set(r, [...(usedOn.get(r) ?? []), item])
-
-const levelName = { system: 'Overview', board: 'System', power: 'Power' }
 
 /** The filter searches the whole row (topic, decision, notes, date). */
 const rowText: FilterFn<SpecId> = (row, _col, value: string) => {
@@ -173,18 +164,7 @@ export function DecisionsPage() {
     getFilteredRowModel: getFilteredRowModel(),
   })
 
-  // A link such as ?id=DEC-050 scrolls its row into view once.
-  useEffect(() => {
-    if (!search.id) return
-    const t = setTimeout(
-      () =>
-        document
-          .getElementById(`row-${search.id}`)
-          ?.scrollIntoView({ block: 'center' }),
-      50
-    )
-    return () => clearTimeout(t)
-  }, [search.id])
+  useScrollToRow(search.id, 'row-', 'center')
 
   const rows = table.getRowModel().rows
 
@@ -225,74 +205,14 @@ export function DecisionsPage() {
             />
           </CardHeader>
           <CardContent className='px-0'>
-            <div className='overflow-x-auto'>
-              <Table className='sm:table-fixed'>
-                <TableHeader>
-                  {table.getHeaderGroups().map((hg) => (
-                    <TableRow key={hg.id}>
-                      {hg.headers.map((h) => (
-                        <TableHead
-                          key={h.id}
-                          className={cn(
-                            'first:ps-6',
-                            h.column.columnDef.meta?.className,
-                            h.column.columnDef.meta?.thClassName
-                          )}
-                        >
-                          {flexRender(
-                            h.column.columnDef.header,
-                            h.getContext()
-                          )}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {rows.map((r) => {
-                    const open = r.original.id === search.id
-                    return (
-                      <Fragment key={r.id}>
-                        <TableRow
-                          id={`row-${r.original.id}`}
-                          onClick={() => toggle(r.original.id)}
-                          data-state={open ? 'selected' : undefined}
-                          className={cn(
-                            'cursor-pointer align-top data-[state=selected]:bg-primary/10',
-                            r.original.removed && 'line-through opacity-60'
-                          )}
-                        >
-                          {r.getVisibleCells().map((c) => (
-                            <TableCell
-                              key={c.id}
-                              className={cn(
-                                'py-2 align-top whitespace-normal first:ps-6',
-                                c.column.columnDef.meta?.className
-                              )}
-                            >
-                              {flexRender(
-                                c.column.columnDef.cell,
-                                c.getContext()
-                              )}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                        {open && (
-                          <TableRow className='bg-primary/5 hover:bg-primary/5'>
-                            <TableCell
-                              colSpan={columns.length}
-                              className='px-6 py-3 whitespace-normal'
-                            >
-                              <DecisionDetail row={r.original} />
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </Fragment>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-            </div>
+            <RecordTable
+              table={table}
+              openId={search.id}
+              getId={(s) => s.id}
+              onToggle={toggle}
+              detail={(s) => <DecisionDetail row={s} />}
+              rowClassName={(s) => s.removed && 'line-through opacity-60'}
+            />
           </CardContent>
         </Card>
       </Main>
@@ -306,16 +226,12 @@ function DecisionDetail({ row }: { row: SpecId }) {
     <div className='grid gap-4 text-sm lg:grid-cols-[minmax(0,1fr)_16rem]'>
       <div className='min-w-0 space-y-2'>
         <div className='space-y-2 sm:hidden'>
-          <div className='text-xs font-semibold tracking-wide text-muted-foreground uppercase'>
-            Decision · {row.fields['Date']}
-          </div>
+          <div className={detailLabel}>Decision · {row.fields['Date']}</div>
           <p className='leading-relaxed'>
             <MdText text={row.fields['Selected option'] ?? ''} />
           </p>
         </div>
-        <div className='text-xs font-semibold tracking-wide text-muted-foreground uppercase'>
-          Notes
-        </div>
+        <div className={detailLabel}>Notes</div>
         <p className='leading-relaxed'>
           <MdText text={row.fields['Notes'] || '-'} />
         </p>
@@ -329,38 +245,8 @@ function DecisionDetail({ row }: { row: SpecId }) {
         </a>
       </div>
       <div className='space-y-2'>
-        <div className='text-xs font-semibold tracking-wide text-muted-foreground uppercase'>
-          On the diagram
-        </div>
-        {used.length ? (
-          <ul className='space-y-1'>
-            {used.map((item) => {
-              const isLink = 'from' in item
-              return (
-                <li key={item.id} className='flex items-baseline gap-1.5'>
-                  <span className='w-16 shrink-0 text-xs text-muted-foreground'>
-                    {levelName[item.level]}
-                  </span>
-                  <RouterLink
-                    to='/diagram'
-                    search={
-                      isLink
-                        ? { level: item.level, link: item.id }
-                        : { level: item.level, block: item.id }
-                    }
-                    className='min-w-0 [overflow-wrap:anywhere] text-primary hover:underline'
-                  >
-                    {isLink ? `${item.label} (link)` : item.label}
-                  </RouterLink>
-                </li>
-              )
-            })}
-          </ul>
-        ) : (
-          <p className='text-xs text-muted-foreground'>
-            Not drawn on any diagram view.
-          </p>
-        )}
+        <div className={detailLabel}>On the diagram</div>
+        <DiagramItemList items={used} />
       </div>
     </div>
   )
