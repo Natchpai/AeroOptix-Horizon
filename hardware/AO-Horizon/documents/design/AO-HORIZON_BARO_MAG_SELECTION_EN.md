@@ -135,7 +135,7 @@ Source keys used below:
 | --------- | ----- | ------ | ----- |
 | Product status | Not stated in the datasheet | iSentek | `NOT_VERIFIED` |
 | Package | LGA-16, 3.0 × 3.0 × 1.0 mm, ±0.1 mm. Land pattern not in the text (drawing is an image) | DS 1, 2.2 | `VERIFIED` (DS via NotebookLM) |
-| Pins | 1 SCL, 2 AVDD, 3 NC, 4 NC, 5 CAD0, 6 CAD1, 7 VPP (test, leave floating), 8 NC, 9 VSS, 10 C1 (4.7 µF set/reset capacitor), 11 VSS, 12 NC, 13 DVDD, 14 RSTN, 15 DRDY, 16 SDA | DS 2.2 | `VERIFIED` (DS via NotebookLM) |
+| Pins | 1 SCL, 2 AVDD, 3 NC, 4 NC, 5 CAD0, 6 CAD1, 7 VPP (test pin; V1.8: "connection to DVDD is suggested, Otherwise can be floating"; floating decided, spec DEC-102), 8 NC, 9 VSS, 10 C1 (4.7 µF set/reset capacitor), 11 VSS, 12 NC, 13 DVDD, 14 RSTN, 15 DRDY, 16 SDA | DS 2.2 | `VERIFIED` (DS via NotebookLM) |
 | Interface | I2C only, fast mode up to 400 kHz | DS 1 | `VERIFIED` (DS via NotebookLM) |
 | I2C address | CAD1/CAD0 = VSS/VSS 0x0C, VSS/VDD 0x0D, VDD/VSS 0x0E, VDD/VDD 0x0F. Both floating: 0x0E | DS 2.3 | `VERIFIED` (DS via NotebookLM) |
 | AVDD / DVDD | 1.72 to 3.6 V each (typ 2.8 V / 1.8 V) | DS 4.2 | `VERIFIED` (DS via NotebookLM) |

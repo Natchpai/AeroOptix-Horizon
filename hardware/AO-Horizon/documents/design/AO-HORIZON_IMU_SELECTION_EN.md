@@ -60,7 +60,7 @@ Supply: the `+3V3A` rail feeds the VDD pins of all sensors, both IMUs included; 
 
 All from DS via agy, so `NOT_VERIFIED` until the human check in section 5.
 
-- **Pins used per IMU:** pin 12 CS, pin 13 SCLK, pin 14 SDI, pin 1 SDO, pin 4 INT1. Pin 9 INT2/FSYNC/CLKIN is optional; if unused, leave it NC or tie it to VDDIO. The team does not use pin 9 (no CLKIN, no INT2; pinmap review Q16, 2026-10-24).
+- **Pins used per IMU:** pin 12 CS, pin 13 SCLK, pin 14 SDI, pin 1 SDO, pin 4 INT1. Pin 9 INT2/FSYNC/CLKIN is optional; if unused, leave it NC or tie it to VDDIO. The team does not use pin 9 (no CLKIN, no INT2; pinmap review Q16, 2026-10-24). Pins 7 and 9 are not connected in the schematic (spec DEC-103).
 - **Reserved pins 2, 3, 7, 10, 11:** NC, VDDIO or GND. The internal pull-up setting (`pe_trim`) must match the choice, so firmware needs to know it.
 - **Bypass:** 0.1 µF X7R ±10% on VDD and on VDDIO, one each (DS §4.5 Table 11). Use larger capacitors if supply ripple exceeds 50 mV pk-pk.
 - **Reset:** no reset line to route (DEC-009).
