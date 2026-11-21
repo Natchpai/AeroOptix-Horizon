@@ -1,5 +1,6 @@
 /**
- * Browser checks on the built site, in the installed Microsoft Edge:
+ * Browser checks on the built site, in the installed Microsoft Edge (in CI,
+ * Playwright's bundled Chromium):
  * pages load, diagram lines are straight, link labels are clear, SVG
  * exports are plain valid SVG, phone width has no sideways scroll and opens
  * diagrams at a readable zoom, the light theme passes the same checks, and
@@ -9,7 +10,8 @@
  * revision chip opens its Spec history row, and the Power budget page
  * draws one bar per Rail summary row.
  *
- * Run after `npm run build`: `npm run test:ui`. Local only (CI has no Edge).
+ * Run after `npm run build`: `npm run test:ui`. Set UI_BROWSER to pick a
+ * Playwright channel (default `msedge` locally; `chromium` when CI is set).
  * Exits 1 and lists every failure.
  */
 import { readFileSync } from 'node:fs'
@@ -435,7 +437,8 @@ async function main() {
     preview: { port: PORT, strictPort: true, open: false },
     logLevel: 'warn',
   })
-  const browser = await chromium.launch({ channel: 'msedge' })
+  const channel = process.env.UI_BROWSER ?? (process.env.CI ? '' : 'msedge')
+  const browser = await chromium.launch(channel ? { channel } : {})
   try {
     // pages load without errors, both themes
     for (const theme of ['dark', 'light'] as const)

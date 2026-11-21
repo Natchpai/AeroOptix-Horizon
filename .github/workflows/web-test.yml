@@ -1,0 +1,50 @@
+# Runs the browser checks (web/tests/ui.ts) on the built website, in
+# Playwright's bundled Chromium. The deploy workflow (pages.yml) builds
+# only; this one adds the page, diagram, export and phone-width checks.
+name: Website UI test
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'web/**'
+      - 'hardware/AO-Horizon/documents/design/**'
+      - 'README.md'
+      - '.github/workflows/web-test.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'web/**'
+      - 'hardware/AO-Horizon/documents/design/**'
+      - 'README.md'
+      - '.github/workflows/web-test.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: web-test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # the build dates the board model by its last commit
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npx playwright-core install --with-deps chromium
+      - run: npm run build
+      - run: npm run test:ui
