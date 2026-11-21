@@ -75,12 +75,11 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 
 1. Engineer reviews the Traceability flag lists (3 no task, 29 no decision or diagram).
 2. Engineer reviews the `npm run drift` list (24 findings) and decides which site texts to fix.
-3. Update `README.md` in `web/`: its data table and browser-check list predate the five new pages (`history.json`, `power.json`, task fields, the new tests).
-4. Re-export the board GLB once the parts are placed.
-5. Keep `topology.ts` in step with the spec; `npm run check` flags a new IF row on no link.
-6. Optional: a note on the Power view power-mux block for the DNP Plan B diode-OR (spec 0.87, DEC-108). Do not draw the diodes; they are not fitted.
+3. Re-export the board GLB once the parts are placed.
+4. Keep `topology.ts` in step with the spec; `npm run check` flags a new IF row on no link.
+5. Optional: a note on the Power view power-mux block for the DNP Plan B diode-OR (spec 0.87, DEC-108). Do not draw the diodes; they are not fitted.
 
-**Later, when the data exists:** connector pinout pages after OPEN-023 gives the far-end pins (this also fills the Interface view `TBD`s); the BOM page (idea 15).
+**Later, when the data exists:** connector pinout pages after OPEN-023 gives the far-end pins (this also fills the Interface view `TBD`s); the BOM page (idea 6).
 
 **Adding a table page:** copy the Decisions page (`src/features/decisions/index.tsx`, the shortest): a route in `src/routes/_site/` with `validateSearch`, a TanStack table drawn by `RecordTable`, a sidebar item in `src/components/layout/data/sidebar-data.ts`, and `tests/ui.ts` page-load and 390 px entries. A new record field needs an extractor change and a type in `src/data/types.ts`. Process: build, `npm run build` and `npm run test:ui` pass, screenshots at 1440 and 390 px in both themes, the engineer approves the look, then each Git step with its own approval.
 
@@ -90,24 +89,17 @@ The engineer picks; nothing here is decided.
 
 1. **Overview cards for the new pages.** The Explore grid shows six cards; Open items, Checklist, Traceability and Power budget are only in the sidebar. The Open items stat tile could link to `/open`.
 2. **Power view to the Power budget.** The Power view rail and regulator blocks could link to `/power`.
-3. **Record revision drift (report only).** The checklist names the spec revision it follows ("Requirements authority: ... rev 0.87"), and the spec and power budget cite each other's revisions. A check could list records that point to an older revision than the one the site reads.
-4. **Traceability rule option.** A toggle to count task text, not only Req.
-5. **Run `test:ui` in CI** with Playwright's bundled Chromium instead of the local Edge.
-6. **Rail colours.** A re-stepped set that passes the validator would help the Power view. The engineer picked these colours, so any change is theirs.
-7. **Bundle size.** The `search-provider` chunk is about 593 kB (Vite warns). Loading the Ctrl+K index on first open would speed up the first page load.
-8. **Copy link** button in each opened row.
-9. **Evidence badges elsewhere** (`SpecText labels`): the Checklist evidence column and the Decisions notes.
-10. **About page** for new team members: how to read the site (phases, evidence labels, ID kinds, which record each page reads, what `TBD` means).
-11. **Progress over time.** Plot the DONE task count per gate from the checklist's Git history at build time. CI would need `fetch-depth: 0` in the checkout.
-12. **Recent decisions on the Overview.** DEC rows carry a Date; a card could list the ones from the last 7 days or since the previous spec revision.
-13. **Full-text search.** Ctrl+K matches IDs and titles only; descriptions and notes could join a lazy-loaded index (see idea 7).
-14. **Print view** for Decisions, Open items and Checklist (print CSS, rows expanded) for team meetings.
-15. **BOM page** (`/bom`), once the engineer exports a BOM from KiCad and commits it (a schematic output, so a human step; the site never reads `.kicad_sch`).
+3. **Bundle size.** The `search-provider` chunk is about 593 kB (Vite warns). Loading the Ctrl+K index on first open would speed up the first page load.
+4. **Run `test:ui` in CI** with Playwright's bundled Chromium instead of the local Edge.
+5. **About page** for new team members: how to read the site (phases, evidence labels, ID kinds, which record each page reads, what `TBD` means).
+6. **BOM page** (`/bom`), once the engineer exports a BOM from KiCad and commits it (a schematic output, so a human step; the site never reads `.kicad_sch`).
     - One row per part: references, quantity, value, footprint, `MFR`, `MFR.P/N`, `LCSC`, DNP (for example D105 and D106, Plan B, DEC-108). Filter by text, group and DNP.
     - The detail row links the part to its diagram blocks (part number in a block's `sub`, as the Power budget does) and to the DEC rows that name it.
     - Report-only flags: a fitted part without `MFR.P/N` or `LCSC`.
     - The extractor reads the exported file and fails the build on a missing column, like the other records. Stock and price stay off the page: supplier pages are JavaScript-rendered, so those values would be `NOT_VERIFIED`.
     - Before building: agree the export format (CSV columns) and where the file lives with the engineer.
+
+Dropped from the list (2026-11-21), so later sessions do not propose them again: record revision drift check (`/progress-update` keeps revisions in step); a Traceability toggle for task text (fix the Req cell instead, as for CMP-010 in P1-014); re-stepped rail colours (the engineer's choice); a copy-link button (the address bar already holds `?id=`); evidence badges on more pages; a progress-over-time chart; recent decisions on the Overview (Spec history covers it); full-text search (works against the bundle-size idea); a print view.
 
 ## Known gaps
 
