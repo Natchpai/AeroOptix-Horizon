@@ -29,6 +29,20 @@ const nodeTypes = { block: BlockNode, zone: ZoneNode }
 const NARROW = 640
 const READABLE = 0.35
 const FIT = { padding: 0.05, maxZoom: 1 }
+/**
+ * The minimap (shown from the lg breakpoint) sits in the bottom-right
+ * corner; the fit keeps that strip free so it covers no block.
+ */
+const MINIMAP = { width: 170, height: 110 }
+const fitPadding = () =>
+  window.matchMedia('(min-width: 1024px)').matches
+    ? ({
+        left: '5%',
+        top: '5%',
+        bottom: '5%',
+        right: `${MINIMAP.width + 30}px`,
+      } as const satisfies Record<string, `${number}${'%' | 'px'}`>)
+    : FIT.padding
 const startBlock: Record<Level, string> = {
   system: 'fc',
   board: 'h743',
@@ -95,7 +109,7 @@ function CanvasInner({
             duration: 300,
           })
       }
-      fitView({ ...FIT, duration: 300 })
+      fitView({ ...FIT, padding: fitPadding(), duration: 300 })
     }, 30)
     return () => clearTimeout(t)
   }, [laid, level, paneW, paneH, fitView, setCenter])
@@ -201,12 +215,16 @@ function CanvasInner({
         size={1.2}
         color='color-mix(in oklab, var(--brand) 22%, transparent)'
       />
-      <Controls showInteractive={false} position='top-right' />
+      <Controls
+        showInteractive={false}
+        position='top-right'
+        fitViewOptions={{ ...FIT, padding: fitPadding(), duration: 300 }}
+      />
       <MiniMap
         pannable
         zoomable
         position='bottom-right'
-        style={{ width: 170, height: 110 }}
+        style={MINIMAP}
         className='!hidden !rounded-md !border !bg-card lg:!block'
         maskColor='color-mix(in oklab, var(--background) 70%, transparent)'
         nodeColor={(n) =>
