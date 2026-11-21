@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.34
-**Updated:** 2026-11-19
+**Revision:** 0.36
+**Updated:** 2026-11-21
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012), the 5 V input is a TPS2121 power mux with a 1.5 A limit (DEC-029, DEC-030) and the `+3V3A` LDO is TPS73533DRBR (DEC-027). No other rail, regulator or protection part is approved. Not a verification record.
-**Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006 (closed), OPEN-011, OPEN-021 (servo load, was OPEN-007), OPEN-024 (closed), OPEN-025 (closed; bench check P4-012), OPEN-028. Decisions: DEC-007, DEC-010, DEC-011, DEC-012, DEC-018, DEC-019, DEC-053, DEC-054, DEC-025, DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-039, DEC-040, DEC-043, DEC-044, DEC-048, DEC-055, DEC-058, DEC-059. Checklist tasks: P0-017 (done), P2-010.
+**Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006 (closed), OPEN-011, OPEN-021 (servo load, was OPEN-007), OPEN-024 (closed), OPEN-025 (closed; bench check P4-012), OPEN-028. Decisions: DEC-007, DEC-010, DEC-011, DEC-012, DEC-018, DEC-019, DEC-053, DEC-054, DEC-025, DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-039, DEC-040, DEC-043, DEC-044, DEC-048, DEC-055, DEC-058, DEC-059. Checklist tasks: P0-017 (done), P2-010 (calculations in sections 5 and 11).
 **Decision owner:** Hardware
 
 Single record for rail loads, rail tolerances, brownout thresholds and power protection requirements.
@@ -16,6 +16,7 @@ Source keys used below:
 - **IMU rec**: `AO-HORIZON_IMU_SELECTION_EN.md` (datasheet values extracted by agy, `NOT_VERIFIED`).
 - **Snippet**: search-result text of a PDF datasheet. Not opened, always `NOT_VERIFIED`.
 - **TI**: ti.com product pages and HTML datasheets (TPS62142: SLVSAJ0F Rev. F; TPS735: SBVS087M), fetched 2026-10-18 and 2026-10-19.
+- **TDK and iSentek text**: ICM-45686 DS-000489 Rev 1.1, ICP-20100 DS-000416 Rev 1.3, BMP581 Rev 1.13 and IST8310 V1.8, read as NotebookLM source fulltext (2026-11-21).
 - **TI mux**: TPS212x datasheet SLVSEA3F (August 2020), NotebookLM notebook `TPS212x 2.8-V to 22-V Priority Power MUX with Seamless Switchover` (added by the human owner), read as source fulltext.
 
 Fetches to st.com, invensense.tdk.com, te.com and en.benewake.com failed on 2026-10-18 (`getaddrinfo EAI_AGAIN`). The rows that depend on them are `TBD`.
@@ -56,12 +57,12 @@ Typical or average current per load. Peak current listed where known. "TBD" mean
 
 | Load | Qty | Current each | Peak | Source | Label |
 | ---- | --- | ------------ | ---- | ------ | ----- |
-| ICM-45686, 6-axis low-noise, 6400 Hz | 2 | 0.44 mA | TBD | IMU rec (DS Table 3) | `NOT_VERIFIED` |
-| ICP-20100 VDD | 1 | TBD | TBD | Not read | `NOT_VERIFIED` |
-| BMP581 VDD | 1 | TBD | TBD | Not read | `NOT_VERIFIED` |
-| IST8310 AVDD | 1 | TBD | TBD | Not read | `NOT_VERIFIED` |
+| ICM-45686, 6-axis low-noise, 6400 Hz | 2 | 0.44 mA typ (0.42 mA at 1600 Hz) | Not stated | DS-000489 Rev 1.1 Table 3 (VDD 1.8 V, characterization) | `VERIFIED` for the table condition; at 3.3 V `NOT_VERIFIED` |
+| ICP-20100 | 1 | 0.25 mA typ, highest mode (MODE4); MODE0 0.211 mA, MODE1 0.222 mA; standby 2.65 µA | Not stated | DS-000416 Rev 1.3 Table 2 and Table 5 | `VERIFIED` for the table condition |
+| BMP581 | 1 | 0.075 mA typ, 0.08 mA max (high resolution, 30 Hz) | 0.26 mA max | BMP581 Rev 1.13 Table 4 | `VERIFIED` for the table condition |
+| IST8310 | 1 | 1.2 mA typ at 200 sps, 0.32 mA at 50 sps; standby 10 µA | Not stated | IST8310 V1.8 3.3 (AVDD 2.8 V, DVDD 1.8 V) | `VERIFIED` at 2.8 V; at 3.3 V `NOT_VERIFIED` |
 
-Since DEC-043 (2026-11-12), this rail feeds the VDD pins of all sensors. VDDIO (IST8310 DVDD) stays on the 3.3 V rail, so the sensor I/O current stays in the 3.3 V row.
+Since DEC-043 (2026-11-12), this rail feeds the VDD pins of all sensors. VDDIO (IST8310 DVDD) stays on the 3.3 V rail. None of the four datasheets splits the current between VDD and VDDIO, so each row above books the whole device current on this rail (an upper bound for VDD, `ESTIMATED`). The I/O share on the 3.3 V rail is not stated and is bounded by the same values.
 
 ### 3.3 V
 
@@ -69,9 +70,9 @@ Since DEC-043 (2026-11-12), this rail feeds the VDD pins of all sensors. VDDIO (
 | ---- | --- | ------------ | ---- | ------ | ----- |
 | STM32H743VIT6 | 1 | 220 mA typ at Tj 25 °C; 436 mA max at Tj 85 °C, 546 mA max at Tj 105 °C (Run mode, 480 MHz VOS0, code from flash, cache on, all peripherals enabled, LDO on) | Same | ST DS12110 Rev 11 Table 120 (NotebookLM notebook `STM32H743VI`, cited_text, 2026-11-03) | `VERIFIED` for the table condition; the firmware clock and peripheral use are `ASSUMED` |
 | STM32F100C8T6B | 1 | 15.4 mA max at 24 MHz, all peripherals on, code from Flash, TA 85 °C | Not stated | F1 value-line DS Table 12 (NotebookLM) | `VERIFIED` for the table condition (8 MHz external clock with PLL); at a 24 MHz HSE without PLL `ESTIMATED` as no higher |
-| ICP-20100 | 1 | TBD | TBD | invensense.tdk.com unreachable | `NOT_VERIFIED` |
-| BMP581 (barometer 2, DEC-010) | 1 | TBD | TBD | Not read yet (NotebookLM notebook `BMP581`) | `NOT_VERIFIED` |
-| IST8310 (magnetometer, DEC-011) | 1 | 1.2 mA at 200 sps, 0.32 mA at 50 sps (typ, AVDD 2.8 V) | Not stated | IST8310 DS V1.2, 4.3 (NotebookLM) | `VERIFIED` at 2.8 V; at 3.3 V `NOT_VERIFIED` |
+| ICP-20100 VDDIO | 1 | Not stated; at most 0.25 mA (device total, 3.3 V_IMU row) | Not stated | DS-000416 Rev 1.3 Table 2 | `ESTIMATED` upper bound |
+| BMP581 (barometer 2, DEC-010) VDDIO | 1 | Not stated; at most 0.08 mA (device total, 3.3 V_IMU row) | 0.26 mA max | BMP581 Rev 1.13 Table 4 | `ESTIMATED` upper bound |
+| IST8310 (magnetometer, DEC-011) DVDD | 1 | Not stated; at most 1.2 mA at 200 sps (device total, 3.3 V_IMU row) | Not stated | IST8310 V1.8 3.3 | `ESTIMATED` upper bound; at 3.3 V `NOT_VERIFIED` |
 | Clock oscillators U202 (ECS-2520MV-160-CN-TR, 16 MHz) and U302 (ASDDV-24.000MHZ-LC-T, 24 MHz), type decided 2026-11-14 (spec DEC-044), part numbers decided (DEC-048), data checked against the MCU HSE limits (spec CMP-010) | 2 | U202 6.0 mA max (3.3 V, up to 19 MHz); U302 4.0 mA max (3.3 V, 20 to 30 MHz); both into 15 pF | Not stated | ECS-2520MV and Abracon ASDDV datasheets via NotebookLM | `VERIFIED` |
 | I2C pull-ups | TBD | TBD | - | Depends on P1-003 | `TBD` |
 | LEDs: 3 board (IF-047), 3 px4io, safety LED (IF-049) | 7 | TBD (set by the resistors) | - | Resistors not chosen | `TBD` |
@@ -110,8 +111,8 @@ The 4 motor outputs (IF-040 to IF-043) carry only the signal and GND to one Tekk
 
 | Rail | Known subtotal | Missing | Budget | Margin | Label |
 | ---- | -------------- | ------- | ------ | ------ | ----- |
-| 3.3 V_IMU | 0.88 mA (2 × 0.44 mA, IMUs only) | IMU peak; ICP-20100, BMP581 and IST8310 VDD currents (DEC-043) | TBD. 500 mA, TPS73533DRBR (DEC-027, TI SBVS087M 5.3). | TBD | `ESTIMATED` from `NOT_VERIFIED` inputs |
-| 3.3 V | about 244 mA typ (design current about 0.6 A maximum, DEC-040; L101 1.2 A rating, distributor `NOT_VERIFIED`, allows about 0.5 A buck input); about 460 mA with the H743 at its Tj 85 °C maximum, about 570 mA at Tj 105 °C (H743, F100 max 15.4 mA, IST8310, D104 about 2.5 mA, and an assumed 5 mA for the barometers and pull-ups); U202 and U302 add up to 10 mA max, not yet in these sums | ICP-20100, BMP581, pull-ups and px4io LEDs not read | 2 A, TPS62142RGTR (DEC-012, TI SLVSAJ0F) | TBD | `ESTIMATED` from partial inputs |
+| 3.3 V_IMU | about 2.4 mA typ (2 × 0.44 + 0.25 + 0.08 + 1.2 mA), about 2.6 mA with the BMP581 0.26 mA peak; whole device currents, so an upper bound for the VDD pins | IMU and IST8310 peaks not stated; currents at 3.3 V not stated | 500 mA, TPS73533DRBR (DEC-027, TI SBVS087M 5.3) | over 99 % | `ESTIMATED` from `VERIFIED` table values |
+| 3.3 V | about 244 mA typ (design current about 0.6 A maximum, DEC-040; L101 1.2 A rating, distributor `NOT_VERIFIED`, allows about 0.5 A buck input); about 460 mA with the H743 at its Tj 85 °C maximum, about 570 mA at Tj 105 °C (H743, F100 max 15.4 mA, IST8310, D104 about 2.5 mA, and an assumed 5 mA for the barometers and pull-ups); U202 and U302 add up to 10 mA max, not yet in these sums | Pull-ups and px4io LEDs; the ICP-20100 and BMP581 I/O share is within the assumed 5 mA in the subtotal | 2 A, TPS62142RGTR (DEC-012, TI SLVSAJ0F) | TBD | `ESTIMATED` from partial inputs |
 | 5 V | Board: about 190 to 215 mA typ, 360 to 400 mA with the H743 at its Tj 85 °C maximum, 445 to 495 mA at Tj 105 °C (3.3 V load through the buck at an assumed 85 % efficiency, 5.0 and 4.5 V in, plus D103 and the LDO). External: about 435 mA (SiK radio 100, FS-iA6B 50 placeholder, GPS 100, MS4525DO 5, TF-Luna 150, buzzer 30 mA; DEC-053, human owner). Total about 625 to 650 mA typ, 880 to 930 mA hot worst case | Telemetry 2 (no device planned) | 2 A source (PWR-010); power mux limit 1.0 / 1.5 / 2.0 A with 80.6 kΩ (DEC-030, TI mux, `VERIFIED`) | TBD | `ESTIMATED` from partial inputs |
 | 6 V (on the board) | none | All servo loads | 10 A cont., 15 A inst. (PWR-011), UBEC and XT30 input | TBD | `TBD` |
 
@@ -133,15 +134,18 @@ With the loads in section 3 (SiK radio 100, FS-iA6B 50 placeholder, GPS 100, MS4
 | Rail | Nominal | Min | Max | Load step | Ripple / noise | Label |
 | ---- | ------- | --- | --- | --------- | -------------- | ----- |
 | 5 V input | 5 V | 4.5 V | 5.5 V | TBD | TBD | `VERIFIED` (PWR-010) for min/max |
-| 3.3 V | 3.3 V | TBD | TBD, at most 3.6 V | TBD | TBD | `TBD` |
-| 3.3 V_IMU | 3.3 V | TBD | TBD, at most 3.6 V | TBD | TBD | `TBD` |
+| 3.3 V (U102 TPS62142, fixed 3.3 V) | 3.3 V | 3.241 V PWM, 3.224 V power-save | 3.359 V PWM, 3.392 V power-save | Not stated (transient response depends on L and COUT); measure at P4-002 | Not stated | Accuracy `VERIFIED` (TI SLVSAJ0F 7.5: ±1.8 % over TJ −40 to 125 °C in PWM, −2.3 / +2.8 % in power-save with 22 µF; fixed versions include the internal divider); limits `ESTIMATED` (load regulation 0.05 %/A and line regulation 0.02 %/V add under 0.1 %) |
+| 3.3 V_IMU (U103 TPS73533) | 3.3 V | 3.234 V | 3.366 V | Not stated | Not stated | Accuracy `VERIFIED` (TI SBVS087M 6.5: ±2 % for 1 to 500 mA and VOUT + 0.5 V ≤ VIN < 6.5 V, TJ −40 to 125 °C); limits `ESTIMATED` |
+| `+5V` bus (after U101) | Input minus mux drop | 4.42 V (4.5 V input, 0.93 A, 85 mΩ) | 5.5 V | - | - | `ESTIMATED` (RON 85 mΩ max to TJ 85 °C, TI SLVSEA3F 7.5) |
 | 6 V servo | 6 V | TBD | 7.4 V (servo rating, PWR-011) | TBD | TBD | `VERIFIED` (PWR-011) for max |
 
 Known upper bounds for the 3.3 V rails:
 - ICM-45686 VDD and VDDIO max 3.6 V recommended, 4 V absolute maximum (IMU rec, `NOT_VERIFIED`).
 - IST8310 AVDD and DVDD max 3.6 V recommended and 3.6 V absolute maximum (IST8310 DS V1.2, 4.1 and 4.2, `VERIFIED` via NotebookLM). This is the tightest limit on the 3.3 V rail.
 - `ESTIMATED`: 3.3 V nominal leaves 0.3 V (9 %) to the 3.6 V limit for regulator tolerance, load transients and overshoot.
-- F100 VDD 2 to 3.6 V (F1 value-line DS Table 8, `VERIFIED`). H743 VDD range `TBD`.
+- F100 VDD 2 to 3.6 V (F1 value-line DS Table 8, `VERIFIED`). H743 VDD 1.71 to 3.6 V for LQFP100, which has no PDR_ON pin (DS12110 Rev 11 Table 14 and Table 2 note 5, via NotebookLM, `VERIFIED`, cited); VDD33USB 3.0 to 3.6 V when USB is used (Table 14, `VERIFIED`); the U201 symbol shows no separate VDD33USB pin, so the 3.0 V minimum is taken to apply to `+3V3` (`ASSUMED`).
+- ICP-20100 VDD and VDDIO 2.97 to 3.63 V in the 3.3 V range (DS-000416 Rev 1.3 Table 5, source text, `VERIFIED`). ICM-45686 VDD 1.71 to 3.6 V (DS-000489 Rev 1.1 Table 3, source text, `VERIFIED`). BMP581 absolute maximum 4.3 V on VDD and VDDIO (rev 1.13, source text, `VERIFIED`).
+- **Margins (`ESTIMATED`, static only):** `+3V3` 3.224 to 3.392 V against 3.0 V (USB) and 3.6 V (IST8310): 0.224 V low and 0.208 V high. `+3V3A` 3.234 to 3.366 V against 2.97 V (ICP-20100) and 3.6 V: 0.264 V low and 0.234 V high. Load steps and start-up overshoot must fit inside these margins; they are not stated by TI for this circuit and are measured at P4-002 and P4-015. The LDO has more than 1 V headroom from the 4.42 V `+5V` minimum at 2.6 mA (dropout 280 mV typ, 500 mV max at 500 mA, SBVS087M 6.5).
 
 ## 6. Brownout and reset thresholds (PWR-014)
 
@@ -214,3 +218,23 @@ All `TBD`. Items to decide:
 - DS3235 servo: DS SERVO sheet for DS3235 / DS3235-180 / DS3235-270, no revision or date, copy at https://hajim.rochester.edu/me/sites/kelley/me240/DS3235-270_datasheet.pdf, NotebookLM notebook `Servos` (added 2026-11-19 with the human owner's approval; not opened by Claude)
 - Kingmax C507 servo: Kingmax spec sheet, French translation, no version, https://www.intermodel.fr/fichiers/C507KINGMAX.pdf, NotebookLM notebook `Servos` (added 2026-11-19 with the human owner's approval; not opened by Claude)
 - Requirements: `AO-HORIZON_SPEC_EN.md` sections on power, safety and interfaces
+- TI TPS6214x SLVSAJ0F Rev F (NotebookLM notebook `TPS6214x 3-17V 2A Step-down`), TI TPS735 SBVS087M (notebook `TPS735`), TI TPS212x SLVSEA3F (notebook `TPS212x ...`), ST DS12110 Rev 11 (notebook `STM32H743VI`): NotebookLM answers with cited text, 2026-11-21.
+
+## 11. Thermal margin (spec 4.7, P2-010)
+
+Method: `TJ = TA + P × RθJA`, with the JEDEC RθJA from each datasheet (`ESTIMATED`; the real board, copper and enclosure change it). TA 32 °C is the field ambient near Bangkok (ENV-001, team model); the fuselage gets hotter in the sun and is not measured (`NOT_VERIFIED`). The 85 °C column is the part rating corner (DEC-020).
+
+| Part | Dissipation | RθJA | Rise | TJ at TA 32 °C | TJ at TA 85 °C | TJ limit | Source | Label |
+| ---- | ----------- | ---- | ---- | -------------- | -------------- | -------- | ------ | ----- |
+| U201 STM32H743, typical | 0.73 W (3.3 V × 220 mA typ at TJ 25 °C, Table 120 condition: 480 MHz, all peripherals on) | 45 °C/W (LQFP100) | 33 °C | about 65 °C | about 118 °C | 125 °C (suffix 6) | DS12110 Rev 11 Table 120, Table 222, Table 14 | `ESTIMATED` from `VERIFIED` values |
+| U201 STM32H743, worst-case part | 1.44 W at TJ 85 °C (436 mA max), 1.80 W at TJ 105 °C (546 mA max) | 45 °C/W | 65 °C, 81 °C | Not settled: TJ 85 °C needs TA ≤ 20 °C, TJ 105 °C needs TA ≤ 24 °C | Over the limit | 125 °C | Same | `ESTIMATED`; see finding below |
+| U301 STM32F100 | 0.05 W (15.4 mA max at 24 MHz, all peripherals on) | 55 °C/W (LQFP48) | 3 °C | about 35 °C | about 88 °C | 105 °C (suffix 6) | DocID16455 Rev 9 Table 12, Table 53, Table 8 | `ESTIMATED` |
+| U102 TPS62142 buck | 0.14 W typ, 0.33 W hot case (output 0.81 W and 1.88 W at an assumed 85 % efficiency, all loss in the IC as an upper bound) | 45 °C/W (RGT) | 6 °C, 15 °C | under 50 °C | about 100 °C | 125 °C | SLVSAJ0F 7.3, 7.4; efficiency `ASSUMED` (figures only, no number in the text) | `ESTIMATED` |
+| U103 TPS73533 LDO | 6 mW ((5.5 − 3.3) V × 2.6 mA) | 52.2 °C/W (DRB) | 0.3 °C | about 32 °C | about 85 °C | 125 °C operating | SBVS087M 6.4, 6.5 | `ESTIMATED` |
+| U101 TPS2121 mux | 0.07 W at 0.93 A (85 mΩ), 0.19 W at 1.5 A, 0.40 W at the 2.0 A limit maximum (100 mΩ) | 72.2 °C/W | 5, 14, 29 °C | under 61 °C | up to 114 °C at 2.0 A | 125 °C (`ASSUMED`, the TJ row was not read) | SLVSEA3F 7.4, 7.5 (the thermal table names the column "RNW (PKG FAM) 11 PINS"; the board uses RUX, `ASSUMED` the same) | `ESTIMATED` |
+| TVS and ESD parts (D101, D807, ESD arrays) | None in normal operation | - | - | - | - | - | - | `ASSUMED` |
+| Servo bus copper and XT30 | Up to 10 A continuous, 13.2 A with all 8 servos stalled | Set by copper | - | - | - | - | OPEN-021, P3-003, P3-010 | `NOT_VERIFIED` (layout) |
+
+Findings:
+- MINOR | U201 | `ESTIMATED` | At the DS12110 Table 120 maximum currents (480 MHz, all peripherals on, worst-case part), the JEDEC RθJA gives no stable junction temperature below 105 °C at a 32 °C ambient. The typical part settles near 65 °C. PX4 does not turn on every peripheral, so the real current is lower (`ASSUMED`). Measure the H743 current with PX4 running and the board temperature at P4-002; the human owner decides whether more copper under U201 or a lower clock is needed.
+- INFO | U102, U103, U101, U301 | `ESTIMATED` | Each stays at least 10 °C under its TJ limit at the 85 °C part rating corner, except U101 at the 2.0 A limit maximum (114 °C against 125 °C, `ASSUMED`). At the 0.93 A hot load it is under 61 °C at 32 °C ambient.

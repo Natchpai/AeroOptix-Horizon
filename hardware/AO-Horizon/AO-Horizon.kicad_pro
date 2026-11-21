@@ -885,18 +885,6 @@
       "/Top/Connector - USB & Debug/{DBG_UART3}": [
         "DBG"
       ],
-      "/Top/MCU - Main FC/BATT_I_INP11": [
-        "ANALOG"
-      ],
-      "/Top/MCU - Main FC/BATT_V_INP10": [
-        "ANALOG"
-      ],
-      "/Top/MCU - Main FC/H7_ADC123_INP10": [
-        "ANALOG"
-      ],
-      "/Top/MCU - Main FC/H7_ADC123_INP11": [
-        "ANALOG"
-      ],
       "/Top/MCU - Main FC/H7_SDMMC1_CLK": [
         "SDMMC"
       ],
@@ -1140,7 +1128,7 @@
       "include_excluded_from_bom": true,
       "name": "",
       "sort_asc": true,
-      "sort_field": "Description"
+      "sort_field": "Footprint"
     },
     "bus_aliases": {
       "AUX_TIM5": [
