@@ -80,7 +80,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 5. Keep `topology.ts` in step with the spec; `npm run check` flags a new IF row on no link.
 6. Optional: a note on the Power view power-mux block for the DNP Plan B diode-OR (spec 0.87, DEC-108). Do not draw the diodes; they are not fitted.
 
-**Later, when the data exists:** connector pinout pages after OPEN-023 gives the far-end pins (this also fills the Interface view `TBD`s); a BOM page from a BOM file the engineer exports.
+**Later, when the data exists:** connector pinout pages after OPEN-023 gives the far-end pins (this also fills the Interface view `TBD`s); the BOM page (idea 15).
 
 **Adding a table page:** copy the Decisions page (`src/features/decisions/index.tsx`, the shortest): a route in `src/routes/_site/` with `validateSearch`, a TanStack table drawn by `RecordTable`, a sidebar item in `src/components/layout/data/sidebar-data.ts`, and `tests/ui.ts` page-load and 390 px entries. A new record field needs an extractor change and a type in `src/data/types.ts`. Process: build, `npm run build` and `npm run test:ui` pass, screenshots at 1440 and 390 px in both themes, the engineer approves the look, then each Git step with its own approval.
 
@@ -97,6 +97,17 @@ The engineer picks; nothing here is decided.
 7. **Bundle size.** The `search-provider` chunk is about 593 kB (Vite warns). Loading the Ctrl+K index on first open would speed up the first page load.
 8. **Copy link** button in each opened row.
 9. **Evidence badges elsewhere** (`SpecText labels`): the Checklist evidence column and the Decisions notes.
+10. **About page** for new team members: how to read the site (phases, evidence labels, ID kinds, which record each page reads, what `TBD` means).
+11. **Progress over time.** Plot the DONE task count per gate from the checklist's Git history at build time. CI would need `fetch-depth: 0` in the checkout.
+12. **Recent decisions on the Overview.** DEC rows carry a Date; a card could list the ones from the last 7 days or since the previous spec revision.
+13. **Full-text search.** Ctrl+K matches IDs and titles only; descriptions and notes could join a lazy-loaded index (see idea 7).
+14. **Print view** for Decisions, Open items and Checklist (print CSS, rows expanded) for team meetings.
+15. **BOM page** (`/bom`), once the engineer exports a BOM from KiCad and commits it (a schematic output, so a human step; the site never reads `.kicad_sch`).
+    - One row per part: references, quantity, value, footprint, `MFR`, `MFR.P/N`, `LCSC`, DNP (for example D105 and D106, Plan B, DEC-108). Filter by text, group and DNP.
+    - The detail row links the part to its diagram blocks (part number in a block's `sub`, as the Power budget does) and to the DEC rows that name it.
+    - Report-only flags: a fitted part without `MFR.P/N` or `LCSC`.
+    - The extractor reads the exported file and fails the build on a missing column, like the other records. Stock and price stay off the page: supplier pages are JavaScript-rendered, so those values would be `NOT_VERIFIED`.
+    - Before building: agree the export format (CSV columns) and where the file lives with the engineer.
 
 ## Known gaps
 
