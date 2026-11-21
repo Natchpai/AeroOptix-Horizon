@@ -120,9 +120,71 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 
 ## Next steps
 
-1. Engineer reviews the `npm run drift` list and decides which site texts to fix.
-2. Re-export the board GLB once the parts are placed on the board.
-3. Keep `topology.ts` in step with the spec. `npm run check` now flags a new IF row that is on no link.
+1. New pages: see "Next pages (plan, 2026-11-21)" below. Start with pages 1 and 2.
+2. Engineer reviews the `npm run drift` list (24 findings) and decides which site texts to fix.
+3. Re-export the board GLB once the parts are placed on the board.
+4. Keep `topology.ts` in step with the spec. `npm run check` flags a new IF row that is on no link.
+5. Optional: a note on the Power view power-mux block for the DNP Plan B diode-OR (spec 0.87, DEC-108). Do not draw the diodes, since they are not fitted.
+
+## Next pages (plan, 2026-11-21)
+
+The engineer asked for these pages. They are not built yet.
+
+**Pattern for each page** (copy the Decisions page, `src/features/decisions/index.tsx`):
+- route `src/routes/_site/<page>.tsx` with `validateSearch` (`q`, `id`);
+- the TanStack table with the `rowText` filter, `meta.className` for phone columns, a detail row on click and a `usedOn` map;
+- `IdChip` and `MdText`;
+- a sidebar item in `src/components/layout/data/sidebar-data.ts`;
+- `tests/ui.ts` page-load and 390 px entries in both themes.
+
+Data comes from `src/data/generated/*.json`, written by `scripts/extract-docs.ts`. A new field needs an extractor change and a type in `src/data/types.ts`.
+
+**Process for each page:** one batch:
+- build the page;
+- `npm run build` and `npm run test:ui` pass;
+- screenshots at 1440 and 390 px, dark and light;
+- the engineer approves the look;
+- commit on `dev`, PR to `main`, and after the squash merge `main` into `dev`, each Git step with its own approval.
+
+Order: 1 and 2 first (cheap, most asked), then 4, 3, 5.
+
+1. **Open items** (`/open`)
+   - All OPEN rows from `ids.json` (`kind === 'OPEN'`; fields Description, Impact, Owner / next action; `closed`). Open rows first, with a toggle to show closed rows.
+   - The detail row shows the full text and "cited by": diagram blocks and links (`refs`, `open`), DEC rows whose text names the ID, and checklist tasks (after page 2's extractor change).
+   - Ctrl+K: an OPEN result opens `/open?id=`, as DEC does in `src/components/command-menu.tsx`.
+   - The Overview open-items card links here.
+   - No extractor change.
+2. **Checklist** (`/checklist`)
+   - Every gate and `Pn-xxx` task: ID, Task, Req, Owner, Status, Evidence. Filter by gate and status.
+   - Gate rows show the exit criterion and the stacked bar from the Overview `ProgressCard`.
+   - **Extractor:** `progress.tasks` keeps only `{status, line}` today. Add `task`, `req`, `owner` and `evidence` from the task tables (header `| ID | Task | Req | Owner | Status | Evidence required / link |` under `## P<n>: ...`).
+   - The Overview next-action task links go to `/checklist?id=` instead of GitHub.
+3. **Traceability** (`/trace`)
+   - One row per requirement ID (kinds `SYS MCU IF SEN PWR SAF FUN ENV CMP MEC PCB MFG TST`). Columns:
+     - DEC rows citing it (in Topic or Selected option);
+     - OPEN rows citing it;
+     - checklist tasks with it in Req (after page 2);
+     - diagram items with it in `refs`.
+   - Flag a requirement with no task, or with no decision and no diagram item.
+   - Report only: the page never fails the build.
+   - Expand ranges written as "IF-030 to IF-043" (like `range()` in `topology.ts`).
+4. **Spec history** (`/history`)
+   - The full section 9 change-note table (revision, date, description, approved by), newest first, with search. Spec IDs in the text become `IdChip`s.
+   - **Extractor:** `specChanges` keeps only the last 5 (`extract-docs.ts`, `.slice(-5)`). Add `specHistory` with every row, and keep `specChanges` for the Overview.
+5. **Power budget** (`/power`)
+   - From `AO-HORIZON_POWER_BUDGET_EN.md`:
+     - section 3 load tables per rail (3.3 V_IMU, 3.3 V, 5 V, 6 V servo);
+     - section 4 totals;
+     - section 5 rail tolerances;
+     - section 11 thermal margin.
+   - A bar per rail of load against the regulator limit. Use the `dataviz` skill and the `--rail-*` colours in `src/styles/theme.css`.
+   - Each load links to its Power view block.
+   - **Extractor:** a new `power.json`. Values keep the record's evidence labels (`ESTIMATED`, `VERIFIED`, `NOT_VERIFIED`) and are never recomputed in the site.
+   - Read the record's table headers first. The extractor must throw on a missing table, like the other records.
+
+Later, when the data exists:
+- **Connector pinout pages**, after OPEN-023 gives the far-end pins. This also fills the Interface view `TBD`s.
+- **BOM page**, from a BOM file the engineer exports.
 
 ## Known gaps
 
