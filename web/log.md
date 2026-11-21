@@ -120,3 +120,32 @@ One entry per change: what changed, why, and which files were edited.
     at least 4.5:1). With the old colours injected it fails at 2.57 to
     3.30:1.
   - `log.md`: this entry.
+
+## 2026-11-22 T7: "Mentioned in" revisions on opened rows
+
+- What: an opened row on Decisions, Open items and Traceability now lists
+  "Mentioned in": the spec revisions whose change note (spec section 9)
+  names that ID, newest first. Each is a revision chip that opens its row
+  on Spec history; the URL keeps the revision as a string, so 0.10 stays
+  0.10. The ID must match whole (DEC-030 does not match DEC-0301), and a
+  range such as "IF-030 to IF-043" is not expanded; a muted note says so.
+  Up to 12 chips show, then a "+N more" button. An ID no note names shows
+  "Not named in any change note."
+- Why: to see when and why a decision, open item or requirement changed
+  without searching the history by hand. The chips only point to existing
+  notes. The notes JSON (about 60 kB) loads with a dynamic import when the
+  first row opens, so `records` (406.40 kB) is unchanged and the entry
+  chunk grew 0.08 kB. Spot check against a word-boundary grep of the spec
+  section 9 table: DEC-030 (0.21), DEC-013 (0.10), PWR-011 (0.47, 0.14,
+  0.13) and OPEN-023 (15 revisions) match.
+- Files:
+  - `src/lib/history-mentions.ts`: `loadHistory` (cached dynamic import)
+    and `mentionsOf` (word-boundary match).
+  - `src/components/mentioned-in.tsx`: the `MentionedIn` list.
+  - `src/features/decisions/index.tsx`, `src/features/open-items/index.tsx`,
+    `src/features/trace/index.tsx`: the list in each detail row.
+  - `src/features/about/index.tsx`: one sentence under "Finding things".
+  - `tests/ui.ts`: new `mentionedInChips` check (DEC-030 to 0.21, DEC-013
+    to 0.10, each lands on the Spec history row). Its page logic fails on
+    the build before this change.
+  - `log.md`: this entry.

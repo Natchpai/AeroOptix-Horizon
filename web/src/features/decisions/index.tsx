@@ -35,6 +35,7 @@ import { IdChip } from '@/components/id-chip'
 import { Main } from '@/components/layout/main'
 import { SiteHeader } from '@/components/layout/site-header'
 import { MdText } from '@/components/md-text'
+import { MentionedIn } from '@/components/mentioned-in'
 import { DiagramItemList, RecordTable } from '@/components/record-table'
 
 const route = getRouteApi('/_site/decisions')
@@ -262,9 +263,12 @@ function DecisionDetail({ row }: { row: SpecId }) {
           Spec line {row.line}
         </a>
       </div>
-      <div className='space-y-2'>
-        <div className={detailLabel}>On the diagram</div>
-        <DiagramItemList items={used} />
+      <div className='min-w-0 space-y-4'>
+        <div className='space-y-2'>
+          <div className={detailLabel}>On the diagram</div>
+          <DiagramItemList items={used} />
+        </div>
+        <MentionedIn id={row.id} />
       </div>
     </div>
   )

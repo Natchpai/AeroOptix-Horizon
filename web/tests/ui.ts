@@ -7,7 +7,8 @@
  * a hash link changed in an open tab shows the new view, and Ctrl+K on a
  * decision or an open item (open or closed) opens its row on its page,
  * a next-action task chip opens its Checklist row, and an Overview
- * revision chip opens its Spec history row, the Power budget page
+ * revision chip and a Decisions "Mentioned in" revision chip open their
+ * Spec history rows, the Power budget page
  * draws one bar per Rail summary row, every Decisions Date cell holds
  * its text inside the cell, every page has its own browser tab title, the
  * diagram view tabs fit at phone width, and light-theme status and evidence
@@ -576,6 +577,40 @@ async function revChipOpensRow(browser: Browser) {
   await v.close()
 }
 
+/**
+ * An opened Decisions row lists the revisions whose change note names it
+ * ("Mentioned in"); a chip opens that row on Spec history, 0.10 not 0.1.
+ */
+async function mentionedInChips(browser: Browser) {
+  for (const [id, rev] of [
+    ['DEC-030', '0.21'],
+    ['DEC-013', '0.10'],
+  ]) {
+    const where = `Mentioned in on ${id}`
+    const v = await open(browser, `decisions?id=${id}`)
+    const chip = v.page
+      .locator('tr', { hasText: 'Mentioned in' })
+      .getByRole('link', { name: `rev ${rev}`, exact: true })
+    try {
+      await chip.waitFor({ timeout: 5000 })
+    } catch {
+      fail(where, `no "rev ${rev}" chip under "Mentioned in"`)
+      await v.close()
+      continue
+    }
+    await chip.click()
+    await v.page.waitForTimeout(1000)
+    const [hash, row] = await v.page.evaluate(() => [
+      location.hash,
+      document.querySelector('tr[data-state=selected]')?.id ?? '',
+    ])
+    if (!hash.includes('history')) fail(where, `went to ${hash || 'nowhere'}`)
+    if (row !== `rev-${rev}`) fail(where, `selected row is "${row}"`)
+    for (const e of v.errors) fail(where, `page error: ${e}`)
+    await v.close()
+  }
+}
+
 /** Click an export button; the file must be valid SVG with plain colours. */
 async function svgExport(page: Page, button: string, where: string) {
   const download = page.waitForEvent('download', { timeout: 15000 })
@@ -664,6 +699,7 @@ async function main() {
     )
     await taskChipOpensRow(browser)
     await revChipOpensRow(browser)
+    await mentionedInChips(browser)
     await powerBars(browser)
     await decisionDatesFit(browser)
     await lightContrast(browser)

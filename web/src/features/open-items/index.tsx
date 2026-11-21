@@ -36,6 +36,7 @@ import { IdChip } from '@/components/id-chip'
 import { Main } from '@/components/layout/main'
 import { SiteHeader } from '@/components/layout/site-header'
 import { MdText } from '@/components/md-text'
+import { MentionedIn } from '@/components/mentioned-in'
 import {
   DiagramItemList,
   RecordTable,
@@ -305,6 +306,7 @@ function OpenDetail({ row }: { row: SpecId }) {
             </div>
           </div>
         )}
+        <MentionedIn id={row.id} />
       </div>
     </div>
   )

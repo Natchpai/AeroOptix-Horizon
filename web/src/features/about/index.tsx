@@ -367,7 +367,8 @@ export function AboutPage() {
                 <li>
                   An opened row puts its ID in the address bar (
                   <Code>?id=DEC-050</Code>), so the link opens the same row for
-                  a teammate.
+                  a teammate. On Decisions, Open items and Traceability it also
+                  lists the spec revisions whose change note names the ID.
                 </li>
                 <li>
                   The table pages (Decisions, Open items, Checklist, Spec

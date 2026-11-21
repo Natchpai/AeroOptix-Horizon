@@ -26,6 +26,7 @@ import { IdChip } from '@/components/id-chip'
 import { Main } from '@/components/layout/main'
 import { SiteHeader } from '@/components/layout/site-header'
 import { MdText } from '@/components/md-text'
+import { MentionedIn } from '@/components/mentioned-in'
 import {
   DiagramItemList,
   SiteRowList,
@@ -416,6 +417,7 @@ function TraceDetail({ row }: { row: TraceRow }) {
           <div className={label}>On the diagram</div>
           <DiagramItemList items={row.diagram} none='None.' />
         </div>
+        <MentionedIn id={req.id} />
       </div>
     </div>
   )
