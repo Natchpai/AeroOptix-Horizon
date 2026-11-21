@@ -77,7 +77,11 @@ function blockFor(cells: string[], headers: string[]): Block | undefined {
   )
 }
 
-const fmt = (n: number) => `${n.toLocaleString('en-US')} mA`
+/** mA from the record; 1000 mA and up shows in A (1000 -> 1 A, 13200 -> 13.2 A). */
+const fmt = (n: number) =>
+  n >= 1000
+    ? `${(n / 1000).toLocaleString('en-US', { maximumFractionDigits: 3 })} A`
+    : `${n.toLocaleString('en-US')} mA`
 
 function SectionTitle({
   title,
