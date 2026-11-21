@@ -19,12 +19,14 @@ Turn what the user knows into a specification, one step at a time, using only co
   calculation or an official source), `ASSUMED` (assumption stated),
   `ESTIMATED` (method and margin stated) or `NOT_VERIFIED` (evidence missing
   or check not run).
-- Datasheet, schematic and PCB PDFs are not read, by any tool. Project report
-  PDFs may be read.
+- Schematic and PCB PDFs are not read, by any tool. Project report PDFs may
+  be read.
 - Datasheet values come from the user, official manufacturer web pages, or
   NotebookLM answers with cited text. Query an existing notebook without
   asking. Adding a source or creating a notebook uploads a file and needs the
-  user's approval. With no source, the value is `NOT_VERIFIED`.
+  user's approval. A datasheet PDF is read directly only after the user
+  approves that file, citing file, revision, page and table. With no source,
+  the value is `NOT_VERIFIED`.
 - KiCad design and library files are read-only. Propose changes; do not apply
   them.
 - If the project has `.claude/rules/engineering.md` and `pdf.md`, follow them;
@@ -88,7 +90,7 @@ Pick the mode from `$ARGUMENTS` or the request. If unclear, ask.
 
 ## Boundaries
 
-- Never open or read a PDF. Datasheet values come from the user, official manufacturer web pages, or NotebookLM answers with cited text, used only after the user approves uploading the file. If the project has `.claude/rules/engineering.md`, follow its "Datasheet evidence" section.
+- Do not open or read a PDF, except a datasheet the user approves for a direct read (`pdf.md`). Datasheet values come from the user, official manufacturer web pages, or NotebookLM answers with cited text; uploading a file to NotebookLM needs the user's approval. If the project has `.claude/rules/engineering.md`, follow its "Datasheet evidence" section.
 - KiCad design and library files are read-only.
 - The project phase (`DRAFT`, `PRELIMINARY`, `CHECK`, `RELEASE`) is declared by the human; a specification never sets or changes it.
 - Electrical specs, component ratings, manufacturing capabilities and test results come from the user or a cited source. Without one, write `TBD` or `NOT_VERIFIED`.

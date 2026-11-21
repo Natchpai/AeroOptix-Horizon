@@ -16,48 +16,25 @@
       "Bash(git add *)",
       "Bash(git commit *)",
       "Bash(gh pr create *)",
-      "Bash(git push *)",
-
-      "Edit(**/*.step)",
-      "Edit(**/*.stp)",
-
-      "Edit(**/*.kicad_sym)",
-      "Edit(**/*.kicad_mod)",
-      "Edit(**/*.kicad_pro)",
-      "Edit(**/library/**)"
+      "Bash(git push *)"
     ],
     "ask": [
       "Edit(**/*.kicad_sch)",
       "Edit(**/*.kicad_pcb)",
-      "Bash(git merge *)",
-
-      "Bash(pdftotext *)",
-      "Read(**/*.pdf)"
+      "Bash(git merge *)"
     ],
     "deny": [
       "Edit(**/*.kicad_wks)",
-      "Read(~/.notebooklm/**)",
-      "Read(**/documents/schematic/**/*.pdf)",
-      "Read(**/documents/Schematics/**/*.pdf)",
-      "Read(**/documents/manufacturing/**/*.pdf)",
-      "Read(**/documents/Manufacturing/**/*.pdf)",
-      "Edit(**/templates/**)",
       "Edit(**/*.wrl)",
-      "Bash(git push origin main*)",
-      "Bash(git push origin master*)",
-      "Bash(git push * HEAD:main*)",
-      "Bash(git push * HEAD:master*)",
-      "Bash(git push --force *)",
-      "Bash(git push -f *)",
-      "Bash(git reset --hard *)",
-      "Bash(git clean -fd *)",
+      "Edit(**/templates/**)",
+      "Read(~/.notebooklm/**)",
       "Bash(gh pr merge *)"
     ]
   },
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Edit|Write|MultiEdit|Bash|PowerShell",
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Read|Bash|PowerShell",
         "hooks": [
           {
             "type": "command",

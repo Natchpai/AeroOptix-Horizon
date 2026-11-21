@@ -25,12 +25,14 @@ Pick the mode from the argument or the request. If it is unclear, ask.
   calculation or an official source), `ASSUMED` (assumption stated),
   `ESTIMATED` (method and margin stated) or `NOT_VERIFIED` (evidence missing
   or check not run).
-- Datasheet, schematic and PCB PDFs are not read, by any tool. Project report
-  PDFs may be read.
+- Schematic and PCB PDFs are not read, by any tool. Project report PDFs may
+  be read.
 - Datasheet values come from the user, official manufacturer web pages, or
   NotebookLM answers with cited text. Query an existing notebook without
   asking. Adding a source or creating a notebook uploads a file and needs the
-  user's approval. With no source, the value is `NOT_VERIFIED`.
+  user's approval. A datasheet PDF is read directly only after the user
+  approves that file, citing file, revision, page and table. With no source,
+  the value is `NOT_VERIFIED`.
 - KiCad design and library files are read-only. Propose changes; do not apply
   them.
 - If the project has `.claude/rules/engineering.md` and `pdf.md`, follow them;
@@ -120,7 +122,7 @@ release, with the main IDs) and the rest from the entries and
 - `CHECK`: schematic and PCB mostly final; the human runs ERC and DRC on a
   saved baseline.
 - `RELEASE`: an approved CHECK baseline is published.
-`rules/hardware-workflow.md`, when present, holds the full definitions.
+`rules/workflow.md`, when present, holds the full definitions.
 
 1. Accept a phase only when the human states one of these values; write it
    in upper case. A step back (CHECK to DRAFT) is recorded as declared.
