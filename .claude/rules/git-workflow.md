@@ -7,8 +7,8 @@ the `git-workflow` skill. This file only adds hardware specifics. It never relax
 If the global file is missing, apply the defaults built into the `git-workflow`
 skill.
 
-Hardware workflow phases and engineering policy live in `hardware-workflow.md`
-and `engineering.md`.
+Hardware workflow phases and engineering policy live in `workflow.md` and
+`engineering.md`.
 
 - Git inspection is not permission to edit engineering files. Staging an
   existing change is distinct from writing the design and still needs approval

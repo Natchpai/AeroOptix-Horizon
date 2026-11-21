@@ -652,7 +652,8 @@ def pick_project(repo: Path, arg: str | None) -> Path:
             raise RuntimeError(f"project not found: {pro}")
         return pro
     listed = git(repo, "ls-files", "--cached", "--others", "--exclude-standard", "*.kicad_pro").splitlines()
-    pros = [repo / p for p in listed if "-backups/" not in p]
+    # .claude/ holds tool fixtures (sch-inspect ships a test project), not the design
+    pros = [repo / p for p in listed if "-backups/" not in p and not p.startswith(".claude/")]
     if not pros:
         raise RuntimeError("no .kicad_pro file in this git repo; pass --project")
     if len(pros) == 1:

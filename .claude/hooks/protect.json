@@ -1,5 +1,5 @@
 {
-  "_help": "Rules for protect_kicad_v2.py. Order: allow > deny > ask. Globs: ** crosses folders, * and ? do not cross '/'. Matching is case-insensitive on '/'-normalized paths. Edit this file to change protection; no code change needed.",
+  "_help": "Rules for protect_kicad_v2.py. Each block is checked deny > ask > allow, like Claude Code. Globs: ** crosses folders, * and ? do not cross '/'. Matching is case-insensitive on '/'-normalized paths, so one glob covers 'Schematics' and 'schematic'. Edit this file to change protection; no code change needed. Check it with Hardware-Copilot tools/check_permissions.py.",
   "deny": [
     "**/*.kicad_wks",
     "**/*.wrl",
@@ -17,5 +17,39 @@
     "**/*.kicad_mod",
     "**/library/**",
     "**/scratchpad/**"
-  ]
+  ],
+  "pdf": {
+    "_help": "PDF reads by Read and shell commands (cat, pdftotext, python, ...). deny > ask > allow; a PDF that matches no glob is ask. Defaults: schematic, PCB, fabrication and assembly plots are denied; datasheets and other PDFs ask; the project's reports and scratchpad output are allowed.",
+    "deny": [
+      "**/documents/schematic*/**",
+      "**/documents/manufacturing/**"
+    ],
+    "ask": [],
+    "allow": [
+      "**/documents/reports/**",
+      "**/scratchpad/**"
+    ]
+  },
+  "git": {
+    "_help": "Named checks on git and gh commands, with flags in any order. Move a name between deny and ask, or drop it, to change the rule. Names: push-protected, force-push, force-with-lease, push-delete, push-tags, reset-hard, clean-force, branch-delete, branch-rename, tag, rebase, commit-amend, gh-pr-merge, gh-release.",
+    "protected_branches": ["main", "master"],
+    "deny": [
+      "push-protected",
+      "force-push",
+      "reset-hard",
+      "clean-force",
+      "gh-pr-merge"
+    ],
+    "ask": [
+      "force-with-lease",
+      "push-delete",
+      "push-tags",
+      "branch-delete",
+      "branch-rename",
+      "tag",
+      "rebase",
+      "commit-amend",
+      "gh-release"
+    ]
+  }
 }

@@ -4,7 +4,7 @@ Design authority, evidence and verification rules for KiCad hardware projects.
 MUST rules are mandatory; SHOULD rules are defaults that may bend with a
 stated reason. This file is the single source for these topics; other rules
 refer to it instead of restating it. Phases are defined in
-`hardware-workflow.md`; Git actions in `git-workflow.md`.
+`workflow.md`; Git actions in `git-workflow.md`.
 
 ## Overrides
 Repository-local documentation (CONTRIBUTING, design policy, CLAUDE.md) takes
@@ -54,14 +54,18 @@ Allowed sources for datasheet claims:
 1. Answers from NotebookLM through the `notebooklm` skill (the default).
 2. Text, tables or values the user supplies.
 3. Official manufacturer web pages and HTML application notes.
+4. The datasheet PDF itself, read directly only as a fallback after the human
+   approves that file in chat (`pdf.md`).
 
 PDF access, uploads and what to do when NotebookLM has a problem follow
 `pdf.md`. The NotebookLM procedure is in `notebooklm.md`; read it before
 running any `notebooklm` command.
 - Label a NotebookLM value `VERIFIED` only when the `cited_text`
   contains it; an answer without a citation is `NOT_VERIFIED`.
-- If neither the user nor NotebookLM can supply the source, report
-  `NOT_VERIFIED` or ask the human for the values.
+- Label a value from a direct read `VERIFIED` only with the file name,
+  document revision, page and table or figure.
+- If no allowed source can supply the value, report `NOT_VERIFIED` or ask
+  the human for it.
 
 Check outcomes in skills (`PASS`, `FAIL`, `WARNING`, `NOT_VERIFIED`) are not
 evidence labels. `PASS` needs `VERIFIED` evidence for that specific check.

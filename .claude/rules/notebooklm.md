@@ -41,5 +41,6 @@ keeps the gating rules and points here; read this file before any
   notebook's chat history; do not use `ask --new` without approval.
 - Never print or commit its auth files, and do not generate NotebookLM
   artifacts, notes or shares unless asked.
-- If neither the user nor NotebookLM can supply the source, report
-  `NOT_VERIFIED` or ask the human for the values.
+- If neither the user nor NotebookLM can supply the value, ask the human:
+  supply it, keep it `NOT_VERIFIED`, or approve a direct read of that
+  datasheet PDF (`pdf.md`, Direct read).
