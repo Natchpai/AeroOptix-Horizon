@@ -1054,9 +1054,10 @@ export const powerBlocks: Block[] = [
       'DEC-034',
       'CMP-008',
       'PWR-010',
+      'DEC-108',
     ],
-    open: ['OPEN-006'],
-    note: 'PM02D on IN1 has priority. USB VBUS on IN2 takes over when the PM02D falls below about 3.98 V at VBUS 5.0 V, with the 5 µs XCOMP switchover. Blocks reverse current on both inputs.',
+    open: ['OPEN-006', 'OPEN-041'],
+    note: 'PM02D on IN1 has priority. USB VBUS on IN2 takes over when the PM02D falls below about 3.98 V at VBUS 5.0 V, with the 5 µs XCOMP switchover. Blocks reverse current on both inputs. Plan B (DEC-108): the DNP Schottky diodes D105 and D106 replace U101 on a board where U101 is not fitted.',
   },
   {
     id: 'pw-usb',
