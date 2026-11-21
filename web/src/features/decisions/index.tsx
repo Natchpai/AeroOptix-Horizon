@@ -83,10 +83,8 @@ export function DecisionsPage() {
             ) : (
               <ChevronRight className='size-3.5 text-muted-foreground' />
             )}
-            {/* the chip opens GitHub; it should not also toggle the row */}
-            <span onClick={(e) => e.stopPropagation()}>
-              <IdChip id={row.original.id} />
-            </span>
+            {/* its own page: the row click opens it, so no link */}
+            <IdChip id={row.original.id} plain />
           </span>
         ),
       },

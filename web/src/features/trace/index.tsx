@@ -3,6 +3,7 @@ import { getRouteApi } from '@tanstack/react-router'
 import { idTitle, meta, sourceUrl } from '@/data'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { detailLabel, useScrollToRow } from '@/lib/record-rows'
+import { REQ_KINDS } from '@/lib/spec-ids'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -31,7 +32,7 @@ import {
   TaskRowList,
 } from '@/components/record-table'
 import { SpecText } from '@/components/spec-text'
-import { REQ_KINDS, type TraceRow, traceRows } from './matrix'
+import { type TraceRow, traceRows } from './matrix'
 
 const route = getRouteApi('/_site/trace')
 
@@ -323,10 +324,8 @@ function TraceTableRow({
             ) : (
               <ChevronRight className='size-3.5 text-muted-foreground' />
             )}
-            {/* the chip opens GitHub; it should not also toggle the row */}
-            <span onClick={(e) => e.stopPropagation()}>
-              <IdChip id={r.req.id} />
-            </span>
+            {/* its own page: the row click opens it, so no link */}
+            <IdChip id={r.req.id} plain />
           </span>
         </TableCell>
         <TableCell className={cn(cell, 'whitespace-normal')}>

@@ -64,6 +64,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - The Rail summary table was added to the record by the engineer's approval (power budget rev 0.38, 2026-11-21). Limits: 3.3 V_IMU 500 mA (TPS73533), 3.3 V 600 mA (`+3V3` design current, DEC-040; the buck IC's 2 A is not the limit, engineer), 5 V 1000 mA (TPS2121 minimum limit), 6 V 10,000 mA (UBEC continuous).
   - Bar colours are the rail colours. The dataviz validator fails them as a categorical palette (light: 6 V against 5 V; dark: 3.3 V against 3.3 V_IMU for protan), so the page never relies on colour: every bar has its rail name, and the numbers are written under it.
   - Sections 3 (loads per rail), 4 (totals), 5 (tolerances) and 11 (thermal) as tables. Evidence labels show as coloured badges with the word (`SpecText labels`). A load links to its Power view block when the block's part number is in the load name or its refs share a spec ID with the row's Ref.
+- **ID chips** (`src/components/id-chip.tsx`): a DEC chip opens its row on Decisions, OPEN on Open items, a requirement on Traceability; other kinds (REF ...) open their spec row on GitHub. Each site page links the spec line in its detail row. In the ID column of an ID's own page the chip is `plain` (no link), so the row click opens it and the filter stays. `REQ_KINDS` lives in `src/lib/spec-ids.ts`.
 - **Search:** Ctrl+K over pins, signals, blocks and spec IDs (not checklist tasks). A DEC result opens it on the Decisions page and an OPEN result on the Open items page; other IDs open their spec row on GitHub.
 - **SVG export:** on each diagram view and each package card. The export uses native SVG with hex colours, plus a footer with the spec revision, the phase, "not for fabrication" and the date.
 - **Showcase:** a 3D board viewer (`@google/model-viewer` 4.4.0 with `three` 0.183.x), loaded only on this page. It shows `web/public/models/ao-horizon.glb` with its board revision, export date (last commit of the file), KiCad version, size, a "not for fabrication" tag and a GLB download. Without the file the page says "No board model yet".
@@ -128,7 +129,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - no sideways scroll at 390 px in both themes;
   - a readable phone zoom;
   - same-tab hash links;
-  - the Decisions, Open items, Checklist, Spec history, Traceability and Power budget pages (both themes, 390 px), one Power budget bar per Rail summary row, top-aligned cells in an opened row, Ctrl+K on DEC-050, OPEN-023 and the closed OPEN-001, a next-action task chip opening its Checklist row, and an Overview revision chip (and `0.10`) opening its Spec history row.
+  - the Decisions, Open items, Checklist, Spec history, Traceability and Power budget pages (both themes, 390 px), one Power budget bar per Rail summary row, top-aligned cells in an opened row, ID chips opening their site row (and a chip in a closed history row opening that row), Ctrl+K on DEC-050, OPEN-023 and the closed OPEN-001, a next-action task chip opening its Checklist row, and an Overview revision chip (and `0.10`) opening its Spec history row.
 
 ## Verified (2026-11-21)
 
@@ -225,24 +226,23 @@ Claude's list after building the five pages. The engineer picks; nothing here is
 
 Declined by the engineer (2026-11-21): keyboard access to table rows (Tab, Enter, Space on the row).
 
-Done 2026-11-21: top-aligned cells in opened rows on all five table pages (`test:ui` checks it); one shared table and detail lists (`RecordTable` and friends; the five pages went from about 2,040 to 1,570 lines plus 270 shared, no visible change except DEC and OPEN IDs in detail lists now share one width).
+Done 2026-11-21: top-aligned cells in opened rows on all five table pages (`test:ui` checks it); one shared table and detail lists (`RecordTable` and friends; the five pages went from about 2,040 to 1,570 lines plus 270 shared, no visible change except DEC and OPEN IDs in detail lists now share one width); ID chips open their site page (DEC, OPEN, requirements), approved by the engineer ("do next").
 
 **Linking (the site now has a page for most IDs):**
-1. **ID chips open the site page.** `IdChip` opens GitHub for every ID. DEC could open `/decisions`, OPEN `/open`, requirement IDs `/trace`, with GitHub kept as a small link in each detail row. This changes every page, so it needs the engineer's OK.
-2. **Ctrl+K for tasks, revisions and requirements.** Search covers spec IDs but not `Pn-xxx` tasks or spec revisions; a requirement result could open its Traceability row.
-3. **Overview cards for the new pages.** The Explore grid shows six cards; Open items, Checklist, Traceability and Power budget are only in the sidebar. The Open items stat tile could link to `/open`.
-4. **Diagram detail panel links.** A block or link panel lists its spec IDs; DEC, OPEN and requirement IDs could open the new pages, and Power view rail and regulator blocks could link to `/power`.
+1. **Ctrl+K for tasks, revisions and requirements.** Search covers spec IDs but not `Pn-xxx` tasks or spec revisions; a requirement result could open its Traceability row.
+2. **Overview cards for the new pages.** The Explore grid shows six cards; Open items, Checklist, Traceability and Power budget are only in the sidebar. The Open items stat tile could link to `/open`.
+3. **Power view to the Power budget.** Diagram panel spec IDs already open the site pages (with the chip change); the Power view rail and regulator blocks could also link to `/power`.
 
 **Checks (report only, like `npm run drift`):**
-5. **Record revision drift.** The checklist header names the spec revision it follows ("Requirements authority: ... rev 0.87"), and the spec and power budget cite each other's revisions. A check could list records that point to an older revision than the one the site reads.
-6. **Traceability rule option.** A toggle to count task text, not only Req (CMP-010 is in the P1-014 text but not its Req).
-7. **Run `test:ui` in CI** with Playwright's bundled Chromium instead of the local Edge, so a PR shows the browser checks.
+4. **Record revision drift.** The checklist header names the spec revision it follows ("Requirements authority: ... rev 0.87"), and the spec and power budget cite each other's revisions. A check could list records that point to an older revision than the one the site reads.
+5. **Traceability rule option.** A toggle to count task text, not only Req (CMP-010 is in the P1-014 text but not its Req).
+6. **Run `test:ui` in CI** with Playwright's bundled Chromium instead of the local Edge, so a PR shows the browser checks.
 
 **Look and speed:**
-8. **Rail colours.** The dataviz validator fails the rail colours as a categorical set (light: 6 V against 5 V; dark: 3.3 V against 3.3 V_IMU for protan vision). The pages never rely on colour alone, but a re-stepped set would help the Power view. The engineer picked these colours, so any change is theirs.
-9. **Bundle size.** The `search-provider` chunk is about 545 kB (Vite warns). Loading the Ctrl+K index on first open would speed up the first page load.
-10. **Copy link** button in each opened row, since `?id=` links are the main way to share a row.
-11. **Evidence badges elsewhere.** `SpecText labels` colours `VERIFIED` and the other labels; the Checklist evidence column and the Decisions notes could use it too.
+7. **Rail colours.** The dataviz validator fails the rail colours as a categorical set (light: 6 V against 5 V; dark: 3.3 V against 3.3 V_IMU for protan vision). The pages never rely on colour alone, but a re-stepped set would help the Power view. The engineer picked these colours, so any change is theirs.
+8. **Bundle size.** The `search-provider` chunk is about 545 kB (Vite warns). Loading the Ctrl+K index on first open would speed up the first page load.
+9. **Copy link** button in each opened row, since `?id=` links are the main way to share a row.
+10. **Evidence badges elsewhere.** `SpecText labels` colours `VERIFIED` and the other labels; the Checklist evidence column and the Decisions notes could use it too.
 
 ## Known gaps
 

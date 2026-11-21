@@ -274,6 +274,52 @@ async function taskChipOpensRow(browser: Browser) {
   await v.close()
 }
 
+/**
+ * An ID chip opens its row on the site page: DEC on Decisions, OPEN on Open
+ * items, a requirement on Traceability. In a closed Spec history row a chip
+ * click opens the row instead.
+ */
+async function chipsOpenSitePages(browser: Browser) {
+  const where = 'ID chip'
+  const v = await open(browser, 'history?rev=0.86')
+  const selected = () =>
+    v.page.evaluate(() => [
+      location.hash,
+      document.querySelector('tr[data-state=selected]')?.id ?? '',
+    ])
+  for (const [id, page] of [
+    ['DEC-106', 'decisions'],
+    ['OPEN-031', 'open'],
+    ['IF-048', 'trace'],
+  ] as const) {
+    await v.page.evaluate(() => {
+      location.hash = '#/history?rev=%220.86%22'
+    })
+    await v.page.waitForTimeout(800)
+    await v.page
+      .locator('tr[data-state=selected] a', { hasText: new RegExp(`^${id}$`) })
+      .first()
+      .click()
+    await v.page.waitForTimeout(1000)
+    const [hash, row] = await selected()
+    if (!hash.includes(`/${page}`) || !hash.includes(id))
+      fail(where, `${id} went to ${hash}`)
+    if (row !== `row-${id}`) fail(where, `${id}: selected row is "${row}"`)
+  }
+  // a chip in a closed history row opens that row, not the chip's page
+  await v.page.evaluate(() => {
+    location.hash = '#/history'
+  })
+  await v.page.waitForTimeout(800)
+  await v.page.locator('#rev-0\\.85 a', { hasText: /^DEC-/ }).first().click()
+  await v.page.waitForTimeout(800)
+  const [hash, row] = await selected()
+  if (!hash.includes('history') || row !== 'rev-0.85')
+    fail(where, `closed-row chip went to ${hash}, row "${row}"`)
+  for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+}
+
 /** In an opened table row every cell is top-aligned, so the ID stays at the top. */
 async function openRowTopAligned(browser: Browser) {
   for (const route of [
@@ -430,6 +476,7 @@ async function main() {
     await revChipOpensRow(browser)
     await powerBars(browser)
     await openRowTopAligned(browser)
+    await chipsOpenSitePages(browser)
 
     // diagram drawing, with nothing and with a block selected
     for (const route of [
