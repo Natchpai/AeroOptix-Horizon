@@ -4,7 +4,7 @@
 | -------------------- |---|
 | Project              | AeroOptix-Horizon |
 | Document owner       | Human engineering owner (TBD) |
-| Document revision    | 0.81 |
+| Document revision    | 0.82 |
 | Last updated         | 2026-11-21 |
 | Design tool          | KiCad 10 (saved files written by eeschema 10.0) |
 | Hardware phase       | PRELIMINARY (declared by the human owner, 2026-11-20) |
@@ -61,7 +61,7 @@ See section 3.2.
 | REF-01    | Pixhawk 6C reference architecture | Not specified | Conceptual and functional reference only |
 | REF-02    | User-provided FC_H743 architecture diagram | 2026-10-12 | Diagram-derived candidate architecture; not native design authority |
 | REF-03    | User-provided power architecture diagram | 2026-10-12 | Diagram-derived power candidates; not an approved power specification |
-| REF-04    | `AO-HORIZON_EXECUTION_CHECKLIST_EN.md` | 0.59 | Execution and evidence checklist |
+| REF-04    | `AO-HORIZON_EXECUTION_CHECKLIST_EN.md` | 0.70 | Execution and evidence checklist |
 | REF-05    | Pixhawk 6X reference architecture | Rev 8 | Conceptual and functional reference only |
 | REF-06    | `AO-HORIZON_PINMAP_DECISIONS_EN.md` | 0.2, 2026-10-24 | Team answers behind DEC-014 to DEC-018 |
 | REF-07    | `AO-HORIZON_PINMAP_REVIEW_EN.md` | 0.3, answered 2026-10-24 | Pinmap agreed with the software team |
@@ -693,6 +693,7 @@ DEC-020 to DEC-022 come from the software team's answers to the integration ques
 | 0.79     | 2026-11-21 | Added DEC-097 (second 68 µF T495C686M016ATE250, C804, on `+6V`; human owner: "use option A, same as C803"). OPEN-021 bulk item settled; the 100 nF sense capacitor is now C805 (noted in 4.2 and DEC-066). | Pending human review |
 | 0.80     | 2026-11-21 | No new decisions. `progress-update` since `e7c831f`: added 5.2 "PCB state" and OPEN-040 for the stackup and board rules drawn in `a70e6cc` (drawn, not decided); added the 2026-11-20 library changes to 4.6; rewrote the verdict for the closed P1 gate, the 11:18 ERC and the items closed in rev 0.78. | Pending human review |
 | 0.81     | 2026-11-21 | No new decisions. `progress-update light` review of open items and tasks (checklist rev 0.69): P2-016 now cites DEC-097 (C804 bulk) and stays open for the copper and GND join (OPEN-021); P4-011 adds the PWM boot-state check from DEC-073; P2-021 set to DONE by the human owner ("DONE, 1 % stays ASSUMED"). No KiCad file changed. | Pending human review |
+| 0.82     | 2026-11-21 | No new decisions. Checklist rev 0.70: 16 task rows (P0-023, P1-001, P1-003, P1-006, P1-014, P1-017, P2-005, P2-009, P2-012, P2-015, P2-016, P2-018, P2-021, P2-022, P2-023, P3-002) cut to the statement, the current state and `Left:`, each under 600 characters; the history they held is in the earlier change-notes and the decision and open-item rows they cite. Task merges of 2026-11-19, removed from the rows: P1-001 took P1-002, P1-009, P1-010, P1-012 and P1-013; P1-003 took P1-004, P1-005 and P2-003; P1-017 took P1-018; P2-005 took P2-006, P2-007, P4-006 and P4-007; P2-009 took P1-011 and P2-008; P2-018 took P2-013. P2-022 `Left:` now names the temporary `PWR_FLAG` on `VBUS` and `/kicad-link-audit` for `0_Oscillator` (not recorded as run). REF-04 set to checklist rev 0.70 (was 0.59, last set in rev 0.65). No KiCad file changed. | Pending human review |
 
 ## Current verdict
 
