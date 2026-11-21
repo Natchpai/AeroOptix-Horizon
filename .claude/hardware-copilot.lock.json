@@ -1,14 +1,14 @@
 {
   "source": "Hardware-Copilot",
-  "ref": "v4.1.0",
-  "commit": "e3ae7dd49a1275447b77e7a3cac4e4cbd1863103",
-  "version": "4.1.0",
+  "ref": "fix/hook-shell-syntax",
+  "commit": "c428492977ce62f1a7611b128a7f8cc8099c1e36",
+  "version": "4.1.1",
   "exclude": [
     "skills/git-workflow"
   ],
   "files": {
     ".claude/hooks/protect.json": "578cc88a464ba6e8db1085308b31edf96214357df551ae0a7e399ff7df260320",
-    ".claude/hooks/protect_kicad_v2.py": "42b85bf9b85a7fce50bf8529c9d4728ca8c84f031d8109f6972bc18c3f7df2d9",
+    ".claude/hooks/protect_kicad_v2.py": "519b78ae3362bcd5b4f02cbadd761b9ac3ffa9d43bcabedc07346135bcd4e13b",
     ".claude/rules/engineering.md": "4fb00a6ffa97e78ab4ed21139c4a8cc96c7c452fc8c93b4d7e0143d5b752e5b4",
     ".claude/rules/git-workflow.md": "9ba152ea92a1e6afb8b800ba251965850afe4229d574684b1422e61f20c4c71c",
     ".claude/rules/notebooklm.md": "877b2cd1c86706addc8d3f64839bc552f266a8ceedf9f632f3a2be3f90f4119d",

@@ -10,8 +10,10 @@ deny > ask > allow, the same order as Claude Code's own permissions:
 - `git`: named checks on git and gh commands, with flags in any order.
 deny -> blocked; ask -> the user is prompted; no match -> normal permissions.
 
-Advisory defense-in-depth; not an OS sandbox. Shell analysis is token-based:
-it cannot see paths or commands built at runtime, Git aliases or scripts.
+Advisory defense-in-depth; not an OS sandbox. Shell analysis is token-based.
+It follows chains, pipes, background jobs, subshells, $(...), shell keywords
+(if/then/do/...), wrappers and heredocs fed to a shell or interpreter. It
+cannot see paths or commands built at runtime, Git aliases or script files.
 """
 import json
 import os
@@ -41,12 +43,27 @@ INTERPRETERS = {'python', 'python3', 'py', 'node', 'powershell', 'pwsh', 'perl'}
 WRITE_HINT = re.compile(r"(?i)open\([^)]*['\"][wax]|write|rmtree|unlink|remove|"
                         r"set-content|out-file|copy|rename|move")
 # words that run the next word as the command
-WRAPPERS = {'env', 'command', 'time', 'nohup', 'exec', 'sudo', 'xargs', '&', 'call'}
+WRAPPERS = {'env', 'command', 'time', 'nohup', 'exec', 'sudo', 'xargs', '&', 'call',
+            'timeout', 'nice'}
+# wrapper options that take a value (the value is not the command)
+WRAPPER_ARG = {
+    'env': {'-u', '--unset', '-C', '--chdir'},
+    'sudo': {'-u', '--user', '-g', '--group', '-h', '--host', '-p', '--prompt', '-C',
+             '--close-from', '-D', '--chdir'},
+    'xargs': {'-I', '-n', '--max-args', '-P', '--max-procs', '-L', '--max-lines', '-d',
+              '--delimiter', '-E', '-s', '--max-chars', '-a', '--arg-file'},
+    'timeout': {'-s', '--signal', '-k', '--kill-after'},
+    'nice': {'-n', '--adjustment'},
+}
+# shell words that come before a command (if git push ...; then git push ...)
+KEYWORDS = {'if', 'then', 'do', 'else', 'elif', 'while', 'until', '!', '{'}
 # shells whose -c / -Command string is itself a command
 SUBSHELLS = {'bash', 'sh', 'zsh', 'dash', 'powershell', 'pwsh', 'cmd'}
 SUBSHELL_FLAGS = {'-c', '-lc', '-ic', '-command', '/c', '/k'}
 CD = {'cd', 'pushd', 'set-location', 'sl', 'chdir'}
-HEREDOC = re.compile(r"<<-?\s*(['\"]?)([A-Za-z_][\w-]*)\1")
+# <<EOF and <<-'EOF', not the <<< here-string
+HEREDOC = re.compile(r"(?<!<)<<(?!<)-?\s*(['\"]?)([A-Za-z_][\w-]*)\1")
+HEREDOC_TAG = re.compile(r'__heredoc(\d+)__')
 
 # PDFs: these commands list, move or print text, and never read PDF content
 PDF_NO_READ = {'ls', 'dir', 'gci', 'get-childitem', 'find', 'stat', 'du', 'mkdir',
@@ -75,6 +92,8 @@ GIT_GLOBAL_ARG = {'-C', '-c', '--git-dir', '--work-tree', '--namespace', '--conf
 PUSH_ARG = {'-o', '--push-option', '--repo', '--receive-pack', '--exec'}
 PUSH_NO_HEAD = {'--tags', '--all', '--mirror', '--branches', '--delete'}
 GH_GLOBAL_ARG = {'-R', '--repo', '--hostname'}
+TAG_ARG = {'--contains', '--no-contains', '--merged', '--no-merged', '--points-at',
+           '--sort', '--format', '--column'}
 
 
 def glob_re(g):
@@ -136,37 +155,56 @@ def classify(path, rules, default=None):
 # ---------------------------------------------------------------- shell parsing
 
 def strip_heredocs(command):
-    """Drop heredoc bodies (commit messages and similar text are not commands)."""
-    lines, out, end = command.split('\n'), [], None
-    for ln in lines:
-        if end is not None:
+    """Move heredoc bodies out of the command text.
+
+    Each heredoc operator becomes a word __heredocN__. Return (text, bodies).
+    segments() parses a body only when it feeds a shell or an interpreter, so
+    commit messages and similar text are not commands."""
+    out, bodies, pending = [], [], []
+
+    def tag(m):
+        pending.append((len(bodies), m.group(2)))
+        bodies.append([])
+        return f' __heredoc{len(bodies) - 1}__ '
+
+    for ln in command.split('\n'):
+        if pending:
+            idx, end = pending[0]
             if ln.strip() == end:
-                end = None
+                pending.pop(0)
+            else:
+                bodies[idx].append(ln)
             continue
-        out.append(ln)
-        m = HEREDOC.search(ln)
-        if m:
-            end = m.group(2)
-    return '\n'.join(out)
+        out.append(HEREDOC.sub(tag, ln))
+    return '\n'.join(out), ['\n'.join(b) for b in bodies]
 
 
 def split_segments(command):
-    """Split on && || ; | and newlines, outside quotes."""
-    segs, cur, quote, i = [], '', None, 0
-    while i < len(command):
+    """Split on && || ; | & newlines ( ) ` and a standalone { or }, outside quotes.
+
+    A & that is part of a redirect (2>&1, &>file) does not split; nor do the
+    braces of ${VAR}, {} or {a,b}."""
+    segs, cur, quote, i, n = [], '', None, 0, len(command)
+    while i < n:
         c = command[i]
+        prev = command[i - 1] if i else ' '
+        nxt = command[i + 1] if i + 1 < n else ' '
         if quote:
             cur += c
             if c == quote:
                 quote = None
-        elif c in '"\'':
+            i += 1
+            continue
+        if c in '"\'':
             quote = c
             cur += c
         elif command.startswith(('&&', '||'), i):
             segs.append(cur)
             cur = ''
             i += 1
-        elif c in ';|\n':
+        elif (c in ';|\n()`'
+              or (c == '&' and prev not in ('<', '>') and nxt != '>')
+              or (c in '{}' and prev.isspace() and (nxt.isspace() or nxt == ';'))):
             segs.append(cur)
             cur = ''
         else:
@@ -189,32 +227,51 @@ def base(tok):
 
 
 def unwrap(toks):
-    """Drop leading env assignments and wrapper words (env, sudo, xargs -r, &)."""
-    i, in_wrapper = 0, False
+    """Drop leading shell keywords, env assignments and wrapper words with
+    their options (if, then, do, !, env -u X, sudo, xargs -n 1, timeout 60, &)."""
+    i, wrapper = 0, None
     while i < len(toks):
-        t = toks[i]
-        if re.match(r'^[A-Za-z_][A-Za-z0-9_]*=', t) or base(t) in WRAPPERS:
-            in_wrapper = base(t) in WRAPPERS
-        elif not (in_wrapper and t.startswith('-')):
+        t, b = toks[i], base(toks[i])
+        if t in KEYWORDS or re.match(r'^[A-Za-z_][A-Za-z0-9_]*=', t):
+            wrapper = None
+        elif b in WRAPPERS:
+            wrapper = b
+        elif wrapper and t.startswith('-'):
+            if t in WRAPPER_ARG.get(wrapper, ()):
+                i += 1                               # skip the option's value
+        elif wrapper == 'timeout' and re.match(r'^\d+(\.\d+)?[smhd]?$', t):
+            wrapper = None                           # the duration; the command follows
+        else:
             break
         i += 1
     return toks[i:]
 
 
-def segments(command, depth=0):
-    """Yield (segment text, tokens) for each simple command, entering bash -c strings."""
-    if depth == 0:
-        command = strip_heredocs(command.replace('\\', '/'))
+def segments(command, depth=0, bodies=None):
+    """Yield (segment text, tokens) for each simple command, entering bash -c
+    strings and heredocs fed to a shell. A heredoc fed to an interpreter is
+    added to that segment's text, so the write and PDF scans see it."""
+    if bodies is None:
+        if depth == 0:
+            command = command.replace('\\', '/')
+        command, bodies = strip_heredocs(command)
     for seg in split_segments(command):
         toks = unwrap(tokens(seg))
         if not toks:
             continue
+        cmd = base(toks[0])
+        fed = [bodies[int(k)] for k in HEREDOC_TAG.findall(seg) if int(k) < len(bodies)]
+        if fed and cmd in INTERPRETERS:
+            seg = '\n'.join([seg, *fed])
         yield seg, toks
-        if depth < 3 and base(toks[0]) in SUBSHELLS:
+        if depth < 3 and cmd in SUBSHELLS:
             for i, t in enumerate(toks[:-1]):
                 if t.lower() in SUBSHELL_FLAGS:
-                    yield from segments(' '.join(toks[i + 1:]), depth + 1)
+                    yield from segments(' '.join(toks[i + 1:]), depth + 1, bodies)
                     break
+            else:
+                for body in fed:
+                    yield from segments(body, depth + 1)
 
 
 def shell_targets(command):
@@ -385,6 +442,7 @@ def git_hits(toks, cwd, branches):
             hits.append('branch-rename')
         return hits
     if sub == 'tag':
+        longs, shorts, pos = parse_opts(args, TAG_ARG)
         listing = '--list' in longs or 'l' in shorts
         writes = (shorts & {'a', 's', 'u', 'f', 'd', 'm', 'F', 'e'}) or (set(longs) & {
             '--delete', '--annotate', '--sign', '--local-user', '--force', '--message',
@@ -392,8 +450,13 @@ def git_hits(toks, cwd, branches):
         return [] if listing or not (pos or writes) else ['tag']
     if sub == 'rebase':
         return ['rebase']
-    if sub == 'pull' and ('--rebase' in longs or 'r' in shorts):
-        return ['rebase']
+    if sub == 'pull':
+        # the last of -r, --rebase[=mode] and --no-rebase wins, as in git
+        last = [a for a in args if a in ('-r', '--rebase', '--no-rebase')
+                or a.startswith('--rebase=') or re.match(r'^-[A-Za-z]*r[A-Za-z]*$', a)]
+        if last and last[-1] != '--no-rebase' and \
+                last[-1].split('=', 1)[-1].lower() not in ('false', 'no', 'off', '0'):
+            return ['rebase']
     if sub == 'commit' and '--amend' in longs:
         return ['commit-amend']
     return []
