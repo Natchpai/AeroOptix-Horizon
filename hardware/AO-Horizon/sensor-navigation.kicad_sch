@@ -3661,7 +3661,7 @@
 				)
 			)
 		)
-		(property "STATUS" ""
+		(property "STATUS" "CHECKED"
 			(at 179.07 146.05 0)
 			(hide yes)
 			(show_name no)
@@ -6606,7 +6606,7 @@
 				)
 			)
 		)
-		(property "STATUS" ""
+		(property "STATUS" "CHECKED"
 			(at 179.07 80.01 0)
 			(hide yes)
 			(show_name no)
