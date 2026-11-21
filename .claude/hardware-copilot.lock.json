@@ -1,8 +1,8 @@
 {
   "source": "Hardware-Copilot",
-  "ref": "v4.0.0",
-  "commit": "530698dfc5d98c30420ff8c270694553ef678eb3",
-  "version": "4.0.0",
+  "ref": "v4.0.1",
+  "commit": "a37c1422876c06debcca26b778b32130e883ef1c",
+  "version": "4.0.1",
   "exclude": [
     "skills/git-workflow"
   ],
@@ -40,9 +40,9 @@
     ".claude/skills/pcb-review/SKILL.md": "0fc0b0e2e934598a13047ff434b09d5583e0ac2e116ef766ba86b03aaacf73e0",
     ".claude/skills/progress-update/SKILL.md": "401ce8cd8a6dcdc372557e01999b2644cc5b6f2cb80182091db13d7ce8ef35c5",
     ".claude/skills/progress-update/scripts/list_symbols.py": "b57fd2c2eb14348ffe12ad4f55cd6b9aab509f0d115e7eaed0ef5c325501c869",
-    ".claude/skills/progress-update/scripts/progress_preflight.py": "400c7588970ecf9275a818db814dfc27964429592c1448860778f09e5689a565",
+    ".claude/skills/progress-update/scripts/progress_preflight.py": "6eccc873794c3e41dc0204218a7b6249788c46aa5a5291c79544e72d5b482b73",
     ".claude/skills/progress-update/scripts/register.py": "dac1d60a4a76d88ceacfd9f0ebfc12b86977ad5561d92556c2a1d0f1489af27e",
-    ".claude/skills/progress-update/tests/test_register.py": "ce5b77116f70d436b6de26ba180c2ea8163d73ca4015b2be9cc40f69268631bd",
+    ".claude/skills/progress-update/tests/test_register.py": "21ec62d8f0d6c25d2214bba7ec31631ff76a50eb865653838abb5617328dd2f4",
     ".claude/skills/progress-update/tests/test_review_items.py": "b19daee57a19284f163e520122fdf21be170cbe2a7ae7a92b645cd21ea54032b",
     ".claude/skills/sch-inspect/SKILL.md": "83297fe91e2f975bc2b203fb2df82c70439c55ec217fd66c87e73b4f2a6125ac",
     ".claude/skills/sch-inspect/references/schematic-data.md": "ecb83472cfaeef6f53850166383308cdec52a4d486ef2829670609dbb7106f96",

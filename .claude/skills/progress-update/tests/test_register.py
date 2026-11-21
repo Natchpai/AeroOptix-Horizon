@@ -142,5 +142,20 @@ class ItemCites(unittest.TestCase):
         self.assertIn(("review:newer_dec", "P2-001"), hit)
 
 
+
+class PickProject(unittest.TestCase):
+    def test_ignores_projects_under_dot_claude(self):
+        import subprocess
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            subprocess.run(["git", "init", "-q", str(repo)], check=True)
+            for rel in ("hw/board.kicad_pro", ".claude/skills/sch-inspect/tests/fixtures/x/x.kicad_pro"):
+                f = repo / rel
+                f.parent.mkdir(parents=True, exist_ok=True)
+                f.write_text("{}", encoding="utf-8")
+            self.assertEqual(pp.pick_project(repo, None), repo / "hw" / "board.kicad_pro")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
