@@ -205,7 +205,7 @@ export const systemBlocks: Block[] = [
     kind: 'connector',
     label: 'RC IN',
     sub: '1x3 2.54 mm header',
-    refs: ['IF-038', 'DEC-053'],
+    refs: ['IF-038', 'DEC-053', 'DEC-098'],
     open: ['OPEN-034'],
   },
   {
@@ -544,7 +544,7 @@ export const boardBlocks: Block[] = [
     kind: 'bus',
     label: 'I2C2',
     rail: 'i2c',
-    refs: ['SEN-002', 'SEN-003'],
+    refs: ['SEN-002', 'SEN-003', 'DEC-094', 'DEC-099'],
     note: 'Both barometers and the magnetometer share I2C2. Addresses do not overlap. One bus fault can take out both barometers.',
   },
   // Power module port: I2C4 only here; power parts are on the Power view
@@ -646,9 +646,9 @@ export const boardBlocks: Block[] = [
     kind: 'connector',
     label: 'RC IN',
     sub: '1x3 2.54 mm header',
-    refs: ['IF-038', 'DEC-053', 'DEC-056', 'DEC-057'],
+    refs: ['IF-038', 'DEC-053', 'DEC-056', 'DEC-057', 'DEC-098'],
     open: ['OPEN-034'],
-    note: 'PPM from an FS-iA6B. ESD at the connector, then the U303 SN74LVC1G34DCKR buffer on +3V3 into PA8 (DEC-056, DEC-057). Connector type and pin order: OPEN-034 item 6a.',
+    note: 'PPM from an FS-iA6B. ESD at the connector, then the U303 SN74LVC1G34DCKR buffer on +3V3 into PA8 (DEC-056, DEC-057). Connector CN706: pin 1 PPM, pin 2 +5V, pin 3 GND, so a servo lead in signal, +, - order plugs in directly (DEC-098).',
   },
   {
     id: 'j-esc',
@@ -757,7 +757,7 @@ export const boardLinks: Link[] = [
     to: 'baro1',
     bus: 'i2c',
     label: '0x63',
-    refs: ['SEN-002'],
+    refs: ['SEN-002', 'DEC-099'],
   },
   {
     id: 'b-baro2',
@@ -766,7 +766,7 @@ export const boardLinks: Link[] = [
     to: 'baro2',
     bus: 'i2c',
     label: '0x46',
-    refs: ['SEN-002'],
+    refs: ['SEN-002', 'DEC-099'],
   },
   {
     id: 'b-mag',
@@ -775,7 +775,7 @@ export const boardLinks: Link[] = [
     to: 'mag',
     bus: 'i2c',
     label: '0x0C',
-    refs: ['SEN-003', 'DEC-047'],
+    refs: ['SEN-003', 'DEC-047', 'DEC-099'],
   },
   // MCU link
   {
