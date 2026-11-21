@@ -10,6 +10,8 @@ type ChecklistSearch = {
   gate?: string
   /** Show only tasks with this status, e.g. OPEN. */
   status?: string
+  /** Show only tasks with this owner, e.g. Software. */
+  owner?: string
 }
 
 const str = (v: unknown, re: RegExp) =>
@@ -21,6 +23,7 @@ export const Route = createFileRoute('/_site/checklist')({
     id: str(s.id, /^P\d-\d{3}$/),
     gate: str(s.gate, /^P\d$/),
     status: str(s.status, /^[A-Z_/]+$/),
+    owner: typeof s.owner === 'string' && s.owner ? s.owner : undefined,
   }),
   component: ChecklistPage,
 })

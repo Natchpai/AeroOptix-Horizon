@@ -149,3 +149,35 @@ One entry per change: what changed, why, and which files were edited.
     to 0.10, each lands on the Spec history row). Its page logic fails on
     the build before this change.
   - `log.md`: this entry.
+
+## 2026-11-22 T8: Checklist owner filter and gate blockers
+
+- What: the Checklist task list has a row of owner chips under the gate
+  and state chips: All owners, then each owner with its task count, most
+  tasks first. An Owner cell is split on "," and "+", so "Team +
+  Hardware" counts under Team and under Hardware. A chip sets `?owner=`;
+  a second click clears it. Owner, gate, state and text filters combine,
+  and `?id=` still shows its row. Each chip row counts the tasks the
+  other chip filters leave, so the state counts now follow the owner
+  filter too. Under each gate that is not DONE, the Gates card lists
+  "Open items naming this gate's tasks": open items (not closed or
+  removed) whose "Owner / next action" cell names a task of that gate,
+  as ID chips that open the row on Open items. Today P3 shows OPEN-004,
+  009, 021, 023, 031, 040, 041 and P4 shows OPEN-011, 017, 021, 026,
+  031, 034.
+- Why: to see one person's or team's tasks at a glance, and which open
+  items stand between an open gate and done. Both only cross-reference
+  record text; the site adds no values.
+- Files:
+  - `src/routes/_site/checklist.tsx`: `owner` search param.
+  - `src/features/checklist/index.tsx`: owner split, owner chips and
+    filter, gate blocker lists.
+  - `src/features/open-items/cites.ts`: `TASK_ID` exported (no change in
+    behaviour), so the gate blockers find task IDs with the same regex.
+  - `src/features/about/index.tsx`: one sentence under "Finding things".
+  - `tests/ui.ts`: new `ownerFilter` (Software chip and `?owner=` show
+    the computed row count) and `gateBlockers` (lists equal a computation
+    from `ids.json` and `progress.json`; a chip opens its Open items row)
+    checks, and `checklist?owner=Software` in the page-load list. Both
+    fail on the build before this change.
+  - `log.md`: this entry.

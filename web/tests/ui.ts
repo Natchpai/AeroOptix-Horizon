@@ -8,7 +8,8 @@
  * decision or an open item (open or closed) opens its row on its page,
  * a next-action task chip opens its Checklist row, and an Overview
  * revision chip and a Decisions "Mentioned in" revision chip open their
- * Spec history rows, the Power budget page
+ * Spec history rows, the Checklist owner chip filters its rows and a gate
+ * blocker chip opens its Open items row, the Power budget page
  * draws one bar per Rail summary row, every Decisions Date cell holds
  * its text inside the cell, every page has its own browser tab title, the
  * diagram view tabs fit at phone width, and light-theme status and evidence
@@ -611,6 +612,124 @@ async function mentionedInChips(browser: Browser) {
   }
 }
 
+const generated = (file: string) =>
+  JSON.parse(
+    readFileSync(
+      new URL(`../src/data/generated/${file}`, import.meta.url),
+      'utf8'
+    )
+  )
+
+/**
+ * The Checklist owner chip sets ?owner= and lists the tasks whose Owner
+ * cell, split on "," and "+", names that owner; the URL alone does the same.
+ */
+async function ownerFilter(browser: Browser) {
+  const owner = 'Software'
+  const where = `Checklist owner ${owner}`
+  const tasks = Object.values(generated('progress.json').tasks) as {
+    owner: string
+  }[]
+  const want = tasks.filter((t) =>
+    t.owner
+      .split(/[,+]/)
+      .map((o) => o.trim())
+      .includes(owner)
+  ).length
+  const rows = (page: Page) =>
+    page.evaluate(
+      () => document.querySelectorAll('tbody tr[id^="row-"]').length
+    )
+  const v = await open(browser, 'checklist')
+  const chip = v.page
+    .locator('[aria-label="Owner"] button')
+    .filter({ hasText: new RegExp(`^${owner}\\s*${want}$`) })
+  try {
+    await chip.click({ timeout: 5000 })
+    await v.page.waitForTimeout(500)
+    const hash = await v.page.evaluate(() => location.hash)
+    if (!hash.includes(`owner=${owner}`)) fail(where, `chip went to ${hash}`)
+    const got = await rows(v.page)
+    if (got !== want) fail(where, `chip shows ${got} rows, not ${want}`)
+  } catch {
+    fail(where, `no "${owner} ${want}" owner chip`)
+  }
+  for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+  const u = await open(browser, `checklist?owner=${owner}`)
+  const got = await rows(u.page)
+  if (got !== want) fail(where, `?owner= shows ${got} rows, not ${want}`)
+  await u.close()
+}
+
+/**
+ * Under each open gate the Checklist lists the open items whose "Owner /
+ * next action" names one of the gate's tasks; a chip opens its Open items row.
+ */
+async function gateBlockers(browser: Browser) {
+  const where = 'Checklist gate blockers'
+  const progress = generated('progress.json') as {
+    gates: { id: string; status: string }[]
+    tasks: Record<string, { gate: string }>
+  }
+  const ids = Object.values(generated('ids.json')) as {
+    id: string
+    kind: string
+    closed: boolean
+    removed: boolean
+    fields: Record<string, string>
+  }[]
+  const want: Record<string, string[]> = {}
+  for (const g of progress.gates) {
+    if (g.status === 'DONE') continue
+    const list = ids
+      .filter((s) => s.kind === 'OPEN' && !s.closed && !s.removed)
+      .filter((s) =>
+        (s.fields['Owner / next action'] ?? '')
+          .match(/\bP\d-\d{3}\b/g)
+          ?.some((id) => progress.tasks[id]?.gate === g.id)
+      )
+      .map((s) => s.id)
+      .sort()
+    if (list.length) want[g.id] = list
+  }
+  const v = await open(browser, 'checklist')
+  const got = await v.page.evaluate(() =>
+    Object.fromEntries(
+      [...document.querySelectorAll<HTMLElement>('[data-gate-blockers]')].map(
+        (d) => [
+          d.dataset.gateBlockers ?? '',
+          [...d.querySelectorAll('a')].map((a) => a.textContent?.trim()),
+        ]
+      )
+    )
+  )
+  if (JSON.stringify(got) !== JSON.stringify(want))
+    fail(where, `shown ${JSON.stringify(got)}, not ${JSON.stringify(want)}`)
+  const [gate, list] = Object.entries(want)[0] ?? []
+  if (gate && list) {
+    const id = list[0]
+    const chip = v.page
+      .locator(`[data-gate-blockers="${gate}"] a`)
+      .filter({ hasText: new RegExp(`^${id}$`) })
+    try {
+      await chip.click({ timeout: 5000 })
+      await v.page.waitForTimeout(1000)
+      const [hash, row] = await v.page.evaluate(() => [
+        location.hash,
+        document.querySelector('tr[data-state=selected]')?.id ?? '',
+      ])
+      if (!hash.includes('/open') || !hash.includes(id))
+        fail(where, `${id} went to ${hash}`)
+      if (row !== `row-${id}`) fail(where, `${id}: selected row is "${row}"`)
+    } catch {
+      fail(where, `no ${id} chip under gate ${gate}`)
+    }
+  }
+  for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+}
+
 /** Click an export button; the file must be valid SVG with plain colours. */
 async function svgExport(page: Page, button: string, where: string) {
   const download = page.waitForEvent('download', { timeout: 15000 })
@@ -656,6 +775,7 @@ async function main() {
         'checklist',
         'checklist?id=P3-007',
         'checklist?gate=P3&status=OPEN',
+        'checklist?owner=Software',
         'history',
         'history?rev=0.86',
         'trace',
@@ -700,6 +820,8 @@ async function main() {
     await taskChipOpensRow(browser)
     await revChipOpensRow(browser)
     await mentionedInChips(browser)
+    await ownerFilter(browser)
+    await gateBlockers(browser)
     await powerBars(browser)
     await decisionDatesFit(browser)
     await lightContrast(browser)

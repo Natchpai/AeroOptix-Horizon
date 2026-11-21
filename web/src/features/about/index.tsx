@@ -373,7 +373,9 @@ export function AboutPage() {
                 <li>
                   The table pages (Decisions, Open items, Checklist, Spec
                   history, Traceability, Pinout) have a text filter. A linked
-                  row always shows, even when a filter would hide it.
+                  row always shows, even when a filter would hide it. The
+                  Checklist also filters by gate, state and owner, and under
+                  each open gate lists the open items that name its tasks.
                 </li>
                 <li>
                   The footer of the Overview names the commit and date the site
