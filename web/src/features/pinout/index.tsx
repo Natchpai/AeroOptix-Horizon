@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { getRouteApi, Link as RouterLink } from '@tanstack/react-router'
 import {
   type ColumnDef,
@@ -10,6 +10,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import {
+  type Bus,
   type Mcu,
   type PinRow,
   busInfo,
@@ -58,6 +59,14 @@ export function PinoutPage() {
     : undefined
   const pick = (pin?: string) =>
     navigate({ search: { mcu, pin: pin === search.pin ? undefined : pin } })
+
+  // A pin picked in the table (below the package) brings its details into view.
+  useEffect(() => {
+    if (search.pin)
+      document
+        .getElementById('pin-detail')
+        ?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+  }, [search.pin])
 
   return (
     <>
@@ -124,14 +133,18 @@ export function PinoutPage() {
             </CardContent>
           </Card>
 
-          <div className='min-w-0 space-y-4'>
-            {selected && (
+          <div className='min-w-0'>
+            {selected ? (
               <PinDetail mcu={mcu} row={selected} onClose={() => pick()} />
+            ) : (
+              <PinHint mcu={mcu} />
             )}
-            <PinTable mcu={mcu} selected={search.pin} onPick={pick} />
-            {mcu === 'f100' && <ReservedTable />}
           </div>
         </div>
+
+        {/* full width, so every column fits without tall wrapped rows */}
+        <PinTable mcu={mcu} selected={search.pin} onPick={pick} />
+        {mcu === 'f100' && <ReservedTable />}
       </Main>
     </>
   )
@@ -154,6 +167,45 @@ function BusKey({ mcu }: { mcu: Mcu }) {
   )
 }
 
+/** Wide screens: what the empty space beside the package is for. */
+function PinHint({ mcu }: { mcu: Mcu }) {
+  const counts = new Map<Bus, number>()
+  for (const p of pins[mcu]) {
+    const b = busOfSignal(p.signal)
+    counts.set(b, (counts.get(b) ?? 0) + 1)
+  }
+  return (
+    <Card className='hidden gap-3 xl:flex'>
+      <CardHeader>
+        <CardTitle className='text-base'>Pin details</CardTitle>
+        <CardDescription>
+          Click a pin in the package or a row in the table for its function,
+          source IDs, datasheet check and diagram link.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className='space-y-2 text-sm'>
+        <p>
+          {pins[mcu].length} of {mcuInfo[mcu].pinCount} pins allocated:
+        </p>
+        <ul className='space-y-1'>
+          {[...counts].map(([b, n]) => (
+            <li key={b} className='flex items-center gap-2'>
+              <span
+                className='size-2.5 rounded-sm'
+                style={{ background: busInfo[b].color }}
+              />
+              <span>{busInfo[b].label}</span>
+              <span className='ms-auto font-mono text-xs text-muted-foreground'>
+                {n}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
+  )
+}
+
 function PinDetail({
   mcu,
   row,
@@ -167,7 +219,8 @@ function PinDetail({
   const color = busInfo[busOfSignal(row.signal)].color
   return (
     <Card
-      className='gap-3 border-[color-mix(in_oklab,var(--c)_50%,var(--border))]'
+      id='pin-detail'
+      className='scroll-mt-20 gap-3 border-[color-mix(in_oklab,var(--c)_50%,var(--border))]'
       style={{ ['--c' as string]: color }}
     >
       <CardHeader className='flex flex-row items-start justify-between gap-2'>
@@ -278,13 +331,20 @@ function PinTable({
           <DataTableColumnHeader column={column} title='Signal' />
         ),
         cell: ({ row }) => (
-          <span className='font-mono text-xs'>{row.original.signal}</span>
+          <span className='block min-w-40 font-mono text-xs whitespace-normal'>
+            {row.original.signal}
+          </span>
         ),
       },
       {
         accessorKey: 'function',
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title='Function' />
+        ),
+        cell: ({ row }) => (
+          <span className='block min-w-48 whitespace-normal'>
+            {row.original.function}
+          </span>
         ),
       },
       {
@@ -293,7 +353,7 @@ function PinTable({
         header: 'Ref',
         enableSorting: false,
         cell: ({ row }) => (
-          <div className='flex flex-wrap gap-1'>
+          <div className='flex min-w-40 flex-wrap gap-1'>
             {row.original.refs.map((r) => (
               <IdChip key={r} id={r} />
             ))}
@@ -305,7 +365,7 @@ function PinTable({
         header: 'DS',
         enableSorting: false,
         cell: ({ row }) => (
-          <span className='text-xs text-muted-foreground'>
+          <span className='block min-w-32 text-xs whitespace-normal text-muted-foreground'>
             {row.original.ds}
           </span>
         ),
