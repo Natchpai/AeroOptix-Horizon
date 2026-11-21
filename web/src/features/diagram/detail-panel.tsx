@@ -13,7 +13,7 @@ import {
   sourceUrl,
   statusOf,
 } from '@/data'
-import { ArrowRight, Cpu, X } from 'lucide-react'
+import { ArrowRight, BatteryCharging, Cpu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { IdChip, IdList } from '@/components/id-chip'
 import { MdText } from '@/components/md-text'
@@ -206,6 +206,13 @@ function BlockBody({
         <Button asChild size='sm' className='w-full'>
           <RouterLink to='/pinout' search={{ mcu: block.mcu }}>
             <Cpu className='size-4' /> Open {block.sub} pinout
+          </RouterLink>
+        </Button>
+      )}
+      {block.level === 'power' && (
+        <Button asChild size='sm' variant='outline' className='w-full'>
+          <RouterLink to='/power'>
+            <BatteryCharging className='size-4' /> Open the power budget
           </RouterLink>
         </Button>
       )}
