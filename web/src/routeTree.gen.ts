@@ -12,10 +12,15 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SiteRouteRouteImport } from './routes/_site/route'
 import { Route as errors404RouteImport } from './routes/(errors)/404'
 import { Route as SiteIndexRouteImport } from './routes/_site/index'
+import { Route as SiteChecklistRouteImport } from './routes/_site/checklist'
 import { Route as SiteDecisionsRouteImport } from './routes/_site/decisions'
 import { Route as SiteDiagramRouteImport } from './routes/_site/diagram'
+import { Route as SiteHistoryRouteImport } from './routes/_site/history'
+import { Route as SiteOpenRouteImport } from './routes/_site/open'
 import { Route as SitePinoutRouteImport } from './routes/_site/pinout'
+import { Route as SitePowerRouteImport } from './routes/_site/power'
 import { Route as SiteShowcaseRouteImport } from './routes/_site/showcase'
+import { Route as SiteTraceRouteImport } from './routes/_site/trace'
 
 const SiteRouteRoute = SiteRouteRouteImport.update({
   id: '/_site',
@@ -31,6 +36,11 @@ const SiteIndexRoute = SiteIndexRouteImport.update({
   path: '/',
   getParentRoute: () => SiteRouteRoute,
 } as any)
+const SiteChecklistRoute = SiteChecklistRouteImport.update({
+  id: '/checklist',
+  path: '/checklist',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
 const SiteDecisionsRoute = SiteDecisionsRouteImport.update({
   id: '/decisions',
   path: '/decisions',
@@ -41,9 +51,24 @@ const SiteDiagramRoute = SiteDiagramRouteImport.update({
   path: '/diagram',
   getParentRoute: () => SiteRouteRoute,
 } as any)
+const SiteHistoryRoute = SiteHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
+const SiteOpenRoute = SiteOpenRouteImport.update({
+  id: '/open',
+  path: '/open',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
 const SitePinoutRoute = SitePinoutRouteImport.update({
   id: '/pinout',
   path: '/pinout',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
+const SitePowerRoute = SitePowerRouteImport.update({
+  id: '/power',
+  path: '/power',
   getParentRoute: () => SiteRouteRoute,
 } as any)
 const SiteShowcaseRoute = SiteShowcaseRouteImport.update({
@@ -51,46 +76,93 @@ const SiteShowcaseRoute = SiteShowcaseRouteImport.update({
   path: '/showcase',
   getParentRoute: () => SiteRouteRoute,
 } as any)
+const SiteTraceRoute = SiteTraceRouteImport.update({
+  id: '/trace',
+  path: '/trace',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof SiteIndexRoute
   '/404': typeof errors404Route
+  '/checklist': typeof SiteChecklistRoute
   '/decisions': typeof SiteDecisionsRoute
   '/diagram': typeof SiteDiagramRoute
+  '/history': typeof SiteHistoryRoute
+  '/open': typeof SiteOpenRoute
   '/pinout': typeof SitePinoutRoute
+  '/power': typeof SitePowerRoute
   '/showcase': typeof SiteShowcaseRoute
+  '/trace': typeof SiteTraceRoute
 }
 export interface FileRoutesByTo {
   '/404': typeof errors404Route
+  '/checklist': typeof SiteChecklistRoute
   '/decisions': typeof SiteDecisionsRoute
   '/diagram': typeof SiteDiagramRoute
+  '/history': typeof SiteHistoryRoute
+  '/open': typeof SiteOpenRoute
   '/pinout': typeof SitePinoutRoute
+  '/power': typeof SitePowerRoute
   '/showcase': typeof SiteShowcaseRoute
+  '/trace': typeof SiteTraceRoute
   '/': typeof SiteIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_site': typeof SiteRouteRouteWithChildren
   '/(errors)/404': typeof errors404Route
+  '/_site/checklist': typeof SiteChecklistRoute
   '/_site/decisions': typeof SiteDecisionsRoute
   '/_site/diagram': typeof SiteDiagramRoute
+  '/_site/history': typeof SiteHistoryRoute
+  '/_site/open': typeof SiteOpenRoute
   '/_site/pinout': typeof SitePinoutRoute
+  '/_site/power': typeof SitePowerRoute
   '/_site/showcase': typeof SiteShowcaseRoute
+  '/_site/trace': typeof SiteTraceRoute
   '/_site/': typeof SiteIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/404' | '/decisions' | '/diagram' | '/pinout' | '/showcase'
+  fullPaths:
+    | '/'
+    | '/404'
+    | '/checklist'
+    | '/decisions'
+    | '/diagram'
+    | '/history'
+    | '/open'
+    | '/pinout'
+    | '/power'
+    | '/showcase'
+    | '/trace'
   fileRoutesByTo: FileRoutesByTo
-  to: '/404' | '/decisions' | '/diagram' | '/pinout' | '/showcase' | '/'
+  to:
+    | '/404'
+    | '/checklist'
+    | '/decisions'
+    | '/diagram'
+    | '/history'
+    | '/open'
+    | '/pinout'
+    | '/power'
+    | '/showcase'
+    | '/trace'
+    | '/'
   id:
     | '__root__'
     | '/_site'
     | '/(errors)/404'
+    | '/_site/checklist'
     | '/_site/decisions'
     | '/_site/diagram'
+    | '/_site/history'
+    | '/_site/open'
     | '/_site/pinout'
+    | '/_site/power'
     | '/_site/showcase'
+    | '/_site/trace'
     | '/_site/'
   fileRoutesById: FileRoutesById
 }
@@ -122,6 +194,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteIndexRouteImport
       parentRoute: typeof SiteRouteRoute
     }
+    '/_site/checklist': {
+      id: '/_site/checklist'
+      path: '/checklist'
+      fullPath: '/checklist'
+      preLoaderRoute: typeof SiteChecklistRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
     '/_site/decisions': {
       id: '/_site/decisions'
       path: '/decisions'
@@ -136,11 +215,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteDiagramRouteImport
       parentRoute: typeof SiteRouteRoute
     }
+    '/_site/history': {
+      id: '/_site/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof SiteHistoryRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
+    '/_site/open': {
+      id: '/_site/open'
+      path: '/open'
+      fullPath: '/open'
+      preLoaderRoute: typeof SiteOpenRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
     '/_site/pinout': {
       id: '/_site/pinout'
       path: '/pinout'
       fullPath: '/pinout'
       preLoaderRoute: typeof SitePinoutRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
+    '/_site/power': {
+      id: '/_site/power'
+      path: '/power'
+      fullPath: '/power'
+      preLoaderRoute: typeof SitePowerRouteImport
       parentRoute: typeof SiteRouteRoute
     }
     '/_site/showcase': {
@@ -150,22 +250,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteShowcaseRouteImport
       parentRoute: typeof SiteRouteRoute
     }
+    '/_site/trace': {
+      id: '/_site/trace'
+      path: '/trace'
+      fullPath: '/trace'
+      preLoaderRoute: typeof SiteTraceRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
   }
 }
 
 interface SiteRouteRouteChildren {
+  SiteChecklistRoute: typeof SiteChecklistRoute
   SiteDecisionsRoute: typeof SiteDecisionsRoute
   SiteDiagramRoute: typeof SiteDiagramRoute
+  SiteHistoryRoute: typeof SiteHistoryRoute
+  SiteOpenRoute: typeof SiteOpenRoute
   SitePinoutRoute: typeof SitePinoutRoute
+  SitePowerRoute: typeof SitePowerRoute
   SiteShowcaseRoute: typeof SiteShowcaseRoute
+  SiteTraceRoute: typeof SiteTraceRoute
   SiteIndexRoute: typeof SiteIndexRoute
 }
 
 const SiteRouteRouteChildren: SiteRouteRouteChildren = {
+  SiteChecklistRoute: SiteChecklistRoute,
   SiteDecisionsRoute: SiteDecisionsRoute,
   SiteDiagramRoute: SiteDiagramRoute,
+  SiteHistoryRoute: SiteHistoryRoute,
+  SiteOpenRoute: SiteOpenRoute,
   SitePinoutRoute: SitePinoutRoute,
+  SitePowerRoute: SitePowerRoute,
   SiteShowcaseRoute: SiteShowcaseRoute,
+  SiteTraceRoute: SiteTraceRoute,
   SiteIndexRoute: SiteIndexRoute,
 }
 

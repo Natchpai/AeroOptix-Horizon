@@ -1,14 +1,19 @@
 import { REPO_URL, meta, sourceUrl } from '@/data'
 import {
+  BatteryCharging,
   BookOpen,
   Boxes,
+  CircleAlert,
   Cpu,
   FileText,
   GitBranch,
+  History,
   LayoutDashboard,
+  ListChecks,
   Network,
   ScrollText,
   Sparkles,
+  Waypoints,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -39,6 +44,11 @@ export const sidebarData: SidebarData = {
           ],
         },
         { title: 'Decisions', url: '/decisions', icon: ScrollText },
+        { title: 'Open items', url: '/open', icon: CircleAlert },
+        { title: 'Checklist', url: '/checklist', icon: ListChecks },
+        { title: 'Spec history', url: '/history', icon: History },
+        { title: 'Traceability', url: '/trace', icon: Waypoints },
+        { title: 'Power budget', url: '/power', icon: BatteryCharging },
       ],
     },
     {

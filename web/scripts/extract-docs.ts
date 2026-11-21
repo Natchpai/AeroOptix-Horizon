@@ -17,6 +17,7 @@ const SPEC = `${designDir}/AO-HORIZON_SPEC_EN.md`
 const PINS = `${designDir}/AO-HORIZON_PIN_ALLOCATION_EN.md`
 const CHECKLIST = `${designDir}/AO-HORIZON_EXECUTION_CHECKLIST_EN.md`
 const README = 'README.md'
+const POWER = `${designDir}/AO-HORIZON_POWER_BUDGET_EN.md`
 const outDir = path.resolve(here, '../src/data/generated')
 
 type Table = {
@@ -180,9 +181,8 @@ const changeTable = parseTables(specLines).find(
   (t) => /^9\.\s/.test(t.heading) && t.headers[0] === 'Revision'
 )
 if (!changeTable) throw new Error('spec: section 9 change notes table not found')
-const specChanges = changeTable.rows
-  .slice(-5)
-  .reverse()
+// every change note for the Spec history page; the last 5 for the Overview
+const specHistory = changeTable.rows
   .map((r) => ({
     revision: r.cells[0],
     date: r.cells[1],
@@ -190,6 +190,9 @@ const specChanges = changeTable.rows
     approvedBy: r.cells[3] ?? '',
     line: r.line,
   }))
+  .reverse()
+if (!specHistory.length) throw new Error('spec: section 9 change notes table is empty')
+const specChanges = specHistory.slice(0, 5)
 
 // heading number of the OPEN rows, e.g. "8.2 Open questions ..." -> "8.2"
 const openSection =
@@ -211,15 +214,49 @@ const gateTable = clTables.find((t) => t.heading === 'Gate summary')
 if (!gateTable) throw new Error('checklist: "## Gate summary" table not found')
 
 const TASK_RE = /^P\d-\d{3}$/
-const tasks: { id: string; status: string; line: number }[] = []
+type Task = {
+  id: string
+  gate: string
+  task: string
+  req: string
+  owner: string
+  status: string
+  /** The whole Status cell, e.g. "BLOCKED BY P1-004" */
+  statusText: string
+  evidence: string
+  line: number
+}
+const tasks: Task[] = []
 for (const t of clTables) {
   const cS = t.headers.indexOf('Status')
-  if (cS < 0) continue
+  if (cS < 0 || !t.rows.some((r) => TASK_RE.test(r.cells[0]))) continue
+  const col = (name: string) => {
+    const k = t.headers.indexOf(name)
+    if (k < 0)
+      throw new Error(`checklist: "${t.heading}" task table has no "${name}" column`)
+    return k
+  }
+  const [cT, cR, cO, cE] = [
+    col('Task'),
+    col('Req'),
+    col('Owner'),
+    col('Evidence required / link'),
+  ]
   for (const r of t.rows) {
     if (!TASK_RE.test(r.cells[0])) continue
-    // "BLOCKED BY P1-004" -> BLOCKED
-    const status = (r.cells[cS] ?? '').replace(/`/g, '').split(/\s/)[0]
-    tasks.push({ id: r.cells[0], status, line: r.line })
+    const statusText = (r.cells[cS] ?? '').replace(/`/g, '').trim()
+    tasks.push({
+      id: r.cells[0],
+      gate: r.cells[0].split('-')[0],
+      task: r.cells[cT] ?? '',
+      req: r.cells[cR] ?? '',
+      owner: r.cells[cO] ?? '',
+      // "BLOCKED BY P1-004" -> BLOCKED
+      status: statusText.split(/\s/)[0],
+      statusText,
+      evidence: r.cells[cE] ?? '',
+      line: r.line,
+    })
   }
 }
 if (!tasks.length) throw new Error('checklist: no P<n>-<nnn> task rows found')
@@ -269,10 +306,97 @@ const progress = {
   gates,
   nextAction,
   nextActionLine: naStart + 1,
-  // status and line of every task, for links from the next action
-  tasks: Object.fromEntries(
-    tasks.map((t) => [t.id, { status: t.status, line: t.line }])
-  ),
+  // every task row, for the Checklist page and links from the next action
+  tasks: Object.fromEntries(tasks.map((t) => [t.id, t])),
+}
+
+// ---------- power budget: rail summary and the record's tables ----------
+const powerLines = read(POWER)
+const pwProp = (name: string) =>
+  powerLines
+    .map((l) => new RegExp(`^\\*\\*${name}:\\*\\*\\s*(.+)$`).exec(l)?.[1])
+    .find(Boolean) ?? 'TBD'
+const pwTables = parseTables(powerLines)
+/** 1-based line of a "## n. ..." heading, or throw. */
+const pwSection = (n: number) => {
+  const i = powerLines.findIndex((l) => new RegExp(`^##\\s+${n}\\.\\s`).test(l))
+  if (i < 0) throw new Error(`power budget: "## ${n}." heading not found`)
+  return i + 1
+}
+/** Tables between two "## n." headings (to the end of the file without `to`). */
+const pwTablesIn = (from: number, to?: number) => {
+  const a = pwSection(from)
+  const b = to === undefined ? Infinity : pwSection(to)
+  return pwTables.filter((t) => t.rows.length && t.rows[0].line > a && t.rows[0].line < b)
+}
+const pwTable = (from: number, to: number | undefined, first: string) => {
+  const t = pwTablesIn(from, to).find((x) => x.headers[0] === first)
+  if (!t) throw new Error(`power budget: section ${from} table "${first}" not found`)
+  return {
+    heading: t.heading,
+    headers: t.headers,
+    rows: t.rows.map((r) => ({ cells: r.cells, line: r.line })),
+  }
+}
+
+const summaryTable = pwTables.find((t) => t.heading === 'Rail summary')
+if (!summaryTable) throw new Error('power budget: "### Rail summary" table not found')
+const sumCol = (name: string) => {
+  const k = summaryTable.headers.indexOf(name)
+  if (k < 0) throw new Error(`power budget: Rail summary has no "${name}" column`)
+  return k
+}
+const [sRail, sTyp, sWorst, sLimit, sFrom, sLabel] = [
+  'Rail',
+  'Typical load (mA)',
+  'Worst-case load (mA)',
+  'Limit (mA)',
+  'Limit from',
+  'Label',
+].map(sumCol)
+// numbers are copied as written; TBD stays null, anything else fails the build
+const mA = (cell: string, where: string, required = false) => {
+  const v = cell.trim()
+  if (v === 'TBD' && !required) return null
+  const n = Number(v)
+  if (!v || !Number.isFinite(n))
+    throw new Error(`power budget: Rail summary ${where} "${cell}" is not a number`)
+  return n
+}
+const powerSummary = summaryTable.rows.map((r) => {
+  const rail = r.cells[sRail]
+  return {
+    rail,
+    typical: mA(r.cells[sTyp], `${rail} typical`),
+    worst: mA(r.cells[sWorst], `${rail} worst case`),
+    limit: mA(r.cells[sLimit], `${rail} limit`, true) as number,
+    limitFrom: r.cells[sFrom] ?? '',
+    label: r.cells[sLabel] ?? '',
+    line: r.line,
+  }
+})
+if (!powerSummary.length) throw new Error('power budget: Rail summary table is empty')
+
+const loads = pwTablesIn(3, 4).map((t) => ({
+  heading: t.heading,
+  headers: t.headers,
+  rows: t.rows.map((r) => ({ cells: r.cells, line: r.line })),
+}))
+if (loads.length < 4) throw new Error(`power budget: section 3 has ${loads.length} load tables, expected 4`)
+
+const power = {
+  file: POWER,
+  revision: pwProp('Revision'),
+  updated: pwProp('Updated'),
+  summary: powerSummary,
+  loads,
+  loadsLine: pwSection(3),
+  totals: pwTable(4, 5, 'Rail'),
+  totalsLine: pwSection(4),
+  tolerances: pwTable(5, 6, 'Rail'),
+  tolerancesLine: pwSection(5),
+  thermal: pwTable(11, undefined, 'Part'),
+  thermalLine: pwSection(11),
 }
 
 // ---------- build stamp ----------
@@ -338,6 +462,8 @@ write('meta.json', meta)
 write('ids.json', ids)
 write('pins.json', { h743, f100, f100Reserved })
 write('progress.json', progress)
+write('history.json', specHistory)
+write('power.json', power)
 
 console.log(
   `extract-docs: ${Object.keys(ids).length} spec IDs, H743 ${h743.length} pins, ` +

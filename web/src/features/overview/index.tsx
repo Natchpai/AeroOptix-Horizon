@@ -34,6 +34,7 @@ import { IdChip } from '@/components/id-chip'
 import { Main } from '@/components/layout/main'
 import { SiteHeader } from '@/components/layout/site-header'
 import { MdText } from '@/components/md-text'
+import { GateBar, TaskLegend, TaskText } from '@/components/task-status'
 
 const openList = Object.values(ids).filter(
   (s) => s.kind === 'OPEN' && !s.closed
@@ -122,15 +123,6 @@ const explore = [
     color: 'var(--status-decided)',
   },
 ] as const
-
-/** Checklist task states, in bar order. N/A tasks are left out. */
-const taskStates = [
-  { key: 'DONE', label: 'Done', color: 'var(--status-decided)' },
-  { key: 'IN_PROGRESS', label: 'In progress', color: 'var(--brand)' },
-  { key: 'BLOCKED', label: 'Blocked', color: 'var(--destructive)' },
-  { key: 'OPEN', label: 'Open', color: 'var(--status-open)' },
-  { key: 'DEFERRED', label: 'Deferred', color: 'var(--status-candidate)' },
-]
 
 const ext = { target: '_blank', rel: 'noreferrer' } as const
 const linkCls = 'text-primary underline-offset-2 hover:underline'
@@ -247,7 +239,16 @@ export function Overview() {
 
           <Card className='lg:col-span-4'>
             <CardHeader>
-              <CardTitle>Open items</CardTitle>
+              <div className='flex items-center gap-2'>
+                <CardTitle>Open items</CardTitle>
+                <Link
+                  to='/open'
+                  className='group ms-auto flex items-center gap-1 text-xs text-primary hover:underline'
+                >
+                  All open items
+                  <ArrowRight className='size-3.5 transition-transform group-hover:translate-x-0.5' />
+                </Link>
+              </div>
               <CardDescription>
                 Still open in the{' '}
                 <a
@@ -266,9 +267,13 @@ export function Overview() {
                   <li key={o.id} className='flex gap-3 py-2 first:pt-0'>
                     <IdChip id={o.id} className='mt-0.5 h-fit' />
                     <div className='min-w-0'>
-                      <p className='line-clamp-2'>
+                      <Link
+                        to='/open'
+                        search={{ id: o.id }}
+                        className='line-clamp-2 hover:text-primary'
+                      >
                         <MdText text={o.fields['Description'] ?? ''} />
-                      </p>
+                      </Link>
                       <p className='text-xs text-muted-foreground'>
                         {o.fields['Owner / next action']}
                       </p>
@@ -315,21 +320,19 @@ function ProgressCard() {
       <CardContent className='space-y-4'>
         <ul className='space-y-3'>
           {progress.gates.map((g) => {
-            const parts = taskStates.map((s) => ({
-              ...s,
-              n: g.counts[s.key] ?? 0,
-            }))
-            const total = parts.reduce((t, p) => t + p.n, 0)
+            const total = Object.entries(g.counts)
+              .filter(([k]) => k !== 'N/A')
+              .reduce((t, [, n]) => t + n, 0)
             return (
               <li key={g.id} className='space-y-1.5 text-sm'>
                 <div className='flex items-center gap-2'>
-                  <a
-                    href={sourceUrl(meta.sources.checklist, g.line)}
-                    {...ext}
+                  <Link
+                    to='/checklist'
+                    search={{ gate: g.id }}
                     className='rounded border border-primary/40 px-1.5 py-0.5 font-mono text-[11px] leading-none text-primary hover:bg-primary/10'
                   >
                     {g.id}
-                  </a>
+                  </Link>
                   <span className='min-w-0 font-medium' title={g.exit}>
                     {g.name}
                   </span>
@@ -343,43 +346,12 @@ function ProgressCard() {
                     </Pill>
                   </span>
                 </div>
-                <div
-                  className='flex h-2.5 overflow-hidden rounded-full bg-muted'
-                  role='img'
-                  aria-label={parts
-                    .filter((p) => p.n)
-                    .map((p) => `${p.n} ${p.label.toLowerCase()}`)
-                    .join(', ')}
-                >
-                  {parts.map(
-                    (p) =>
-                      p.n > 0 && (
-                        <span
-                          key={p.key}
-                          title={`${p.label}: ${p.n}`}
-                          style={{
-                            width: `${(p.n / total) * 100}%`,
-                            background: p.color,
-                          }}
-                        />
-                      )
-                  )}
-                </div>
+                <GateBar counts={g.counts} />
               </li>
             )
           })}
         </ul>
-        <div className='flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground'>
-          {taskStates.map((s) => (
-            <span key={s.key} className='flex items-center gap-1.5'>
-              <span
-                className='size-2.5 rounded-sm'
-                style={{ background: s.color }}
-              />
-              {s.label}
-            </span>
-          ))}
-        </div>
+        <TaskLegend />
       </CardContent>
     </Card>
   )
@@ -414,31 +386,6 @@ function NextActionCard() {
   )
 }
 
-/** Record text with each checklist task ID (P2-017) as a link to its row. */
-function TaskText({ text }: { text: string }) {
-  return text.split(/\b(P\d-\d{3})\b/).map((part, i) => {
-    const task = i % 2 ? progress.tasks[part] : undefined
-    if (!task) return part && <MdText key={i} text={part} />
-    const state = taskStates.find((s) => s.key === task.status)
-    const color = state?.color ?? 'var(--muted-foreground)'
-    return (
-      <a
-        key={i}
-        href={sourceUrl(meta.sources.checklist, task.line)}
-        {...ext}
-        title={`${part}: ${state?.label ?? task.status}`}
-        className='inline-flex items-center rounded border px-1 py-px align-baseline font-mono text-[11px] leading-none whitespace-nowrap hover:opacity-80'
-        style={{
-          color,
-          borderColor: `color-mix(in oklab, ${color} 50%, transparent)`,
-        }}
-      >
-        {part}
-      </a>
-    )
-  })
-}
-
 function ChangesCard() {
   return (
     <Card>
@@ -446,6 +393,13 @@ function ChangesCard() {
         <div className='flex items-center gap-2'>
           <FileClock className='size-4 text-primary' />
           <CardTitle>Recent spec changes</CardTitle>
+          <Link
+            to='/history'
+            className='group ms-auto flex items-center gap-1 text-xs text-primary hover:underline'
+          >
+            Full history
+            <ArrowRight className='size-3.5 transition-transform group-hover:translate-x-0.5' />
+          </Link>
         </div>
         <CardDescription>
           Latest change notes in the{' '}
@@ -459,13 +413,13 @@ function ChangesCard() {
         <ul className='divide-y divide-border text-sm'>
           {meta.specChanges.map((c) => (
             <li key={c.revision} className='flex gap-3 py-2 first:pt-0'>
-              <a
-                href={sourceUrl(meta.sources.spec, c.line)}
-                {...ext}
+              <Link
+                to='/history'
+                search={{ rev: c.revision }}
                 className='mt-0.5 h-fit rounded border border-primary/40 px-1.5 py-0.5 font-mono text-[11px] leading-none whitespace-nowrap text-primary hover:bg-primary/10'
               >
                 rev {c.revision}
-              </a>
+              </Link>
               <div className='min-w-0'>
                 <p className='line-clamp-2'>
                   <MdText text={c.description} />
