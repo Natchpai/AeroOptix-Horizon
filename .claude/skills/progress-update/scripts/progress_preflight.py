@@ -6,8 +6,10 @@ KiCad 6 or later project. Covers the steps whose inputs decide the output:
 baseline since a ref, schematic part checks, library symbol, footprint and 3D
 checks, an optional datasheet pin-text check, and doc checks (em dashes, spec
 IDs, tracker rows or, with no tracker table, a checklist task named in each
-open spec row, relative links). Judgement (what changed, DECISION vs
-DRAWN, doc text) stays with the model. Connectivity is out of scope: use
+open spec row, relative links), and a review of open items, task status
+and the summary lists (`review:*` findings, INFO only; review_items()).
+Judgement (what changed, DECISION vs DRAWN, doc text, whether to close an
+item) stays with the model and the human. Connectivity is out of scope: use
 sch-inspect for nets and power sources.
 
 Usage:
@@ -40,6 +42,7 @@ VAR_RE = re.compile(r"\$\{([A-Za-z0-9_]+)\}")
 STOCK_VAR_RE = re.compile(r"KICAD(\d+)_(3DMODEL|FOOTPRINT|SYMBOL|TEMPLATE)_DIR")
 STOCK_SUBDIR = {"3DMODEL": "3dmodels", "FOOTPRINT": "footprints", "SYMBOL": "symbols", "TEMPLATE": "template"}
 MAX_LIBRARY_ENTRIES = 50
+FIELD_NAMES = ("MFR", "MFR.P/N", "LCSC", "Footprint")
 
 
 def git(root: Path, *args: str) -> str:
@@ -147,6 +150,8 @@ class Ctx:
         self.repo, self.proj, self.major = repo, proj, major
         self.fp_libs, self.sym_libs, self.global_tables = fp_libs, sym_libs, global_tables
         self.finds = finds
+        self.refs: set = set()       # every placed reference (no "#" power symbols)
+        self.fields: dict = {}       # BOM ref -> filled fields among FIELD_NAMES
 
     def footprint_file(self, fp: str) -> tuple[str, Path | None]:
         """("ok"|"no_nickname"|"unknown"|"unresolved"|"missing", path)."""
@@ -194,6 +199,12 @@ def check_sheets(files: list[Path], changed: set, ctx: Ctx) -> list[dict]:
                     power_nets.add(p.get("Value", ""))
                 continue
             parts.append(ref)
+            ctx.refs.add(ref)
+            in_bom = first(sym, "in_bom")
+            bare_pad = "TestPoint" in lib_id or lib_id.endswith(":SolderPad")
+            if not (in_bom and in_bom[1] == "no") and not bare_pad:
+                filled = {k for k in FIELD_NAMES if p.get(k, "").strip() not in ("", "~")}
+                ctx.fields[ref] = ctx.fields.get(ref, set()) | filled
             if ref.endswith("?"):
                 unannotated[ref.rstrip("?")] += 1
             code = pick(p, LCSC_KEYS)
@@ -370,6 +381,239 @@ def check_docs(repo: Path, since: str, mds: list[str], untracked: set, spec: Pat
             "open_without_tracker": no_tracker}
 
 
+# ---------------------------------------------------------------------------
+# Review of open items, task status and summary lists
+# ---------------------------------------------------------------------------
+
+ANY_ID_RE = re.compile(r"\b[A-Z][A-Z0-9]*-\d+\b")
+DATE_RE = re.compile(r"\b20\d\d-\d\d-\d\d\b")
+MARKER_RE = re.compile(r"(?:Still open|Open|Left|left)\s*:")
+CLOSED_STATUS = ("DONE", "N/A", "DEFERRED")
+STATUS_RE = re.compile(r"^(OPEN|IN_PROGRESS|DONE|N/A|DEFERRED|BLOCKED)")
+PENDING_RE = re.compile(r"(?i)\b(later|TBD|open|fill|not decided|not chosen|missing|empty|not filled)\b")
+CLOSED_WORD_RE = re.compile(r"(?i)\b(closed?|closes|done|accepted|settled|resolved|replaced|was|were|cleared)\b")
+REV_HEADER_RE = re.compile(r"(?m)^(?:\*\*Revision:\*\*\s*|\|\s*Document revision\s*\|\s*)(\d+(?:\.\d+)+)")
+REF_RANGE_RE = re.compile(r"\b([A-Z]{1,3})(\d+)\s+(?:to|-)\s+(?:\1)?(\d+)\b")
+REF_RE = re.compile(r"\b([A-Z]{1,3})(\d{1,4})\b")
+UNANNOTATED_RE = re.compile(r"\b([A-Z]{1,3})\?")
+SENTENCE_SPLIT_RE = re.compile(r"(?<=[.;])\s+|\n")
+
+
+def table_rows(text: str, ncells: int, id_re: str = r"[A-Z][A-Z0-9]*-\d+") -> list[list[str]]:
+    """Markdown table rows whose first cell matches id_re and that have ncells cells."""
+    rows = []
+    for line in text.splitlines():
+        m = re.match(rf"^\|\s*({id_re})\s*\|", line)
+        if not m:
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) == ncells:
+            rows.append(cells)
+    return rows
+
+
+def section(text: str, heading: str) -> str:
+    """Body of the first '## <heading>' section, up to the next '## ' heading."""
+    m = re.search(rf"(?m)^##\s+{re.escape(heading)}\s*$", text)
+    if not m:
+        return ""
+    nxt = re.search(r"(?m)^##\s", text[m.end():])
+    return text[m.end(): m.end() + nxt.start()] if nxt else text[m.end():]
+
+
+def still_open(text: str) -> str:
+    """Text after the last 'Still open:' / 'Open:' / 'Left:' marker, else all of it."""
+    hits = list(MARKER_RE.finditer(text))
+    return text[hits[-1].end():] if hits else text
+
+
+def newest_date(text: str) -> str | None:
+    dates = DATE_RE.findall(text)
+    return max(dates) if dates else None
+
+
+def field_words(clause: str) -> set:
+    found = set()
+    if "MFR.P/N" in clause:
+        found.add("MFR.P/N")
+    if re.search(r"\bMFR\b(?!\.P/N)", clause):
+        found.add("MFR")
+    if re.search(r"\bLCSC\b(?!\s*:?\s*C\d)", clause):  # "LCSC C7519" is a filled value
+        found.add("LCSC")
+    if re.search(r"(?i)\bfootprints?\b", clause) and re.search(r"(?i)\bfields?\b", clause):
+        found.add("Footprint")
+    return found
+
+
+def named_refs(clause: str, refs: set) -> set:
+    out = set()
+    for pre, a, b in REF_RANGE_RE.findall(clause):
+        lo, hi = int(a), int(b)
+        if 0 < hi - lo <= 200:
+            width = len(a)
+            out |= {f"{pre}{n:0{width}d}" for n in range(lo, hi + 1)} & refs
+    out |= {f"{p}{n}" for p, n in REF_RE.findall(clause)} & refs
+    return out
+
+
+def review_items(spec_text: str, checklist_text: str, readme_text: str | None,
+                 refs: set | None, fields: dict | None, rev_of,
+                 open_prefix: str = "OPEN", dec_prefix: str = "DEC") -> tuple[list, int]:
+    """Findings that an open item, a task status or a summary line may be stale.
+
+    Pure: text and data in, rows out. rev_of(name) returns the header revision of
+    a Markdown record by file name, or None. refs/fields None skips the CAD rules.
+    Every row is INFO and only a question for the human; nothing is changed here.
+    """
+    finds = []
+
+    def add(rule, item, reason):
+        finds.append(["INFO", f"review:{rule}", item, reason])
+
+    # --- parse
+    opens = {}  # id -> (desc, owner, full row text, closed)
+    for c in table_rows(spec_text, 4, rf"{re.escape(open_prefix)}-\d+"):
+        closed = c[1].startswith("Closed") or c[3].startswith("Closed")
+        opens[c[0]] = (c[1], c[3], " | ".join(c), closed)
+    decs = {}  # id -> (date, cited ids)
+    for c in table_rows(spec_text, 5, rf"{re.escape(dec_prefix)}-\d+"):
+        decs[c[0]] = (newest_date(c[-1]) or newest_date(" ".join(c)), set(ANY_ID_RE.findall(" ".join(c[1:]))))
+    tasks = {}  # id -> (task text, status, evidence, full row)
+    for c in table_rows(checklist_text, 6):
+        if STATUS_RE.match(c[4]):
+            tasks[c[0]] = (c[1], c[4], c[5], " | ".join(c))
+    gates = {c[0]: c[-1] for c in table_rows(checklist_text, 4, r"[A-Z][A-Z0-9]*")}
+
+    def task_closed(tid):
+        return tid in tasks and tasks[tid][1].startswith(CLOSED_STATUS)
+
+    def task_done(tid):
+        return tid in tasks and tasks[tid][1].startswith(("DONE", "N/A"))
+
+    open_ids = [i for i, v in opens.items() if not v[3]]
+    active = [t for t in tasks if not task_closed(t)]
+    checked = len(open_ids) + len(tasks)
+
+    # --- tasks_closed: every task an open item names is DONE or N/A
+    # (a DEFERRED task parks the item; it does not settle it)
+    for oid in open_ids:
+        named = [t for t in ANY_ID_RE.findall(opens[oid][1]) if t in tasks]
+        if named and all(task_done(t) for t in named):
+            add("tasks_closed", oid, "owner tasks all closed: " + ", ".join(f"{t} {tasks[t][1].split()[0]}" for t in named))
+
+    # --- newer_dec: a DEC on or after the row's newest date cites it, and the row does not cite the DEC
+    def newer_decs(row_text, targets):
+        nd = newest_date(row_text)
+        if not nd:
+            return []
+        cited = set(ANY_ID_RE.findall(row_text))
+        return sorted(d for d, (date, ids) in decs.items()
+                      if date and date >= nd and ids & targets and d not in cited)
+    for oid in open_ids:
+        for d in newer_decs(opens[oid][2], {oid}):
+            add("newer_dec", oid, f"{d} ({decs[d][0]}) cites {oid}; the row does not cite {d}")
+    for t in active:
+        # the task itself, and the open items its still-open text waits on
+        text = tasks[t][0]
+        waits = {i for i in ANY_ID_RE.findall(still_open(text)) if i in opens} if MARKER_RE.search(text) else set()
+        targets = {t} | waits
+        for d in newer_decs(tasks[t][3], targets):
+            via = sorted(decs[d][1] & targets)
+            add("newer_dec", t, f"{d} ({decs[d][0]}) cites {', '.join(via)}; {t} does not cite {d}")
+
+    # --- field_filled: text waits for a part field that is filled
+    if fields:
+        def check_fields(item, text):
+            for clause in SENTENCE_SPLIT_RE.split(text):
+                wanted = field_words(clause)
+                if not wanted or not PENDING_RE.search(ANY_ID_RE.sub("", clause)):
+                    continue
+                scope = named_refs(clause, set(fields)) or set(fields)
+                if all(wanted <= fields[r] for r in scope):
+                    where = f"{len(scope)} named parts" if scope != set(fields) else f"all {len(scope)} BOM parts"
+                    add("field_filled", item, f"{', '.join(sorted(wanted))} filled on {where}: \"{clause.strip()[:120]}\"")
+                    return
+        for oid in open_ids:
+            check_fields(oid, still_open(opens[oid][0]))
+        for t in active:
+            check_fields(t, still_open(tasks[t][0]))
+
+    # --- ref_missing: still-open text names a reference that is not drawn
+    if refs:
+        prefixes = defaultdict(list)
+        for r in refs:
+            m = re.fullmatch(r"([A-Z]{1,3})(\d+)", r)
+            if m:
+                prefixes[m.group(1)].append(len(m.group(2)))
+        for oid in open_ids:
+            text = ANY_ID_RE.sub("", still_open(opens[oid][0]))
+            text = re.sub(r"`[^`]*`", "", text)
+            bad = set()
+            for pre, num in REF_RE.findall(text):
+                # same digit count as drawn refs of that prefix: "Q10" (a question) and
+                # "C7519" (an LCSC code) are not references when every Q or C ref has 3 digits
+                if (pre in prefixes and min(prefixes[pre]) <= len(num) <= max(prefixes[pre])
+                        and f"{pre}{num}" not in refs):
+                    bad.add(f"{pre}{num}")
+            bad |= {f"{pre}?" for pre in UNANNOTATED_RE.findall(text) if pre in prefixes}
+            if bad:
+                add("ref_missing", oid, f"not in the saved schematic: {sorted(bad)}")
+
+    # --- rev_drift: a cited record revision differs from the record's header
+    spec_rev = (REV_HEADER_RE.search(spec_text) or [None, None])[1]
+    mention_re = re.compile(r"(?:\[([^\]]+\.md)\]\([^)]*\)|`([^`]+\.md)`)\s+rev\s+(\d+(?:\.\d+)+)")
+
+    def check_revs(item, text):
+        for a, b, rev in mention_re.findall(text):
+            name = Path(a or b).name
+            now = rev_of(name)
+            if now and now != rev:
+                add("rev_drift", item, f"cites {name} rev {rev}; the file is rev {now}")
+    for t in active:
+        check_revs(t, tasks[t][3])
+    for oid in open_ids:
+        check_revs(oid, opens[oid][0])
+    head = "\n".join(checklist_text.splitlines()[:15])
+    check_revs("checklist header", head)
+    if readme_text and spec_rev:
+        m = re.search(r"(?i)specification \(rev (\d+(?:\.\d+)+)", readme_text)
+        if m and m.group(1) != spec_rev:
+            add("rev_drift", "README", f"names spec rev {m.group(1)}; the spec is rev {spec_rev}")
+
+    # --- status_mismatch: DONE without evidence; gate status against its tasks
+    for t, (_, status, evidence, _) in tasks.items():
+        if status.startswith("DONE") and evidence.strip() in ("", "-", "TBD"):
+            add("status_mismatch", t, "DONE with no evidence record")
+    for g, gstatus in gates.items():
+        mine = [t for t in tasks if t.startswith(f"{g}-")]
+        if not mine:
+            continue
+        if gstatus.startswith("OPEN") and all(task_closed(t) for t in mine):
+            add("status_mismatch", g, f"gate OPEN but all {len(mine)} tasks are DONE, N/A or DEFERRED")
+        if gstatus.startswith("DONE"):
+            still = [t for t in mine if not task_closed(t)]
+            if still:
+                add("status_mismatch", g, f"gate DONE but tasks still active: {still}")
+
+    # --- summary_cites_closed: a summary list calls a closed item open
+    summaries = [("spec verdict", section(spec_text, "Current verdict")),
+                 ("checklist next action", section(checklist_text, "Current next action"))]
+    if readme_text:
+        summaries.append(("README open items", section(readme_text, "Open Items")))
+    for where, body in summaries:
+        hits = set()
+        for clause in SENTENCE_SPLIT_RE.split(body):
+            if CLOSED_WORD_RE.search(ANY_ID_RE.sub("", clause)):
+                continue
+            for i in ANY_ID_RE.findall(clause):
+                if (i in opens and opens[i][3]) or task_done(i):
+                    hits.add(i)
+        if hits:
+            add("summary_cites_closed", where, f"cites closed items as open: {sorted(hits)}")
+
+    return finds, checked
+
+
 def find_doc(repo: Path, mds: list[str], name_key: str, heading_key: str | None) -> Path | None:
     hit = next((p for p in mds if name_key in Path(p).name.upper()), None)
     if hit is None and heading_key:
@@ -462,6 +706,22 @@ def main() -> int:
                                 [p for p in live if p.suffix == ".kicad_mod"], pin_text, ctx)
         docs = check_docs(repo, since, mds, untracked, spec, checklist,
                           args.id_prefixes, args.open_prefix, args.tracker_prefix, finds)
+        review = {"items_checked": 0, "findings": 0, "readme": "MISSING"}
+        if spec and spec.exists() and checklist and checklist.exists():
+            by_name = {Path(p).name: repo / p for p in mds}
+
+            def rev_of(name: str) -> str | None:
+                f = by_name.get(name)
+                m = REV_HEADER_RE.search(f.read_text(encoding="utf-8")) if f and f.exists() else None
+                return m.group(1) if m else None
+            readme = repo / "README.md"
+            rows, checked = review_items(
+                spec.read_text(encoding="utf-8"), checklist.read_text(encoding="utf-8"),
+                readme.read_text(encoding="utf-8") if readme.exists() else None,
+                ctx.refs, ctx.fields, rev_of, args.open_prefix)
+            finds.extend(rows)
+            review = {"items_checked": checked, "findings": len(rows),
+                      "readme": "README.md" if readme.exists() else "MISSING"}
     except (OSError, ValueError, RuntimeError) as exc:
         print(json.dumps({"verification": "NOT_VERIFIED", "error": str(exc)}))
         return 1
@@ -487,6 +747,7 @@ def main() -> int:
         "sheets": sheets,
         "library": library,
         "docs": docs,
+        "review": review,
         "findings": [dict(zip(("severity", "check", "item", "detail"), f)) for f in finds],
     }
     if args.findings_only:

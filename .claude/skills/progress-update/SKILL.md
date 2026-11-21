@@ -37,6 +37,8 @@ that part by hand and say so in the report.
   cited NotebookLM answers. PDFs stay closed.
 - Write plain English: short sentences, exact names (refs, nets, part
   numbers), no em dash.
+- The review (step 4) only proposes. Never close an open item, change a task
+  or gate status, or drop a summary line without the human's answer in step 5.
 
 ## Modes
 
@@ -68,8 +70,11 @@ Run the deterministic checks first, from the repo root:
 python -I -X utf8 <skills dir>/progress-update/scripts/progress_preflight.py [--since <ref>]
 ```
 It prints one JSON: project, spec and checklist paths, since point, commits,
-changed files by kind, per-sheet parts, library checks, doc checks and a
-`findings` list. Use it for steps 1, 2, the sheet and library parts of 3, the
+changed files by kind, per-sheet parts, library checks, doc checks, a
+`review` count and a `findings` list. The review checks every open spec item,
+every checklist task and gate status, and the summary lists against the
+spec, checklist, README and saved schematic fields (`review:*` findings, see
+step 4). Use it for steps 1, 2, the sheet and library parts of 3, the
 listed checks in 4, and 7. Read the JSON, not the KiCad files, for anything it
 covers. Options:
 - `--project <file.kicad_pro or folder>` when the repo has several projects
@@ -152,11 +157,35 @@ Check by hand, because they need connectivity or a datasheet:
 - labels that reach nothing on any sheet (preflight sees one sheet at a time)
 - parts a checked datasheet recommends that are missing
 
+**Review of open items, status and lists.** Preflight `review:*` rows are
+`INFO` questions, not defects. Each means "this may be stale":
+
+| Check | Means |
+|---|---|
+| `review:tasks_closed` | Every task an open item names is `DONE` or `N/A`. |
+| `review:newer_dec` | A DEC on or after the row's newest date cites the item (or the open item a task waits on), and the row does not cite that DEC. |
+| `review:field_filled` | The text waits for MFR, MFR.P/N, LCSC or a footprint field that is filled on every part it names (or every BOM part). |
+| `review:ref_missing` | The still-open text names a reference that is not in the saved schematic, or an unannotated one. |
+| `review:rev_drift` | A cited record revision (or the README spec revision) differs from the record's header. |
+| `review:status_mismatch` | A task is `DONE` with no evidence, or a gate status does not match its tasks. |
+| `review:summary_cites_closed` | The spec "Current verdict", the checklist "Current next action" or the README "Open Items" calls a closed item open. |
+
+Read the row behind each one and drop false hits (a DEC that only mentions
+the item, a field word used in another sense). Report the rest under their
+own heading with the stale text and the evidence. Each is `VERIFIED` only for
+what it compares; whether the item is done is the human's call.
+
 Done when each finding has a severity, a label and its evidence.
 
 ### 5. Confirm
 If a stated decision is ambiguous ("maybe X", "try X"), ask once with
-AskUserQuestion: DECISION or DRAWN. Otherwise go on.
+AskUserQuestion: DECISION or DRAWN.
+
+For each `review:*` finding kept in step 4, ask with AskUserQuestion, up to 4
+per call. Quote the stale text and the evidence, and offer: close the item or
+set the new status (name it, for example `DONE`), re-point it to another task,
+or keep it as it is. Record the answer with the human's words. Otherwise go
+on.
 
 ### 6. Update docs
 Edit in this order so each fact has one home and the others point to it.
@@ -183,6 +212,18 @@ fitting row or table and mention it in the report.
 5. **CHANGELOG:** follow `hw-git-changelog`. Add entries under
    `[Unreleased]` and state the verification status.
 
+**Review answers (step 5):** apply only what the human chose, in the same
+order:
+- Close an open item: start its description with
+  `Closed <date>: <reason, the human's words>` and set the owner cell to
+  `Closed`.
+- Re-point an item: change its owner cell to the new task.
+- Change a task or gate status: set the status and put the evidence record in
+  the last cell. `DONE` needs both.
+- Fix a stale summary line or revision number.
+- Note each change in the open change-note row (open-revision rule), and
+  carry closed items into the README open-items list and the CHANGELOG.
+
 Done when every decision and open item added to the spec also appears in the
 checklist, the README and the CHANGELOG (for each doc that exists).
 
@@ -196,14 +237,17 @@ if the checklist keeps a tracker table).
 added or changed DEC and OPEN row as input. Do items 3 to 5 for them, and set
 the README spec revision to the open revision. Leave the spec and checklist
 as they are, except for a broken cross-reference. If there is no open
-revision, say that nothing needs syncing and stop. Done when every DEC and
+revision, say that nothing needs syncing and stop. `sync` skips steps 4 and
+5, so list any `review:*` rows in the report for the next full or `light`
+run instead of acting on them. Done when every DEC and
 OPEN row in that diff also appears in the README and the CHANGELOG, and every
 design record that owns an affected value is updated.
 
 ### 7. Check
 Run preflight again with `--findings-only` and the same `--since`. It reads
 the working tree, so it sees your edits. No `em_dash`, `undefined_id`,
-`no_tracker_row`, `open_without_task` or `broken_link` row may be new. Then:
+`no_tracker_row`, `open_without_task` or `broken_link` row may be new, and
+`review:*` rows may remain only for items the human chose to keep. Then:
 ```bash
 git diff --stat
 ```
@@ -218,6 +262,8 @@ decision and open-item ID you cite exists in the spec.
 ### 8. Report
 - Target and scope: project, sheets read, since point, saved-file note.
 - Findings, most severe first.
+- Review: n found, n closed or changed by the human, n kept, n dropped as
+  false hits.
 - Doc changes, one line per file; docs `MISSING`.
 - Not changed, with the reason (phase, records not touched, ignored items).
 - A proposed commit message, for example
@@ -225,7 +271,7 @@ decision and open-item ID you cite exists in the spec.
 
 `light` report, at most 10 lines: the IDs added or changed, the open revision
 number, MAJOR and CRITICAL findings in full, a count of MINOR and INFO
-findings, the step 7 result, and the line "README, CHANGELOG and design
+findings, the review count, the step 7 result, and the line "README, CHANGELOG and design
 records not synced; run `/progress-update sync` before committing." No commit
 message.
 
