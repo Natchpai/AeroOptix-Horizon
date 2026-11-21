@@ -43,9 +43,7 @@ export const sidebarData: SidebarData = {
     },
     {
       title: 'Output',
-      items: [
-        { title: 'Showcase', url: '/showcase', icon: Sparkles, badge: 'soon' },
-      ],
+      items: [{ title: 'Showcase', url: '/showcase', icon: Sparkles }],
     },
     {
       title: 'Links',

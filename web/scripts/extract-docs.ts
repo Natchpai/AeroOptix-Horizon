@@ -285,6 +285,28 @@ function commit(): string {
   }
 }
 
+// ---------- board model (Showcase) ----------
+// The engineer exports the GLB with kicad-cli (a PCB output, so a human
+// step) into web/public/models/. The site shows it when it is there. Its
+// date is the last commit that changed it (CI checks out full history),
+// or the file date for a model that is not committed yet.
+const MODEL = 'models/ao-horizon.glb'
+function boardModel() {
+  const file = path.resolve(here, '../public', MODEL)
+  if (!fs.existsSync(file)) return null
+  let date = ''
+  try {
+    date = execSync(`git log -1 --format=%cs -- "web/public/${MODEL}"`, {
+      cwd: repo,
+      encoding: 'utf8',
+    }).trim()
+  } catch {
+    // no git: fall back to the file date
+  }
+  if (!date) date = fs.statSync(file).mtime.toISOString().slice(0, 10)
+  return { file: MODEL, bytes: fs.statSync(file).size, date }
+}
+
 const meta = {
   project: 'AeroOptix-Horizon',
   tagline: grab(/^\*\*(.+)\*\*$/),
@@ -301,6 +323,7 @@ const meta = {
   openSection,
   specChanges,
   build: { commit: commit(), date: new Date().toISOString().slice(0, 10) },
+  boardModel: boardModel(),
   sources: { spec: SPEC, pins: PINS, readme: README, checklist: CHECKLIST },
   generatedFrom: 'saved Markdown records in the repository',
 }

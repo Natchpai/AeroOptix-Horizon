@@ -39,7 +39,12 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - It is also an Overview card and a sidebar item.
 - **Search:** Ctrl+K over pins, signals, blocks and spec IDs. A DEC result opens it on the Decisions page; other IDs open their spec row on GitHub.
 - **SVG export:** on each diagram view and each package card. The export uses native SVG with hex colours, plus a footer with the spec revision, the phase, "not for fabrication" and the date.
-- **Showcase:** placeholder.
+- **Showcase:** a 3D board viewer (`@google/model-viewer` 4.4.0 with `three` 0.183.x), loaded only on this page. It shows `web/public/models/ao-horizon.glb` with its board revision, export date (last commit of the file), KiCad version, size, a "not for fabrication" tag and a GLB download. Without the file the page says "No board model yet".
+  - **Lighting:** the KiCad GLB sets only a base colour per material, so glTF reads every material as rough metal and the board looks grey and flat. On load, `fixMaterials()` sorts materials by colour (solder mask, silkscreen, gold, tin, plastic) and sets metallic and roughness. Lighting is the `legacy` environment with `neutral` tone mapping, exposure 1 and full shadow, picked from screenshots on 2026-11-21.
+  - **Re-export (manual):** the engineer runs this after layout changes, because it is a PCB output, then commits the GLB:
+    `"C:\Program Files\KiCad\10.0\bin\kicad-cli.exe" pcb export glb --subst-models --include-silkscreen --include-soldermask -o web/public/models/ao-horizon.glb hardware/AO-Horizon/AO-Horizon.kicad_pcb`
+  - The first export (2026-11-21, 8.1 MB) came from an uncommitted PCB with many parts not yet placed on the board.
+  - Renders and photos are still placeholders.
 
 ## Engineer decisions
 
@@ -116,7 +121,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 ## Next steps
 
 1. Engineer reviews the `npm run drift` list and decides which site texts to fix.
-2. Showcase 3D viewer (Batch 4), per the plan of 2026-11-21: the engineer exports the GLB.
+2. Re-export the board GLB once the parts are placed on the board.
 3. Keep `topology.ts` in step with the spec. `npm run check` now flags a new IF row that is on no link.
 
 ## Known gaps

@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.36
+**Revision:** 0.37
 **Updated:** 2026-11-21
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012), the 5 V input is a TPS2121 power mux with a 1.5 A limit (DEC-029, DEC-030) and the `+3V3A` LDO is TPS73533DRBR (DEC-027). No other rail, regulator or protection part is approved. Not a verification record.
-**Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006 (closed), OPEN-011, OPEN-021 (servo load, was OPEN-007), OPEN-024 (closed), OPEN-025 (closed; bench check P4-012), OPEN-028. Decisions: DEC-007, DEC-010, DEC-011, DEC-012, DEC-018, DEC-019, DEC-053, DEC-054, DEC-025, DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-039, DEC-040, DEC-043, DEC-044, DEC-048, DEC-055, DEC-058, DEC-059. Checklist tasks: P0-017 (done), P2-010 (calculations in sections 5 and 11).
+**Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006 (closed), OPEN-011, OPEN-021 (servo load, was OPEN-007), OPEN-024 (closed), OPEN-025 (closed; bench check P4-012), OPEN-028, OPEN-041. Decisions: DEC-007, DEC-010, DEC-011, DEC-012, DEC-018, DEC-019, DEC-053, DEC-054, DEC-025, DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-039, DEC-040, DEC-043, DEC-044, DEC-048, DEC-055, DEC-058, DEC-059, DEC-108. Checklist tasks: P0-017 (done), P2-010 (calculations in sections 5 and 11).
 **Decision owner:** Hardware
 
 Single record for rail loads, rail tolerances, brownout thresholds and power protection requirements.
@@ -48,6 +48,7 @@ USB VBUS (bench) -> TPS2121 mux IN2 ----------------------------^
 - 3.3 V_IMU is the `+3V3A` rail from its own LDO. It feeds the VDD pins of the 2 IMUs, both barometers and the IST8310 (AVDD); their VDDIO pins (IST8310 DVDD) stay on `+3V3` (DEC-043, human owner, 2026-11-12; replaces DEC-025). The LDO is TPS73533DRBR (DEC-027, 2026-10-31).
 - USB VBUS powers the board and all external 5 V ports on the bench without the battery (team; all ports: human owner, 2026-10-24). The TPS2121 power mux joins USB (IN2) and the PM02D (IN1) and blocks reverse current on both channels (TI mux 9.3.6, `VERIFIED`). The PR1 and CP2 dividers give the PM02D priority with the XCOMP fast switchover (DEC-031 to DEC-034); switch points in section 6.
 - The saved `power_supplies.kicad_sch` draws `+5V` from the TPS2121 power mux (U101), and `+3V3` from the TPS62142RGTR buck (DEC-012) and `+3V3A` from the TPS73533DRBR LDO (DEC-027), both fed from `+5V`. The LDO is enabled by the buck power-good, so `+3V3A` starts after `+3V3` (DEC-039). Mux settings: DEC-030 to DEC-036, checked against TI mux (sections 6 and 7). Status LED on the mux ST pin (DEC-035, DEC-036); LED current `TBD` (LED forward voltage not checked). Details: spec 4.3 "Schematic state".
+- Plan B (DEC-108): D105 and D106 MBR230LSFT1G Schottky diodes, DNP, join `PM02_5V` and `VBUS` to `+5V` on a board where U101 is not fitted. The tables below cover the default build with U101 only. Plan B `+5V` (source minus the diode drop), current limit and OV protection are open (OPEN-041, P3-012; diode data `NOT_VERIFIED`).
 
 ## 3. Load table
 

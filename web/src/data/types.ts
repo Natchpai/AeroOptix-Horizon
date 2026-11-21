@@ -139,6 +139,8 @@ export type Meta = {
   }[]
   /** Commit and date the site was built from */
   build: { commit: string; date: string }
+  /** Board GLB for the Showcase (web/public), or null when not exported */
+  boardModel: { file: string; bytes: number; date: string } | null
   sources: { spec: string; pins: string; readme: string; checklist: string }
   generatedFrom: string
 }

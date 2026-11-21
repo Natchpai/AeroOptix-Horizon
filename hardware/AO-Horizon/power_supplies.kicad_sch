@@ -633,6 +633,172 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "0_Diode:MBR230LSFT1G"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "D"
+				(at 0 2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "MBR230LSFT1G"
+				(at 0 -2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "0_Diode_SMD:D_SOD-123FL"
+				(at 0 5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "diode Schottky, 30V, 2A, SOD-123FL"
+				(at 0 7.62 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "diode Schottky, 30V, 2A, SOD-123FL"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "D?SOD?123FL*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "MBR230LSFT1G_0_1"
+				(polyline
+					(pts
+						(xy -1.905 0.635) (xy -1.905 1.27) (xy -1.27 1.27) (xy -1.27 -1.27) (xy -0.635 -1.27) (xy -0.635 -0.635)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 1.27) (xy 1.27 -1.27) (xy -1.27 0) (xy 1.27 1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 0) (xy -1.27 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "MBR230LSFT1G_1_1"
+				(pin passive line
+					(at -3.81 0 0)
+					(length 2.54)
+					(name "K"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 3.81 0 180)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "0_Inductor:L"
 			(pin_numbers
 				(hide yes)
@@ -3889,6 +4055,19 @@
 		(uuid "15660563-f7c4-40ea-8df9-b3cfb22c5475")
 	)
 	(rectangle
+		(start 29.21 113.03)
+		(end 121.92 143.51)
+		(stroke
+			(width 0.254)
+			(type solid)
+			(color 132 132 132 1)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "1c6ea204-225f-4e28-9736-cf4705711280")
+	)
+	(rectangle
 		(start 177.8 203.2)
 		(end 209.55 214.63)
 		(stroke
@@ -3954,7 +4133,6 @@
 		(stroke
 			(width 0.254)
 			(type solid)
-			(color 72 72 72 0.5019607843)
 		)
 		(fill
 			(type none)
@@ -3974,12 +4152,11 @@
 		(uuid "7190ada6-4ebd-48c9-b227-223ec93e749b")
 	)
 	(rectangle
-		(start 27.94 154.94)
+		(start 29.21 154.94)
 		(end 276.86 237.49)
 		(stroke
 			(width 0.254)
 			(type solid)
-			(color 72 72 72 0.5019607843)
 		)
 		(fill
 			(type none)
@@ -4006,7 +4183,6 @@
 		(stroke
 			(width 0.254)
 			(type solid)
-			(color 72 72 72 0.5019607843)
 		)
 		(fill
 			(type none)
@@ -4039,11 +4215,10 @@
 	)
 	(rectangle
 		(start 29.21 41.91)
-		(end 106.68 124.46)
+		(end 121.92 105.41)
 		(stroke
 			(width 0.254)
 			(type solid)
-			(color 72 72 72 0.5019607843)
 		)
 		(fill
 			(type none)
@@ -4186,6 +4361,21 @@
 			)
 		)
 		(uuid "1f46549c-f5d8-4665-b0b1-2354ea572626")
+	)
+	(text "(Plan B)"
+		(exclude_from_sim no)
+		(at 121.92 111.76 0)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 1.778 1.778)
+				(bold yes)
+				(italic yes)
+				(color 132 132 132 1)
+			)
+			(justify right)
+		)
+		(uuid "20aa0dd2-b59b-4545-8ef2-b2b3775d9646")
 	)
 	(text "I_{IN} = 3.3V x 1.5A/(~0.9 x 5V) = 1.1A\nP_{L} = 1.1^{2} x 0.17 = 0.21W\n\nV_{DROP} = 5 - 0.17(1.1A) =  0.19V"
 		(exclude_from_sim no)
@@ -4596,6 +4786,20 @@
 		)
 		(uuid "db294ad8-49aa-4080-864f-19e3f92255c6")
 	)
+	(text "Reserve"
+		(exclude_from_sim no)
+		(at 29.21 111.76 0)
+		(effects
+			(font
+				(face "Century Gothic")
+				(size 2.54 2.54)
+				(bold yes)
+				(color 132 132 132 1)
+			)
+			(justify left)
+		)
+		(uuid "de2e19b6-51c6-4c9b-a026-f1ba8263e4f6")
+	)
 	(text "PR1 = IN1 × 5.1 / (12.1 + 5)\nPR1 = 5.0 × 5.1 / 17.2 = 1.48 V"
 		(exclude_from_sim no)
 		(at 322.58 115.57 0)
@@ -4634,7 +4838,7 @@
 	)
 	(text "5.2V (MAX 2A) from PM02"
 		(exclude_from_sim no)
-		(at 91.44 40.64 0)
+		(at 106.68 40.64 0)
 		(effects
 			(font
 				(face "Century Gothic")
@@ -4699,7 +4903,7 @@
 	)
 	(text "Buck Converter 3V3 2A (2.5MHz)"
 		(exclude_from_sim no)
-		(at 27.94 153.67 0)
+		(at 29.21 153.67 0)
 		(effects
 			(font
 				(face "Century Gothic")
@@ -4907,6 +5111,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "5dc603a7-9888-45a9-b9d6-f677be9601e7")
+	)
+	(junction
+		(at 97.79 129.54)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "60f120bd-8a89-4ca3-8ced-1b8b602a4200")
 	)
 	(junction
 		(at 60.96 198.12)
@@ -5890,6 +6100,16 @@
 	)
 	(wire
 		(pts
+			(xy 107.95 127) (xy 107.95 129.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3f590fd4-9172-47e4-a1b7-08fce935073c")
+	)
+	(wire
+		(pts
 			(xy 129.54 182.88) (xy 140.97 182.88)
 		)
 		(stroke
@@ -6027,6 +6247,16 @@
 			(type default)
 		)
 		(uuid "517d7d2b-d527-4013-87ba-2bd475b33a55")
+	)
+	(wire
+		(pts
+			(xy 77.47 123.19) (xy 97.79 123.19)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "51e4ccbf-6604-4024-9667-23de6accfd23")
 	)
 	(wire
 		(pts
@@ -6300,6 +6530,16 @@
 	)
 	(wire
 		(pts
+			(xy 97.79 129.54) (xy 107.95 129.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7140519d-09a5-41ea-ae1a-f9fcf4537f91")
+	)
+	(wire
+		(pts
 			(xy 208.28 168.91) (xy 208.28 179.07)
 		)
 		(stroke
@@ -6377,6 +6617,16 @@
 			(type default)
 		)
 		(uuid "79b00032-7cb5-466d-a8da-dd1846e1e08c")
+	)
+	(wire
+		(pts
+			(xy 77.47 135.89) (xy 97.79 135.89)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "79ec8d9f-ff07-47d6-9519-e74f34ab57de")
 	)
 	(wire
 		(pts
@@ -6490,6 +6740,16 @@
 	)
 	(wire
 		(pts
+			(xy 46.99 135.89) (xy 69.85 135.89)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8bc34d55-da74-4529-bb0d-198dc11d162c")
+	)
+	(wire
+		(pts
 			(xy 52.07 81.28) (xy 90.17 81.28)
 		)
 		(stroke
@@ -6527,6 +6787,16 @@
 			(type default)
 		)
 		(uuid "9066a45a-b67c-4ceb-a3ba-00ed4641f5f4")
+	)
+	(wire
+		(pts
+			(xy 97.79 123.19) (xy 97.79 129.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "920f1879-915e-4449-8e8e-87d7f119f4f6")
 	)
 	(wire
 		(pts
@@ -6950,6 +7220,16 @@
 	)
 	(wire
 		(pts
+			(xy 46.99 123.19) (xy 69.85 123.19)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cf4429d7-9d6c-4666-81b6-264056bee821")
+	)
+	(wire
+		(pts
 			(xy 199.39 53.34) (xy 199.39 68.58)
 		)
 		(stroke
@@ -7087,6 +7367,16 @@
 			(type default)
 		)
 		(uuid "de0d0830-c7bf-4d8f-9751-971830bf99fd")
+	)
+	(wire
+		(pts
+			(xy 97.79 129.54) (xy 97.79 135.89)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "deb4b6ed-8283-40e6-ae6a-a04942761b77")
 	)
 	(wire
 		(pts
@@ -7310,6 +7600,16 @@
 	)
 	(wire
 		(pts
+			(xy 46.99 134.62) (xy 46.99 135.89)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f2fd6659-1ff6-4176-b8a8-f644bd73fbd8")
+	)
+	(wire
+		(pts
 			(xy 246.38 168.91) (xy 255.27 168.91)
 		)
 		(stroke
@@ -7414,6 +7714,17 @@
 			(justify left bottom)
 		)
 		(uuid "582be4f6-cb22-4043-a342-0ff5f0153f3c")
+	)
+	(label "PM02_5V"
+		(at 46.99 123.19 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.1588)
+			)
+			(justify left bottom)
+		)
+		(uuid "6b85b638-536a-4fd6-b228-68f98ffd55e2")
 	)
 	(label "3V3_PG"
 		(at 293.37 194.31 0)
@@ -9310,6 +9621,83 @@
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/5920cc04-6cd8-462c-b523-fb850d762b0c"
 					(reference "C108")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:VBUS")
+		(at 46.99 134.62 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "1956b76d-4622-408c-8b9e-5b127ace7ddd")
+		(property "Reference" "#PWR0122"
+			(at 46.99 138.43 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "VBUS"
+			(at 46.99 130.81 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 46.99 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 46.99 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VBUS\""
+			(at 46.99 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "ffcf29cd-1074-4d2f-b668-3b77ce75b498")
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/5920cc04-6cd8-462c-b523-fb850d762b0c"
+					(reference "#PWR0122")
 					(unit 1)
 				)
 			)
@@ -11718,6 +12106,129 @@
 		)
 	)
 	(symbol
+		(lib_id "0_Diode:MBR230LSFT1G")
+		(at 73.66 123.19 180)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp yes)
+		(uuid "66004836-c530-4533-aca4-e8afff9d3a49")
+		(property "Reference" "D105"
+			(at 68.58 120.65 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MBR230LSFT1G"
+			(at 80.01 120.65 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "0_Diode_SMD:D_SOD-123FL"
+			(at 73.66 128.27 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 73.66 123.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Schottky diode"
+			(at 73.66 130.81 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C126673"
+			(at 73.66 123.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "onsemi"
+			(at 73.66 123.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "MBR230LSFT1G"
+			(at 73.66 123.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
+			(at 73.66 123.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "4436f78a-c96f-4ca2-ab39-c8bae1736bcc")
+		)
+		(pin "2"
+			(uuid "a4e4709f-7e48-45d5-b6c0-9336746458c1")
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/5920cc04-6cd8-462c-b523-fb850d762b0c"
+					(reference "D105")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "0_Capacitor:C")
 		(at 97.79 182.88 0)
 		(unit 1)
@@ -13405,6 +13916,83 @@
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/5920cc04-6cd8-462c-b523-fb850d762b0c"
 					(reference "D102")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+5V")
+		(at 107.95 127 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "aa76fb2b-034a-41b8-92e9-b0310f09562c")
+		(property "Reference" "#PWR0121"
+			(at 107.95 130.81 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "+5V"
+			(at 107.95 123.19 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 107.95 127 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 107.95 127 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 107.95 127 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "7dbb36a9-99d5-45fd-bd44-473833b455d8")
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/5920cc04-6cd8-462c-b523-fb850d762b0c"
+					(reference "#PWR0121")
 					(unit 1)
 				)
 			)
@@ -16300,6 +16888,129 @@
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/5920cc04-6cd8-462c-b523-fb850d762b0c"
 					(reference "R112")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "0_Diode:MBR230LSFT1G")
+		(at 73.66 135.89 180)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp yes)
+		(uuid "f4e7763c-a9bb-4957-8ee6-aacd157746dc")
+		(property "Reference" "D106"
+			(at 68.58 133.35 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MBR230LSFT1G"
+			(at 80.01 133.35 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "0_Diode_SMD:D_SOD-123FL"
+			(at 73.66 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 73.66 135.89 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Schottky diode"
+			(at 73.66 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C126673"
+			(at 73.66 135.89 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR" "onsemi"
+			(at 73.66 135.89 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MFR.P/N" "MBR230LSFT1G"
+			(at 73.66 135.89 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "STATUS" "CHECKED"
+			(at 73.66 135.89 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "17d9816c-1e98-426f-9ea3-1c6501dc11cd")
+		)
+		(pin "2"
+			(uuid "eb0fc5e1-fded-488d-9d1a-f1f658762dd0")
+		)
+		(instances
+			(project "AO-Horizon"
+				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/5920cc04-6cd8-462c-b523-fb850d762b0c"
+					(reference "D106")
 					(unit 1)
 				)
 			)
