@@ -8,7 +8,8 @@ const SPEC_ID = /\b([A-Z]{2,5}-\d{2,3})\b/
 /** Evidence labels (engineering rules) and the colour each one shows in. */
 const LABEL_COLOR: Record<string, string> = {
   VERIFIED: 'var(--status-decided)',
-  ESTIMATED: 'var(--brand)',
+  // --primary: same as --brand in dark, darker for contrast in light
+  ESTIMATED: 'var(--primary)',
   ASSUMED: 'var(--status-candidate)',
   NOT_VERIFIED: 'var(--status-open)',
   TBD: 'var(--muted-foreground)',

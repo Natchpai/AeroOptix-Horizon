@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { type Task, meta, progress, sourceUrl } from '@/data'
+import { type Task, ids, meta, progress, sourceUrl } from '@/data'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { detailLabel, useScrollToRow } from '@/lib/record-rows'
 import { cn } from '@/lib/utils'
@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { DataTableColumnHeader } from '@/components/data-table'
+import { IdChip } from '@/components/id-chip'
 import { Main } from '@/components/layout/main'
 import { SiteHeader } from '@/components/layout/site-header'
 import { MdText } from '@/components/md-text'
@@ -35,12 +36,51 @@ import {
   allTaskStates,
   taskState,
 } from '@/components/task-status'
-import { openItemsNaming } from '@/features/open-items/cites'
+import { TASK_ID, openItemsNaming } from '@/features/open-items/cites'
 
 const route = getRouteApi('/_site/checklist')
 
 /** Every task row, in record order. */
 const tasks = Object.values(progress.tasks)
+
+/** The owners of a task: the Owner cell split on "," and "+". */
+const ownersOf = (t: Task) =>
+  t.owner
+    .split(/[,+]/)
+    .map((o) => o.trim())
+    .filter(Boolean)
+
+/** Every owner name, most tasks first. */
+const ownerNames = (() => {
+  const n = new Map<string, number>()
+  for (const t of tasks)
+    for (const o of ownersOf(t)) n.set(o, (n.get(o) ?? 0) + 1)
+  return [...n]
+    .sort(([a, x], [b, y]) => y - x || a.localeCompare(b))
+    .map(([o]) => o)
+})()
+
+/**
+ * For each gate that is not done, the open items (not closed or removed)
+ * whose "Owner / next action" cell names one of the gate's tasks.
+ */
+const gateBlockers = new Map(
+  progress.gates
+    .filter((g) => g.status !== 'DONE')
+    .map((g) => {
+      const open = Object.values(ids)
+        .filter((s) => s.kind === 'OPEN' && !s.closed && !s.removed)
+        .filter((s) =>
+          // matchAll works on a copy, so the shared regex keeps no lastIndex
+          [...(s.fields['Owner / next action'] ?? '').matchAll(TASK_ID)].some(
+            ([id]) => progress.tasks[id]?.gate === g.id
+          )
+        )
+        .map((s) => s.id)
+        .sort()
+      return [g.id, open]
+    })
+)
 
 /** The filter searches the whole row. */
 const rowText: FilterFn<Task> = (row, _col, value: string) => {
@@ -67,20 +107,41 @@ export function ChecklistPage() {
   const toggle = (id: string) =>
     set({ id: id === search.id ? undefined : id }, false)
 
-  // A link to one task shows it even when the gate or status filter hides it.
+  const byGate = (t: Task) => !search.gate || t.gate === search.gate
+  const byStatus = (t: Task) => !search.status || t.status === search.status
+  const byOwner = (t: Task) =>
+    !search.owner || ownersOf(t).includes(search.owner)
+
+  // A link to one task shows it even when the gate, status or owner filter
+  // hides it.
   const data = useMemo(
     () =>
       tasks.filter(
         (t) =>
           t.id === search.id ||
           ((!search.gate || t.gate === search.gate) &&
-            (!search.status || t.status === search.status))
+            (!search.status || t.status === search.status) &&
+            (!search.owner || ownersOf(t).includes(search.owner)))
       ),
-    [search.gate, search.status, search.id]
+    [search.gate, search.status, search.owner, search.id]
   )
-  const inGate = search.gate
-    ? tasks.filter((t) => t.gate === search.gate)
-    : tasks
+  // Each chip row counts the tasks the other filters leave.
+  const forStates = tasks.filter((t) => byGate(t) && byOwner(t))
+  const forOwners = tasks.filter((t) => byGate(t) && byStatus(t))
+  // A ?status= or ?owner= value no chip names (an old or mistyped link)
+  // still shows as a pressed chip, so the filter is visible and one click
+  // clears it.
+  const otherStatus =
+    search.status && !allTaskStates.some((s) => s.key === search.status)
+      ? {
+          ...taskState(search.status),
+          n: forStates.filter((t) => t.status === search.status).length,
+        }
+      : undefined
+  const otherOwner =
+    search.owner && !ownerNames.includes(search.owner)
+      ? search.owner
+      : undefined
 
   const columns = useMemo<ColumnDef<Task>[]>(
     () => [
@@ -206,6 +267,7 @@ export function ChecklistPage() {
                   .filter(([k]) => k !== 'N/A')
                   .reduce((t, [, n]) => t + n, 0)
                 const on = search.gate === g.id
+                const blockers = gateBlockers.get(g.id) ?? []
                 return (
                   <li key={g.id}>
                     <button
@@ -241,6 +303,17 @@ export function ChecklistPage() {
                         )}
                       </div>
                     </button>
+                    {blockers.length > 0 && (
+                      <div
+                        className='flex flex-wrap items-center gap-1.5 pb-3 text-xs text-muted-foreground'
+                        data-gate-blockers={g.id}
+                      >
+                        <span>Open items naming this gate's tasks:</span>
+                        {blockers.map((id) => (
+                          <IdChip key={id} id={id} />
+                        ))}
+                      </div>
+                    )}
                   </li>
                 )
               })}
@@ -261,6 +334,7 @@ export function ChecklistPage() {
                 </CardDescription>
               </div>
               <Input
+                aria-label='Filter tasks'
                 placeholder='Filter: ERC, OPEN-023, Human…'
                 value={filter}
                 onChange={(e) => set({ q: e.target.value || undefined })}
@@ -303,7 +377,7 @@ export function ChecklistPage() {
                 All states
               </Button>
               {allTaskStates.map((s) => {
-                const n = inGate.filter((t) => t.status === s.key).length
+                const n = forStates.filter((t) => t.status === s.key).length
                 if (!n && search.status !== s.key) return null
                 const on = search.status === s.key
                 return (
@@ -324,6 +398,65 @@ export function ChecklistPage() {
                   </Button>
                 )
               })}
+              {otherStatus && (
+                <Button
+                  variant='outline'
+                  size='sm'
+                  aria-pressed
+                  className={chip(true)}
+                  onClick={() => set({ status: undefined })}
+                >
+                  <span
+                    className='size-2 rounded-sm'
+                    style={{ background: otherStatus.color }}
+                  />
+                  {otherStatus.label}
+                  <span className='text-muted-foreground'>{otherStatus.n}</span>
+                </Button>
+              )}
+            </div>
+            <div className='flex flex-wrap gap-1.5' aria-label='Owner'>
+              <Button
+                variant='outline'
+                size='sm'
+                aria-pressed={!search.owner}
+                className={chip(!search.owner)}
+                onClick={() => set({ owner: undefined })}
+              >
+                All owners
+              </Button>
+              {ownerNames.map((o) => {
+                const n = forOwners.filter((t) =>
+                  ownersOf(t).includes(o)
+                ).length
+                if (!n && search.owner !== o) return null
+                const on = search.owner === o
+                return (
+                  <Button
+                    key={o}
+                    variant='outline'
+                    size='sm'
+                    aria-pressed={on}
+                    className={chip(on)}
+                    onClick={() => set({ owner: on ? undefined : o })}
+                  >
+                    {o}
+                    <span className='text-muted-foreground'>{n}</span>
+                  </Button>
+                )
+              })}
+              {otherOwner && (
+                <Button
+                  variant='outline'
+                  size='sm'
+                  aria-pressed
+                  className={chip(true)}
+                  onClick={() => set({ owner: undefined })}
+                >
+                  {otherOwner}
+                  <span className='text-muted-foreground'>0</span>
+                </Button>
+              )}
             </div>
           </CardHeader>
           <CardContent className='px-0'>

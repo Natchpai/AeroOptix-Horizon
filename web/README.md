@@ -1,6 +1,6 @@
 # AO-Horizon team website
 
-Static site for the team. Pages: Overview, About this site, Block diagram (three views), Pinout, Decisions, Open items, Checklist, Spec history, Traceability, Power budget and Showcase (the board 3D model; renders and photos come later).
+Static site for the team. Pages: Overview, About this site, Block diagram (three views), Pinout (as a table or by peripheral), Decisions, Open items, Checklist (filter by gate, state and owner), Spec history, Traceability, Power budget and Showcase (the board 3D model; renders and photos come later).
 
 The design records in `hardware/AO-Horizon/documents/design/` stay the source of truth. The site reads them at build time and adds no values of its own.
 
@@ -22,19 +22,19 @@ npm run drift    # report only: site text that may have drifted from the spec
 
 ## Where the data comes from
 
-| Data | Source | How |
-|---|---|---|
-| Spec IDs (IF, DEC, OPEN, SEN, PWR ...) | `AO-HORIZON_SPEC_EN.md` | `scripts/extract-docs.ts`, every table row whose first cell is an ID |
-| MCU pins | `AO-HORIZON_PIN_ALLOCATION_EN.md` | same script, the H743, F100 and F100-reserved tables; a row with Signal `-` (a pin whose function was removed, such as PC0 and PC1 by DEC-107) is skipped, so the pin shows as free |
-| Spec change notes | `AO-HORIZON_SPEC_EN.md` section 9 | same script: every note to `history.json` (Spec history page); the last 5 and the revision and date of each note go to `meta.json` (Overview, Ctrl+K) |
-| Phase, board and spec revision, key features, MCU part numbers | root `README.md` | same script, `Specifications` table for the MCUs |
-| Gates, tasks and current next action | `AO-HORIZON_EXECUTION_CHECKLIST_EN.md` | same script: `Gate summary` table; every `P<n>-<nnn>` task row with its Task, Req, Owner, Status and `Evidence required / link` cells (a missing column fails the build); `Current next action` paragraph |
-| Power budget | `AO-HORIZON_POWER_BUDGET_EN.md` | same script, to `power.json`: the section 4 `### Rail summary` table (Rail, Typical load, Worst-case load, Limit in mA, Limit from, Label; `TBD` stays empty, other text fails the build), the four section 3 load tables and the section 4, 5 and 11 tables |
-| Board model (Showcase) | `public/models/ao-horizon.glb` | exported by the engineer with `kicad-cli pcb export glb` (see `HANDOFF.md`); the script stores its size and last commit date |
-| Build stamp (commit, date) | Git | same script: `GITHUB_SHA` in CI, `git rev-parse HEAD` locally |
-| Blocks and links | `src/data/topology.ts` | hand-written; every block and link names its spec IDs |
-| Block positions | `src/data/places.ts` | hand-written drawing data |
-| Traceability | the data above | built in the browser (`src/features/trace/matrix.ts`), not by the script: one row per requirement ID with the DEC, OPEN, task (Req cell) and diagram items that cite it |
+| Data                                                           | Source                                 | How                                                                                                                                                                                                                                                          |
+| -------------------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Spec IDs (IF, DEC, OPEN, SEN, PWR ...)                         | `AO-HORIZON_SPEC_EN.md`                | `scripts/extract-docs.ts`, every table row whose first cell is an ID                                                                                                                                                                                         |
+| MCU pins                                                       | `AO-HORIZON_PIN_ALLOCATION_EN.md`      | same script, the H743, F100 and F100-reserved tables; a row with Signal `-` (a pin whose function was removed, such as PC0 and PC1 by DEC-107) is skipped, so the pin shows as free                                                                          |
+| Spec change notes                                              | `AO-HORIZON_SPEC_EN.md` section 9      | same script: every note to `history.json` (Spec history page); the last 5 and the revision and date of each note go to `meta.json` (Overview, Ctrl+K)                                                                                                        |
+| Phase, board and spec revision, key features, MCU part numbers | root `README.md`                       | same script, `Specifications` table for the MCUs                                                                                                                                                                                                             |
+| Gates, tasks and current next action                           | `AO-HORIZON_EXECUTION_CHECKLIST_EN.md` | same script: `Gate summary` table; every `P<n>-<nnn>` task row with its Task, Req, Owner, Status and `Evidence required / link` cells (a missing column fails the build); `Current next action` paragraph                                                    |
+| Power budget                                                   | `AO-HORIZON_POWER_BUDGET_EN.md`        | same script, to `power.json`: the section 4 `### Rail summary` table (Rail, Typical load, Worst-case load, Limit in mA, Limit from, Label; `TBD` stays empty, other text fails the build), the four section 3 load tables and the section 4, 5 and 11 tables |
+| Board model (Showcase)                                         | `public/models/ao-horizon.glb`         | exported by the engineer with `kicad-cli pcb export glb` (see `HANDOFF.md`); the script stores its size and last commit date                                                                                                                                 |
+| Build stamp (commit, date)                                     | Git                                    | same script: `GITHUB_SHA` in CI, `git rev-parse HEAD` locally                                                                                                                                                                                                |
+| Blocks and links                                               | `src/data/topology.ts`                 | hand-written; every block and link names its spec IDs                                                                                                                                                                                                        |
+| Block positions                                                | `src/data/places.ts`                   | hand-written drawing data                                                                                                                                                                                                                                    |
+| Traceability                                                   | the data above                         | built in the browser (`src/features/trace/matrix.ts`), not by the script: one row per requirement ID with the DEC, OPEN, task (Req cell) and diagram items that cite it                                                                                      |
 
 The extracted JSON (`meta`, `ids`, `pins`, `progress`, `history`, `power`) goes to `src/data/generated/`. It is git-ignored and rebuilt on every `dev` and `build`. `meta`, `ids`, `pins` and `progress` are read by every page, so `vite.config.ts` bundles them into one `records` chunk that caches apart from the code; `history` and `power` load with their own pages. The script throws when a table or heading it needs is missing, so a record that changes shape fails the build instead of showing `TBD`.
 
@@ -75,6 +75,11 @@ For a DEC row only Topic and Selected option count, and history phrases such as 
 - the next-action task chip or the Overview revision chip does not open its row
 - an opened table row has cells that are not top-aligned
 - the Power budget page does not draw one bar per Rail summary row
+- a Decisions Date cell is wider than its cell, two pages share a tab title, or the diagram view tabs do not fit at 390 px
+- a light-theme badge (OPEN, DONE, ESTIMATED, NOT_VERIFIED) or the sidebar PRELIMINARY text is below 4.5:1 contrast
+- a "Mentioned in" chip does not open its revision (DEC-030 to 0.21, DEC-013 to 0.10), or a failed notes load does not show the reload note
+- the Checklist owner filter shows the wrong row count, a gate blocker list differs from the records or lists a closed item, or an unknown `?owner=` or `?status=` shows no pressed chip
+- the Pinout By peripheral view does not list every H743 pin once or select a clicked pin, or the filter finds different pins in Table and By peripheral
 
 It takes about 5 to 12 minutes locally (about 2 minutes in CI) and prints `test:ui: OK` on a pass. `.github/workflows/web-test.yml` runs it on pushes to `dev` and PRs to `main` that touch `web/`, the design records or the root `README.md`, and by hand. Google Fonts are fetched once per run and then served from memory. If they cannot be fetched, the run warns that label checks used fallback fonts.
 

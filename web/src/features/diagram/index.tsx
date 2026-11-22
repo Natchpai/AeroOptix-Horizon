@@ -68,6 +68,7 @@ export function DiagramPage() {
   return (
     <>
       <SiteHeader
+        pageTitle={`Block diagram · ${levels.find((l) => l.id === view)?.label}`}
         title={
           <nav className='flex min-w-0 items-center gap-1 text-sm'>
             <span className='text-muted-foreground'>Block diagram</span>
@@ -96,7 +97,10 @@ export function DiagramPage() {
       />
       <Main fixed fluid className='gap-3 px-3 pt-0 pb-3 sm:px-4'>
         <div className='flex flex-wrap items-center gap-2'>
-          <div className='inline-flex rounded-lg border bg-muted/40 p-0.5'>
+          <div
+            data-view-tabs
+            className='inline-flex rounded-lg border bg-muted/40 p-0.5'
+          >
             {levels.map((l) => {
               const active = view === l.id
               const disabled = l.id === 'interface' && !link
@@ -117,7 +121,7 @@ export function DiagramPage() {
                   {l.label}
                   <span
                     className={cn(
-                      'font-mono text-[10px]',
+                      'hidden font-mono text-[10px] sm:inline',
                       active ? 'opacity-80' : 'opacity-60'
                     )}
                   >

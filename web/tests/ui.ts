@@ -7,17 +7,27 @@
  * a hash link changed in an open tab shows the new view, and Ctrl+K on a
  * decision or an open item (open or closed) opens its row on its page,
  * a next-action task chip opens its Checklist row, and an Overview
- * revision chip opens its Spec history row, and the Power budget page
- * draws one bar per Rail summary row.
+ * revision chip and a Decisions "Mentioned in" revision chip open their
+ * Spec history rows, the Checklist owner chip filters its rows and a gate
+ * blocker chip opens its Open items row (OPEN-004 under P3, no closed item
+ * listed), an unknown ?owner= or ?status= shows a pressed chip that clears
+ * it, "Mentioned in" shows a reload note when the notes chunk fails, the
+ * Pinout "By peripheral" view lists every H743 pin once and a SPI1 pin click
+ * selects it, the Pinout filter finds the same pins in both views, the Power
+ * budget page draws one bar per Rail summary row, every Decisions Date cell holds
+ * its text inside the cell, every page has its own browser tab title, the
+ * diagram view tabs fit at phone width, and light-theme status and evidence
+ * badges have AA contrast.
  *
  * Run after `npm run build`: `npm run test:ui`. Set UI_BROWSER to pick a
  * Playwright channel (default `msedge` locally; `chromium` when CI is set).
  * Exits 1 and lists every failure.
  */
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import {
   chromium,
   type Browser,
+  type BrowserContext,
   type Page,
   type Route,
 } from 'playwright-core'
@@ -61,7 +71,12 @@ async function serveFont(route: Route) {
 async function open(
   browser: Browser,
   route: string,
-  opts: { width?: number; theme?: 'dark' | 'light' } = {}
+  opts: {
+    width?: number
+    theme?: 'dark' | 'light'
+    /** Runs on the new context before the page loads (routes, init scripts). */
+    setup?: (ctx: BrowserContext) => Promise<unknown>
+  } = {}
 ) {
   const ctx = await browser.newContext({
     viewport: { width: opts.width ?? 1440, height: 900 },
@@ -78,6 +93,7 @@ async function open(
   // tsx compiles the page-side functions with esbuild's __name helper
   await ctx.addInitScript('window.__name = (f) => f')
   await ctx.route(FONTS, serveFont)
+  await opts.setup?.(ctx)
   const page = await ctx.newPage()
   const errors: string[] = []
   page.on('pageerror', (e) => errors.push(e.message))
@@ -168,6 +184,23 @@ async function noSideScroll(page: Page, where: string) {
     window.innerWidth,
   ])
   if (sw > w) fail(where, `scrolls sideways (${sw} px wide at ${w} px)`)
+}
+
+/** The diagram view tabs fit inside their row and the viewport. */
+async function viewTabsFit(page: Page, where: string) {
+  const out = await page.evaluate(() => {
+    const tabs = document.querySelector('[data-view-tabs]')
+    if (!tabs) return ['no view tabs']
+    const edge = Math.min(
+      window.innerWidth,
+      tabs.parentElement!.getBoundingClientRect().right
+    )
+    return [...tabs.querySelectorAll('button')]
+      .map((b) => ({ name: b.textContent, right: b.getBoundingClientRect().right }))
+      .filter((b) => b.right > edge + 0.5)
+      .map((b) => `tab "${b.name}" ends at ${b.right} px, past ${edge} px`)
+  })
+  for (const o of out) fail(where, o)
 }
 
 /** At phone width a diagram opens at a readable zoom (canvas.tsx READABLE). */
@@ -386,6 +419,156 @@ async function powerBars(browser: Browser) {
   }
 }
 
+/**
+ * Every page sets its own browser tab title, ending with the site name, also
+ * after moving between pages in one tab. The titles are fixed here, so the
+ * check waits for the exact title instead of a fixed time, and a wrong title
+ * fails as clearly as a late one.
+ */
+async function pageTitles(browser: Browser) {
+  const where = 'tab titles'
+  const v = await open(browser, '')
+  const seen = new Map<string, string>()
+  for (const [route, page] of [
+    ['', 'Overview'],
+    ['diagram?level=system', 'Block diagram · Overview'],
+    ['diagram?level=board', 'Block diagram · System'],
+    ['diagram?level=power', 'Block diagram · Power'],
+    ['diagram?level=board&link=b-link', 'Block diagram · Interface'],
+    ['pinout?mcu=h743', 'Pinout · STM32H743VIT6'],
+    ['pinout?mcu=f100', 'Pinout · STM32F100C8T6B'],
+    ['decisions', 'Decisions'],
+    ['open', 'Open items'],
+    ['checklist', 'Checklist'],
+    ['history', 'Spec history'],
+    ['trace', 'Traceability'],
+    ['power', 'Power budget'],
+    ['showcase', 'Showcase'],
+    ['about', 'About this site'],
+  ]) {
+    const want = `${page} · AeroOptix-Horizon`
+    await v.page.evaluate((h) => {
+      location.hash = h
+    }, `#/${route}`)
+    try {
+      await v.page.waitForFunction((t) => document.title === t, want, {
+        timeout: 10000,
+      })
+    } catch {
+      fail(where, `/${route} title is "${await v.page.title()}", not "${want}"`)
+    }
+    const title = await v.page.title()
+    const other = seen.get(title)
+    if (other !== undefined)
+      fail(where, `/${route} has the same title as /${other}: "${title}"`)
+    seen.set(title, route)
+  }
+  for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+}
+
+/** Every Decisions Date cell holds its text inside the cell, at 1440 px. */
+async function decisionDatesFit(browser: Browser) {
+  const where = '/decisions date cells'
+  const v = await open(browser, 'decisions')
+  const date = await v.page.evaluate(() => {
+    const ths = [...document.querySelectorAll('thead th')]
+    return ths.findIndex((th) => th.textContent?.trim() === 'Date')
+  })
+  if (date < 0) fail(where, 'no Date column')
+  const wide = await v.page.evaluate((col) => {
+    const out: string[] = []
+    for (const tr of document.querySelectorAll('tbody tr[id^="row-"]')) {
+      const td = tr.children[col] as HTMLElement | undefined
+      if (!td) continue
+      const box = td.getBoundingClientRect()
+      const pad = parseFloat(getComputedStyle(td).paddingRight)
+      const right = Math.max(
+        ...[...td.querySelectorAll('*')].map(
+          (e) => e.getBoundingClientRect().right
+        ),
+        box.left
+      )
+      if (td.scrollWidth > td.clientWidth || right > box.right - pad + 0.5)
+        out.push(`${tr.id}: "${td.textContent}" is wider than its cell`)
+    }
+    return out
+  }, date)
+  for (const w of wide) fail(where, w)
+  for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+}
+
+/**
+ * Light theme: a few status and evidence badges have WCAG AA contrast
+ * (4.5:1) against the background they sit on, tints included. The sidebar
+ * phase text sits on a 10% tint of its own colour, the worst case. The
+ * badges are the bordered spans in `main`.
+ */
+async function lightContrast(browser: Browser) {
+  const cases: [string, string, string[]][] = [
+    ['checklist', 'main span.border', ['OPEN', 'DONE']],
+    ['power', 'main span.border', ['ESTIMATED', 'NOT_VERIFIED']],
+    ['power', '[data-sidebar=footer] span', ['PRELIMINARY']],
+  ]
+  for (const [route, selector, words] of cases) {
+    const where = `/${route} light contrast`
+    const v = await open(browser, route, { theme: 'light' })
+    const found = await v.page.evaluate(([selector, words]) => {
+      const cv = document.createElement('canvas')
+      cv.width = cv.height = 1
+      const g = cv.getContext('2d', { willReadFrequently: true })!
+      // paints the colours in order on one pixel and reads the result
+      const paint = (colors: string[]) => {
+        g.clearRect(0, 0, 1, 1)
+        for (const c of colors) {
+          g.fillStyle = '#000'
+          g.fillStyle = c
+          g.fillRect(0, 0, 1, 1)
+        }
+        return [...g.getImageData(0, 0, 1, 1).data]
+      }
+      const lum = (c: number[]) => {
+        const [r, gr, b] = c.map((v) => {
+          v /= 255
+          return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
+        })
+        return 0.2126 * r + 0.7152 * gr + 0.0722 * b
+      }
+      const out: Record<string, number> = {}
+      for (const el of document.querySelectorAll<HTMLElement>(selector)) {
+        const word = el.textContent?.trim() ?? ''
+        if (!words.includes(word) || word in out || el.children.length)
+          continue
+        if (el.getBoundingClientRect().width < 2) continue
+        // background layers up to the first opaque one
+        const layers: string[] = []
+        for (let e: Element | null = el; e; e = e.parentElement) {
+          const bg = getComputedStyle(e).backgroundColor
+          const a = paint([bg])[3]
+          if (a === 0) continue
+          layers.unshift(bg)
+          if (a === 255) break
+        }
+        if (paint(layers)[3] !== 255) layers.unshift('#ffffff')
+        const bg = lum(paint(layers))
+        const fg = lum(paint([...layers, getComputedStyle(el).color]))
+        out[word] =
+          (Math.max(fg, bg) + 0.05) / (Math.min(fg, bg) + 0.05)
+      }
+      return out
+    }, [selector, words] as const)
+    for (const w of words) {
+      const ratio = found[w]
+      if (ratio === undefined) fail(where, `no visible "${w}" text`)
+      else if (ratio < 4.5)
+        fail(where, `"${w}" contrast is ${ratio.toFixed(2)}:1, below 4.5:1`)
+    }
+    for (const e of v.errors) fail(where, `page error: ${e}`)
+    await v.close()
+  }
+}
+
 /** A revision chip on the Overview opens its row on Spec history. */
 async function revChipOpensRow(browser: Browser) {
   const where = 'Overview revision chip'
@@ -410,6 +593,328 @@ async function revChipOpensRow(browser: Browser) {
   )
   if (ten !== 'rev-0.10') fail(where, `rev "0.10" selected "${ten}"`)
   for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+}
+
+/**
+ * An opened Decisions row lists the revisions whose change note names it
+ * ("Mentioned in"); a chip opens that row on Spec history, 0.10 not 0.1.
+ */
+async function mentionedInChips(browser: Browser) {
+  for (const [id, rev] of [
+    ['DEC-030', '0.21'],
+    ['DEC-013', '0.10'],
+  ]) {
+    const where = `Mentioned in on ${id}`
+    const v = await open(browser, `decisions?id=${id}`)
+    const chip = v.page
+      .locator('tr', { hasText: 'Mentioned in' })
+      .getByRole('link', { name: `rev ${rev}`, exact: true })
+    try {
+      await chip.waitFor({ timeout: 5000 })
+    } catch {
+      fail(where, `no "rev ${rev}" chip under "Mentioned in"`)
+      await v.close()
+      continue
+    }
+    await chip.click()
+    await v.page.waitForTimeout(1000)
+    const [hash, row] = await v.page.evaluate(() => [
+      location.hash,
+      document.querySelector('tr[data-state=selected]')?.id ?? '',
+    ])
+    if (!hash.includes('history')) fail(where, `went to ${hash || 'nowhere'}`)
+    if (row !== `rev-${rev}`) fail(where, `selected row is "${row}"`)
+    for (const e of v.errors) fail(where, `page error: ${e}`)
+    await v.close()
+  }
+}
+
+const generated = (file: string) =>
+  JSON.parse(
+    readFileSync(
+      new URL(`../src/data/generated/${file}`, import.meta.url),
+      'utf8'
+    )
+  )
+
+/**
+ * The Checklist owner chip sets ?owner= and lists the tasks whose Owner
+ * cell, split on "," and "+", names that owner; the URL alone does the same.
+ */
+async function ownerFilter(browser: Browser) {
+  const owner = 'Software'
+  const where = `Checklist owner ${owner}`
+  const tasks = Object.values(generated('progress.json').tasks) as {
+    owner: string
+  }[]
+  const want = tasks.filter((t) =>
+    t.owner
+      .split(/[,+]/)
+      .map((o) => o.trim())
+      .includes(owner)
+  ).length
+  const rows = (page: Page) =>
+    page.evaluate(
+      () => document.querySelectorAll('tbody tr[id^="row-"]').length
+    )
+  const v = await open(browser, 'checklist')
+  const chip = v.page
+    .locator('[aria-label="Owner"] button')
+    .filter({ hasText: new RegExp(`^${owner}\\s*${want}$`) })
+  try {
+    await chip.click({ timeout: 5000 })
+    await v.page.waitForTimeout(500)
+    const hash = await v.page.evaluate(() => location.hash)
+    if (!hash.includes(`owner=${owner}`)) fail(where, `chip went to ${hash}`)
+    const got = await rows(v.page)
+    if (got !== want) fail(where, `chip shows ${got} rows, not ${want}`)
+  } catch {
+    fail(where, `no "${owner} ${want}" owner chip`)
+  }
+  for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+  const u = await open(browser, `checklist?owner=${owner}`)
+  const got = await rows(u.page)
+  if (got !== want) fail(where, `?owner= shows ${got} rows, not ${want}`)
+  await u.close()
+}
+
+/**
+ * A Checklist link with an owner or status no chip names still shows the
+ * filter: a pressed chip with that value and count 0, and a click on it
+ * removes the filter and lists every task again.
+ */
+async function unknownChipFilters(browser: Browser) {
+  const total = Object.keys(generated('progress.json').tasks).length
+  for (const [key, value, group] of [
+    ['owner', 'Nobody', 'Owner'],
+    ['status', 'WAITING', 'Status'],
+  ]) {
+    const where = `Checklist ?${key}=${value}`
+    const v = await open(browser, `checklist?${key}=${value}`)
+    const chip = v.page
+      .locator(`[aria-label="${group}"] button[aria-pressed="true"]`)
+      .filter({ hasText: new RegExp(`^${value}\\s*0$`) })
+    try {
+      await chip.click({ timeout: 5000 })
+      await v.page.waitForTimeout(500)
+      const [hash, rows] = await v.page.evaluate(() => [
+        location.hash,
+        document.querySelectorAll('tbody tr[id^="row-"]').length,
+      ])
+      if (String(hash).includes(`${key}=`))
+        fail(where, `chip click left ${hash}`)
+      if (rows !== total) fail(where, `shows ${rows} rows, not all ${total}`)
+    } catch {
+      fail(where, `no pressed "${value} 0" chip in the ${group} row`)
+    }
+    for (const e of v.errors) fail(where, `page error: ${e}`)
+    await v.close()
+  }
+}
+
+/**
+ * Under each open gate the Checklist lists the open items whose "Owner /
+ * next action" names one of the gate's tasks; a chip opens its Open items row.
+ */
+async function gateBlockers(browser: Browser) {
+  const where = 'Checklist gate blockers'
+  const progress = generated('progress.json') as {
+    gates: { id: string; status: string }[]
+    tasks: Record<string, { gate: string }>
+  }
+  const ids = Object.values(generated('ids.json')) as {
+    id: string
+    kind: string
+    closed: boolean
+    removed: boolean
+    fields: Record<string, string>
+  }[]
+  const want: Record<string, string[]> = {}
+  for (const g of progress.gates) {
+    if (g.status === 'DONE') continue
+    const list = ids
+      .filter((s) => s.kind === 'OPEN' && !s.closed && !s.removed)
+      .filter((s) =>
+        (s.fields['Owner / next action'] ?? '')
+          .match(/\bP\d-\d{3}\b/g)
+          ?.some((id) => progress.tasks[id]?.gate === g.id)
+      )
+      .map((s) => s.id)
+      .sort()
+    if (list.length) want[g.id] = list
+  }
+  const v = await open(browser, 'checklist')
+  const got = await v.page.evaluate(() =>
+    Object.fromEntries(
+      [...document.querySelectorAll<HTMLElement>('[data-gate-blockers]')].map(
+        (d) => [
+          d.dataset.gateBlockers ?? '',
+          [...d.querySelectorAll('a')].map((a) => a.textContent?.trim()),
+        ]
+      )
+    )
+  )
+  if (JSON.stringify(got) !== JSON.stringify(want))
+    fail(where, `shown ${JSON.stringify(got)}, not ${JSON.stringify(want)}`)
+  // fixed points, in case the computation above drifts with the page code
+  if (!got.P3?.includes('OPEN-004'))
+    fail(where, `OPEN-004 is not listed under P3: ${JSON.stringify(got.P3)}`)
+  const closed = new Set(
+    ids.filter((s) => s.kind === 'OPEN' && s.closed).map((s) => s.id)
+  )
+  if (!closed.has('OPEN-001')) fail(where, 'ids.json: OPEN-001 is not closed')
+  for (const [g, shown] of Object.entries(got))
+    for (const id of shown)
+      if (id && closed.has(id)) fail(where, `closed ${id} is listed under ${g}`)
+  const [gate, list] = Object.entries(want)[0] ?? []
+  if (gate && list) {
+    const id = list[0]
+    const chip = v.page
+      .locator(`[data-gate-blockers="${gate}"] a`)
+      .filter({ hasText: new RegExp(`^${id}$`) })
+    try {
+      await chip.click({ timeout: 5000 })
+      await v.page.waitForTimeout(1000)
+      const [hash, row] = await v.page.evaluate(() => [
+        location.hash,
+        document.querySelector('tr[data-state=selected]')?.id ?? '',
+      ])
+      if (!hash.includes('/open') || !hash.includes(id))
+        fail(where, `${id} went to ${hash}`)
+      if (row !== `row-${id}`) fail(where, `${id}: selected row is "${row}"`)
+    } catch {
+      fail(where, `no ${id} chip under gate ${gate}`)
+    }
+  }
+  for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+}
+
+/**
+ * The Pinout "By peripheral" view lists every H743 pin of pins.json exactly
+ * once, and a click on the SPI1_SCK pin selects it as a table row click does.
+ */
+async function peripheralView(browser: Browser) {
+  const where = 'Pinout by peripheral'
+  const rows = generated('pins.json').h743 as { pin: string; signal: string }[]
+  const v = await open(browser, 'pinout?mcu=h743&view=peripheral')
+  const shown = await v.page.evaluate(() =>
+    [
+      ...document.querySelectorAll<HTMLElement>('[data-peripheral] [data-pin]'),
+    ].map((b) => b.dataset.pin ?? '')
+  )
+  const missing = rows.map((r) => r.pin).filter((p) => !shown.includes(p))
+  if (
+    shown.length !== rows.length ||
+    new Set(shown).size !== shown.length ||
+    missing.length
+  )
+    fail(
+      where,
+      `lists ${shown.length} pins (${new Set(shown).size} unique), not ` +
+        `the ${rows.length} rows; missing: ${missing.join(', ') || 'none'}`
+    )
+  const sck = rows.find((r) => r.signal === 'SPI1_SCK')
+  if (!sck) fail(where, 'pins.json has no SPI1_SCK row')
+  else
+    try {
+      await v.page.click(`[data-peripheral="SPI1"] [data-pin="${sck.pin}"]`, {
+        timeout: 5000,
+      })
+      await v.page.waitForTimeout(800)
+      const [hash, detail] = await v.page.evaluate(() => [
+        location.hash,
+        document.getElementById('pin-detail')?.textContent ?? '',
+      ])
+      if (!hash.includes(`pin=${sck.pin}`))
+        fail(where, `${sck.pin} click went to ${hash}`)
+      if (!detail.startsWith(sck.pin))
+        fail(where, `pin details show "${detail.slice(0, 20)}"`)
+    } catch {
+      fail(where, `no ${sck.pin} pin under SPI1`)
+    }
+  for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+}
+
+/**
+ * When the change notes chunk fails to load (an old tab after a deploy),
+ * "Mentioned in" says so and offers a page reload, with no page error or
+ * unhandled rejection. Recovery is not checked: the chunk stays blocked.
+ */
+async function mentionedInFails(browser: Browser) {
+  const where = 'Mentioned in, notes chunk blocked'
+  const dir = new URL('../dist/assets/', import.meta.url)
+  // the notes JSON chunk is named history-<hash>.js like the Spec history
+  // page chunk; it is the one that holds the data
+  const chunk = readdirSync(dir).find(
+    (f) =>
+      /^history-.*\.js$/.test(f) &&
+      readFileSync(new URL(f, dir), 'utf8').includes('"revision":"')
+  )
+  if (!chunk) return fail(where, 'no history notes chunk in dist/assets')
+  const v = await open(browser, 'decisions?id=DEC-030', {
+    setup: async (ctx) => {
+      await ctx.route(`**/assets/${chunk}`, (r) => r.abort())
+      await ctx.addInitScript(() => {
+        const w = window as unknown as { __rejections: string[] }
+        w.__rejections = []
+        addEventListener('unhandledrejection', (e) =>
+          w.__rejections.push(String(e.reason))
+        )
+      })
+    },
+  })
+  const row = v.page.locator('tr', { hasText: 'Mentioned in' })
+  try {
+    await row
+      .getByText('Could not load the change notes.', { exact: true })
+      .waitFor({ timeout: 5000 })
+  } catch {
+    fail(where, 'no "Could not load the change notes." note')
+  }
+  if (!(await row.getByRole('button', { name: 'Reload page' }).count()))
+    fail(where, 'no "Reload page" button')
+  const rejections = await v.page.evaluate(
+    () => (window as unknown as { __rejections: string[] }).__rejections
+  )
+  for (const r of rejections) fail(where, `unhandled rejection: ${r}`)
+  for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+}
+
+/**
+ * The Pinout filter finds the same H743 pins in Table and in By peripheral,
+ * also for text only one view used to search (a group name, the DS check).
+ */
+async function pinFilterSame(browser: Browser) {
+  const v = await open(browser, 'pinout?mcu=h743')
+  for (const q of ['Debug', 'not checked']) {
+    const where = `Pinout filter "${q}"`
+    try {
+      await v.page.getByLabel('Filter pins').fill(q, { timeout: 5000 })
+      await v.page.getByRole('button', { name: 'Table', exact: true }).click()
+      await v.page.waitForTimeout(300)
+      const table = await v.page.evaluate(
+        () => document.querySelectorAll('tbody tr').length
+      )
+      await v.page
+        .getByRole('button', { name: 'By peripheral', exact: true })
+        .click()
+      await v.page.waitForTimeout(300)
+      const groups = await v.page.evaluate(
+        () => document.querySelectorAll('[data-peripheral] [data-pin]').length
+      )
+      if (!table) fail(where, 'the table shows no pins')
+      if (table !== groups)
+        fail(where, `Table shows ${table} pins, By peripheral ${groups}`)
+    } catch (e) {
+      fail(where, `could not run: ${(e as Error).message.split('\n')[0]}`)
+    }
+  }
+  for (const e of v.errors) fail('Pinout filter', `page error: ${e}`)
   await v.close()
 }
 
@@ -450,6 +955,7 @@ async function main() {
         'diagram?level=power',
         'pinout?mcu=h743',
         'pinout?mcu=f100',
+        'pinout?mcu=h743&view=peripheral',
         'decisions',
         'decisions?id=DEC-050',
         'open',
@@ -458,6 +964,7 @@ async function main() {
         'checklist',
         'checklist?id=P3-007',
         'checklist?gate=P3&status=OPEN',
+        'checklist?owner=Software',
         'history',
         'history?rev=0.86',
         'trace',
@@ -501,7 +1008,17 @@ async function main() {
     )
     await taskChipOpensRow(browser)
     await revChipOpensRow(browser)
+    await mentionedInChips(browser)
+    await mentionedInFails(browser)
+    await ownerFilter(browser)
+    await unknownChipFilters(browser)
+    await gateBlockers(browser)
+    await peripheralView(browser)
+    await pinFilterSame(browser)
     await powerBars(browser)
+    await decisionDatesFit(browser)
+    await lightContrast(browser)
+    await pageTitles(browser)
     await openRowTopAligned(browser)
     await chipsOpenSitePages(browser)
 
@@ -555,6 +1072,7 @@ async function main() {
         'diagram?level=power',
         'pinout?mcu=h743',
         'pinout?mcu=f100',
+        'pinout?mcu=h743&view=peripheral',
         'decisions?id=DEC-050',
         'open?id=OPEN-023',
         'open?closed=true&id=OPEN-001',
@@ -570,7 +1088,10 @@ async function main() {
         const v = await open(browser, route, { width: 390, theme })
         const where = `/${route} at 390 px ${theme}`
         await noSideScroll(v.page, where)
-        if (route.startsWith('diagram')) await readableZoom(v.page, where)
+        if (route.startsWith('diagram')) {
+          await readableZoom(v.page, where)
+          await viewTabsFit(v.page, where)
+        }
         await v.close()
       }
   } finally {

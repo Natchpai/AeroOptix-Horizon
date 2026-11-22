@@ -87,6 +87,7 @@ export function HistoryPage() {
               </CardDescription>
             </div>
             <Input
+              aria-label='Filter spec revisions'
               placeholder='Filter: TPS2121, DEC-050, 2026-11…'
               value={filter}
               onChange={(e) => setFilter(e.target.value)}

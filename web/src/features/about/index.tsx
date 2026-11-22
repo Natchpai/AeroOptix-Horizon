@@ -367,12 +367,17 @@ export function AboutPage() {
                 <li>
                   An opened row puts its ID in the address bar (
                   <Code>?id=DEC-050</Code>), so the link opens the same row for
-                  a teammate.
+                  a teammate. On Decisions, Open items and Traceability it also
+                  lists the spec revisions whose change note names the ID.
                 </li>
                 <li>
                   The table pages (Decisions, Open items, Checklist, Spec
                   history, Traceability, Pinout) have a text filter. A linked
-                  row always shows, even when a filter would hide it.
+                  row always shows, even when a filter would hide it. The
+                  Checklist also filters by gate, state and owner, and under
+                  each open gate lists the open items that name its tasks. The
+                  Pinout can also list its pins by peripheral (SPI1, USART6
+                  ...).
                 </li>
                 <li>
                   The footer of the Overview names the commit and date the site

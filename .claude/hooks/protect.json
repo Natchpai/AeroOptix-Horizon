@@ -37,8 +37,7 @@
       "push-protected",
       "force-push",
       "reset-hard",
-      "clean-force",
-      "gh-pr-merge"
+      "clean-force"
     ],
     "ask": [
       "force-with-lease",

@@ -25,7 +25,7 @@ export type LaidNode = {
   handles: HandleSpec[]
 }
 
-export type LaidEdge = {
+type LaidEdge = {
   link: Link
   sourceHandle: string
   targetHandle: string

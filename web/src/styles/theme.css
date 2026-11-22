@@ -15,12 +15,12 @@
   --card-foreground: #14213a;
   --popover: #ffffff;
   --popover-foreground: #14213a;
-  --primary: #2e78bd;
+  --primary: #2a6fae;
   --primary-foreground: #ffffff;
   --secondary: #e9eff8;
   --secondary-foreground: #1d2d4a;
   --muted: #edf1f7;
-  --muted-foreground: #5b6b85;
+  --muted-foreground: #55647d;
   --accent: #e3edf9;
   --accent-foreground: #1d3b63;
   --destructive: #d43c3c;
@@ -63,10 +63,11 @@
   --bus-gpio: #db2777;
   --bus-analog: #ea580c;
 
-  /* Design state */
-  --status-decided: #16a34a;
-  --status-open: #d97706;
-  --status-candidate: #64748b;
+  /* Design state. Darker than the matching bus colours so 11 px text
+     on a 10% tint of itself passes WCAG AA (4.5:1) in the light theme */
+  --status-decided: #15773a;
+  --status-open: #a34a0c;
+  --status-candidate: #5a697f;
 }
 
 .dark {

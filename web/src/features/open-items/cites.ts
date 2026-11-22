@@ -1,7 +1,7 @@
 import { type SpecId, type Task, ids, progress } from '@/data'
 
 const OPEN_ID = /\bOPEN-\d{3}\b/g
-const TASK_ID = /\bP\d-\d{3}\b/g
+export const TASK_ID = /\bP\d-\d{3}\b/g
 
 const openRows = Object.values(ids).filter((s) => s.kind === 'OPEN')
 const rowText = (s: SpecId) => Object.values(s.fields).join(' ')

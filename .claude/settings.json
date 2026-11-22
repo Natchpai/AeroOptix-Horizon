@@ -16,7 +16,8 @@
       "Bash(git add *)",
       "Bash(git commit *)",
       "Bash(gh pr create *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(gh pr merge *)"
     ],
     "ask": [
       "Edit(**/*.kicad_sch)",
@@ -27,8 +28,7 @@
       "Edit(**/*.kicad_wks)",
       "Edit(**/*.wrl)",
       "Edit(**/templates/**)",
-      "Read(~/.notebooklm/**)",
-      "Bash(gh pr merge *)"
+      "Read(~/.notebooklm/**)"
     ]
   },
   "hooks": {

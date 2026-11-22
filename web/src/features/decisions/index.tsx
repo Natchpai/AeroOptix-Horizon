@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
 import {
   type ColumnDef,
@@ -35,6 +35,7 @@ import { IdChip } from '@/components/id-chip'
 import { Main } from '@/components/layout/main'
 import { SiteHeader } from '@/components/layout/site-header'
 import { MdText } from '@/components/md-text'
+import { MentionedIn } from '@/components/mentioned-in'
 import { DiagramItemList, RecordTable } from '@/components/record-table'
 
 const route = getRouteApi('/_site/decisions')
@@ -125,11 +126,30 @@ export function DecisionsPage() {
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title='Date' />
         ),
-        cell: ({ row }) => (
-          <span className='font-mono text-xs whitespace-nowrap text-muted-foreground'>
-            {row.original.fields['Date']}
-          </span>
-        ),
+        cell: ({ row }) => {
+          // "2026-10-12, changed 2026-10-24": the first date on one line,
+          // the change note below it, wrapped between words only, so a date
+          // never breaks at its hyphens
+          const [first, ...rest] = (row.original.fields['Date'] ?? '').split(
+            ', '
+          )
+          const words = rest.join(', ').split(' ')
+          return (
+            <span className='block font-mono text-xs text-muted-foreground'>
+              <span className='whitespace-nowrap'>{first}</span>
+              {rest.length > 0 && (
+                <span className='block text-[11px] whitespace-normal'>
+                  {words.map((w, i) => (
+                    <Fragment key={i}>
+                      {i > 0 && ' '}
+                      <span className='whitespace-nowrap'>{w}</span>
+                    </Fragment>
+                  ))}
+                </span>
+              )}
+            </span>
+          )
+        },
       },
       {
         id: 'used',
@@ -196,6 +216,7 @@ export function DecisionsPage() {
               </CardDescription>
             </div>
             <Input
+              aria-label='Filter decisions'
               placeholder='Filter: USB, TPS2121, DEC-050…'
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
@@ -242,9 +263,12 @@ function DecisionDetail({ row }: { row: SpecId }) {
           Spec line {row.line}
         </a>
       </div>
-      <div className='space-y-2'>
-        <div className={detailLabel}>On the diagram</div>
-        <DiagramItemList items={used} />
+      <div className='min-w-0 space-y-4'>
+        <div className='space-y-2'>
+          <div className={detailLabel}>On the diagram</div>
+          <DiagramItemList items={used} />
+        </div>
+        <MentionedIn id={row.id} />
       </div>
     </div>
   )

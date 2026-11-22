@@ -412,7 +412,7 @@ function RecordTableView({
                   <TableCell
                     key={h}
                     className={cn(
-                      'py-2 align-top text-xs leading-relaxed [overflow-wrap:anywhere] whitespace-normal first:ps-6 last:pe-6',
+                      'py-2 align-top text-xs leading-relaxed break-words whitespace-normal first:ps-6 last:pe-6',
                       k === 0 && 'text-sm font-medium'
                     )}
                   >

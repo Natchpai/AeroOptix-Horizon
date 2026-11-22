@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { getRouteApi, Link as RouterLink } from '@tanstack/react-router'
 import {
   type ColumnDef,
+  type FilterFn,
   type SortingState,
   flexRender,
   getCoreRowModel,
@@ -45,9 +46,19 @@ import { DataTableColumnHeader } from '@/components/data-table'
 import { IdChip } from '@/components/id-chip'
 import { Main } from '@/components/layout/main'
 import { SiteHeader } from '@/components/layout/site-header'
+import { MdText } from '@/components/md-text'
 import { PackageView } from './package-view'
+import {
+  type PeripheralGroup,
+  peripheralGroups,
+  pinMatches,
+} from './peripherals'
 
 const route = getRouteApi('/_site/pinout')
+
+/** The table filter: the same match as the By peripheral view. */
+const pinFilter: FilterFn<PinRow> = (row, _col, value: string) =>
+  pinMatches(row.original, value)
 
 export function PinoutPage() {
   const search = route.useSearch()
@@ -57,10 +68,14 @@ export function PinoutPage() {
   const selected = search.pin
     ? pins[mcu].find((p) => p.pin === search.pin)
     : undefined
+  const view = search.view
   const pick = (pin?: string) =>
-    navigate({ search: { mcu, pin: pin === search.pin ? undefined : pin } })
+    navigate({
+      search: { mcu, pin: pin === search.pin ? undefined : pin, view },
+    })
 
-  // A pin picked in the table (below the package) brings its details into view.
+  // A pin picked in the table or a peripheral group (below the package)
+  // brings its details into view.
   useEffect(() => {
     if (search.pin)
       document
@@ -93,7 +108,7 @@ export function PinoutPage() {
               <RouterLink
                 key={m}
                 to='/pinout'
-                search={{ mcu: m }}
+                search={{ mcu: m, view }}
                 className={cn(
                   'rounded-md px-3 py-1 text-sm font-medium transition-colors',
                   m === mcu
@@ -143,7 +158,15 @@ export function PinoutPage() {
         </div>
 
         {/* full width, so every column fits without tall wrapped rows */}
-        <PinTable mcu={mcu} selected={search.pin} onPick={pick} />
+        <PinTable
+          mcu={mcu}
+          selected={search.pin}
+          onPick={pick}
+          view={view}
+          onView={(v) =>
+            navigate({ search: { ...search, view: v }, replace: true })
+          }
+        />
         {mcu === 'f100' && <ReservedTable />}
       </Main>
     </>
@@ -244,13 +267,15 @@ function PinDetail({
         </Button>
       </CardHeader>
       <CardContent className='space-y-3 text-sm'>
-        <div>{row.function}</div>
+        <div>
+          <MdText text={row.function} />
+        </div>
         <div className='flex flex-wrap items-center gap-1'>
           {row.refs.map((r) => (
             <IdChip key={r} id={r} />
           ))}
           <span className='ms-2 text-xs text-muted-foreground'>
-            DS check: {row.ds || '-'}
+            DS check: <MdText text={row.ds || '-'} />
           </span>
         </div>
         <div className='flex flex-wrap gap-2'>
@@ -283,10 +308,14 @@ function PinTable({
   mcu,
   selected,
   onPick,
+  view,
+  onView,
 }: {
   mcu: Mcu
   selected?: string
   onPick: (pin: string) => void
+  view?: 'peripheral'
+  onView: (view?: 'peripheral') => void
 }) {
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'number', desc: false },
@@ -343,7 +372,7 @@ function PinTable({
         ),
         cell: ({ row }) => (
           <span className='block min-w-48 whitespace-normal'>
-            {row.original.function}
+            <MdText text={row.original.function} />
           </span>
         ),
       },
@@ -366,7 +395,7 @@ function PinTable({
         enableSorting: false,
         cell: ({ row }) => (
           <span className='block min-w-32 text-xs whitespace-normal text-muted-foreground'>
-            {row.original.ds}
+            <MdText text={row.original.ds} />
           </span>
         ),
       },
@@ -380,11 +409,23 @@ function PinTable({
     state: { sorting, globalFilter: filter },
     onSortingChange: setSorting,
     onGlobalFilterChange: setFilter,
-    globalFilterFn: 'includesString',
+    globalFilterFn: pinFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   })
+
+  const groups = useMemo(
+    () =>
+      peripheralGroups(pins[mcu])
+        .map((g) => ({
+          ...g,
+          rows: g.rows.filter(({ row }) => pinMatches(row, filter)),
+        }))
+        .filter((g) => g.rows.length),
+    [mcu, filter]
+  )
+  const shown = groups.reduce((n, g) => n + g.rows.length, 0)
 
   return (
     <Card className='gap-3'>
@@ -392,52 +433,151 @@ function PinTable({
         <div>
           <CardTitle className='text-base'>Allocated pins</CardTitle>
           <CardDescription>
-            {table.getRowModel().rows.length} of {pins[mcu].length} rows
+            {view === 'peripheral'
+              ? `${shown} of ${pins[mcu].length} pins in ${groups.length} groups`
+              : `${table.getRowModel().rows.length} of ${pins[mcu].length} rows`}
           </CardDescription>
         </div>
-        <Input
-          placeholder='Filter: PA5, SPI1, IF-010…'
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className='h-8 w-full sm:w-64'
-        />
+        <div className='flex w-full flex-wrap items-center gap-2 sm:w-auto'>
+          <div
+            role='group'
+            aria-label='Pin view'
+            className='inline-flex rounded-lg border bg-muted/40 p-0.5'
+          >
+            {(
+              [
+                [undefined, 'Table'],
+                ['peripheral', 'By peripheral'],
+              ] as const
+            ).map(([v, label]) => (
+              <button
+                key={label}
+                type='button'
+                aria-pressed={view === v}
+                onClick={() => onView(v)}
+                className={cn(
+                  'rounded-md px-3 py-1 text-sm font-medium transition-colors',
+                  view === v
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <Input
+            aria-label='Filter pins'
+            placeholder='Filter: PA5, SPI1, IF-010…'
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className='h-8 w-full sm:w-64'
+          />
+        </div>
       </CardHeader>
       <CardContent className='px-0'>
-        <div className='overflow-x-auto'>
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((hg) => (
-                <TableRow key={hg.id}>
-                  {hg.headers.map((h) => (
-                    <TableHead key={h.id} className='first:ps-6'>
-                      {flexRender(h.column.columnDef.header, h.getContext())}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows.map((r) => (
-                <TableRow
-                  key={r.id}
-                  onClick={() => onPick(r.original.pin)}
-                  data-state={
-                    r.original.pin === selected ? 'selected' : undefined
-                  }
-                  className='cursor-pointer data-[state=selected]:bg-primary/10'
-                >
-                  {r.getVisibleCells().map((c) => (
-                    <TableCell key={c.id} className='py-1.5 first:ps-6'>
-                      {flexRender(c.column.columnDef.cell, c.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        {view === 'peripheral' ? (
+          <PeripheralList groups={groups} selected={selected} onPick={onPick} />
+        ) : (
+          <div className='overflow-x-auto'>
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((hg) => (
+                  <TableRow key={hg.id}>
+                    {hg.headers.map((h) => (
+                      <TableHead key={h.id} className='first:ps-6'>
+                        {flexRender(h.column.columnDef.header, h.getContext())}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows.map((r) => (
+                  <TableRow
+                    key={r.id}
+                    onClick={() => onPick(r.original.pin)}
+                    data-state={
+                      r.original.pin === selected ? 'selected' : undefined
+                    }
+                    className='cursor-pointer data-[state=selected]:bg-primary/10'
+                  >
+                    {r.getVisibleCells().map((c) => (
+                      <TableCell key={c.id} className='py-1.5 first:ps-6'>
+                        {flexRender(c.column.columnDef.cell, c.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </CardContent>
     </Card>
+  )
+}
+
+/** Pins grouped by peripheral instance, one small box per group. */
+function PeripheralList({
+  groups,
+  selected,
+  onPick,
+}: {
+  groups: PeripheralGroup[]
+  selected?: string
+  onPick: (pin: string) => void
+}) {
+  if (!groups.length)
+    return <p className='px-6 text-sm text-muted-foreground'>No pin matches.</p>
+  return (
+    <div className='gap-3 px-6 sm:columns-2 lg:columns-3 2xl:columns-4'>
+      {groups.map((g) => {
+        const color = busInfo[busOfSignal(g.rows[0].row.signal)].color
+        return (
+          <section
+            key={g.name}
+            data-peripheral={g.name}
+            className='mb-3 break-inside-avoid rounded-lg border'
+          >
+            <h3 className='flex items-center gap-2 border-b px-3 py-1.5 text-sm font-semibold'>
+              <span
+                className='size-2.5 shrink-0 rounded-sm'
+                style={{ background: color }}
+              />
+              <span className='font-mono'>{g.name}</span>
+              <span className='ms-auto font-mono text-xs font-normal text-muted-foreground'>
+                {g.rows.length} {g.rows.length === 1 ? 'pin' : 'pins'}
+              </span>
+            </h3>
+            <ul className='py-1'>
+              {g.rows.map(({ row, label }) => (
+                <li key={row.pin}>
+                  <button
+                    type='button'
+                    data-pin={row.pin}
+                    data-state={row.pin === selected ? 'selected' : undefined}
+                    onClick={() => onPick(row.pin)}
+                    className='flex w-full gap-2 px-3 py-1 text-start text-sm hover:bg-muted/50 data-[state=selected]:bg-primary/10'
+                  >
+                    <span className='w-12 shrink-0 font-mono font-semibold'>
+                      {row.pin}
+                    </span>
+                    <span className='min-w-0 break-words'>
+                      <span className='font-mono text-xs'>{label}</span>
+                      <span className='text-muted-foreground'>
+                        {' · '}
+                        <MdText text={row.function} />
+                      </span>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      })}
+    </div>
   )
 }
 
@@ -467,9 +607,11 @@ function ReservedTable() {
                   <TableCell className='ps-6 font-mono font-semibold'>
                     {r.pins.join(', ')}
                   </TableCell>
-                  <TableCell>{r.function}</TableCell>
+                  <TableCell>
+                    <MdText text={r.function} />
+                  </TableCell>
                   <TableCell className='text-muted-foreground'>
-                    {r.plan}
+                    <MdText text={r.plan} />
                   </TableCell>
                 </TableRow>
               ))}

@@ -36,6 +36,7 @@ import { IdChip } from '@/components/id-chip'
 import { Main } from '@/components/layout/main'
 import { SiteHeader } from '@/components/layout/site-header'
 import { MdText } from '@/components/md-text'
+import { MentionedIn } from '@/components/mentioned-in'
 import {
   DiagramItemList,
   RecordTable,
@@ -222,6 +223,7 @@ export function OpenItemsPage() {
                 {search.closed ? 'Hide closed' : 'Show closed'}
               </Button>
               <Input
+                aria-label='Filter open items'
                 placeholder='Filter: UBEC, P3-007, OPEN-023…'
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
@@ -304,6 +306,7 @@ function OpenDetail({ row }: { row: SpecId }) {
             </div>
           </div>
         )}
+        <MentionedIn id={row.id} />
       </div>
     </div>
   )
