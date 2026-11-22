@@ -5090,7 +5090,7 @@
 				)
 			)
 		)
-		(property "Description" "Pin header, triple row, 12 pins, 2.54mm pitch, right angle, through hole"
+		(property "Description" "Pin Header 12 Position 2.54mm Pitch Triple Row Through Hole, Right Angle -55℃~+125℃"
 			(at 294.64 213.36 0)
 			(hide yes)
 			(show_name no)
@@ -6194,7 +6194,7 @@
 				)
 			)
 		)
-		(property "Description" "Pin header, triple row, 12 pins, 2.54mm pitch, right angle, through hole"
+		(property "Description" "Pin Header 12 Position 2.54mm Pitch Triple Row Through Hole, Right Angle -55℃~+125℃"
 			(at 294.64 93.98 0)
 			(hide yes)
 			(show_name no)
@@ -7038,7 +7038,7 @@
 				(justify bottom)
 			)
 		)
-		(property "Description" "XT30 power connector, male plug, right angle"
+		(property "Description" "Connector XT30PW30-M.G.* Male Plug Right Angle for RC ESC"
 			(at 76.2 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -7167,7 +7167,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 144.78 113.03 0)
 			(hide yes)
 			(show_name no)
@@ -7631,7 +7631,7 @@
 				)
 			)
 		)
-		(property "Description" "Pin header, triple row, 12 pins, 2.54mm pitch, right angle, through hole"
+		(property "Description" "Pin Header 12 Position 2.54mm Pitch Triple Row Through Hole, Right Angle -55℃~+125℃"
 			(at 294.64 153.67 0)
 			(hide yes)
 			(show_name no)
@@ -8357,7 +8357,7 @@
 				)
 			)
 		)
-		(property "Description" "Polarized capacitor"
+		(property "Description" "CAP TANT 68uF ±20% 16V CASE-C-6032"
 			(at 118.11 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -9033,7 +9033,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 318.77 76.2 0)
 			(hide yes)
 			(show_name no)
@@ -10338,7 +10338,7 @@
 				)
 			)
 		)
-		(property "Description" "Polarized capacitor"
+		(property "Description" "CAP TANT 68uF ±20% 16V CASE-C-6032"
 			(at 106.68 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -10894,7 +10894,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 318.77 195.58 0)
 			(hide yes)
 			(show_name no)
@@ -11040,7 +11040,7 @@
 				)
 			)
 		)
-		(property "Description" "TVS/ESD diode, unidirectional"
+		(property "Description" "TVS DIODE 7.5VWM 12.9VC SOD-123FL"
 			(at 85.09 83.82 0)
 			(hide yes)
 			(show_name no)

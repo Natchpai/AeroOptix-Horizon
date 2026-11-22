@@ -4597,7 +4597,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x06, mounting pin"
+		(property "Description" "CONN HEADER SMD R/A 6POS 1mm"
 			(at 237.49 86.36 0)
 			(hide yes)
 			(show_name no)
@@ -6411,7 +6411,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 259.08 72.39 0)
 			(hide yes)
 			(show_name no)
@@ -6760,7 +6760,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 259.08 161.29 0)
 			(hide yes)
 			(show_name no)
@@ -7755,7 +7755,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 128.27 68.58 0)
 			(hide yes)
 			(show_name no)
