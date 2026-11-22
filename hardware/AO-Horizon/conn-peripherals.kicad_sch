@@ -5,6 +5,7 @@
 	(uuid "28df54f4-90e8-48b4-abae-07daea5f8cfe")
 	(paper "A3")
 	(title_block
+		(rev "A")
 		(comment 1 "Connector - Peripherals")
 	)
 	(lib_symbols
@@ -9550,7 +9551,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -12640,7 +12641,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -12701,7 +12702,7 @@
 				)
 			)
 		)
-		(property "STATUS" "CHECKED"
+		(property "STATUS" ""
 			(at 186.69 226.06 0)
 			(hide yes)
 			(show_name no)
@@ -13137,7 +13138,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
@@ -14291,7 +14292,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)

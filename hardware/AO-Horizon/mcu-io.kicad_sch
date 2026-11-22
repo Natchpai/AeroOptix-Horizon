@@ -5,6 +5,7 @@
 	(uuid "33e996ef-2388-4375-905e-35bf3052affe")
 	(paper "A3")
 	(title_block
+		(rev "A")
 		(comment 1 "MCU - IO")
 		(comment 2 "STM32F100C8")
 	)

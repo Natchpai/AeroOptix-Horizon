@@ -37,11 +37,13 @@ import { SiteHeader } from '@/components/layout/site-header'
 import { MdText } from '@/components/md-text'
 import { MentionedIn } from '@/components/mentioned-in'
 import { DiagramItemList, RecordTable } from '@/components/record-table'
+import { UnknownIdNotice } from '@/components/unknown-id-notice'
 
 const route = getRouteApi('/_site/decisions')
 
 /** Every DEC row of the spec, as the extractor read it. */
 const decisions = Object.values(ids).filter((s) => s.kind === 'DEC')
+const decisionIds = new Set(decisions.map((s) => s.id))
 
 /** Diagram blocks and links that cite each decision (refs or open). */
 const usedOn = new Map<string, (Block | Link)[]>()
@@ -224,6 +226,9 @@ export function DecisionsPage() {
             />
           </CardHeader>
           <CardContent className='px-0'>
+            <UnknownIdNotice id={search.id} known={decisionIds}>
+              is not in the spec.
+            </UnknownIdNotice>
             <RecordTable
               table={table}
               openId={search.id}

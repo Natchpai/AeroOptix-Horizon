@@ -610,7 +610,8 @@ function ReservedTable() {
                   <TableCell>
                     <MdText text={r.function} />
                   </TableCell>
-                  <TableCell className='text-muted-foreground'>
+                  {/* long plan text wraps, so the table fits its card */}
+                  <TableCell className='min-w-64 break-words whitespace-normal text-muted-foreground'>
                     <MdText text={r.plan} />
                   </TableCell>
                 </TableRow>

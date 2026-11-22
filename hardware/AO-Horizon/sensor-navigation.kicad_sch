@@ -5,6 +5,7 @@
 	(uuid "78f89b3b-778d-42d9-8da3-e607f8e903f7")
 	(paper "A3")
 	(title_block
+		(rev "A")
 		(comment 1 "Sensor - Navigation")
 	)
 	(lib_symbols

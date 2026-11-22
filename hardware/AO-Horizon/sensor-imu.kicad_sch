@@ -5,6 +5,7 @@
 	(uuid "0f6cd2e1-fd77-4842-81fd-0d57118a60f3")
 	(paper "A3")
 	(title_block
+		(rev "A")
 		(comment 1 "Sensor - IMU")
 	)
 	(lib_symbols

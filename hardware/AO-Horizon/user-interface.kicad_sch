@@ -5,6 +5,7 @@
 	(uuid "28fef4c4-eda3-499d-b7e7-00a7f1cff17a")
 	(paper "A3")
 	(title_block
+		(rev "A")
 		(comment 1 "User - Interface")
 	)
 	(lib_symbols

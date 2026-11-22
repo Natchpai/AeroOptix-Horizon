@@ -2,7 +2,7 @@
 
 **Updated:** 2026-11-22
 
-**Status:** live on GitHub Pages. Pages: Overview, About this site, Block diagram, Pinout, Decisions, Open items, Checklist, Spec history, Traceability, Power budget, Showcase. The engineer approved the Pinout page and the five pages added on 2026-11-21, reviewed the Block diagram, and merged the About page, Overview cards, CI test and layout fixes (PR #58, deployed from `6bed2d9`). Hand-written diagram text is synced to spec rev 0.87 and pin allocation rev 0.31. The 2026-11-22 run (`c437c20` to `e90818a`) is on `dev`, waiting for a PR to `main`: tab titles, small logo files, light-theme contrast, sidebar fade, "Mentioned in" revisions, Checklist owner filter and gate blockers, Pinout by peripheral, prettier and knip cleanup, and bug-hunt fixes. Each change is in `log.md`.
+**Status:** live on GitHub Pages. Pages: Overview, About this site, Block diagram, Pinout, Decisions, Open items, Checklist, Spec history, Traceability, Power budget, BOM, Showcase. The engineer approved the Pinout page and the five pages added on 2026-11-21, reviewed the Block diagram, and merged the About page, Overview cards, CI test and layout fixes (PR #58, deployed from `6bed2d9`). Hand-written diagram text is synced to spec rev 0.87 and pin allocation rev 0.31. The 2026-11-22 run (`c437c20` to `1413a6b`) was squash-merged as PR #60 (`da0ed1c`) and deployed from it; `main` is merged back into `dev`. It added tab titles, small logo files, light-theme contrast, sidebar fade, "Mentioned in" revisions, Checklist owner filter and gate blockers, Pinout by peripheral, prettier and knip cleanup, and bug-hunt fixes. Each change is in `log.md`.
 
 Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in `README.md`. History is in Git (`git log -- web`).
 
@@ -19,6 +19,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - Checklist: `Gate summary`, every task row (ID, Task, Req, Owner, Status, Evidence required / link) and `Current next action`.
   - Root `README.md`: phase, revisions, key features, MCUs.
   - Power budget (`power.json`): the section 4 `### Rail summary` table (mA; `TBD` stays empty, other text fails), the section 3 load tables and the section 4, 5 and 11 tables.
+  - BOM (`bom.json`): the one `*.csv` in `hardware/AO-Horizon/documents/manufacturing/Assembly/BOM/`, the engineer's KiCad export (a schematic output, so a human step). Required columns: Reference, Qty, Value, DNP, LCSC, MFR, MFR.P/N; optional: Footprint, STATUS, Exclude from BOM. Also the file name and its last commit date (`uncommitted` when no commit has it).
 - **Hand-written:** blocks and links in `src/data/topology.ts`, positions in `src/data/places.ts`, page texts of the About page in `src/features/about/index.tsx` (phases and evidence labels follow `.claude/rules/workflow.md` and `engineering.md`; the phase itself comes from the README).
 - **Shared code for the table pages:** `RecordTable`, `DiagramItemList`, `SiteRowList` and `TaskRowList` in `src/components/record-table.tsx`; `useScrollToRow`, `detailLabel` and `levelName` in `src/lib/record-rows.ts`; `idsIn` (range expansion) and `REQ_KINDS` in `src/lib/spec-ids.ts`; `SpecText` (ID and task chips, `labels` for evidence badges) in `src/components/spec-text.tsx`.
 
@@ -37,6 +38,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 - **Open items** show the full description only in the opened row: OPEN-023 is about 4,600 characters.
 - **Traceability** is built in the browser (`src/features/trace/matrix.ts`), report only. Flags: no task names the requirement in Req; no live DEC row and no diagram item cites it. Removed rows are never flagged. On 2026-11-21: 3 without a task (CMP-010 to CMP-012; CMP-010 is in the P1-014 task text but not its Req) and 29 without a decision or diagram item.
 - **Power budget** draws one bullet bar per Rail summary row, each on its own scale; values are never recomputed. A load links to its Power view block when the block's part number is in the load name or its refs share an ID with the row's Ref. The rail colours fail the dataviz validator as a categorical set (light: 6 V against 5 V; dark: 3.3 V against 3.3 V_IMU, protan), so every bar also carries its rail name and numbers.
+- **BOM page** (`/bom`). The build needs exactly one `*.csv` in the BOM folder, whatever its name; none or two fail the build and list the names found. Other files there (`ibom.html`, `README.md`) are ignored. The CSV parser is in the extractor (quoted cells, `""` escapes, a UTF-8 byte order mark, CRLF or LF). The build also fails when a row's Qty differs from its reference count, a reference is in two rows, or a DNP cell is not `DNP` or empty. A Footprint column shows only when the export has one; on 2026-11-22 it has none, and "Exclude from BOM" is empty on every row. `?id=R306` opens the row that holds that reference (whole reference only: R10 does not open R101's row). A detail row lists the diagram blocks whose `sub` names the MFR.P/N or whose part number starts it (TPS2121RUX in TPS2121RUXR, as the Power budget links loads), and the DEC rows whose Topic or Selected option names the MFR.P/N as a whole word. Report-only flag: a fitted row with no MFR.P/N or LCSC (TP605 on 2026-11-22). No stock or price. `bom.json` is a lazy chunk with the page, not in `records`.
 - **Diagram on a phone** (canvas under 640 px): a view that would fit below zoom 0.35 opens centred on its start block (FC, Main MCU or the power mux) at 0.35.
 - **Diagram fit and minimap:** from 1024 px the fit (and the fit button) keeps a 200 px strip on the right free, so the bottom-right minimap covers no block.
 - **Pinout layout:** the package and the pin details (or, with no pin picked, a per-bus pin count from 1280 px) sit side by side; the pin tables run full width below. Picking a table row scrolls the details into view. "By peripheral" (`?view=peripheral`) swaps the table for one box per peripheral; the group is the start of the signal text (`src/features/pinout/peripherals.ts`), and a pin pick or MCU switch keeps the view. Both views filter with the one `pinMatches`. Function, DS and Plan text render with `MdText`; the package pin hover titles drop the backticks, since the SVG export clones them.
@@ -91,9 +93,12 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - "Mentioned in" chips (DEC-030 to 0.21, DEC-013 to 0.10) open their Spec history rows; a blocked notes chunk shows the reload note;
   - Checklist: owner chip and `?owner=` row counts; gate blocker lists match `ids.json` and `progress.json` (OPEN-004 under P3, no closed item) and a chip opens its row; an unknown `?owner=` or `?status=` shows a pressed chip;
   - Pinout: By peripheral lists every H743 pin once and a SPI1_SCK click selects it; "Debug" and "not checked" find the same pins in both views.
+  - BOM, every value from `bom.json` (no refs or counts in the test): one table row per BOM row; header rows, parts and DNP parts; `?id=` of a DNP ref (the last of its row) opens that row with the DNP badge, also with `?dnp=fitted`; flagged rows match the fitted rows without MFR.P/N or LCSC; `?dnp=dnp` and `?dnp=fitted` row counts; an unknown ref and a real ref cut short (R10 from R101) show the notice and open no row; the opened row's decisions match `ids.json`; the table fits its card at 390 and 1440 px.
 - **`npm run format:check`** and **`npx knip`** pass (both failed at `b2b5b3c`).
 
-**Verified 2026-11-22:** `npm run build`, `npm run lint` (0 errors, 6 warnings), `npm run format:check`, `npx knip` and the full `npm run test:ui` (local Edge) pass on `e90818a`. `npm run drift` 24 findings, unchanged. Earlier (2026-11-21): the CI `test:ui` run passed on `b1c0696`, the PR #58 head; the Pages deploy of `6bed2d9` succeeded. Fault injection: removing IF-001 from `b-link` fails `npm run check`; a `0x0E` magnetometer tap shows in `npm run drift`.
+**CI-style fresh clone:** the sparse checkout now needs `hardware/AO-Horizon/documents/manufacturing/Assembly/BOM` too, besides `web` and `hardware/AO-Horizon/documents/design`; without it the extract step fails (no BOM CSV).
+
+**Verified 2026-11-22:** `npm run build`, `npm run lint` (0 errors, 6 warnings), `npm run format:check`, `npx knip` and the full `npm run test:ui` (local Edge) pass on `1413a6b` (same files as `e90818a` plus docs). `npm run drift` 24 findings, unchanged. The CI `test:ui` run passed on `a5dd1e0`, the PR #60 head; the Pages deploy of `da0ed1c` succeeded. Earlier (2026-11-21): the Pages deploy of `6bed2d9` succeeded. Fault injection: removing IF-001 from `b-link` fails `npm run check`; a `0x0E` magnetometer tap shows in `npm run drift`.
 
 **Not verified:** every block and link text against the spec (`npm run drift` lists 24 unreviewed findings); SVG exports opened in Inkscape, PowerPoint or Word; the 2026-11-21 `test:ui` checks were seen passing only, never failing on a broken build. Of the 2026-11-22 checks, the contrast, "Mentioned in", owner filter, gate blocker, peripheral view, unknown chip and Pinout filter checks were also seen failing on the build before their change (`log.md`).
 
@@ -102,15 +107,17 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 - [ ] Engineer reviews the Traceability flag lists (3 no task, 29 no decision or diagram).
 - [ ] Engineer reviews the `npm run drift` list (24 findings) and decides which site texts to fix.
 - [ ] Re-export the board GLB once the parts are placed.
-- [ ] After the squash merge of this run's PR, merge `main` into `dev` (see Merging).
+- [x] Commit the BOM CSV with the BOM page (`BOM_AO-Horizon_A_2026-11-22.csv`): the build fails without a CSV, in CI and on Pages.
+- [ ] Engineer decides whether `pages.yml` and `web-test.yml` should also run on changes in the BOM folder; today a BOM-only commit does not rebuild the site.
+- [x] Check and deploy the 2026-11-22 site changes (PR #60, merged 2026-11-22; `main` merged into `dev`).
 - [x] Plan B note on the Power view power mux block (DEC-108, OPEN-041), 2026-11-21.
 - [x] Check and deploy the 2026-11-21 site changes (PR #58, merged 2026-11-21).
 
 **Always:** keep `topology.ts` in step with the spec; `npm run check` flags a new IF row on no link.
 
-**Later, when the data exists:** connector pinout pages after OPEN-023 gives the far-end pins (this also fills the Interface view `TBD`s); the BOM page (below).
+**Later, when the data exists:** connector pinout pages after OPEN-023 gives the far-end pins (this also fills the Interface view `TBD`s).
 
-**Adding a table page:** copy the Decisions page (`src/features/decisions/index.tsx`, the shortest): a route in `src/routes/_site/` with `validateSearch`, a TanStack table drawn by `RecordTable`, a sidebar item in `src/components/layout/data/sidebar-data.ts`, an Overview Explore card, a row in the About page `pages` list, and `tests/ui.ts` page-load and 390 px entries. A new record field needs an extractor change and a type in `src/data/types.ts`. A new route file needs one `npx vite build` before `tsc` knows it (the router plugin writes `routeTree.gen.ts`). Process: build, `npm run build` and `npm run test:ui` pass, screenshots at 1440 and 390 px in both themes, then commit.
+**Adding a table page:** copy the Decisions page (`src/features/decisions/index.tsx`, the shortest): a route in `src/routes/_site/` with `validateSearch`, a TanStack table drawn by `RecordTable`, a sidebar item in `src/components/layout/data/sidebar-data.ts`, an Overview Explore card, a row in the About page `pages` list, and `tests/ui.ts` page-load and 390 px entries. A new record field needs an extractor change and a type in `src/data/types.ts`. A new route file needs one `npx vite build` before `tsc` knows it (the router plugin writes `routeTree.gen.ts`). `useReactTable` adds a React Compiler lint warning (`react-hooks/incompatible-library`); the BOM page turns that rule off on its one line, so the count stays at 6. Process: build, `npm run build` and `npm run test:ui` pass, screenshots at 1440 and 390 px in both themes, then commit.
 
 ## Improvement ideas
 
@@ -122,12 +129,7 @@ The engineer picks open ideas; nothing open is decided.
 - [x] `test:ui` in CI with bundled Chromium (2026-11-21).
 - [x] About page (2026-11-21).
 - [x] Pinout table full width; diagram fit keeps the minimap corner free (2026-11-21).
-- [ ] **BOM page** (`/bom`), once the engineer exports a BOM from KiCad and commits it (a schematic output, so a human step; the site never reads `.kicad_sch`).
-    - One row per part: references, quantity, value, footprint, `MFR`, `MFR.P/N`, `LCSC`, DNP (for example D105 and D106, Plan B, DEC-108). Filter by text, group and DNP.
-    - The detail row links the part to its diagram blocks (part number in a block's `sub`, as the Power budget does) and to the DEC rows that name it.
-    - Report-only flags: a fitted part without `MFR.P/N` or `LCSC`.
-    - The extractor reads the exported file and fails the build on a missing column, like the other records. Stock and price stay off the page: supplier pages are JavaScript-rendered, so those values would be `NOT_VERIFIED`.
-    - Before building: agree the export format (CSV columns) and where the file lives with the engineer.
+- [x] BOM page (`/bom`) from the engineer's KiCad BOM export: DNP filter, linked rows, links to diagram blocks and DEC rows, report-only flags for fitted parts without MFR.P/N or LCSC; no stock or price (2026-11-22).
 
 Dropped from the list (2026-11-21), so later sessions do not propose them again: record revision drift check (`/progress-update` keeps revisions in step); a Traceability toggle for task text (fix the Req cell instead, as for CMP-010 in P1-014); re-stepped rail colours (the engineer's choice); a copy-link button (the address bar already holds `?id=`); evidence badges on more pages; a progress-over-time chart; recent decisions on the Overview (Spec history covers it); full-text search (works against the bundle-size idea); a print view.
 
@@ -138,6 +140,4 @@ Dropped from the list (2026-11-21), so later sessions do not propose them again:
 - `block_diagram.kicad_sch` still says F103 (P2-014, an engineer item). The site does not use it.
 - Renders and photos on the Showcase are still placeholders.
 - On a phone the pin tables scroll sideways inside their card, and wrapped Function text (NRST) makes some rows tall.
-- `?id=` with an unknown ID selects nothing and shows no notice.
-- Long Plan text in the F100 reserved table scrolls sideways inside the table.
 - At 390 px the header page name is cut short by the search box (the phone layout is not critical, per the engineer).
