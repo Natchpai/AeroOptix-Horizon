@@ -261,6 +261,11 @@ Notable changes to this hardware project are documented here.
 - `AO-HORIZON_BARO_MAG_SELECTION_EN.md` rev 0.14: ICP-20100 address selection row (AD0 low gives 0x63, cited).
 - Schematic (2026-11-21 19:22 save, human owner): DNP Plan B diodes D105 and D106 MBR230LSFT1G on `power_supplies`, `PM02_5V` and `VBUS` to `+5V` (DEC-108); new project symbol `0_Diode:MBR230LSFT1G`.
 - Specification rev 0.87 and checklist rev 0.75 (2026-11-21): DEC-108, OPEN-041, P3-012, REF-04; power budget rev 0.37 (Plan B note); see the change-note.
+- Schematic (2026-11-21, human owner, `0ef816a`): revision history sheet note (Rev A in work, not released); root and revision history sheets embed the title font.
+- PCB (2026-11-21, human owner, `eec3593`): D105 and D106 added from the schematic; ERC report 19:41, 0 errors, 0 warnings.
+- Power budget rev 0.38 (`ea1756a`): rail summary table in section 4.
+- Schematic (2026-11-22, human owner, `b19c89c`, `7c47941`): CN707 to CN710 and TP601 to TP606 excluded from the BOM; TP601 to TP606 use the new project symbol `0_Conn:TestPoint`, nets unchanged; title block rev A on seven sheets; BOM export job and `BOM_AO-Horizon_rev-A_2026-11-22.csv`.
+- Specification rev 0.88 and checklist rev 0.76 (2026-11-22): no new IDs, REF-04; see the change-note.
 
 ### Fixed
 
