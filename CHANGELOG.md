@@ -271,6 +271,8 @@ Notable changes to this hardware project are documented here.
 - BOM export `BOM_AO-Horizon_rev-A_2026-11-22.csv` (human owner): adds the Description and Footprint columns; TP605 excluded; 58 rows, 251 parts.
 - Website: the BOM page shows the Description, and no page scrolls sideways at 768 px.
 - Specification rev 0.89 and checklist rev 0.77 (2026-11-22): OPEN-042, P3-013, DEC-066 (pointer), REF-04; see the change-note.
+- Schematic (2026-11-22, human owner, `3010c96` and the 10:23 save): the `+6V` ceramics are 4 × 22 µF 25 V X7R 1210 (GRM32ER71E226KE15L, Value `22u`), now C803 to C806; the 68 µF tantalums are re-annotated C801 and C802; the 10 µF 0805 parts are removed. ERC report 10:24, 0 errors, 0 warnings. BOM CSV re-exported to match (59 rows, 249 parts).
+- Specification rev 0.90 and checklist rev 0.78 (2026-11-22): DEC-109, OPEN-042 (closed), CMP-011, P3-002, P3-013, REF-04; power budget rev 0.39; see the change-note.
 
 ### Fixed
 

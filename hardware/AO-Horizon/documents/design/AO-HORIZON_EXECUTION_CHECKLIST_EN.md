@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Execution Checklist
 
-**Revision:** 0.77
+**Revision:** 0.78
 **Updated:** 2026-11-22
 **Status:** Active execution tracker; not an approval or verification record
-**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.89
+**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.90
 
 Use the specification for confirmed requirements and decisions. This checklist records the sequence of work and the evidence needed to close each gate. Diagram content is reference material. User-confirmed requirements take precedence. All sensor parts are chosen (DEC-008, DEC-010, DEC-011); their lifecycle and sourcing risks are open.
 
@@ -116,7 +116,7 @@ Firmware task P2-005 does not block the hardware release.
 | ID     | Task | Req | Owner | Status | Evidence required / link |
 | ------ |---|---|---|---|---|
 | P3-001 | Confirm board envelope, mounting, connector placement, and service/debug access. | MEC-001 to MEC-004, OPEN-009 | Human | OPEN | Mechanical constraint review |
-| P3-002 | Place IMUs, barometers, magnetometers, clock, power, USB and debug interfaces by their constraints. Placement notes: C301 4.7 µF at F100 VDD3 (pin 48); each MCU 100 nF next to its VDD pin; C212 and C213 ESR under 100 mΩ; C215 and C216 at SD1 pin 4; U601 next to CN601 with a short ground path; U503 far from L101, L102, CN101 and the servo power bus (DEC-096); C803 and C804 at CN804 (DEC-097). CN706 and CN802 apart from the `+6V` rows (OPEN-031, DEC-106). State: 269 footprints imported 2026-11-20 (`a70e6cc`), 9 inside the outline; not yet updated from the 2026-11-21 schematic (spec 5.2). | PCB-011, PCB-012, PCB-013, DEC-096 | TBD | OPEN | Placement review |
+| P3-002 | Place IMUs, barometers, magnetometers, clock, power, USB and debug interfaces by their constraints. Placement notes: C301 4.7 µF at F100 VDD3 (pin 48); each MCU 100 nF next to its VDD pin; C212 and C213 ESR under 100 mΩ; C215 and C216 at SD1 pin 4; U601 next to CN601 with a short ground path; U503 far from L101, L102, CN101 and the servo power bus (DEC-096); the 68 µF tantalums at CN804 (DEC-097; C801 and C802 since the 2026-11-22 10:23 save, were C803 and C804); the 22 µF ceramics C803 to C806 near the servo headers (DEC-109). CN706 and CN802 apart from the `+6V` rows (OPEN-031, DEC-106). State: 269 footprints imported 2026-11-20 (`a70e6cc`), 9 inside the outline; not yet updated from the 2026-11-21 schematic (spec 5.2). | PCB-011, PCB-012, PCB-013, DEC-096 | TBD | OPEN | Placement review |
 | P3-003 | Route the board: power and return paths with documented current and noise assumptions; USB FS and the sensor and debug signals; the PWM/actuator outputs and the H743↔F100 USART with return path, drive, protection, voltage compatibility and test access. Servo bus: 6 V and servo GND copper for 10 A continuous and 13.2 A all-stall, and the servo GND join to logic GND away from the sensors (OPEN-021; from P2-016). Merged P3-004 and P3-011 on 2026-11-19. | PCB-010, PCB-011, PCB-012, PCB-014, PCB-015 | TBD | OPEN | Power, signal and layout review; electrical test |
 | P3-004 | Route USB FS and high-sensitivity sensor/debug signals. Merged into P3-003 on 2026-11-19. | PCB-011, PCB-012 | TBD | N/A | See P3-003 |
 | P3-005 | Run DRC and disposition all relevant findings. |  | TBD | OPEN | DRC output and issue disposition |
@@ -127,7 +127,7 @@ Firmware task P2-005 does not block the hardware release.
 | P3-010 | Define PCB fabrication parameters (layer count, stackup, copper weight, trace/space, hole/via, soldermask, finish) and review thermal and current constraints and manufacturability. Merged P3-006 on 2026-11-19. Include the servo copper current and temperature rise (OPEN-021, from P2-016) and the H743 copper (power budget section 11). Stackup and board rules drawn in `a70e6cc`, not decided (OPEN-040). | PCB-001 to PCB-005, MFG-001 to MFG-003, OPEN-040 | TBD | OPEN | Parameter record confirmed by the fabricator; manufacturing and thermal review |
 | P3-011 | Route PWM/actuator outputs and the H743↔F100 USART. Merged into P3-003 on 2026-11-19. | PCB-014, PCB-015 | TBD | N/A | See P3-003 |
 | P3-012 | Close the 5 V Plan B follow-ups (DEC-108, OPEN-041): MBR230LSFT1G ratings and drop, the Plan B population of the U101 resistors and the D103 status LED, and the LCSC check. Default BOM: U101 fitted, D105 and D106 DNP. Left: OPEN-041 items 1 to 5. | PWR-010, PWR-015 | Hardware | OPEN | OPEN-041 closed with datasheet evidence; Plan B BOM variant |
-| P3-013 | Decide the `+6V` ceramic capacitors C805 to C808 drawn in the 2026-11-22 09:47 save (OPEN-042): keep, change or remove, with the reason and the DC-bias check; then update the PCB from the schematic (C805 to C809) and place them. Left: OPEN-042. | PWR-011 | Hardware | OPEN | OPEN-042 closed with the human owner's decision; PCB updated from the schematic |
+| P3-013 | Decide the `+6V` ceramic capacitors C803 to C806 (4 × 22 µF 25 V 1210, GRM32ER71E226KE15L) in the 2026-11-22 10:23 save (OPEN-042): keep, change or remove, with the reason and the DC-bias check; then update the PCB from the schematic (C801 to C806 and C809, re-annotated) and place them. Decided 2026-11-22 (DEC-109, OPEN-042 closed): keep as drawn, low-ESR bulk, 17 µF each at 6 V (human owner value). Left: update the PCB from the schematic and place C803 to C806 near the servo headers. | PWR-011 | Hardware | OPEN | OPEN-042 closed with the human owner's decision; PCB updated from the schematic |
 
 ## P4: Bring-up and validation
 
@@ -171,9 +171,9 @@ Open items live in the specification, section 8.2. Each row names its owner and 
 ## Current next action
 
 - P0 cleared 2026-11-19 (DEC-061, DEC-062; P0-022 deferred). P1 closed 2026-11-21 by the human owner: pin allocation `ALLOCATED`, not `VERIFIED` (pin allocation section 6). No spec open item needs schematic work (spec rev 0.78).
-- Update the PCB from the 2026-11-21 schematic (B902, C804, resistor renumber, DEC-107 removal and renumber), then continue placement (P3-002) with its notes: magnetometer U503 far from L101, L102, CN101 and the servo bus (DEC-096); C803 and C804 at CN804 (DEC-097).
+- Update the PCB from the 2026-11-21 schematic (B902, C804, resistor renumber, DEC-107 removal and renumber), then continue placement (P3-002) with its notes: magnetometer U503 far from L101, L102, CN101 and the servo bus (DEC-096); the 68 µF tantalums C801 and C802 at CN804 (DEC-097).
 - The 19:22 save adds the DNP Plan B diodes D105 and D106 (DEC-108): re-run ERC (P3-005), update the PCB from the schematic, and close the Plan B follow-ups (OPEN-041, P3-012).
-- The 2026-11-22 09:47 save adds C805 to C808 (4 × 10 µF on `+6V`) and moves the servo rail 100 nF to C809: decide them and update the PCB from the schematic (OPEN-042, P3-013). ERC 09:48: 0 errors, 0 warnings.
+- The 2026-11-22 10:23 save has 4 × 22 µF 1210 on `+6V` (C803 to C806, DEC-109), the 68 µF tantalums as C801 and C802, and the servo rail 100 nF as C809: update the PCB from the schematic and place C803 to C806 near the servo headers (P3-013). ERC 10:24: 0 errors, 0 warnings.
 - Decide the stackup and board rules with the fabricator (OPEN-040, P3-010), and the board outline and mounting (OPEN-009, P3-001).
 - P2 closed 2026-11-21 by the human owner ("Close P2"); the schematic review record is signed. Any schematic change from here needs an ERC re-run (P3-005); after DEC-107 (17:53 save) the human owner's ERC at 17:54 shows 0 errors, 0 warnings.
 - Collect the team inputs: ESC data and PWM rate, receiver lead, parts table and team tests (P0-022, OPEN-017, OPEN-034).
