@@ -1919,7 +1919,7 @@
 	)
 	(rectangle
 		(start 335.28 53.34)
-		(end 397.51 227.33)
+		(end 397.51 228.6)
 		(stroke
 			(width 0)
 			(type default)
@@ -1943,7 +1943,7 @@
 	)
 	(rectangle
 		(start 189.23 175.26)
-		(end 326.39 227.33)
+		(end 326.39 228.6)
 		(stroke
 			(width 0)
 			(type default)
@@ -6405,7 +6405,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "2bf42df3-bbb9-4e8f-b56c-866908acf816")
-		(property "Reference" "C806"
+		(property "Reference" "C804"
 			(at 125.73 81.28 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6416,7 +6416,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "10u"
+		(property "Value" "22u"
 			(at 125.73 83.82 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6533,7 +6533,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/752a7d5d-6af8-4edd-90d9-991407e2c1d9"
-					(reference "C806")
+					(reference "C804")
 					(unit 1)
 				)
 			)
@@ -8356,7 +8356,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "80004936-3e7d-4a98-9260-32e6ee0a20a8")
-		(property "Reference" "C804"
+		(property "Reference" "C802"
 			(at 104.14 81.661 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8484,7 +8484,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/752a7d5d-6af8-4edd-90d9-991407e2c1d9"
-					(reference "C804")
+					(reference "C802")
 					(unit 1)
 				)
 			)
@@ -8749,7 +8749,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "927e58f6-baeb-4a88-a598-ddec18c44046")
-		(property "Reference" "C805"
+		(property "Reference" "C803"
 			(at 115.57 81.28 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8760,7 +8760,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "10u"
+		(property "Value" "22u"
 			(at 115.57 83.82 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8877,7 +8877,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/752a7d5d-6af8-4edd-90d9-991407e2c1d9"
-					(reference "C805")
+					(reference "C803")
 					(unit 1)
 				)
 			)
@@ -9177,7 +9177,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "a001ff1b-39dc-4863-ad9f-30d28ef7fbdb")
-		(property "Reference" "C807"
+		(property "Reference" "C805"
 			(at 135.89 81.28 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9188,7 +9188,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "10u"
+		(property "Value" "22u"
 			(at 135.89 83.82 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9305,7 +9305,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/752a7d5d-6af8-4edd-90d9-991407e2c1d9"
-					(reference "C807")
+					(reference "C805")
 					(unit 1)
 				)
 			)
@@ -10482,7 +10482,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "d27b2eec-956d-4835-9ded-bf459328b52a")
-		(property "Reference" "C803"
+		(property "Reference" "C801"
 			(at 92.71 81.661 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10610,7 +10610,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/752a7d5d-6af8-4edd-90d9-991407e2c1d9"
-					(reference "C803")
+					(reference "C801")
 					(unit 1)
 				)
 			)
@@ -11372,7 +11372,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f73da2dd-8fac-4323-bab0-8c3ad9171915")
-		(property "Reference" "C808"
+		(property "Reference" "C806"
 			(at 146.05 81.28 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11383,7 +11383,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "10u"
+		(property "Value" "22u"
 			(at 146.05 83.82 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11500,7 +11500,7 @@
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/752a7d5d-6af8-4edd-90d9-991407e2c1d9"
-					(reference "C808")
+					(reference "C806")
 					(unit 1)
 				)
 			)
