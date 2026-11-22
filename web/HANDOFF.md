@@ -9,7 +9,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 ## Where things are
 
 - **Live site:** https://natchpai.github.io/AeroOptix-Horizon/
-- **Deploy:** `.github/workflows/pages.yml`, on a push to `main` that touches `web/`, the design docs or `README.md`; it can also be started by hand. It builds only.
+- **Deploy:** `.github/workflows/pages.yml`, on a push to `main` that touches `web/`, the design docs, the BOM folder or `README.md`; it can also be started by hand. It builds only.
 - **CI browser test:** `.github/workflows/web-test.yml` runs `npm run test:ui` in Playwright's bundled Chromium on pushes to `dev` and PRs to `main` (same paths), and by hand. About 4 minutes in all, 2 of them the test.
 - **Change log:** `log.md`, one entry per change: what changed, why, and the files.
 - **Merging:** `main` needs linear history, so PRs from `dev` are squash-merged. After each PR, merge `main` into `dev`.
@@ -98,7 +98,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 
 **CI-style fresh clone:** the sparse checkout now needs `hardware/AO-Horizon/documents/manufacturing/Assembly/BOM` too, besides `web` and `hardware/AO-Horizon/documents/design`; without it the extract step fails (no BOM CSV).
 
-**Verified 2026-11-22:** `npm run build`, `npm run lint` (0 errors, 6 warnings), `npm run format:check`, `npx knip` and the full `npm run test:ui` (local Edge) pass on `4df55e0`, the PR #61 head; CI `test:ui` passed on it and the Pages deploy of `416cafc` succeeded. Before that, the same checks passed on `1413a6b` (same files as `e90818a` plus docs). `npm run drift` 24 findings, unchanged. The CI `test:ui` run passed on `a5dd1e0`, the PR #60 head; the Pages deploy of `da0ed1c` succeeded. Earlier (2026-11-21): the Pages deploy of `6bed2d9` succeeded. Fault injection: removing IF-001 from `b-link` fails `npm run check`; a `0x0E` magnetometer tap shows in `npm run drift`.
+**Verified 2026-11-22:** the same checks and the full `npm run test:ui` (local Edge) pass on `05dcaff`, the PR #62 head (BOM Description, 768 px fixes, spec 0.89). Before that, `npm run build`, `npm run lint` (0 errors, 6 warnings), `npm run format:check`, `npx knip` and the full `npm run test:ui` (local Edge) passed on `4df55e0`, the PR #61 head; CI `test:ui` passed on it and the Pages deploy of `416cafc` succeeded. Before that, the same checks passed on `1413a6b` (same files as `e90818a` plus docs). `npm run drift` 24 findings, unchanged. The CI `test:ui` run passed on `a5dd1e0`, the PR #60 head; the Pages deploy of `da0ed1c` succeeded. Earlier (2026-11-21): the Pages deploy of `6bed2d9` succeeded. Fault injection: removing IF-001 from `b-link` fails `npm run check`; a `0x0E` magnetometer tap shows in `npm run drift`.
 
 **Not verified:** every block and link text against the spec (`npm run drift` lists 24 unreviewed findings); SVG exports opened in Inkscape, PowerPoint or Word; the 2026-11-21 `test:ui` checks were seen passing only, never failing on a broken build. Of the 2026-11-22 checks, the contrast, "Mentioned in", owner filter, gate blocker, peripheral view, unknown chip and Pinout filter checks were also seen failing on the build before their change (`log.md`).
 
@@ -108,7 +108,8 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 - [ ] Engineer reviews the `npm run drift` list (24 findings) and decides which site texts to fix.
 - [ ] Re-export the board GLB once the parts are placed.
 - [x] Commit the BOM CSV with the BOM page (`BOM_AO-Horizon_A_2026-11-22.csv`): the build fails without a CSV, in CI and on Pages.
-- [ ] Engineer decides whether `pages.yml` and `web-test.yml` should also run on changes in the BOM folder; today a BOM-only commit does not rebuild the site.
+- [x] `pages.yml` and `web-test.yml` also run on changes in `hardware/AO-Horizon/documents/manufacturing/Assembly/BOM/` (engineer, 2026-11-22), so a BOM-only commit rebuilds the site.
+- [ ] PR #62 (BOM Description, 768 px fixes, spec 0.89, and the engineer's `e684ebe` and `e56b012`: 22 µF 1210 on `+6V`, DEC-109, spec 0.90; head `e56b012`): open, CI running at the time of writing. Merge only if CI is green and the PR is MERGEABLE/CLEAN; then merge `main` into `dev`, check the Pages deploy and record it here.
 - [x] Check and deploy the BOM page and gap fixes (PR #61, merged 2026-11-22; `main` merged into `dev`).
 - [x] Check and deploy the 2026-11-22 site changes (PR #60, merged 2026-11-22; `main` merged into `dev`).
 - [x] Plan B note on the Power view power mux block (DEC-108, OPEN-041), 2026-11-21.

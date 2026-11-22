@@ -9,6 +9,7 @@ on:
     paths:
       - 'web/**'
       - 'hardware/AO-Horizon/documents/design/**'
+      - 'hardware/AO-Horizon/documents/manufacturing/Assembly/BOM/**'
       - 'README.md'
       - '.github/workflows/web-test.yml'
   pull_request:
@@ -16,6 +17,7 @@ on:
     paths:
       - 'web/**'
       - 'hardware/AO-Horizon/documents/design/**'
+      - 'hardware/AO-Horizon/documents/manufacturing/Assembly/BOM/**'
       - 'README.md'
       - '.github/workflows/web-test.yml'
   workflow_dispatch:
