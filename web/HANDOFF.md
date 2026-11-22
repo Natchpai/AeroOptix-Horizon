@@ -138,6 +138,4 @@ Dropped from the list (2026-11-21), so later sessions do not propose them again:
 - `block_diagram.kicad_sch` still says F103 (P2-014, an engineer item). The site does not use it.
 - Renders and photos on the Showcase are still placeholders.
 - On a phone the pin tables scroll sideways inside their card, and wrapped Function text (NRST) makes some rows tall.
-- `?id=` with an unknown ID selects nothing and shows no notice.
-- Long Plan text in the F100 reserved table scrolls sideways inside the table.
 - At 390 px the header page name is cut short by the search box (the phone layout is not critical, per the engineer).

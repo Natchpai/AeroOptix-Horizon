@@ -33,10 +33,13 @@ import {
   TaskRowList,
 } from '@/components/record-table'
 import { SpecText } from '@/components/spec-text'
+import { UnknownIdNotice } from '@/components/unknown-id-notice'
 import { type TraceRow, traceRows } from './matrix'
 
 const route = getRouteApi('/_site/trace')
 
+/** Every requirement ID, before any filter. */
+const reqIds = new Set(traceRows.map((r) => r.req.id))
 const noTask = traceRows.filter((r) => r.noTask)
 const noLink = traceRows.filter((r) => r.noLink)
 /** Removed rows stay in the table, greyed, but are not counted as live. */
@@ -247,6 +250,9 @@ export function TracePage() {
             </div>
           </CardHeader>
           <CardContent className='px-0'>
+            <UnknownIdNotice id={search.id} known={reqIds}>
+              is not a requirement in the spec.
+            </UnknownIdNotice>
             <div className='overflow-x-auto'>
               <Table className='sm:table-fixed'>
                 <TableHeader>

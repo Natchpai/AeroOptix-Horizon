@@ -43,6 +43,7 @@ import {
   SiteRowList,
   TaskRowList,
 } from '@/components/record-table'
+import { UnknownIdNotice } from '@/components/unknown-id-notice'
 import { tasksNaming } from './cites'
 
 const route = getRouteApi('/_site/open')
@@ -53,6 +54,7 @@ const byId = (a: SpecId, b: SpecId) => a.id.localeCompare(b.id)
 const all = Object.values(ids).filter((s) => s.kind === 'OPEN')
 const openRows = all.filter((s) => !s.closed).sort(byId)
 const closedRows = all.filter((s) => s.closed).sort(byId)
+const openIds = new Set(all.map((s) => s.id))
 
 /** Diagram blocks and links that cite each item (refs or open). */
 const usedOn = new Map<string, (Block | Link)[]>()
@@ -232,6 +234,9 @@ export function OpenItemsPage() {
             </div>
           </CardHeader>
           <CardContent className='px-0'>
+            <UnknownIdNotice id={search.id} known={openIds}>
+              is not in the spec.
+            </UnknownIdNotice>
             <RecordTable
               table={table}
               openId={search.id}

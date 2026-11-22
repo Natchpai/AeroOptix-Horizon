@@ -283,3 +283,40 @@ One entry per change: what changed, why, and which files were edited.
     build before this change; `pageTitles` and `gateBlockers` as above;
     `open()` takes a `setup` hook for routes and init scripts.
   - `log.md`: this entry.
+
+## 2026-11-22 T1b: unknown id notice and reserved Plan wrap
+
+- What: two fixes from the Known gaps list.
+  - A linked `?id=` that names no record now shows one muted line above
+    the table: "DEC-999 is not in the spec." (Decisions, Open items),
+    "P9-999 is not in the checklist." (Checklist), "IF-999 is not a
+    requirement in the spec." (Traceability, which lists requirements
+    only) and "Revision 9.99 is not in the spec change notes." (Spec
+    history, `?rev=`). The check uses every record of the page before
+    any filter, so q, kind, flag, owner, status or "hide closed" never
+    shows the notice for a known ID. A malformed ID is still dropped by
+    the route's `validateSearch`, so it shows no notice; that is
+    accepted.
+  - The F100 reserved table's Plan column wraps (`min-w-64`,
+    `whitespace-normal`, `break-words`), so at 1440 px the table fits its
+    card. At 390 px it still scrolls sideways inside the card (the phone
+    is not critical). Other tables are unchanged.
+  - `tests/ui.ts`: `unknownIdNotice` (an unknown ID on each of the five
+    pages shows the notice; a known ID, alone and with a filter that
+    hides it, shows none) and `reservedPlanFits` (no scroll wrapper of
+    the reserved card scrolls sideways at 1440 px). Both fail on the
+    build before this change. The filter case also fails on a test build
+    that checked only the visible rows.
+- Why: an unknown link selected nothing with no word why, and long Plan
+  text pushed the reserved table wider than its card. The site adds no
+  values.
+- Files:
+  - `src/components/unknown-id-notice.tsx`: new shared `UnknownIdNotice`.
+  - `src/features/decisions/index.tsx`, `src/features/open-items/index.tsx`,
+    `src/features/checklist/index.tsx`, `src/features/history/index.tsx`,
+    `src/features/trace/index.tsx`: a set of all record IDs and the
+    notice above the table.
+  - `src/features/pinout/index.tsx`: reserved table Plan cell classes.
+  - `tests/ui.ts`: the two checks above.
+  - `HANDOFF.md`: the two Known gaps lines removed.
+  - `log.md`: this entry.

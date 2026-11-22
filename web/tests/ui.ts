@@ -13,9 +13,11 @@
  * listed), an unknown ?owner= or ?status= shows a pressed chip that clears
  * it, "Mentioned in" shows a reload note when the notes chunk fails, the
  * Pinout "By peripheral" view lists every H743 pin once and a SPI1 pin click
- * selects it, the Pinout filter finds the same pins in both views, the Power
- * budget page draws one bar per Rail summary row, every Decisions Date cell holds
- * its text inside the cell, every page has its own browser tab title, the
+ * selects it, the Pinout filter finds the same pins in both views, the F100
+ * reserved table fits its card at 1440 px, an unknown linked ID shows a
+ * notice on each table page (a known one, also when filtered, shows none),
+ * the Power budget page draws one bar per Rail summary row, every Decisions
+ * Date cell holds its text inside the cell, every page has its own browser tab title, the
  * diagram view tabs fit at phone width, and light-theme status and evidence
  * badges have AA contrast.
  *
@@ -918,6 +920,87 @@ async function pinFilterSame(browser: Browser) {
   await v.close()
 }
 
+/**
+ * A linked `?id=` (Spec history: `?rev=`) that names no record shows one
+ * muted line above the table. A known ID shows none, also when a filter
+ * hides its row.
+ */
+async function unknownIdNotice(browser: Browser) {
+  for (const [route, unknown] of [
+    ['decisions?id=DEC-999', 'DEC-999'],
+    ['open?id=OPEN-999', 'OPEN-999'],
+    ['checklist?id=P9-999', 'P9-999'],
+    ['trace?id=IF-999', 'IF-999'],
+    ['history?rev=9.99', '9.99'],
+    ['decisions?id=DEC-050', ''],
+    ['open?id=OPEN-023', ''],
+    ['checklist?id=P3-007', ''],
+    ['trace?id=PWR-011', ''],
+    ['history?rev=%220.10%22', ''],
+    ['decisions?id=DEC-050&q=zzzz', ''],
+    ['open?id=OPEN-001&q=zzzz', ''],
+    ['checklist?id=P3-007&status=WAITING&owner=Nobody&q=zzzz', ''],
+    ['trace?id=PWR-011&kind=IF&flag=task&q=zzzz', ''],
+    ['history?rev=%220.10%22&q=zzzz', ''],
+  ]) {
+    const where = `/${route} notice`
+    const v = await open(browser, route)
+    try {
+      // q=zzzz can leave a table with no body rows
+      await v.page.waitForSelector(
+        route.includes('q=') ? 'main thead tr' : 'main tbody tr',
+        { timeout: 10000 }
+      )
+      await v.page.waitForTimeout(300)
+      const notes = await v.page.evaluate(() =>
+        [...document.querySelectorAll('main [data-unknown-id]')].map((el) =>
+          (el.textContent ?? '').trim()
+        )
+      )
+      if (unknown && notes.length !== 1)
+        fail(where, `shows ${notes.length} unknown-ID notices, not 1`)
+      else if (unknown && !notes[0].includes(unknown))
+        fail(where, `notice "${notes[0]}" does not name ${unknown}`)
+      if (!unknown && notes.length)
+        fail(where, `known ID shows a notice: "${notes[0]}"`)
+    } catch (e) {
+      fail(where, `could not run: ${(e as Error).message.split('\n')[0]}`)
+    }
+    for (const e of v.errors) fail(where, `page error: ${e}`)
+    await v.close()
+  }
+}
+
+/**
+ * At 1440 px the F100 reserved table fits its card: long Plan text wraps,
+ * so no scroll wrapper scrolls sideways.
+ */
+async function reservedPlanFits(browser: Browser) {
+  const where = '/pinout?mcu=f100 reserved table at 1440 px'
+  const v = await open(browser, 'pinout?mcu=f100')
+  try {
+    const card = v.page
+      .locator('[data-slot="card"]')
+      .filter({ hasText: 'Reserved for px4io-v2' })
+      .last()
+    await card.locator('tbody tr').first().waitFor({ timeout: 10000 })
+    const wraps = await card.evaluate((el) =>
+      [...el.querySelectorAll('.overflow-x-auto')].map((w) => ({
+        scroll: w.scrollWidth,
+        client: w.clientWidth,
+      }))
+    )
+    if (!wraps.length) fail(where, 'no scroll wrapper found')
+    for (const w of wraps)
+      if (w.scroll > w.client)
+        fail(where, `scroll wrapper is ${w.scroll} px wide in ${w.client} px`)
+  } catch (e) {
+    fail(where, `could not run: ${(e as Error).message.split('\n')[0]}`)
+  }
+  for (const e of v.errors) fail(where, `page error: ${e}`)
+  await v.close()
+}
+
 /** Click an export button; the file must be valid SVG with plain colours. */
 async function svgExport(page: Page, button: string, where: string) {
   const download = page.waitForEvent('download', { timeout: 15000 })
@@ -1015,6 +1098,8 @@ async function main() {
     await gateBlockers(browser)
     await peripheralView(browser)
     await pinFilterSame(browser)
+    await unknownIdNotice(browser)
+    await reservedPlanFits(browser)
     await powerBars(browser)
     await decisionDatesFit(browser)
     await lightContrast(browser)

@@ -24,11 +24,13 @@ import {
 import { Main } from '@/components/layout/main'
 import { SiteHeader } from '@/components/layout/site-header'
 import { SpecText } from '@/components/spec-text'
+import { UnknownIdNotice } from '@/components/unknown-id-notice'
 
 const route = getRouteApi('/_site/history')
 
 /** Every spec change note, newest first, as the extractor read it. */
 const history = historyJson as SpecChange[]
+const revisions = new Set(history.map((c) => c.revision))
 
 export function HistoryPage() {
   const search = route.useSearch()
@@ -95,6 +97,13 @@ export function HistoryPage() {
             />
           </CardHeader>
           <CardContent className='px-0'>
+            <UnknownIdNotice
+              id={search.rev}
+              known={revisions}
+              prefix='Revision'
+            >
+              is not in the spec change notes.
+            </UnknownIdNotice>
             <div className='overflow-x-auto'>
               <Table className='sm:table-fixed'>
                 <TableHeader>

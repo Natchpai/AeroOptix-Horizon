@@ -36,12 +36,14 @@ import {
   allTaskStates,
   taskState,
 } from '@/components/task-status'
+import { UnknownIdNotice } from '@/components/unknown-id-notice'
 import { TASK_ID, openItemsNaming } from '@/features/open-items/cites'
 
 const route = getRouteApi('/_site/checklist')
 
 /** Every task row, in record order. */
 const tasks = Object.values(progress.tasks)
+const taskIds = new Set(tasks.map((t) => t.id))
 
 /** The owners of a task: the Owner cell split on "," and "+". */
 const ownersOf = (t: Task) =>
@@ -460,6 +462,9 @@ export function ChecklistPage() {
             </div>
           </CardHeader>
           <CardContent className='px-0'>
+            <UnknownIdNotice id={search.id} known={taskIds}>
+              is not in the checklist.
+            </UnknownIdNotice>
             <RecordTable
               table={table}
               openId={search.id}
