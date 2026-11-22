@@ -10,7 +10,7 @@
         "drawing_sheet": "",
         "format": "pdf",
         "min_pen_width": 847,
-        "output_filename": "AO-Horizon_${CURRENT_DATE}_V${REVISION}.pdf",
+        "output_filename": "AO-Horizon_rev-${REVISION}_${CURRENT_DATE}.pdf",
         "page_size": "auto",
         "pdf_hierarchical_links": true,
         "pdf_metadata": true,
@@ -60,6 +60,73 @@
         "units": "mm"
       },
       "type": "sch_erc"
+    },
+    {
+      "description": "",
+      "id": "59ed2893-462a-4e6c-85d6-d16bae3fcecd",
+      "settings": {
+        "bom_format_preset_name": "CSV",
+        "bom_preset_name": "",
+        "description": "",
+        "exclude_dnp": false,
+        "field_delimiter": ",",
+        "fields_group_by": [
+          "${DNP}",
+          "Value"
+        ],
+        "fields_labels": [
+          "Reference",
+          "DNP",
+          "EXCLUDE_FROM_BOM",
+          "Qty",
+          "Value",
+          "Datasheet",
+          "Footprint",
+          "Description",
+          "#",
+          "LCSC",
+          "MFR",
+          "MFR.P/N",
+          "Note",
+          "Rate",
+          "STATUS",
+          "Sim.Pins",
+          "TempCof",
+          "Type"
+        ],
+        "fields_ordered": [
+          "Reference",
+          "${DNP}",
+          "__${EXCLUDE_FROM_BOM}",
+          "${QUANTITY}",
+          "Value",
+          "__Datasheet",
+          "Footprint",
+          "__Description",
+          "__${ITEM_NUMBER}",
+          "LCSC",
+          "MFR",
+          "MFR.P/N",
+          "__Note",
+          "__Rate",
+          "STATUS",
+          "__Sim.Pins",
+          "__TempCof",
+          "__Type"
+        ],
+        "filter_string": "",
+        "group_symbols": true,
+        "keep_line_breaks": false,
+        "keep_tabs": false,
+        "output_filename": "BOM_${PROJECTNAME}_rev-${REVISION}_${CURRENT_DATE}.csv",
+        "ref_delimiter": ",",
+        "ref_range_delimiter": "",
+        "sort_asc": false,
+        "sort_field": "Reference",
+        "string_delimiter": "\"",
+        "variant_names": []
+      },
+      "type": "sch_export_bom"
     }
   ],
   "meta": {
@@ -73,7 +140,7 @@
         "114666ba-1e63-4ad8-aa05-7629bcf23c77"
       ],
       "settings": {
-        "output_path": "documents/"
+        "output_path": "documents/schematic/"
       },
       "type": "folder"
     },
@@ -97,6 +164,17 @@
       ],
       "settings": {
         "output_path": "documents/verification"
+      },
+      "type": "folder"
+    },
+    {
+      "description": "BOM",
+      "id": "566339a3-49d9-4247-8bcd-758217a12845",
+      "only": [
+        "59ed2893-462a-4e6c-85d6-d16bae3fcecd"
+      ],
+      "settings": {
+        "output_path": "documents/manufacturing/Assembly/BOM/"
       },
       "type": "folder"
     }

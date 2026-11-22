@@ -1128,7 +1128,7 @@
       "include_excluded_from_bom": true,
       "name": "",
       "sort_asc": true,
-      "sort_field": "Footprint"
+      "sort_field": "Reference"
     },
     "bus_aliases": {
       "AUX_TIM5": [
