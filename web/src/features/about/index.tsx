@@ -144,6 +144,12 @@ const pages: { name: string; to: string; reads: string; source: string }[] = [
     reads: 'Rail summary, load tables and margins',
     source: 'power',
   },
+  {
+    name: 'BOM',
+    to: '/bom',
+    reads: 'Every row of the KiCad BOM export (one CSV file)',
+    source: 'bom',
+  },
 ]
 
 const sourceName: Record<string, string> = {
@@ -152,6 +158,7 @@ const sourceName: Record<string, string> = {
   readme: 'README',
   checklist: 'Execution checklist',
   power: 'Power budget',
+  bom: 'BOM export',
 }
 
 export function AboutPage() {

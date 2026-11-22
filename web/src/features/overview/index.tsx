@@ -18,6 +18,7 @@ import {
   History,
   Info,
   ListChecks,
+  ListOrdered,
   Microchip,
   Network,
   ScrollText,
@@ -172,6 +173,14 @@ const explore = [
     search: {},
     icon: BatteryCharging,
     color: 'var(--rail-6v)',
+  },
+  {
+    title: 'BOM',
+    text: 'Every row of the KiCad BOM export, with DNP parts and links to diagram blocks and decisions.',
+    to: '/bom',
+    search: {},
+    icon: ListOrdered,
+    color: 'var(--bus-gpio)',
   },
   {
     title: 'About this site',

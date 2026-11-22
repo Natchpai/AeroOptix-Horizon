@@ -5,7 +5,7 @@
  * them as-is and adds no values of its own. Output goes to
  * src/data/generated/ (git-ignored, rebuilt on every dev and build run).
  */
-import { execSync } from 'node:child_process'
+import { execFileSync, execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -401,6 +401,177 @@ const power = {
   thermalLine: pwSection(11),
 }
 
+// ---------- BOM: the engineer's KiCad export (a schematic output) ----------
+// Exactly one *.csv in the BOM folder, whatever its name. AO_BOM_DIR points
+// the script at another folder (used to test the failure cases).
+const BOM_DIR = 'hardware/AO-Horizon/documents/manufacturing/Assembly/BOM'
+
+/**
+ * RFC 4180 CSV: quoted cells may hold commas, line breaks and "" for a
+ * quote. Returns each record with the line it starts on; blank lines are
+ * skipped.
+ */
+function parseCsv(text: string, where: string) {
+  const out: { cells: string[]; line: number }[] = []
+  let row: string[] = []
+  let cell = ''
+  let quoted = false
+  let line = 1
+  let start = 1
+  const endRow = () => {
+    row.push(cell)
+    if (row.length > 1 || row[0] !== '') out.push({ cells: row, line: start })
+    row = []
+    cell = ''
+  }
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i]
+    if (quoted) {
+      if (ch === '"' && text[i + 1] === '"') {
+        cell += '"'
+        i++
+      } else if (ch === '"') quoted = false
+      else {
+        if (ch === '\n') line++
+        cell += ch
+      }
+    } else if (ch === '"' && cell === '') quoted = true
+    else if (ch === ',') {
+      row.push(cell)
+      cell = ''
+    } else if (ch === '\r' || ch === '\n') {
+      if (ch === '\r' && text[i + 1] === '\n') i++
+      endRow()
+      line++
+      start = line
+    } else cell += ch
+  }
+  if (quoted) throw new Error(`${where}: a quoted cell is not closed (from line ${start})`)
+  if (cell !== '' || row.length) endRow()
+  return out
+}
+
+/** "R1,R2,R5-R7" -> R1 R2 R5 R6 R7 (also "R5-7"). */
+function expandRefs(cell: string, where: string): string[] {
+  return cell
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .flatMap((tok) => {
+      const m = /^([A-Za-z]+)(\d+)\s*-\s*([A-Za-z]*)(\d+)$/.exec(tok)
+      if (!m) return [tok]
+      const [, p, a, p2, b] = m
+      if ((p2 && p2 !== p) || Number(b) < Number(a))
+        throw new Error(`${where}: bad reference range "${tok}"`)
+      return Array.from({ length: Number(b) - Number(a) + 1 }, (_, k) => `${p}${Number(a) + k}`)
+    })
+}
+
+function readBom() {
+  const dir = process.env.AO_BOM_DIR ? path.resolve(process.env.AO_BOM_DIR) : path.join(repo, BOM_DIR)
+  const shown = path.relative(repo, dir).replace(/\\/g, '/') || dir
+  if (!fs.existsSync(dir)) throw new Error(`BOM: folder ${shown} not found`)
+  const csvs = fs.readdirSync(dir).filter((n) => n.toLowerCase().endsWith('.csv')).sort()
+  if (csvs.length !== 1)
+    throw new Error(
+      `BOM: ${shown} must hold exactly one *.csv file, found ${csvs.length}` +
+        (csvs.length ? `: ${csvs.join(', ')}` : '')
+    )
+  const name = csvs[0]
+  const file = path.join(dir, name)
+  const rel = path.relative(repo, file).replace(/\\/g, '/')
+  const raw = fs.readFileSync(file, 'utf8')
+  // drop a UTF-8 byte order mark (U+FEFF)
+  const text = raw.charCodeAt(0) === 0xfeff ? raw.slice(1) : raw
+  const records = parseCsv(text, name)
+  if (!records.length) throw new Error(`BOM: ${name} is empty`)
+  const headers = records[0].cells.map((h) => h.trim())
+  const col = (h: string, required: boolean) => {
+    const k = headers.indexOf(h)
+    if (k < 0 && required) throw new Error(`BOM: ${name} has no "${h}" column (columns: ${headers.join(', ')})`)
+    return k
+  }
+  const [cRef, cQty, cVal, cDnp, cLcsc, cMfr, cMpn] = [
+    'Reference',
+    'Qty',
+    'Value',
+    'DNP',
+    'LCSC',
+    'MFR',
+    'MFR.P/N',
+  ].map((h) => col(h, true))
+  const [cFp, cStatus, cExcl] = ['Footprint', 'STATUS', 'Exclude from BOM'].map((h) => col(h, false))
+
+  const seen = new Map<string, number>()
+  const rows = records.slice(1).map(({ cells, line }) => {
+    const where = `BOM: ${name} line ${line}`
+    if (cells.length !== headers.length)
+      throw new Error(`${where} has ${cells.length} cells, the header has ${headers.length}`)
+    const refs = expandRefs(cells[cRef], where)
+    if (!refs.length) throw new Error(`${where} has no Reference`)
+    for (const r of refs) {
+      if (seen.has(r)) throw new Error(`${where}: ${r} is also on line ${seen.get(r)}`)
+      seen.set(r, line)
+    }
+    const qtyCell = cells[cQty].trim()
+    if (!/^\d+$/.test(qtyCell)) throw new Error(`${where}: Qty "${qtyCell}" is not a whole number`)
+    const qty = Number(qtyCell)
+    if (qty !== refs.length) throw new Error(`${where}: Qty ${qty} but ${refs.length} references`)
+    // the export writes "DNP" or nothing; anything else needs a look first
+    const dnpCell = cells[cDnp].trim()
+    if (dnpCell && dnpCell.toUpperCase() !== 'DNP') throw new Error(`${where}: DNP "${dnpCell}" is not "DNP" or empty`)
+    return {
+      refs,
+      qty,
+      value: cells[cVal].trim(),
+      dnp: dnpCell !== '',
+      lcsc: cells[cLcsc].trim(),
+      mfr: cells[cMfr].trim(),
+      mpn: cells[cMpn].trim(),
+      ...(cFp >= 0 && { footprint: cells[cFp].trim() }),
+      ...(cStatus >= 0 && { status: cells[cStatus].trim() }),
+      // copied as written, only where the cell is not empty
+      ...(cExcl >= 0 && cells[cExcl].trim() && { exclude: cells[cExcl].trim() }),
+      line,
+    }
+  })
+  if (!rows.length) throw new Error(`BOM: ${name} has a header but no rows`)
+
+  // cross-checks on the parsed rows against the file itself
+  const dataLines = text.split(/\r?\n/).filter((l) => l.trim()).length - 1
+  const multiLine = records.some((r) => r.cells.some((c) => /[\r\n]/.test(c)))
+  if (!multiLine && rows.length !== dataLines)
+    throw new Error(`BOM: ${name} parsed ${rows.length} rows from ${dataLines} data lines`)
+  const parts = rows.reduce((n, r) => n + r.qty, 0)
+  if (parts !== seen.size) throw new Error(`BOM: ${name} Qty sum ${parts} is not the ${seen.size} references`)
+
+  let date = ''
+  try {
+    // an argument list, not a shell string: the file name is not ours
+    date = execFileSync('git', ['log', '-1', '--format=%cs', '--', rel], {
+      cwd: repo,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim()
+  } catch {
+    // no git, or a folder outside the repo
+  }
+  return {
+    meta: {
+      file: rel,
+      name,
+      // last commit that changed the file, or "uncommitted"
+      date: date || 'uncommitted',
+      rows: rows.length,
+      parts,
+      dnpParts: rows.filter((r) => r.dnp).reduce((n, r) => n + r.qty, 0),
+      columns: { footprint: cFp >= 0, status: cStatus >= 0, exclude: cExcl >= 0 },
+    },
+    rows,
+  }
+}
+const bom = readBom()
+
 // ---------- build stamp ----------
 function commit(): string {
   if (process.env.GITHUB_SHA) return process.env.GITHUB_SHA
@@ -457,6 +628,7 @@ const meta = {
     readme: README,
     checklist: CHECKLIST,
     power: POWER,
+    bom: bom.meta.file,
   },
   generatedFrom: 'saved Markdown records in the repository',
 }
@@ -473,9 +645,11 @@ write('pins.json', { h743, f100, f100Reserved })
 write('progress.json', progress)
 write('history.json', specHistory)
 write('power.json', power)
+write('bom.json', bom)
 
 console.log(
   `extract-docs: ${Object.keys(ids).length} spec IDs, H743 ${h743.length} pins, ` +
     `F100 ${f100.length} pins + ${f100Reserved.length} reserved rows, phase ${meta.phase}, spec rev ${meta.specRevision}, ` +
-    `${gates.length} gates, ${tasks.length} checklist tasks, build ${meta.build.commit.slice(0, 7)}`
+    `${gates.length} gates, ${tasks.length} checklist tasks, ` +
+    `BOM ${bom.meta.name} ${bom.meta.rows} rows ${bom.meta.parts} parts, build ${meta.build.commit.slice(0, 7)}`
 )

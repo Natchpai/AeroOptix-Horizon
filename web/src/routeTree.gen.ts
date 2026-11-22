@@ -13,6 +13,7 @@ import { Route as SiteRouteRouteImport } from './routes/_site/route'
 import { Route as errors404RouteImport } from './routes/(errors)/404'
 import { Route as SiteIndexRouteImport } from './routes/_site/index'
 import { Route as SiteAboutRouteImport } from './routes/_site/about'
+import { Route as SiteBomRouteImport } from './routes/_site/bom'
 import { Route as SiteChecklistRouteImport } from './routes/_site/checklist'
 import { Route as SiteDecisionsRouteImport } from './routes/_site/decisions'
 import { Route as SiteDiagramRouteImport } from './routes/_site/diagram'
@@ -40,6 +41,11 @@ const SiteIndexRoute = SiteIndexRouteImport.update({
 const SiteAboutRoute = SiteAboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
+const SiteBomRoute = SiteBomRouteImport.update({
+  id: '/bom',
+  path: '/bom',
   getParentRoute: () => SiteRouteRoute,
 } as any)
 const SiteChecklistRoute = SiteChecklistRouteImport.update({
@@ -92,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/': typeof SiteIndexRoute
   '/404': typeof errors404Route
   '/about': typeof SiteAboutRoute
+  '/bom': typeof SiteBomRoute
   '/checklist': typeof SiteChecklistRoute
   '/decisions': typeof SiteDecisionsRoute
   '/diagram': typeof SiteDiagramRoute
@@ -105,6 +112,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/404': typeof errors404Route
   '/about': typeof SiteAboutRoute
+  '/bom': typeof SiteBomRoute
   '/checklist': typeof SiteChecklistRoute
   '/decisions': typeof SiteDecisionsRoute
   '/diagram': typeof SiteDiagramRoute
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   '/_site': typeof SiteRouteRouteWithChildren
   '/(errors)/404': typeof errors404Route
   '/_site/about': typeof SiteAboutRoute
+  '/_site/bom': typeof SiteBomRoute
   '/_site/checklist': typeof SiteChecklistRoute
   '/_site/decisions': typeof SiteDecisionsRoute
   '/_site/diagram': typeof SiteDiagramRoute
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
     | '/'
     | '/404'
     | '/about'
+    | '/bom'
     | '/checklist'
     | '/decisions'
     | '/diagram'
@@ -151,6 +161,7 @@ export interface FileRouteTypes {
   to:
     | '/404'
     | '/about'
+    | '/bom'
     | '/checklist'
     | '/decisions'
     | '/diagram'
@@ -166,6 +177,7 @@ export interface FileRouteTypes {
     | '/_site'
     | '/(errors)/404'
     | '/_site/about'
+    | '/_site/bom'
     | '/_site/checklist'
     | '/_site/decisions'
     | '/_site/diagram'
@@ -211,6 +223,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof SiteAboutRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
+    '/_site/bom': {
+      id: '/_site/bom'
+      path: '/bom'
+      fullPath: '/bom'
+      preLoaderRoute: typeof SiteBomRouteImport
       parentRoute: typeof SiteRouteRoute
     }
     '/_site/checklist': {
@@ -281,6 +300,7 @@ declare module '@tanstack/react-router' {
 
 interface SiteRouteRouteChildren {
   SiteAboutRoute: typeof SiteAboutRoute
+  SiteBomRoute: typeof SiteBomRoute
   SiteChecklistRoute: typeof SiteChecklistRoute
   SiteDecisionsRoute: typeof SiteDecisionsRoute
   SiteDiagramRoute: typeof SiteDiagramRoute
@@ -295,6 +315,7 @@ interface SiteRouteRouteChildren {
 
 const SiteRouteRouteChildren: SiteRouteRouteChildren = {
   SiteAboutRoute: SiteAboutRoute,
+  SiteBomRoute: SiteBomRoute,
   SiteChecklistRoute: SiteChecklistRoute,
   SiteDecisionsRoute: SiteDecisionsRoute,
   SiteDiagramRoute: SiteDiagramRoute,

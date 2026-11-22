@@ -143,6 +143,8 @@ export type Meta = {
     readme: string
     checklist: string
     power: string
+    /** The one BOM CSV the build read */
+    bom: string
   }
   generatedFrom: string
 }
@@ -228,4 +230,43 @@ export type Power = {
   tolerancesLine: number
   thermal: RecordTable
   thermalLine: number
+}
+
+/** One row of the engineer's BOM export, cells as written there. */
+export type BomRow = {
+  /** Reference cell split on ",", ranges such as R1-R5 expanded */
+  refs: string[]
+  qty: number
+  value: string
+  dnp: boolean
+  lcsc: string
+  mfr: string
+  /** The MFR.P/N column */
+  mpn: string
+  /** Only when the export has the column */
+  footprint?: string
+  status?: string
+  /** The "Exclude from BOM" cell, only where it is not empty */
+  exclude?: string
+  /** CSV line the row starts on */
+  line: number
+}
+
+/** The BOM export, as `bom.json` holds it. */
+export type Bom = {
+  meta: {
+    /** Repo path of the CSV */
+    file: string
+    name: string
+    /** Last commit that changed the file, or "uncommitted" */
+    date: string
+    rows: number
+    /** Qty sum */
+    parts: number
+    /** Qty sum of the DNP rows */
+    dnpParts: number
+    /** Which optional columns the export has */
+    columns: { footprint: boolean; status: boolean; exclude: boolean }
+  }
+  rows: BomRow[]
 }

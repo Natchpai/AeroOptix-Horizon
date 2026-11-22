@@ -19,7 +19,11 @@
  * the Power budget page draws one bar per Rail summary row, every Decisions
  * Date cell holds its text inside the cell, every page has its own browser tab title, the
  * diagram view tabs fit at phone width, and light-theme status and evidence
- * badges have AA contrast.
+ * badges have AA contrast, and the BOM page matches bom.json (rows, header
+ * numbers, ?id= with a whole-ref match and DNP badge, flags on fitted rows
+ * without MFR.P/N or LCSC, ?dnp= filters, the unknown-ref notice and the
+ * decisions that name a part number, the table fitting its card at 390 and
+ * 1440 px).
  *
  * Run after `npm run build`: `npm run test:ui`. Set UI_BROWSER to pick a
  * Playwright channel (default `msedge` locally; `chromium` when CI is set).
@@ -377,6 +381,7 @@ async function openRowTopAligned(browser: Browser) {
     'checklist?id=P3-007',
     'history?rev=0.86',
     'trace?id=IF-010',
+    `bom?id=${bomRefs().bom.rows[0].refs[0]}`,
   ]) {
     const where = `/${route} cell alignment`
     const v = await open(browser, route)
@@ -445,6 +450,7 @@ async function pageTitles(browser: Browser) {
     ['history', 'Spec history'],
     ['trace', 'Traceability'],
     ['power', 'Power budget'],
+    ['bom', 'BOM'],
     ['showcase', 'Showcase'],
     ['about', 'About this site'],
   ]) {
@@ -926,7 +932,12 @@ async function pinFilterSame(browser: Browser) {
  * hides its row.
  */
 async function unknownIdNotice(browser: Browser) {
+  const bomRef = bomRefs()
+  const knownRef = bomRef.bom.rows[0].refs[0]
   for (const [route, unknown] of [
+    [`bom?id=${bomRef.unknown}`, bomRef.unknown],
+    [`bom?id=${knownRef}`, ''],
+    [`bom?id=${knownRef}&dnp=dnp&q=zzzz`, ''],
     ['decisions?id=DEC-999', 'DEC-999'],
     ['open?id=OPEN-999', 'OPEN-999'],
     ['checklist?id=P9-999', 'P9-999'],
@@ -1002,6 +1013,252 @@ async function reservedPlanFits(browser: Browser) {
 }
 
 /** Click an export button; the file must be valid SVG with plain colours. */
+type BomRow = {
+  refs: string[]
+  qty: number
+  dnp: boolean
+  lcsc: string
+  mpn: string
+}
+type BomJson = {
+  meta: { rows: number; parts: number; dnpParts: number }
+  rows: BomRow[]
+}
+
+/**
+ * Refs to test the BOM page with, picked from bom.json, so a new export
+ * needs no edit here: a DNP ref (the last of its row, so a group match is
+ * tested), a ref with no row, and a ref that another ref starts with.
+ */
+function bomRefs() {
+  const bom = generated('bom.json') as BomJson
+  const all = bom.rows.flatMap((r) => r.refs)
+  const known = new Set(all)
+  const dnpRow = bom.rows.find((r) => r.dnp)
+  let n = 999
+  while (known.has(`R${n}`)) n++
+  // R1 and R10 in different rows: R1 must open its own row
+  const prefixPair = all
+    .flatMap((a) =>
+      all
+        .filter((b) => b.length > a.length && b.startsWith(a))
+        .filter((b) => /\d/.test(b[a.length]))
+        .map((b) => [a, b] as const)
+    )
+    .find(
+      ([a, b]) =>
+        bom.rows.find((r) => r.refs.includes(a)) !==
+        bom.rows.find((r) => r.refs.includes(b))
+    )
+  // a real ref cut short (R10 from R101) that is in no row: no substring match
+  const shortRef = all
+    .map((x) => x.slice(0, -1))
+    .find((x) => /^[A-Z]+\d+$/.test(x) && !known.has(x))
+  return {
+    bom,
+    dnpRef: dnpRow?.refs[dnpRow.refs.length - 1],
+    unknown: `R${n}`,
+    prefixPair,
+    shortRef,
+  }
+}
+
+/** The row an opened ?id= selects, and what it shows. */
+async function openedBomRow(page: Page) {
+  return page.evaluate(() => {
+    const row = document.querySelector('tr[data-state=selected]')
+    return {
+      id: row?.id ?? '',
+      dnp: !!row?.querySelector('[data-bom-dnp]'),
+      flag: !!row?.querySelector('[data-bom-flag]'),
+      decisions: [
+        ...(row?.nextElementSibling?.querySelectorAll(
+          '[data-bom-decisions] li > :first-child'
+        ) ?? []),
+      ].map((e) => (e.textContent ?? '').trim()),
+    }
+  })
+}
+
+/**
+ * The BOM page against bom.json: one table row per BOM row and the header
+ * numbers; ?id= opens the row that holds the ref (whole ref only, also with
+ * a filter that hides it) with its DNP badge; a fitted row with no MFR.P/N
+ * or LCSC has the flag and no other row has it; ?dnp= lists the DNP or the
+ * fitted rows only; an unknown ref shows the notice; the decisions listed
+ * are the DEC rows whose Topic or Selected option names the MFR.P/N.
+ */
+async function bomPage(browser: Browser) {
+  const { bom, dnpRef, unknown, prefixPair, shortRef } = bomRefs()
+  const keyOf = (r: BomRow) => `row-${r.refs[0]}`
+  const rowOf = (ref: string) => bom.rows.find((r) => r.refs.includes(ref))!
+  const flagged = bom.rows.filter((r) => !r.dnp && (!r.mpn || !r.lcsc))
+  const tableRows = (page: Page) =>
+    page.evaluate(() =>
+      [...document.querySelectorAll('tbody tr[id^="row-"]')].map((tr) => ({
+        id: tr.id,
+        dnp: !!tr.querySelector('[data-bom-dnp]'),
+        flag: !!tr.querySelector('[data-bom-flag]'),
+      }))
+    )
+  const run = async (route: string, body: (page: Page) => Promise<void>) => {
+    const where = `/${route}`
+    const v = await open(browser, route)
+    try {
+      await v.page.waitForSelector('main tbody tr', { timeout: 10000 })
+      await v.page.waitForTimeout(300)
+      await body(v.page)
+    } catch (e) {
+      fail(where, `could not run: ${(e as Error).message.split('\n')[0]}`)
+    }
+    for (const e of v.errors) fail(where, `page error: ${e}`)
+    await v.close()
+  }
+
+  await run('bom', async (page) => {
+    const rows = await tableRows(page)
+    if (rows.length !== bom.rows.length)
+      fail('/bom', `${rows.length} rows, bom.json has ${bom.rows.length}`)
+    const summary = await page
+      .locator('[data-bom-summary]')
+      .innerText({ timeout: 5000 })
+    for (const want of [
+      `${bom.meta.rows} rows`,
+      `${bom.meta.parts} parts`,
+      `${bom.meta.dnpParts} DNP parts`,
+    ])
+      if (!summary.includes(want))
+        fail('/bom', `header "${summary}" lacks "${want}"`)
+    const wantFlags = flagged.map(keyOf).join(', ')
+    const gotFlags = rows
+      .filter((r) => r.flag)
+      .map((r) => r.id)
+      .join(', ')
+    if (gotFlags !== wantFlags)
+      fail('/bom', `flagged rows are [${gotFlags}], not [${wantFlags}]`)
+  })
+
+  // the table fits its card: no scroll wrapper scrolls sideways
+  for (const width of [390, 1440]) {
+    const where = `/bom table at ${width} px`
+    const v = await open(browser, 'bom', { width })
+    try {
+      await v.page.waitForSelector('main tbody tr', { timeout: 10000 })
+      const wraps = await v.page.evaluate(() =>
+        [...document.querySelectorAll('main .overflow-x-auto')].map((w) => [
+          w.scrollWidth,
+          w.clientWidth,
+        ])
+      )
+      for (const [s, c] of wraps)
+        if (s > c) fail(where, `table is ${s} px wide in ${c} px`)
+    } catch (e) {
+      fail(where, `could not run: ${(e as Error).message.split('\n')[0]}`)
+    }
+    await v.close()
+  }
+
+  if (dnpRef)
+    for (const route of [`bom?id=${dnpRef}`, `bom?id=${dnpRef}&dnp=fitted`])
+      await run(route, async (page) => {
+        const got = await openedBomRow(page)
+        const want = keyOf(rowOf(dnpRef))
+        if (got.id !== want)
+          fail(`/${route}`, `opened row is "${got.id}", not "${want}"`)
+        if (!got.dnp) fail(`/${route}`, 'opened row has no DNP badge')
+      })
+  else console.warn('test:ui: bom.json has no DNP row; DNP ?id= not checked')
+
+  for (const r of flagged) {
+    const route = `bom?id=${r.refs[0]}`
+    await run(route, async (page) => {
+      const got = await openedBomRow(page)
+      if (got.id !== keyOf(r) || !got.flag)
+        fail(`/${route}`, `opened row "${got.id}" flag ${got.flag}`)
+    })
+  }
+
+  if (shortRef) {
+    const route = `bom?id=${shortRef}`
+    await run(route, async (page) => {
+      const got = await openedBomRow(page)
+      if (got.id) fail(`/${route}`, `${shortRef} is in no row but opened "${got.id}"`)
+      const note = await page.locator('main [data-unknown-id]').count()
+      if (note !== 1) fail(`/${route}`, `${note} unknown-ref notices, not 1`)
+    })
+  }
+
+  if (prefixPair) {
+    const [a, b] = prefixPair
+    const route = `bom?id=${a}`
+    await run(route, async (page) => {
+      const got = await openedBomRow(page)
+      if (got.id !== keyOf(rowOf(a)))
+        fail(
+          `/${route}`,
+          `opened "${got.id}", not the row of ${a} (${b} is in another)`
+        )
+    })
+  }
+
+  for (const [value, want] of [
+    ['dnp', bom.rows.filter((r) => r.dnp)],
+    ['fitted', bom.rows.filter((r) => !r.dnp)],
+  ] as const) {
+    const route = `bom?dnp=${value}`
+    const v = await open(browser, route)
+    await v.page.waitForTimeout(500)
+    const rows = await tableRows(v.page)
+    if (rows.length !== want.length)
+      fail(`/${route}`, `${rows.length} rows, not ${want.length}`)
+    if (rows.some((r) => r.dnp !== (value === 'dnp')))
+      fail(`/${route}`, 'lists a row of the other kind')
+    for (const e of v.errors) fail(`/${route}`, `page error: ${e}`)
+    await v.close()
+  }
+
+  {
+    const route = `bom?id=${unknown}`
+    await run(route, async (page) => {
+      const notes = await page.evaluate(() =>
+        [...document.querySelectorAll('main [data-unknown-id]')].map((el) =>
+          (el.textContent ?? '').trim()
+        )
+      )
+      if (notes.length !== 1 || !notes[0].includes(`${unknown} is not in`))
+        fail(`/${route}`, `notices: ${JSON.stringify(notes)}`)
+    })
+  }
+
+  // decisions in the opened row: same rule as the page, from ids.json
+  const decs = (
+    Object.values(generated('ids.json')) as {
+      id: string
+      kind: string
+      fields: Record<string, string>
+    }[]
+  ).filter((s) => s.kind === 'DEC')
+  const named = (mpn: string) => {
+    const esc = mpn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const re = new RegExp(`(?<![A-Za-z0-9])${esc}(?![A-Za-z0-9])`)
+    return decs
+      .filter((d) =>
+        re.test(`${d.fields['Topic'] ?? ''}\n${d.fields['Selected option'] ?? ''}`)
+      )
+      .map((d) => d.id)
+  }
+  const withDec = bom.rows.find((r) => r.mpn && named(r.mpn).length)
+  if (withDec) {
+    const route = `bom?id=${withDec.refs[0]}`
+    await run(route, async (page) => {
+      const got = (await openedBomRow(page)).decisions.join(' ')
+      const want = named(withDec.mpn).join(' ')
+      if (got !== want)
+        fail(`/${route}`, `decisions [${got}], not [${want}]`)
+    })
+  }
+}
+
 async function svgExport(page: Page, button: string, where: string) {
   const download = page.waitForEvent('download', { timeout: 15000 })
   await page.getByRole('button', { name: button, exact: true }).click()
@@ -1027,6 +1284,8 @@ async function main() {
   })
   const channel = process.env.UI_BROWSER ?? (process.env.CI ? '' : 'msedge')
   const browser = await chromium.launch(channel ? { channel } : {})
+  const { dnpRef } = bomRefs()
+  const bomRoutes = ['bom', ...(dnpRef ? [`bom?id=${dnpRef}`] : [])]
   try {
     // pages load without errors, both themes
     for (const theme of ['dark', 'light'] as const)
@@ -1054,6 +1313,8 @@ async function main() {
         'trace?id=IF-010',
         'trace?flag=task',
         'power',
+        ...bomRoutes,
+        'bom?dnp=dnp',
         'showcase',
         'about',
       ]) {
@@ -1101,6 +1362,7 @@ async function main() {
     await unknownIdNotice(browser)
     await reservedPlanFits(browser)
     await powerBars(browser)
+    await bomPage(browser)
     await decisionDatesFit(browser)
     await lightContrast(browser)
     await pageTitles(browser)
@@ -1167,6 +1429,7 @@ async function main() {
         'trace',
         'trace?id=IF-010',
         'power',
+        ...bomRoutes,
         'showcase',
         'about',
       ]) {

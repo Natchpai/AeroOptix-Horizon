@@ -11,6 +11,7 @@ import {
   Info,
   LayoutDashboard,
   ListChecks,
+  ListOrdered,
   Network,
   ScrollText,
   Sparkles,
@@ -53,6 +54,7 @@ export const sidebarData: SidebarData = {
         { title: 'Spec history', url: '/history', icon: History },
         { title: 'Traceability', url: '/trace', icon: Waypoints },
         { title: 'Power budget', url: '/power', icon: BatteryCharging },
+        { title: 'BOM', url: '/bom', icon: ListOrdered },
       ],
     },
     {
