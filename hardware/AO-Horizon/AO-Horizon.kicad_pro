@@ -993,7 +993,7 @@
       "method": 1,
       "sort_order": 0
     },
-    "bom_export_filename": "documents\\manufacturing\\Assembly\\BOM\\${PROJECTNAME}.csv",
+    "bom_export_filename": "documents\\manufacturing\\Assembly\\BOM\\BOM_${PROJECTNAME}_${REVISION}_${CURRENT_DATE}.csv",
     "bom_fmt_presets": [],
     "bom_fmt_settings": {
       "field_delimiter": ",",
@@ -1054,7 +1054,7 @@
           "group_by": true,
           "label": "Footprint",
           "name": "Footprint",
-          "show": true
+          "show": false
         },
         {
           "group_by": false,
@@ -1120,7 +1120,7 @@
           "group_by": false,
           "label": "Description",
           "name": "Description",
-          "show": true
+          "show": false
         }
       ],
       "filter_string": "",

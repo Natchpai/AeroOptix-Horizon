@@ -5,6 +5,7 @@
 	(uuid "aed626df-0b9f-4217-ad82-0da4dbcb4761")
 	(paper "A3")
 	(title_block
+		(rev "A")
 		(comment 1 "Connector - Actuator")
 	)
 	(lib_symbols
