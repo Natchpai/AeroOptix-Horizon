@@ -2,7 +2,7 @@
 
 **Updated:** 2026-11-22
 
-**Status:** live on GitHub Pages. Pages: Overview, About this site, Block diagram, Pinout, Decisions, Open items, Checklist, Spec history, Traceability, Power budget, Showcase. The engineer approved the Pinout page and the five pages added on 2026-11-21, reviewed the Block diagram, and merged the About page, Overview cards, CI test and layout fixes (PR #58, deployed from `6bed2d9`). Hand-written diagram text is synced to spec rev 0.87 and pin allocation rev 0.31. The 2026-11-22 run (`c437c20` to `e90818a`) is on `dev`, waiting for a PR to `main`: tab titles, small logo files, light-theme contrast, sidebar fade, "Mentioned in" revisions, Checklist owner filter and gate blockers, Pinout by peripheral, prettier and knip cleanup, and bug-hunt fixes. Each change is in `log.md`.
+**Status:** live on GitHub Pages. Pages: Overview, About this site, Block diagram, Pinout, Decisions, Open items, Checklist, Spec history, Traceability, Power budget, Showcase. The engineer approved the Pinout page and the five pages added on 2026-11-21, reviewed the Block diagram, and merged the About page, Overview cards, CI test and layout fixes (PR #58, deployed from `6bed2d9`). Hand-written diagram text is synced to spec rev 0.87 and pin allocation rev 0.31. The 2026-11-22 run (`c437c20` to `1413a6b`) was squash-merged as PR #60 (`da0ed1c`) and deployed from it; `main` is merged back into `dev`. It added tab titles, small logo files, light-theme contrast, sidebar fade, "Mentioned in" revisions, Checklist owner filter and gate blockers, Pinout by peripheral, prettier and knip cleanup, and bug-hunt fixes. Each change is in `log.md`.
 
 Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in `README.md`. History is in Git (`git log -- web`).
 
@@ -93,7 +93,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
   - Pinout: By peripheral lists every H743 pin once and a SPI1_SCK click selects it; "Debug" and "not checked" find the same pins in both views.
 - **`npm run format:check`** and **`npx knip`** pass (both failed at `b2b5b3c`).
 
-**Verified 2026-11-22:** `npm run build`, `npm run lint` (0 errors, 6 warnings), `npm run format:check`, `npx knip` and the full `npm run test:ui` (local Edge) pass on `e90818a`. `npm run drift` 24 findings, unchanged. Earlier (2026-11-21): the CI `test:ui` run passed on `b1c0696`, the PR #58 head; the Pages deploy of `6bed2d9` succeeded. Fault injection: removing IF-001 from `b-link` fails `npm run check`; a `0x0E` magnetometer tap shows in `npm run drift`.
+**Verified 2026-11-22:** `npm run build`, `npm run lint` (0 errors, 6 warnings), `npm run format:check`, `npx knip` and the full `npm run test:ui` (local Edge) pass on `1413a6b` (same files as `e90818a` plus docs). `npm run drift` 24 findings, unchanged. The CI `test:ui` run passed on `a5dd1e0`, the PR #60 head; the Pages deploy of `da0ed1c` succeeded. Earlier (2026-11-21): the Pages deploy of `6bed2d9` succeeded. Fault injection: removing IF-001 from `b-link` fails `npm run check`; a `0x0E` magnetometer tap shows in `npm run drift`.
 
 **Not verified:** every block and link text against the spec (`npm run drift` lists 24 unreviewed findings); SVG exports opened in Inkscape, PowerPoint or Word; the 2026-11-21 `test:ui` checks were seen passing only, never failing on a broken build. Of the 2026-11-22 checks, the contrast, "Mentioned in", owner filter, gate blocker, peripheral view, unknown chip and Pinout filter checks were also seen failing on the build before their change (`log.md`).
 
@@ -102,7 +102,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 - [ ] Engineer reviews the Traceability flag lists (3 no task, 29 no decision or diagram).
 - [ ] Engineer reviews the `npm run drift` list (24 findings) and decides which site texts to fix.
 - [ ] Re-export the board GLB once the parts are placed.
-- [ ] After the squash merge of this run's PR, merge `main` into `dev` (see Merging).
+- [x] Check and deploy the 2026-11-22 site changes (PR #60, merged 2026-11-22; `main` merged into `dev`).
 - [x] Plan B note on the Power view power mux block (DEC-108, OPEN-041), 2026-11-21.
 - [x] Check and deploy the 2026-11-21 site changes (PR #58, merged 2026-11-21).
 
