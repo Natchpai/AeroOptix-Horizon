@@ -2,7 +2,7 @@
 
 **Updated:** 2026-11-22
 
-**Status:** live on GitHub Pages. Pages: Overview, About this site, Block diagram, Pinout, Decisions, Open items, Checklist, Spec history, Traceability, Power budget, BOM, Showcase. The engineer approved the Pinout page and the five pages added on 2026-11-21, reviewed the Block diagram, and merged the About page, Overview cards, CI test and layout fixes (PR #58, deployed from `6bed2d9`). Hand-written diagram text is synced to spec rev 0.87 and pin allocation rev 0.31. The 2026-11-22 run (`c437c20` to `1413a6b`) was squash-merged as PR #60 (`da0ed1c`) and deployed from it; `main` is merged back into `dev`. It added tab titles, small logo files, light-theme contrast, sidebar fade, "Mentioned in" revisions, Checklist owner filter and gate blockers, Pinout by peripheral, prettier and knip cleanup, and bug-hunt fixes. Each change is in `log.md`.
+**Status:** live on GitHub Pages. Pages: Overview, About this site, Block diagram, Pinout, Decisions, Open items, Checklist, Spec history, Traceability, Power budget, BOM, Showcase. The engineer approved the Pinout page and the five pages added on 2026-11-21, reviewed the Block diagram, and merged the About page, Overview cards, CI test and layout fixes (PR #58, deployed from `6bed2d9`). Hand-written diagram text is synced to spec rev 0.87 and pin allocation rev 0.31. The 2026-11-22 run (`c437c20` to `1413a6b`) was squash-merged as PR #60 (`da0ed1c`) and deployed from it; `main` is merged back into `dev`. It added tab titles, small logo files, light-theme contrast, sidebar fade, "Mentioned in" revisions, Checklist owner filter and gate blockers, Pinout by peripheral, prettier and knip cleanup, and bug-hunt fixes. A second 2026-11-22 run added the BOM page (from the engineer's `BOM_AO-Horizon_A_2026-11-22.csv`), the unknown-ID notice and the reserved Plan wrap: PR #61, squash-merged as `416cafc` and deployed from it; `main` is merged back into `dev`. Each change is in `log.md`.
 
 Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in `README.md`. History is in Git (`git log -- web`).
 
@@ -26,7 +26,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 ## How the site behaves (non-obvious parts)
 
 - **Links between pages.** An ID chip opens its site row: DEC on Decisions, OPEN on Open items, a requirement kind on Traceability; other kinds (REF) open the spec on GitHub. A task chip opens Checklist, a revision chip Spec history. Ctrl+K results do the same. On an ID's own page the ID column chip is `plain`, so the row click opens it and the filter stays.
-- **`?id=` beats filters.** On every table page a linked row shows even when a filter (or "hide closed") would hide it.
+- **`?id=` beats filters.** On every table page a linked row shows even when a chip filter (or "hide closed") would hide it. On Decisions the text filter `q` still applies (`decisions?id=DEC-050&q=zzzz` shows no rows); the other pages were not checked for this. An unknown `?id=` shows a notice; a malformed one is dropped by the route's `validateSearch`.
 - **Revision URLs.** Revisions 0.1 and 0.10 both exist, and the router reads a typed `?rev=0.10` as the number 0.1. Site links keep the string (`?rev=%220.10%22`); `test:ui` checks it.
 - **Tab titles.** `SiteHeader` sets `document.title` to "<page> · AeroOptix-Horizon" from its `pageTitle` prop, or from `title` when it is a string; the diagram adds the view name. It goes back to the site name on unmount.
 - **Logos.** The sidebar, the Overview hero and the favicons use small copies: the flame at 256 px (`AeroOptix_v2_*_theme_256.png`), the nP mark at 128 px (`np_*_theme_128.png`). The full-size originals stay in `public/images/`.
@@ -98,7 +98,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 
 **CI-style fresh clone:** the sparse checkout now needs `hardware/AO-Horizon/documents/manufacturing/Assembly/BOM` too, besides `web` and `hardware/AO-Horizon/documents/design`; without it the extract step fails (no BOM CSV).
 
-**Verified 2026-11-22:** `npm run build`, `npm run lint` (0 errors, 6 warnings), `npm run format:check`, `npx knip` and the full `npm run test:ui` (local Edge) pass on `1413a6b` (same files as `e90818a` plus docs). `npm run drift` 24 findings, unchanged. The CI `test:ui` run passed on `a5dd1e0`, the PR #60 head; the Pages deploy of `da0ed1c` succeeded. Earlier (2026-11-21): the Pages deploy of `6bed2d9` succeeded. Fault injection: removing IF-001 from `b-link` fails `npm run check`; a `0x0E` magnetometer tap shows in `npm run drift`.
+**Verified 2026-11-22:** `npm run build`, `npm run lint` (0 errors, 6 warnings), `npm run format:check`, `npx knip` and the full `npm run test:ui` (local Edge) pass on `4df55e0`, the PR #61 head; CI `test:ui` passed on it and the Pages deploy of `416cafc` succeeded. Before that, the same checks passed on `1413a6b` (same files as `e90818a` plus docs). `npm run drift` 24 findings, unchanged. The CI `test:ui` run passed on `a5dd1e0`, the PR #60 head; the Pages deploy of `da0ed1c` succeeded. Earlier (2026-11-21): the Pages deploy of `6bed2d9` succeeded. Fault injection: removing IF-001 from `b-link` fails `npm run check`; a `0x0E` magnetometer tap shows in `npm run drift`.
 
 **Not verified:** every block and link text against the spec (`npm run drift` lists 24 unreviewed findings); SVG exports opened in Inkscape, PowerPoint or Word; the 2026-11-21 `test:ui` checks were seen passing only, never failing on a broken build. Of the 2026-11-22 checks, the contrast, "Mentioned in", owner filter, gate blocker, peripheral view, unknown chip and Pinout filter checks were also seen failing on the build before their change (`log.md`).
 
@@ -109,6 +109,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 - [ ] Re-export the board GLB once the parts are placed.
 - [x] Commit the BOM CSV with the BOM page (`BOM_AO-Horizon_A_2026-11-22.csv`): the build fails without a CSV, in CI and on Pages.
 - [ ] Engineer decides whether `pages.yml` and `web-test.yml` should also run on changes in the BOM folder; today a BOM-only commit does not rebuild the site.
+- [x] Check and deploy the BOM page and gap fixes (PR #61, merged 2026-11-22; `main` merged into `dev`).
 - [x] Check and deploy the 2026-11-22 site changes (PR #60, merged 2026-11-22; `main` merged into `dev`).
 - [x] Plan B note on the Power view power mux block (DEC-108, OPEN-041), 2026-11-21.
 - [x] Check and deploy the 2026-11-21 site changes (PR #58, merged 2026-11-21).
