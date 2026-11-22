@@ -42,11 +42,14 @@ const knownRefs = new Set(rowOfRef.keys())
 const flagged = bom.rows.filter((r) => missingOf(r).length)
 /** A committed file links to GitHub; an uncommitted one is not there yet. */
 const committed = bom.meta.date !== 'uncommitted'
+/** With a Description column the Value cell carries it, so Value gets wider. */
+const hasDesc = bom.meta.columns.description
 
 const rowText = (r: BomRow) =>
   [
     r.refs.join(' '),
     r.value,
+    r.description ?? '',
     r.mfr,
     r.mpn,
     r.lcsc,
@@ -110,7 +113,11 @@ export function BomPage() {
     () => [
       {
         id: 'refs',
-        meta: { thClassName: 'sm:w-[22%]' },
+        meta: {
+          thClassName: hasDesc
+            ? 'sm:w-[22%] md:w-[18%] lg:w-[16%]'
+            : 'sm:w-[22%]',
+        },
         accessorFn: (r) => r.refs[0],
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title='Refs' />
@@ -156,13 +163,27 @@ export function BomPage() {
       },
       {
         accessorKey: 'value',
-        meta: { thClassName: 'sm:w-[16%]' },
+        // wider with a Description; the steps keep MFR.P/N about as wide as before
+        meta: {
+          thClassName: hasDesc
+            ? 'sm:w-[24%] md:w-[20%] lg:w-[22%] xl:w-[24%]'
+            : 'sm:w-[16%]',
+        },
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title='Value' />
         ),
         cell: ({ row }) => (
           <span className='block min-w-0 [overflow-wrap:anywhere]'>
             <span className='font-medium'>{row.original.value || '-'}</span>
+            {/* on a phone only the detail row shows it */}
+            {row.original.description && (
+              <span
+                data-bom-desc
+                className='mt-0.5 hidden text-xs text-muted-foreground sm:block'
+              >
+                {row.original.description}
+              </span>
+            )}
             <Flag row={row.original} />
           </span>
         ),
@@ -345,6 +366,7 @@ function BomDetail({ row, linkedRef }: { row: BomRow; linkedRef?: string }) {
   const used = blocksFor(row)
   const decs = decisionsFor(row)
   const fields: [string, string | undefined][] = [
+    ['Description', row.description],
     ['MFR', row.mfr],
     ['MFR.P/N', row.mpn],
     ['LCSC', row.lcsc],
@@ -380,7 +402,12 @@ function BomDetail({ row, linkedRef }: { row: BomRow; linkedRef?: string }) {
             .map(([k, v]) => (
               <div key={k} className='contents'>
                 <dt className='text-muted-foreground'>{k}</dt>
-                <dd className='font-mono [overflow-wrap:anywhere]'>
+                <dd
+                  className={cn(
+                    '[overflow-wrap:anywhere]',
+                    k !== 'Description' && 'font-mono'
+                  )}
+                >
                   {v || '-'}
                 </dd>
               </div>

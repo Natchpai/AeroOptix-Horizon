@@ -32,7 +32,10 @@ export function SiteHeader({ title, pageTitle, fixed }: SiteHeaderProps) {
       </div>
       <Badge
         variant='outline'
-        className='hidden border-status-open/50 bg-status-open/10 text-status-open md:inline-flex'
+        // shown only when the content column has room for it (42rem): at
+        // 768 px the sidebar leaves too little and the header would scroll
+        // the page sideways; the sidebar footer shows the same phase
+        className='hidden border-status-open/50 bg-status-open/10 text-status-open md:@2xl/content:inline-flex'
         title={meta.specStatus}
       >
         {meta.phase} · not for fabrication

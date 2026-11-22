@@ -244,6 +244,7 @@ export type BomRow = {
   /** The MFR.P/N column */
   mpn: string
   /** Only when the export has the column */
+  description?: string
   footprint?: string
   status?: string
   /** The "Exclude from BOM" cell, only where it is not empty */
@@ -266,7 +267,12 @@ export type Bom = {
     /** Qty sum of the DNP rows */
     dnpParts: number
     /** Which optional columns the export has */
-    columns: { footprint: boolean; status: boolean; exclude: boolean }
+    columns: {
+      description: boolean
+      footprint: boolean
+      status: boolean
+      exclude: boolean
+    }
   }
   rows: BomRow[]
 }

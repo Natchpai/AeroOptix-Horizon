@@ -379,3 +379,90 @@ One entry per change: what changed, why, and which files were edited.
     row changed, on a build whose `?id=` matched by prefix, and on a
     build with Qty shown on phones (table 367 px in 356 px).
   - `HANDOFF.md`, `README.md`, `log.md`: docs.
+
+## 2026-11-22 T4: BOM Description column
+
+- What: the BOM page shows the Description text of the engineer's KiCad
+  export when the export has a Description column.
+  - The extractor reads Description as an optional column, like
+    Footprint: each `bom.json` row gets `description` and
+    `meta.columns.description` is set. An export without it still
+    builds, and the page then looks as before.
+  - At `sm` and up the Description is a muted second line under Value.
+    That fits better than a new column: the table already has eight
+    columns at `xl`, and Description explains the Value. With a
+    Description, Value gets wider and Refs narrower (Refs
+    22/18/16 %, Value 24/20/22/24 % at sm/md/lg/xl), so MFR.P/N keeps
+    about the width it had. At 1440 px the longest text wraps to three
+    lines inside the card, and the table is 1142 px in 1142 px.
+  - On a phone the row hides it; the detail row lists it first, in the
+    normal font.
+  - The text filter `q` also searches Description.
+- Why: the engineer's rev-A export (2026-11-22) has a Description on
+  every row.
+- Files:
+  - `scripts/extract-docs.ts`: optional Description column.
+  - `src/data/types.ts`: `BomRow.description`,
+    `Bom.meta.columns.description`.
+  - `src/features/bom/index.tsx`: second line under Value, column widths
+    with a Description, detail row field, filter text.
+  - `tests/ui.ts`: `bomPage` checks, when `bom.json` has descriptions,
+    that the first described row shows its Description at 1440 px, and
+    that `?q=` with a word found only in Descriptions (picked from the
+    data at run time) lists exactly the rows whose Description has it.
+    Both checks fail on the build from before this change (no
+    Description shown, no row found) and pass after it. With a test
+    export that has no Description column, the checks are skipped with
+    a warning and the column widths match the old build.
+  - `HANDOFF.md`, `README.md`, `log.md`: docs.
+
+## 2026-11-22 T5: no sideways scroll at 768 px
+
+- What: at 768 px every page was 840 px wide in a 768 px window (825 px
+  on the light Showcase), in both themes. The header row did not fit:
+  from `md` the 256 px sidebar shows and leaves a 504 px content column,
+  but the header needs about 598 px (sidebar button, the 211 px
+  "PRELIMINARY · not for fabrication" badge, the 160 px search, theme and
+  settings buttons, gaps). The theme and settings buttons sat past the
+  right edge and the page title shrank to nothing. It happened from 768
+  to about 860 px; 640, 1024 and 1280 px had no sideways scroll.
+  - The header badge now shows only when the content column is at least
+    42rem (672 px) wide (`md:@2xl/content:inline-flex`, a container query
+    on the existing `@container/content`). With the sidebar open that is
+    from about 936 px; with it closed, from 768 px. The sidebar footer
+    shows the same phase text, so nothing is lost. At 390 and 1440 px the
+    page looks the same as before (screenshots compared).
+  - After the fix, all 15 pages (Overview, About, the three diagram
+    views, both Pinout peripheral views, Decisions, Open items,
+    Checklist, Spec history, Traceability, Power budget, BOM, Showcase)
+    are exactly as wide as the window at 640, 768, 1024 and 1280 px, in
+    dark and light.
+- Why: a tablet-width window could scroll sideways, and the theme and
+  settings buttons were off screen.
+- Files:
+  - `src/components/layout/site-header.tsx`: the badge class.
+  - `tests/ui.ts`: the no-sideways-scroll loop also runs at 768 px (both
+    themes) and 1024 px (dark), for every route it covered at 390 px.
+    The zoom and view-tab checks still run at 390 px only. On the build
+    from before this change the loop fails 40 times, all at 768 px (20
+    routes, two themes, "840 px wide at 768 px"); after it, it passes.
+  - `HANDOFF.md`: Checks list.
+- Fix round 1: table headers at 768 px. With the 504 px content column,
+  two tables gave one column almost no width, and its header text ran
+  into the next header: Decisions ("Decision" over "Date") and
+  Traceability ("Requirement" over "DEC"). The other table pages (Open
+  items, Checklist, Spec history, Power budget, BOM, the Pinout tables)
+  had no overlap.
+  - Decisions: the On diagram column shows from the same 42rem content
+    width as the header badge (`md:@2xl/content:table-cell`), so Decision
+    gets 98 px at 768 px (0 px before). The row detail still lists the diagram
+    items.
+  - Traceability: the four count columns (DEC, OPEN, Tasks, Diagram) use
+    the same rule, so Requirement gets the width at 768 px, as on a phone.
+  - At 390 and 1440 px the tables are pixel-identical before and after.
+  - Files: `src/features/decisions/index.tsx`,
+    `src/features/trace/index.tsx`, `tests/ui.ts` (`headersClear`: at
+    768 px, dark, no two `thead th` text boxes overlap on Decisions, Open
+    items, Checklist, Spec history, Traceability, Power budget, BOM and
+    the four Pinout views; it fails on the build before this round with
+    the two overlaps above and passes after), `HANDOFF.md` (Checks).

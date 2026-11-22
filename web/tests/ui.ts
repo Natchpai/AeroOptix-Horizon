@@ -2,8 +2,9 @@
  * Browser checks on the built site, in the installed Microsoft Edge (in CI,
  * Playwright's bundled Chromium):
  * pages load, diagram lines are straight, link labels are clear, SVG
- * exports are plain valid SVG, phone width has no sideways scroll and opens
- * diagrams at a readable zoom, the light theme passes the same checks, and
+ * exports are plain valid SVG, phone width (390 px), tablet width (768 px)
+ * and 1024 px have no sideways scroll, phone width opens diagrams at a
+ * readable zoom, the light theme passes the same checks, and
  * a hash link changed in an open tab shows the new view, and Ctrl+K on a
  * decision or an open item (open or closed) opens its row on its page,
  * a next-action task chip opens its Checklist row, and an Overview
@@ -17,7 +18,8 @@
  * reserved table fits its card at 1440 px, an unknown linked ID shows a
  * notice on each table page (a known one, also when filtered, shows none),
  * the Power budget page draws one bar per Rail summary row, every Decisions
- * Date cell holds its text inside the cell, every page has its own browser tab title, the
+ * Date cell holds its text inside the cell, table header texts do not overlap
+ * at 768 px, every page has its own browser tab title, the
  * diagram view tabs fit at phone width, and light-theme status and evidence
  * badges have AA contrast, and the BOM page matches bom.json (rows, header
  * numbers, ?id= with a whole-ref match and DNP badge, flags on fitted rows
@@ -505,6 +507,67 @@ async function decisionDatesFit(browser: Browser) {
   for (const w of wide) fail(where, w)
   for (const e of v.errors) fail(where, `page error: ${e}`)
   await v.close()
+}
+
+/**
+ * At 768 px (sidebar open, narrow content) no two header cells of a table
+ * have overlapping text: the text of a too-narrow column spills into its
+ * neighbour. A cell's text box is the union of its text nodes' boxes.
+ */
+async function headersClear(browser: Browser) {
+  for (const route of [
+    'decisions',
+    'open',
+    'checklist',
+    'history',
+    'trace',
+    'power',
+    'bom',
+    'pinout?mcu=h743',
+    'pinout?mcu=f100',
+    'pinout?mcu=h743&view=peripheral',
+    'pinout?mcu=f100&view=peripheral',
+  ]) {
+    const where = `/${route} headers at 768 px`
+    const v = await open(browser, route, { width: 768 })
+    const hits = await v.page.evaluate(() => {
+      const out: string[] = []
+      for (const tr of document.querySelectorAll('thead tr')) {
+        const boxes = [...tr.querySelectorAll('th')].flatMap((th) => {
+          const walk = document.createTreeWalker(th, NodeFilter.SHOW_TEXT)
+          const range = document.createRange()
+          let l = Infinity
+          let r = -Infinity
+          let t = Infinity
+          let b = -Infinity
+          for (let n = walk.nextNode(); n; n = walk.nextNode()) {
+            if (!n.textContent?.trim()) continue
+            range.selectNodeContents(n)
+            const x = range.getBoundingClientRect()
+            if (!x.width) continue
+            l = Math.min(l, x.left)
+            r = Math.max(r, x.right)
+            t = Math.min(t, x.top)
+            b = Math.max(b, x.bottom)
+          }
+          return r > l ? [{ name: th.textContent!.trim(), l, r, t, b }] : []
+        })
+        boxes.forEach((a, i) => {
+          for (const c of boxes.slice(i + 1))
+            if (
+              a.l < c.r - 0.5 &&
+              c.l < a.r - 0.5 &&
+              a.t < c.b - 0.5 &&
+              c.t < a.b - 0.5
+            )
+              out.push(`header "${a.name}" overlaps "${c.name}"`)
+        })
+      }
+      return out
+    })
+    for (const h of hits) fail(where, h)
+    await v.close()
+  }
 }
 
 /**
@@ -1019,6 +1082,8 @@ type BomRow = {
   dnp: boolean
   lcsc: string
   mpn: string
+  /** Only when the export has a Description column */
+  description?: string
 }
 type BomJson = {
   meta: { rows: number; parts: number; dnpParts: number }
@@ -1086,7 +1151,9 @@ async function openedBomRow(page: Page) {
  * a filter that hides it) with its DNP badge; a fitted row with no MFR.P/N
  * or LCSC has the flag and no other row has it; ?dnp= lists the DNP or the
  * fitted rows only; an unknown ref shows the notice; the decisions listed
- * are the DEC rows whose Topic or Selected option names the MFR.P/N.
+ * are the DEC rows whose Topic or Selected option names the MFR.P/N; with a
+ * Description column, a row's Description shows at 1440 px and the filter
+ * finds a word that only a Description has.
  */
 async function bomPage(browser: Browser) {
   const { bom, dnpRef, unknown, prefixPair, shortRef } = bomRefs()
@@ -1137,6 +1204,47 @@ async function bomPage(browser: Browser) {
     if (gotFlags !== wantFlags)
       fail('/bom', `flagged rows are [${gotFlags}], not [${wantFlags}]`)
   })
+
+  // Description: one row's text shows in its row at 1440 px, and a word
+  // only Descriptions hold (no other cell of any row) filters to their rows
+  const described = bom.rows.find((r) => r.description)
+  if (described) {
+    const others = bom.rows
+      .flatMap((r) =>
+        Object.entries(r)
+          .filter(([k]) => k !== 'description')
+          .map(([, v]) => (Array.isArray(v) ? v.join(' ') : String(v)))
+      )
+      .concat('DNP')
+      .join(' ')
+      .toLowerCase()
+    const word = bom.rows
+      .flatMap((r) => (r.description ?? '').toLowerCase().match(/[a-z]{5,}/g) ?? [])
+      .find((w) => !others.includes(w))
+    await run('bom', async (page) => {
+      const cell = page.locator(
+        `tbody tr[id="${keyOf(described)}"] [data-bom-desc]`
+      )
+      const shown = (await cell.count()) === 1 && (await cell.isVisible())
+      const text = shown ? (await cell.innerText()).trim() : ''
+      if (text !== described.description)
+        fail(
+          '/bom',
+          `row ${keyOf(described)} shows Description "${text}", not "${described.description}"`
+        )
+    })
+    if (word) {
+      const route = `bom?q=${word}`
+      await run(route, async (page) => {
+        const got = (await tableRows(page)).map((r) => r.id).join(', ')
+        const want = bom.rows
+          .filter((r) => (r.description ?? '').toLowerCase().includes(word))
+          .map(keyOf)
+          .join(', ')
+        if (got !== want) fail(`/${route}`, `rows [${got}], not [${want}]`)
+      })
+    } else console.warn('test:ui: no word only in a BOM Description; q not checked')
+  } else console.warn('test:ui: bom.json has no Description; not checked')
 
   // the table fits its card: no scroll wrapper scrolls sideways
   for (const width of [390, 1440]) {
@@ -1364,6 +1472,7 @@ async function main() {
     await powerBars(browser)
     await bomPage(browser)
     await decisionDatesFit(browser)
+    await headersClear(browser)
     await lightContrast(browser)
     await pageTitles(browser)
     await openRowTopAligned(browser)
@@ -1410,8 +1519,15 @@ async function main() {
         await v.close()
       }
 
-    // phone width, both themes
-    for (const theme of ['dark', 'light'] as const)
+    // phone width and tablet width (768 px, where the sidebar first shows),
+    // both themes; 1024 px (lg) in dark only, to keep the run short
+    const sizes = [
+      ...(['dark', 'light'] as const).flatMap((theme) =>
+        [390, 768].map((width) => ({ width, theme }))
+      ),
+      { width: 1024, theme: 'dark' as const },
+    ]
+    for (const { width, theme } of sizes)
       for (const route of [
         '',
         'diagram?level=system',
@@ -1433,10 +1549,10 @@ async function main() {
         'showcase',
         'about',
       ]) {
-        const v = await open(browser, route, { width: 390, theme })
-        const where = `/${route} at 390 px ${theme}`
+        const v = await open(browser, route, { width, theme })
+        const where = `/${route} at ${width} px ${theme}`
         await noSideScroll(v.page, where)
-        if (route.startsWith('diagram')) {
+        if (width === 390 && route.startsWith('diagram')) {
           await readableZoom(v.page, where)
           await viewTabsFit(v.page, where)
         }
