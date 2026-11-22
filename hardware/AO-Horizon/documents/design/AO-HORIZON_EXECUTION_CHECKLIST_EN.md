@@ -1,6 +1,6 @@
 # AeroOptix-Horizon: Execution Checklist
 
-**Revision:** 0.78
+**Revision:** 0.79
 **Updated:** 2026-11-22
 **Status:** Active execution tracker; not an approval or verification record
 **Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.91
@@ -127,14 +127,14 @@ Firmware task P2-005 does not block the hardware release.
 | P3-010 | Define PCB fabrication parameters (layer count, stackup, copper weight, trace/space, hole/via, soldermask, finish) and review thermal and current constraints and manufacturability. Merged P3-006 on 2026-11-19. Include the servo copper current and temperature rise (OPEN-021, from P2-016) and the H743 copper (power budget section 11). Stackup and board rules drawn in `a70e6cc`, not decided (OPEN-040). | PCB-001 to PCB-005, MFG-001 to MFG-003, OPEN-040 | TBD | OPEN | Parameter record confirmed by the fabricator; manufacturing and thermal review |
 | P3-011 | Route PWM/actuator outputs and the H743↔F100 USART. Merged into P3-003 on 2026-11-19. | PCB-014, PCB-015 | TBD | N/A | See P3-003 |
 | P3-012 | Close the 5 V Plan B follow-ups (DEC-108, OPEN-041): MBR230LSFT1G ratings and drop, the Plan B population of the U101 resistors and the D103 status LED, and the LCSC check. Default BOM: U101 fitted, D105 and D106 DNP. Left: OPEN-041 items 1 to 5. | PWR-010, PWR-015 | Hardware | OPEN | OPEN-041 closed with datasheet evidence; Plan B BOM variant |
-| P3-013 | Decide the `+6V` ceramic capacitors C803 to C806 (4 × 22 µF 25 V 1210, GRM32ER71E226KE15L) in the 2026-11-22 10:23 save (OPEN-042): keep, change or remove, with the reason and the DC-bias check; then update the PCB from the schematic (C801 to C806 and C809, re-annotated) and place them. Decided 2026-11-22 (DEC-109, OPEN-042 closed): keep as drawn, low-ESR bulk, 17 µF each at 6 V (human owner value). Left: update the PCB from the schematic and place C803 to C806 near the servo headers. | PWR-011 | Hardware | OPEN | OPEN-042 closed with the human owner's decision; PCB updated from the schematic |
+| P3-013 | Update the PCB from the schematic for the `+6V` capacitors decided in DEC-109 (OPEN-042 closed 2026-11-22): C801 and C802 68 µF tantalum, C803 to C806 4 × 22 µF 25 V 1210 (GRM32ER71E226KE15L), C809 100 nF servo rail sense, as re-annotated in the 2026-11-22 10:23 save. Place C803 to C806 near the servo headers. Left: PCB update and placement. | PWR-011 | Hardware | OPEN | PCB updated from the schematic |
 
 ## P4: Bring-up and validation
 
 | ID     | Task | Req | Owner | Status | Evidence required / link |
 | ------ |---|---|---|---|---|
 | P4-001 | Inspect the assembled board for shorts, assembly defects, polarity, and component identity. |  | TBD | OPEN | Inspection record |
-| P4-002 | Verify power rails, sequencing, reset behavior, and current consumption before firmware loading. Also (moved from P1-007 and P1-014, 2026-11-21): B901 resets both MCUs and an F100 internal reset leaves the H743 running (OPEN-026, DEC-074); BOOT0 boot states with B902 held and released (DEC-095). Also (2026-11-21, DEC-097): scope `+6V` at CN801 and CN803 with all servos stalled; record the dip against the 156 µF bulk. Also (from P2-010, P2-016): servo current under load (P0-022); H743 current with PX4 and board temperature; `+3V3` and `+3V3A` load steps (power budget sections 5 and 11). | PWR-001, PWR-002, TST-004, TST-005 | TBD | OPEN | Measured bring-up log |
+| P4-002 | Verify power rails, sequencing, reset behavior, and current consumption before firmware loading. Also (moved from P1-007 and P1-014, 2026-11-21): B901 resets both MCUs and an F100 internal reset leaves the H743 running (OPEN-026, DEC-074); BOOT0 boot states with B902 held and released (DEC-095). Also (DEC-097, DEC-109): scope `+6V` at CN801 and CN803 with all servos stalled; record the dip against the 224 µF nominal bulk (2 × 68 µF + 4 × 22 µF). Also (from P2-010, P2-016): servo current under load (P0-022); H743 current with PX4 and board temperature; `+3V3` and `+3V3A` load steps (power budget sections 5 and 11). | PWR-001, PWR-002, TST-004, TST-005 | TBD | OPEN | Measured bring-up log |
 | P4-003 | Verify SWD access on the H743 and the F100. Merged P4-004 on 2026-11-19. | FUN-005, TST-001, TST-002 | TBD | OPEN | Probe/session log per MCU |
 | P4-004 | Verify SWD access for F100. Merged into P4-003 on 2026-11-19. | FUN-005, TST-002 | TBD | N/A | See P4-003 |
 | P4-005 | Verify the H743 USB FS hardware path, connector, protection, continuity, and relevant electrical behavior. Also (moved from P1-006 and P1-007, 2026-11-21): PA9 level and USB detection with the R603/R604 divider (DEC-080); with B902 held at reset, check which port the ST bootloader offers (USB DFU on PA11/PA12 expected, AN2606 `NOT_VERIFIED`). | IF-022 | TBD | OPEN | Hardware inspection/measurement record. Host enumeration may stay deferred. |
