@@ -2797,7 +2797,7 @@
 				)
 			)
 		)
-		(property "Description" "Tactile switch, SPST-NO, 4.2x3.2mm"
+		(property "Description" "Switch Tactile, SPST, SMD"
 			(at 116.84 147.32 0)
 			(hide yes)
 			(show_name no)
@@ -3719,7 +3719,7 @@
 				)
 			)
 		)
-		(property "Description" "Tactile switch, SPST-NO, 4.2x3.2mm"
+		(property "Description" "Switch Tactile, SPST, SMD"
 			(at 116.84 87.63 0)
 			(hide yes)
 			(show_name no)

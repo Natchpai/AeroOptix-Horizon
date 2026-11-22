@@ -155,7 +155,12 @@ export function DecisionsPage() {
       },
       {
         id: 'used',
-        meta: { className: 'hidden md:table-cell', thClassName: 'w-28' },
+        // only when the content column is 42rem wide: at 768 px the sidebar
+        // leaves too little, and Decision gets squeezed under Date
+        meta: {
+          className: 'hidden md:@2xl/content:table-cell',
+          thClassName: 'w-28',
+        },
         accessorFn: (r) => usedOn.get(r.id)?.length ?? 0,
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title='On diagram' />

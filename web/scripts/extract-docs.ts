@@ -500,7 +500,9 @@ function readBom() {
     'MFR',
     'MFR.P/N',
   ].map((h) => col(h, true))
-  const [cFp, cStatus, cExcl] = ['Footprint', 'STATUS', 'Exclude from BOM'].map((h) => col(h, false))
+  const [cDesc, cFp, cStatus, cExcl] = ['Description', 'Footprint', 'STATUS', 'Exclude from BOM'].map((h) =>
+    col(h, false)
+  )
 
   const seen = new Map<string, number>()
   const rows = records.slice(1).map(({ cells, line }) => {
@@ -528,6 +530,7 @@ function readBom() {
       lcsc: cells[cLcsc].trim(),
       mfr: cells[cMfr].trim(),
       mpn: cells[cMpn].trim(),
+      ...(cDesc >= 0 && { description: cells[cDesc].trim() }),
       ...(cFp >= 0 && { footprint: cells[cFp].trim() }),
       ...(cStatus >= 0 && { status: cells[cStatus].trim() }),
       // copied as written, only where the cell is not empty
@@ -565,7 +568,7 @@ function readBom() {
       rows: rows.length,
       parts,
       dnpParts: rows.filter((r) => r.dnp).reduce((n, r) => n + r.qty, 0),
-      columns: { footprint: cFp >= 0, status: cStatus >= 0, exclude: cExcl >= 0 },
+      columns: { description: cDesc >= 0, footprint: cFp >= 0, status: cStatus >= 0, exclude: cExcl >= 0 },
     },
     rows,
   }

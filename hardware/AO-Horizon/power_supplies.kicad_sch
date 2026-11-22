@@ -8557,7 +8557,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 87.63 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -8827,7 +8827,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 60.96 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -8971,7 +8971,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 265.43 53.34 0)
 			(hide yes)
 			(show_name no)
@@ -9108,7 +9108,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 82.55 62.23 0)
 			(hide yes)
 			(show_name no)
@@ -9244,7 +9244,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 368.3 198.12 0)
 			(hide yes)
 			(show_name no)
@@ -9389,7 +9389,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 163.83 63.5 0)
 			(hide yes)
 			(show_name no)
@@ -9534,7 +9534,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10nF 50V C0G 0402"
 			(at 294.64 113.03 0)
 			(hide yes)
 			(show_name no)
@@ -10232,7 +10232,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 218.44 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -10548,7 +10548,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10nF 50V C0G 0402"
 			(at 322.58 203.2 0)
 			(hide yes)
 			(show_name no)
@@ -10763,7 +10763,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 317.5 176.53 0)
 			(hide yes)
 			(show_name no)
@@ -11025,7 +11025,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10nF 50V C0G 0402"
 			(at 129.54 190.5 0)
 			(hide yes)
 			(show_name no)
@@ -11172,7 +11172,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 173.99 63.5 0)
 			(hide yes)
 			(show_name no)
@@ -11317,7 +11317,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 307.34 176.53 0)
 			(hide yes)
 			(show_name no)
@@ -11541,7 +11541,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 238.76 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -11811,7 +11811,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 228.6 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -12158,7 +12158,7 @@
 				)
 			)
 		)
-		(property "Description" "Schottky diode"
+		(property "Description" "DIODE SCHOTTKY 30V SOD-123FL"
 			(at 73.66 130.81 0)
 			(hide yes)
 			(show_name no)
@@ -12283,7 +12283,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 97.79 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -12835,7 +12835,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 107.95 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -13214,7 +13214,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10nF 50V C0G 0402"
 			(at 312.42 200.66 0)
 			(hide yes)
 			(show_name no)
@@ -13701,7 +13701,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 50.8 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -14052,7 +14052,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x06, mounting pin"
+		(property "Description" "CONN HEADER SMD R/A 2mm"
 			(at 45.72 82.55 0)
 			(hide yes)
 			(show_name no)
@@ -14628,7 +14628,7 @@
 				)
 			)
 		)
-		(property "Description" "Inductor"
+		(property "Description" "FIXED IND 330nH 1.2A 130mΩ 0603"
 			(at 73.66 168.91 0)
 			(hide yes)
 			(show_name no)
@@ -14843,7 +14843,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 184.15 110.49 0)
 			(hide yes)
 			(show_name no)
@@ -15260,7 +15260,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 119.38 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -15474,7 +15474,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 186.69 63.5 0)
 			(hide yes)
 			(show_name no)
@@ -15610,7 +15610,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 356.87 198.12 0)
 			(hide yes)
 			(show_name no)
@@ -15747,7 +15747,7 @@
 				)
 			)
 		)
-		(property "Description" "TVS/ESD diode, unidirectional"
+		(property "Description" "TVS DIODE 5VWM 9.2VC SOD-123FL"
 			(at 63.5 62.23 0)
 			(hide yes)
 			(show_name no)
@@ -16152,7 +16152,7 @@
 				)
 			)
 		)
-		(property "Description" "Polarized capacitor"
+		(property "Description" "CAP TANT 47uF ±10% 10V CASE-B-3528-21"
 			(at 148.59 63.5 0)
 			(hide yes)
 			(show_name no)
@@ -16531,7 +16531,7 @@
 				)
 			)
 		)
-		(property "Description" "Inductor"
+		(property "Description" "2.5A 3.3uH ±20% 85mΩ 3.5A Molded inductor SMD,4.4x4.1mm Fixed Inductors RoHS"
 			(at 181.61 168.91 0)
 			(hide yes)
 			(show_name no)
@@ -16946,7 +16946,7 @@
 				)
 			)
 		)
-		(property "Description" "Schottky diode"
+		(property "Description" "DIODE SCHOTTKY 30V SOD-123FL"
 			(at 73.66 143.51 0)
 			(hide yes)
 			(show_name no)
@@ -17202,7 +17202,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 208.28 182.88 0)
 			(hide yes)
 			(show_name no)

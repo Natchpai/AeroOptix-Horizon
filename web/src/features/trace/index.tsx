@@ -47,6 +47,9 @@ const live = traceRows.filter((r) => !r.req.removed).length
 const removed = traceRows.length - live
 
 const label = detailLabel
+// the four count columns show only when the content column is 42rem wide:
+// at 768 px the sidebar leaves too little, and Requirement gets squeezed
+const countShown = 'hidden md:@2xl/content:table-cell'
 
 function Flag({ children }: { children: string }) {
   return (
@@ -259,16 +262,16 @@ export function TracePage() {
                   <TableRow>
                     <TableHead className='w-28 ps-6'>ID</TableHead>
                     <TableHead>Requirement</TableHead>
-                    <TableHead className='hidden w-20 text-center md:table-cell'>
+                    <TableHead className={cn('w-20 text-center', countShown)}>
                       DEC
                     </TableHead>
-                    <TableHead className='hidden w-20 text-center md:table-cell'>
+                    <TableHead className={cn('w-20 text-center', countShown)}>
                       OPEN
                     </TableHead>
-                    <TableHead className='hidden w-20 text-center md:table-cell'>
+                    <TableHead className={cn('w-20 text-center', countShown)}>
                       Tasks
                     </TableHead>
-                    <TableHead className='hidden w-20 text-center md:table-cell'>
+                    <TableHead className={cn('w-20 text-center', countShown)}>
                       Diagram
                     </TableHead>
                   </TableRow>
@@ -317,7 +320,7 @@ function TraceTableRow({
 }) {
   const r = row
   const cell = 'py-2 align-top'
-  const count = cn(cell, 'hidden text-center md:table-cell')
+  const count = cn(cell, 'text-center', countShown)
   return (
     <>
       <TableRow

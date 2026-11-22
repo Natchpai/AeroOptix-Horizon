@@ -1,6 +1,7 @@
 # Builds the team website in web/ and publishes it to GitHub Pages.
 # The build reads the design records (spec, pin allocation, execution
-# checklist) and the root README, so a merged docs change redeploys the site.
+# checklist), the BOM export and the root README, so a merged docs or BOM
+# change redeploys the site.
 # One-time setup: Settings > Pages > Source: "GitHub Actions".
 name: Deploy website
 
@@ -10,6 +11,7 @@ on:
     paths:
       - 'web/**'
       - 'hardware/AO-Horizon/documents/design/**'
+      - 'hardware/AO-Horizon/documents/manufacturing/Assembly/BOM/**'
       - 'README.md'
       - '.github/workflows/pages.yml'
   workflow_dispatch:

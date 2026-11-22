@@ -123,6 +123,7 @@
 		)
 		(capping no)
 		(filling no)
+		(zone_defaults)
 		(grid_origin 110 140)
 		(pcbplotparams
 			(layerselection 0x00000000_00000000_55555555_5755f5ff)
@@ -801,7 +802,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1382,6 +1383,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -1492,6 +1494,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -1579,7 +1582,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1858,7 +1861,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2471,6 +2474,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -3122,7 +3126,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3856,7 +3860,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -4978,6 +4982,19 @@
 				)
 			)
 		)
+		(property "STATUS" "CHECKED"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "66e7c4c5-02d1-4367-b218-3d95362bf8ba")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "Pin* Test*")
 		(path "/85f6b8f0-e85e-4d9f-8681-ac148f93be5a/e4fd025c-5aca-4297-81cf-f2f81b4535ba/4ee0dfff-6434-4eef-8887-c8ddb97e08e6")
 		(sheetname "/Top/Connector - USB & Debug/")
@@ -4988,6 +5005,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -5075,7 +5093,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5620,7 +5638,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5899,7 +5917,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -6175,7 +6193,7 @@
 				)
 			)
 		)
-		(property "Description" "XT30 power connector, male plug, right angle"
+		(property "Description" "Connector XT30PW30-M.G.* Male Plug Right Angle for RC ESC"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -7824,7 +7842,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -8730,7 +8748,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -9275,7 +9293,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10nF 50V C0G 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -9852,7 +9870,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -10398,7 +10416,7 @@
 				)
 			)
 		)
-		(property "Description" "TVS/ESD diode, unidirectional"
+		(property "Description" "TVS DIODE 5VWM 9.2VC SOD-123FL"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -11227,7 +11245,7 @@
 				)
 			)
 		)
-		(property "Description" "Schottky diode"
+		(property "Description" "DIODE SCHOTTKY 30V SOD-123FL"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -11522,7 +11540,7 @@
 				)
 			)
 		)
-		(property "Description" "Polarized capacitor"
+		(property "Description" "CAP TANT 47uF ±10% 10V CASE-B-3528-21"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -11798,7 +11816,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10nF 50V C0G 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -12090,7 +12108,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -12369,7 +12387,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -12914,7 +12932,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -13193,7 +13211,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -14003,7 +14021,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x03"
+		(property "Description" "CONN HEADER 3POS 2.54mm SINGLE ROW TH R/A"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -14797,7 +14815,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x04, mounting pin"
+		(property "Description" "CONN HEADER SMD R/A 4POS 1.25mm"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15708,6 +15726,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -16518,7 +16537,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -16878,7 +16897,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -18522,7 +18541,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -18801,7 +18820,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x06, mounting pin"
+		(property "Description" "CONN HEADER SMD R/A 6POS 1.25mm"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -19177,7 +19196,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -19534,7 +19553,7 @@
 				)
 			)
 		)
-		(property "Description" "Pin header, triple row, 12 pins, 2.54mm pitch, right angle, through hole"
+		(property "Description" "Pin Header 12 Position 2.54mm Pitch Triple Row Through Hole, Right Angle -55℃~+125℃"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -20272,7 +20291,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -21590,7 +21609,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -21869,7 +21888,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -22564,7 +22583,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -23836,7 +23855,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -25183,7 +25202,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x04, mounting pin"
+		(property "Description" "CONN HEADER SMD R/A 4POS 1.25mm"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -26071,7 +26090,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -26616,7 +26635,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -27161,7 +27180,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 4.7uF 16V X7R 0603"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -27757,7 +27776,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x10, mounting pin"
+		(property "Description" "CONN HEADER SMD R/A 10POS 1.25mm"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -28478,7 +28497,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -28757,7 +28776,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 2.2uF 16V X7R 0603"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -29383,7 +29402,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -32056,7 +32075,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -33780,7 +33799,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -34406,7 +34425,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -34685,7 +34704,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10nF 50V C0G 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -35762,7 +35781,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -36327,7 +36346,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -37952,7 +37971,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -39484,7 +39503,7 @@
 				)
 			)
 		)
-		(property "Description" "Inductor"
+		(property "Description" "FIXED IND 330nH 1.2A 130mΩ 0603"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -40026,7 +40045,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10nF 50V C0G 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -40934,6 +40953,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -41020,7 +41040,7 @@
 				)
 			)
 		)
-		(property "Description" "Polarized capacitor"
+		(property "Description" "CAP TANT 68uF ±20% 16V CASE-C-6032"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -41297,7 +41317,7 @@
 				)
 			)
 		)
-		(property "Description" "Tactile switch, SPST-NO, 4.2x3.2mm"
+		(property "Description" "Switch Tactile, SPST, SMD"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -42160,7 +42180,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 2.2uF 16V X7R 0603"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -42459,7 +42479,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -42737,7 +42757,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x06, mounting pin"
+		(property "Description" "CONN HEADER SMD R/A 6POS 1mm"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -43639,7 +43659,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -43918,7 +43938,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -44761,7 +44781,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -45902,7 +45922,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -46263,7 +46283,7 @@
 				)
 			)
 		)
-		(property "Description" "Inductor"
+		(property "Description" "2.5A 3.3uH ±20% 85mΩ 3.5A Molded inductor SMD,4.4x4.1mm Fixed Inductors RoHS"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -46816,7 +46836,7 @@
 				)
 			)
 		)
-		(property "Description" "Pin header, triple row, 12 pins, 2.54mm pitch, right angle, through hole"
+		(property "Description" "Pin Header 12 Position 2.54mm Pitch Triple Row Through Hole, Right Angle -55℃~+125℃"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -47289,7 +47309,7 @@
 				)
 			)
 		)
-		(property "Description" "TVS/ESD diode, unidirectional"
+		(property "Description" "TVS DIODE 7.5VWM 12.9VC SOD-123FL"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -47851,7 +47871,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -49872,7 +49892,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -51623,7 +51643,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x06, mounting pin"
+		(property "Description" "CONN HEADER SMD R/A 6POS 1.25mm"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -52592,7 +52612,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -52871,7 +52891,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -53743,7 +53763,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -54567,7 +54587,7 @@
 				)
 			)
 		)
-		(property "STATUS" "CHECKED"
+		(property "STATUS" ""
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -54590,6 +54610,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -55475,7 +55496,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 2.2uF 16V X7R 0603"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -55774,7 +55795,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -56423,6 +56444,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -57503,7 +57525,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -57779,7 +57801,7 @@
 				)
 			)
 		)
-		(property "Description" "Pin header, triple row, 12 pins, 2.54mm pitch, right angle, through hole"
+		(property "Description" "Pin Header 12 Position 2.54mm Pitch Triple Row Through Hole, Right Angle -55℃~+125℃"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -59049,7 +59071,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -60667,7 +60689,7 @@
 				)
 			)
 		)
-		(property "Description" "Schottky diode"
+		(property "Description" "DIODE SCHOTTKY 30V SOD-523"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -60953,7 +60975,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -61579,7 +61601,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10nF 50V C0G 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -62403,7 +62425,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -62948,7 +62970,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -63759,7 +63781,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -64037,7 +64059,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x06, mounting pin"
+		(property "Description" "CONN HEADER SMD R/A 2mm"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -65185,7 +65207,7 @@
 				)
 			)
 		)
-		(property "Description" "Schottky diode"
+		(property "Description" "DIODE SCHOTTKY 30V SOD-123FL"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -65482,7 +65504,7 @@
 				)
 			)
 		)
-		(property "Description" "Schottky diode"
+		(property "Description" "DIODE SCHOTTKY 30V SOD-523"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -65768,7 +65790,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -67034,7 +67056,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -67580,7 +67602,7 @@
 				)
 			)
 		)
-		(property "Description" "Schottky diode"
+		(property "Description" "DIODE SCHOTTKY 30V SOD-523"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -67866,7 +67888,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 4.7uF 16V X7R 0603"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -68165,7 +68187,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -69278,6 +69300,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -69667,6 +69690,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -70802,7 +70826,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -71081,7 +71105,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -71360,7 +71384,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -71639,7 +71663,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 4.7uF 16V X7R 0603"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -72204,7 +72228,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 2.2uF 16V X7R 0603"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -73227,7 +73251,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -74435,7 +74459,7 @@
 				)
 			)
 		)
-		(property "Description" "Polarized capacitor"
+		(property "Description" "CAP TANT 68uF ±20% 16V CASE-C-6032"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -74711,7 +74735,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -75072,7 +75096,7 @@
 				)
 			)
 		)
-		(property "Description" "Tactile switch, SPST-NO, 4.2x3.2mm"
+		(property "Description" "Switch Tactile, SPST, SMD"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -75689,7 +75713,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 10uF 16V X7R 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -76049,7 +76073,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 100nF 50V X7R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -76328,7 +76352,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "CAP CER 2.2uF 16V X7R 0603"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
