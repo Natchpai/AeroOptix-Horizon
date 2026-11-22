@@ -266,6 +266,11 @@ Notable changes to this hardware project are documented here.
 - Power budget rev 0.38 (`ea1756a`): rail summary table in section 4.
 - Schematic (2026-11-22, human owner, `b19c89c`, `7c47941`): CN707 to CN710 and TP601 to TP606 excluded from the BOM; TP601 to TP606 use the new project symbol `0_Conn:TestPoint`, nets unchanged; title block rev A on seven sheets; BOM export job and `BOM_AO-Horizon_rev-A_2026-11-22.csv`.
 - Specification rev 0.88 and checklist rev 0.76 (2026-11-22): no new IDs, REF-04; see the change-note.
+- Schematic (2026-11-22, human owner, `c12bd87`): supplier-style Description fields on the placed parts. 09:47 save: C805 to C808, 4 × 10 µF on `+6V`, drawn, not decided; the servo-rail 100 nF is now C809. ERC report 09:48, 0 errors, 0 warnings.
+- PCB (2026-11-22 09:23 save, human owner): Description fields and BOM exclusion on the test pads, solder pads and net ties; not yet updated for C805 to C809.
+- BOM export `BOM_AO-Horizon_rev-A_2026-11-22.csv` (human owner): adds the Description and Footprint columns; TP605 excluded; 58 rows, 251 parts.
+- Website: the BOM page shows the Description, and no page scrolls sideways at 768 px.
+- Specification rev 0.89 and checklist rev 0.77 (2026-11-22): OPEN-042, P3-013, DEC-066 (pointer), REF-04; see the change-note.
 
 ### Fixed
 
