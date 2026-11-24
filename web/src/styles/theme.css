@@ -42,7 +42,8 @@
   --sidebar-border: #d9e1ec;
   --sidebar-ring: #529ad6;
 
-  /* Power rails, one colour each: battery red, 6 V orange, 5 V yellow,
+  /* Power rails, one colour each: battery red, servo rails (+VSERVO1 and
+     +VSERVO2 share it) orange, 5 V yellow,
      3.3 V pink (engineer's choice), 3.3 VA indigo */
   --rail-batt: #dc2626;
   --rail-6v: #ea580c;

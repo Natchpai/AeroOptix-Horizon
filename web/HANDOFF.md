@@ -72,7 +72,7 @@ Rules for content, drawing, look and checks are in `CLAUDE.md`. Commands are in 
 | Rail or bus | Bus id | Light | Dark |
 |---|---|---|---|
 | Battery (6S) | `batt` | `#dc2626` | `#ef4444` |
-| +6V | `v6` | `#ea580c` | `#f97316` |
+| Servo rail (`+VSERVO1`, `+VSERVO2`, shared) | `v6` | `#ea580c` | `#f97316` |
 | +5V (incl. `+VIN`, VBUS) | `v5` | `#ca8a04` | `#facc15` |
 | +3.3V | `v3v3` | `#c026d3` | `#e879f9` |
 | +3.3VA | `v3v3a` | `#4f46e5` | `#818cf8` |

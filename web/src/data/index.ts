@@ -58,7 +58,7 @@ export const busInfo: Record<
   { label: string; color: string; power?: boolean }
 > = {
   batt: { label: 'Battery', color: 'var(--rail-batt)', power: true },
-  v6: { label: '+6V', color: 'var(--rail-6v)', power: true },
+  v6: { label: 'Servo rail', color: 'var(--rail-6v)', power: true },
   v5: { label: '+5V', color: 'var(--rail-5v)', power: true },
   v3v3: { label: '+3.3V', color: 'var(--rail-3v3)', power: true },
   v3v3a: { label: '+3.3VA', color: 'var(--rail-3v3a)', power: true },

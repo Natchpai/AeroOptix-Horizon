@@ -467,3 +467,42 @@ One entry per change: what changed, why, and which files were edited.
     items, Checklist, Spec history, Traceability, Power budget, BOM and
     the four Pinout views; it fails on the build before this round with
     the two overlaps above and passes after), `HANDOFF.md` (Checks).
+
+## 2026-11-24 T1: dual servo rail on the diagrams
+
+- What: the diagrams follow spec rev 0.93 (DEC-110 to DEC-114). The one
+  6 V UBEC, the XT30 and the 6 V bus become two rails, `+VSERVO1` and
+  `+VSERVO2`, each with its own UBEC and 1x3 input header.
+  - Overview: UBEC 1 and UBEC 2 on the ESC battery pads (the ESC block is
+    taller for three right-side ends at 440, 540 and 640), each into its
+    port, `+VSERVO1 in, CN804` and `+VSERVO2 in, CN805`, in place of the
+    XT30 port. The servo-header power line is labelled `+VSERVO1, +VSERVO2`.
+  - System: CN801 and CN803 name their rail. The rail-sense line from
+    CN803 is the `+VSERVO2` sense to F100 PA5. The `+VSERVO1` sense (PA4)
+    is not drawn: CN801 must face the H743, and GPS1 already takes the one
+    connector-column slot that spans both MCUs, so a straight PA4 line
+    would break a drawing rule (engineer: "Draw PA5 only"). PA4 is listed
+    in `pinsNotOnDiagram`, and the CN801 note says why.
+  - Power: two rows, UBEC 1 to CN804 to the tilt servos and UBEC 2 to
+    CN805 to the surface servos, 88 px apart and centred on the ESC.
+  - Both rails share the orange `v6` colour, now named "Servo rail"
+    (engineer's choice). The Power budget page maps the `+VSERVO1` and
+    `+VSERVO2` Rail summary rows to UBEC 1 and UBEC 2.
+- Why: the schematic split the servo supply (commit `453b23d`); the
+  engineer asked to update the topology, power tree and pin assignment.
+- Files:
+  - `src/data/topology.ts`: blocks `ubec2`, `o-vservo1`, `o-vservo2`,
+    `pw-ubec2`, `pw-cn804`, `pw-cn805`, `pw-servos2` (removed `o-xt30`,
+    `pw-xt30`); links `s-esc-ubec2`, `s-ubec2-fc`, `pw-esc-ubec2`,
+    `pw-ubec-cn804`, `pw-ubec2-cn805`, `pw-cn804-servo`, `pw-cn805-servo`
+    (removed `pw-ubec-xt30`, `pw-xt30-servo`); `b-servo-sense` selects the
+    PA5 row; the PA4 entry in `pinsNotOnDiagram`.
+  - `src/data/places.ts`: the new positions, zones and `lineAt`.
+  - `src/data/index.ts`: bus `v6` label "Servo rail".
+  - `src/features/power/index.tsx`: `railStyle` for `+VSERVO1` and
+    `+VSERVO2`.
+  - `src/styles/theme.css`, `HANDOFF.md`: rail colour note and table.
+  - Checks: `npm run check`, `npm run build` and `npm run test:ui` pass
+    (`UI_BROWSER=` with the bundled Chromium; Edge is not installed on
+    this Mac). Screenshots of Overview, System, Power, Power budget and
+    Pinout at 1440 px dark and light and 390 px dark.

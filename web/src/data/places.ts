@@ -30,9 +30,10 @@ export const places: Record<Level, Record<string, Place>> = {
 
     // power in / out ports, left of the FC; the ESC headers face the ESC
     'o-pm': { x: -460, y: 200, w: 240 },
-    'o-xt30': { x: -460, y: 400, w: 240 },
-    'o-esc': { x: -460, y: 500, w: 240 },
-    'o-servo': { x: -460, y: 600, w: 240 },
+    'o-vservo1': { x: -460, y: 410, w: 240 },
+    'o-vservo2': { x: -460, y: 510, w: 240 },
+    'o-esc': { x: -460, y: 610, w: 240 },
+    'o-servo': { x: -460, y: 710, w: 240 },
 
     // normal connectors, right of the FC, 92 apart
     'o-tel1': { x: 480, y: 0, w: 240 },
@@ -46,12 +47,14 @@ export const places: Record<Level, Record<string, Place>> = {
     'o-dbg': { x: 480, y: 736, w: 240 },
 
     // power chain, left to right: battery, PM02D (battery down to the ESC),
-    // 4in1 ESC (no PDB, DEC-054; UBEC on its pads at 430, ESC headers at
-    // 530), UBEC into the XT30
+    // 4in1 ESC (no PDB, DEC-054; tall for three right-side ends 100 apart,
+    // centred on 540: UBEC 1 at 440, UBEC 2 at 540, ESC headers at 640),
+    // one UBEC per servo rail into its 1x3 header (DEC-114)
     battery: { x: -1540, y: 200 },
     pm02d: { x: -1180, y: 140, h: 180 },
-    esc: { x: -1210, y: 380, w: 260, h: 200 },
-    ubec: { x: -820, y: 400 },
+    esc: { x: -1210, y: 380, w: 260, h: 320 },
+    ubec: { x: -820, y: 410 },
+    ubec2: { x: -820, y: 510 },
 
     // devices, level with their ports, wide enough for their notes
     sik: { x: 940, y: 0, w: 260 },
@@ -144,10 +147,14 @@ export const places: Record<Level, Record<string, Place>> = {
 
     'pw-buck': { x: 1440, y: 270 },
     'pw-ldo': { x: 1440, y: 470, w: 240, h: 180 },
-    'pw-ubec': { x: 1440, y: 930 },
+    // one UBEC per servo rail (DEC-114): two rows 88 apart, centred on the
+    // ESC (960), clear of the 5 V ports block above
+    'pw-ubec': { x: 1440, y: 886, w: 240 },
+    'pw-ubec2': { x: 1440, y: 974, w: 240 },
 
     'pw-r3v3': { x: 1820, y: 130, w: 120, h: 340 },
-    'pw-xt30': { x: 1800, y: 930 },
+    'pw-cn804': { x: 1800, y: 886, w: 240 },
+    'pw-cn805': { x: 1800, y: 974, w: 240 },
 
     // loads wide enough for their part numbers in full
     'pw-h743': { x: 2120, y: 145, w: 300, h: 140 },
@@ -155,7 +162,8 @@ export const places: Record<Level, Record<string, Place>> = {
     'pw-baro-mag': { x: 2120, y: 485, w: 300 },
     'pw-imu': { x: 2120, y: 575, w: 300 },
     'pw-ports': { x: 2120, y: 790, w: 300 },
-    'pw-servos': { x: 2120, y: 930, w: 300 },
+    'pw-servos': { x: 2120, y: 886, w: 300 },
+    'pw-servos2': { x: 2120, y: 974, w: 300 },
   },
 }
 
@@ -181,7 +189,8 @@ export const zones: Partial<Record<Level, Zone[]>> = {
       blocks: [
         'fc',
         'o-pm',
-        'o-xt30',
+        'o-vservo1',
+        'o-vservo2',
         'o-esc',
         'o-servo',
         'o-tel1',
@@ -198,7 +207,7 @@ export const zones: Partial<Record<Level, Zone[]>> = {
     {
       id: 'z-out-pwr',
       label: 'Out board: power and ESC',
-      blocks: ['battery', 'pm02d', 'esc', 'ubec'],
+      blocks: ['battery', 'pm02d', 'esc', 'ubec', 'ubec2'],
     },
     {
       id: 'z-out-dev',
@@ -279,9 +288,11 @@ export const lineAt: Record<string, number> = {
   // Overview: PM02D to its port, two lines 28 apart, centred on both
   's-pm-fc-pwr': 216,
   's-pm-fc-i2c': 244,
-  // ESC right side: UBEC and ESC header lines, centred on the ESC (480)
-  's-esc-ubec': 430,
-  's-fc-esc': 530,
+  // ESC right side: two UBEC lines and the ESC header line, centred on
+  // the ESC (540)
+  's-esc-ubec': 440,
+  's-esc-ubec2': 540,
+  's-fc-esc': 640,
   // servo headers to servos pair, centred on both (-340)
   's-fc-servo': -354,
   's-fc-servo-pwr': -326,
