@@ -4572,7 +4572,7 @@
 	)
 	(text "LDO 3V3 500mA"
 		(exclude_from_sim no)
-		(at 283.21 153.67 0)
+		(at 284.48 153.67 0)
 		(effects
 			(font
 				(face "Century Gothic")
@@ -7675,7 +7675,7 @@
 		)
 	)
 	(label "EXT_I2C4_SCL"
-		(at 78.74 81.28 0)
+		(at 74.93 81.28 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -7738,7 +7738,7 @@
 		(uuid "878258d0-7316-4d76-aba2-788614be0e68")
 	)
 	(label "EXT_I2C4_SDA"
-		(at 78.74 83.82 0)
+		(at 74.93 83.82 0)
 		(effects
 			(font
 				(size 1.27 1.27)

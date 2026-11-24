@@ -49,9 +49,11 @@ const railStyle = (rail: string) =>
       ? { color: 'var(--rail-3v3)', block: 'pw-buck' }
       : /^5 V/.test(rail)
         ? { color: 'var(--rail-5v)', block: 'pw-pmux' }
-        : /^6 V/.test(rail)
+        : /^6 V|VSERVO1/.test(rail)
           ? { color: 'var(--rail-6v)', block: 'pw-ubec' }
-          : { color: 'var(--muted-foreground)', block: undefined }
+          : /VSERVO2/.test(rail)
+            ? { color: 'var(--rail-6v)', block: 'pw-ubec2' }
+            : { color: 'var(--muted-foreground)', block: undefined }
 
 /**
  * The Power view block a load row belongs to: one whose part number is in

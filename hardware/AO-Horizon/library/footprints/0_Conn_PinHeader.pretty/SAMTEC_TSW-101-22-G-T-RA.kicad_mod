@@ -1,0 +1,266 @@
+(footprint "SAMTEC_TSW-101-22-G-T-RA"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0.905 -10.42 0)
+		(layer "F.SilkS")
+		(uuid "eeaaaa8c-6e9e-42ec-82bb-8fa8323cbb4c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "SAMTEC_TSW-101-22-G-T-RA"
+		(at 12.97 8.975 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "2d71c95b-d52a-461c-9433-cf3de9f6d40f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "755a16c3-6282-43e4-ac18-347ab86434ba")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "211bafbe-7651-4573-8627-cac1729ee09a")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(attr through_hole)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -1.27 1.27)
+		(end -1.27 -1.27)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "423cea77-0def-42a7-be99-9cf3317b4e60")
+	)
+	(fp_line
+		(start 1.27 -1.27)
+		(end -1.27 -1.27)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "ee25fd01-315c-4c5e-b09a-0a42f8ba6438")
+	)
+	(fp_line
+		(start 1.27 -1.27)
+		(end 1.27 1.27)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "496aab64-687d-4c5b-80a7-1c696e5b016b")
+	)
+	(fp_line
+		(start 1.27 1.27)
+		(end -1.27 1.27)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "339cbac3-b499-4454-96a3-ad8b55954322")
+	)
+	(fp_poly
+		(pts
+			(xy -1.45 -2.533333) (xy -1.45 -3.066667) (xy -1.05 -2.8)
+		)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill yes)
+		(layer "F.SilkS")
+		(uuid "d44b6527-1533-4d9a-b411-4bdcbd9a41c4")
+	)
+	(fp_line
+		(start -1.52 -8.785)
+		(end 1.52 -8.785)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "479ff846-a06d-49de-95ed-eb9df94b240c")
+	)
+	(fp_line
+		(start -1.52 7.36)
+		(end -1.52 -8.785)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "ffdfd33f-aa2f-45b9-a5fa-36819a918902")
+	)
+	(fp_line
+		(start 1.52 -8.785)
+		(end 1.52 7.36)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "2a5cd7c6-a6c6-49e9-a6de-d828579f684d")
+	)
+	(fp_line
+		(start 1.52 7.36)
+		(end -1.52 7.36)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "282f4fc4-df5a-4b8a-a118-cdc0e54636fb")
+	)
+	(fp_line
+		(start -1.27 -1.27)
+		(end 1.27 -1.27)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "0b7abc38-95ed-4cf2-b7b4-aba5aaa6ca64")
+	)
+	(fp_line
+		(start -1.27 1.27)
+		(end -1.27 -1.27)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "0c904d21-f5e5-48a2-a297-546d0f17ecfe")
+	)
+	(fp_line
+		(start -0.5 -1.257107)
+		(end 0 -0.55)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "7b004a76-5abb-4e3e-b887-01f265bf6a07")
+	)
+	(fp_line
+		(start 0 -0.55)
+		(end 0.5 -1.257107)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "a4ec1846-bcf7-4441-b27d-2eabbd1b75e5")
+	)
+	(fp_line
+		(start 1.27 -1.27)
+		(end 1.27 1.27)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "3a07badb-6d7f-4d48-80df-a0d56cf8f985")
+	)
+	(fp_line
+		(start 1.27 1.27)
+		(end -1.27 1.27)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "2ae350ab-c382-44f0-bf43-35bf1759538a")
+	)
+	(fp_rect
+		(start -0.5 -8.2)
+		(end 0.5 -1.27)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "c58e0941-3458-4949-bc40-5db98c4227b7")
+	)
+	(fp_rect
+		(start -0.5 1.2875)
+		(end 0.5 7.1125)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "81b25237-8b09-428d-bc1a-23506441eef9")
+	)
+	(pad "1a" thru_hole rect
+		(at 0 -2.77)
+		(size 1.7 1.7)
+		(drill 1.02)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(solder_mask_margin 0.102)
+		(uuid "7fe98f02-d09c-462c-aa1a-5d8ded195b34")
+	)
+	(pad "1b" thru_hole circle
+		(at 0 -5.31)
+		(size 1.7 1.7)
+		(drill 1.02)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(solder_mask_margin 0.102)
+		(uuid "bc0053d5-89a1-42e6-888b-612b90a10441")
+	)
+	(pad "1c" thru_hole circle
+		(at 0 -7.85)
+		(size 1.7 1.7)
+		(drill 1.02)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(solder_mask_margin 0.102)
+		(uuid "6173e691-6a5a-497e-b325-323d755cc50d")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/library/3D/Conn_Header/SAMTEC_TSW-101-22-G-T-RA.step"
+		(offset
+			(xyz 0 1.25 4)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -0 -180 -180)
+		)
+	)
+)

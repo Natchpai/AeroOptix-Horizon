@@ -146,8 +146,11 @@ export function PackageView({ mcu, selected, onPick }: Props) {
         const anchor = p.side === 0 ? 'end' : 'start'
         // both vertical sides read bottom to top
         const rot = vertical ? -90 : 0
+        // the first word of the Signal cell, so a long cell (PB2 BOOT1, PA8
+        // input capture) stays inside the drawing; the hover title and the
+        // table keep the full text
         const label = row
-          ? `${row.pin} · ${row.signal.replace(/\s*\(.*\)$/, '').replace(/^GPIO.*/, 'GPIO')}`
+          ? `${row.pin} · ${row.signal.replace(/^GPIO.*/, 'GPIO').split(/[\s:;,(]/)[0]}`
           : String(p.num)
         return (
           <g

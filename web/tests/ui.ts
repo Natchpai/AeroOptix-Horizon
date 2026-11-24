@@ -15,7 +15,8 @@
  * it, "Mentioned in" shows a reload note when the notes chunk fails, the
  * Pinout "By peripheral" view lists every H743 pin once and a SPI1 pin click
  * selects it, the Pinout filter finds the same pins in both views, the F100
- * reserved table fits its card at 1440 px, an unknown linked ID shows a
+ * reserved table fits its card at 1440 px, every pin label of both package
+ * views sits inside its drawing, an unknown linked ID shows a
  * notice on each table page (a known one, also when filtered, shows none),
  * the Power budget page draws one bar per Rail summary row, every Decisions
  * Date cell holds its text inside the cell, table header texts do not overlap
@@ -1075,6 +1076,55 @@ async function reservedPlanFits(browser: Browser) {
   await v.close()
 }
 
+/**
+ * Every pin label on both package views stays inside the drawing's viewBox,
+ * so a long Signal cell cannot run off the edge (F100 PB2 and PA8 did).
+ */
+async function pinLabelsInside(browser: Browser) {
+  for (const mcu of ['h743', 'f100']) {
+    const where = `/pinout?mcu=${mcu} pin labels`
+    const v = await open(browser, `pinout?mcu=${mcu}`)
+    try {
+      const svg = v.page.locator('svg[aria-label$="pin map"]')
+      await svg.waitFor({ timeout: 10000 })
+      const out = await svg.evaluate((el) => {
+        const vb = (el as SVGSVGElement).viewBox.baseVal
+        const bad: string[] = []
+        for (const t of el.querySelectorAll('text')) {
+          const r = (t as SVGGraphicsElement).getBBox()
+          const m = (t as SVGGraphicsElement).getCTM()
+          const s = (el as SVGSVGElement).getCTM()
+          if (!m || !s) continue
+          // the label box corners in viewBox units (rotated labels too)
+          const toVb = s.inverse().multiply(m)
+          const pts = [
+            [r.x, r.y],
+            [r.x + r.width, r.y],
+            [r.x, r.y + r.height],
+            [r.x + r.width, r.y + r.height],
+          ].map(([x, y]) => new DOMPoint(x, y).matrixTransform(toVb))
+          if (
+            pts.some(
+              (p) =>
+                p.x < vb.x - 0.5 ||
+                p.y < vb.y - 0.5 ||
+                p.x > vb.x + vb.width + 0.5 ||
+                p.y > vb.y + vb.height + 0.5
+            )
+          )
+            bad.push(t.textContent ?? '')
+        }
+        return bad
+      })
+      for (const b of out) fail(where, `label "${b}" runs outside the drawing`)
+    } catch (e) {
+      fail(where, `could not run: ${(e as Error).message.split('\n')[0]}`)
+    }
+    for (const e of v.errors) fail(where, `page error: ${e}`)
+    await v.close()
+  }
+}
+
 /** Click an export button; the file must be valid SVG with plain colours. */
 type BomRow = {
   refs: string[]
@@ -1469,6 +1519,7 @@ async function main() {
     await pinFilterSame(browser)
     await unknownIdNotice(browser)
     await reservedPlanFits(browser)
+    await pinLabelsInside(browser)
     await powerBars(browser)
     await bomPage(browser)
     await decisionDatesFit(browser)

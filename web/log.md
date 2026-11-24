@@ -127,7 +127,8 @@ One entry per change: what changed, why, and which files were edited.
   "Mentioned in": the spec revisions whose change note (spec section 9)
   names that ID, newest first. Each is a revision chip that opens its row
   on Spec history; the URL keeps the revision as a string, so 0.10 stays
-  0.10. The ID must match whole (DEC-030 does not match DEC-0301), and a
+  0.10. The ID must match whole (DEC-030 does not match a longer ID that
+  starts with it), and a
   range such as "IF-030 to IF-043" is not expanded; a muted note says so.
   Up to 12 chips show, then a "+N more" button. An ID no note names shows
   "Not named in any change note."
@@ -288,8 +289,8 @@ One entry per change: what changed, why, and which files were edited.
 
 - What: two fixes from the Known gaps list.
   - A linked `?id=` that names no record now shows one muted line above
-    the table: "DEC-999 is not in the spec." (Decisions, Open items),
-    "P9-999 is not in the checklist." (Checklist), "IF-999 is not a
+    the table: "DEC-nnn is not in the spec." (Decisions, Open items),
+    "Pn-nnn is not in the checklist." (Checklist), "IF-nnn is not a
     requirement in the spec." (Traceability, which lists requirements
     only) and "Revision 9.99 is not in the spec change notes." (Spec
     history, `?rev=`). The check uses every record of the page before
@@ -466,3 +467,62 @@ One entry per change: what changed, why, and which files were edited.
     items, Checklist, Spec history, Traceability, Power budget, BOM and
     the four Pinout views; it fails on the build before this round with
     the two overlaps above and passes after), `HANDOFF.md` (Checks).
+
+## 2026-11-24 T1: dual servo rail on the diagrams
+
+- What: the diagrams follow spec rev 0.93 (DEC-110 to DEC-114). The one
+  6 V UBEC, the XT30 and the 6 V bus become two rails, `+VSERVO1` and
+  `+VSERVO2`, each with its own UBEC and 1x3 input header.
+  - Overview: UBEC 1 and UBEC 2 on the ESC battery pads (the ESC block is
+    taller for three right-side ends at 440, 540 and 640), each into its
+    port, `+VSERVO1 in, CN804` and `+VSERVO2 in, CN805`, in place of the
+    XT30 port. The servo-header power line is labelled `+VSERVO1, +VSERVO2`.
+  - System: CN801 and CN803 name their rail. The rail-sense line from
+    CN803 is the `+VSERVO2` sense to F100 PA5. The `+VSERVO1` sense (PA4)
+    is not drawn: CN801 must face the H743, and GPS1 already takes the one
+    connector-column slot that spans both MCUs, so a straight PA4 line
+    would break a drawing rule (engineer: "Draw PA5 only"). PA4 is listed
+    in `pinsNotOnDiagram`, and the CN801 note says why.
+  - Power: two rows, UBEC 1 to CN804 to the tilt servos and UBEC 2 to
+    CN805 to the surface servos, 88 px apart and centred on the ESC.
+  - Both rails share the orange `v6` colour, now named "Servo rail"
+    (engineer's choice). The Power budget page maps the `+VSERVO1` and
+    `+VSERVO2` Rail summary rows to UBEC 1 and UBEC 2.
+- Why: the schematic split the servo supply (commit `453b23d`); the
+  engineer asked to update the topology, power tree and pin assignment.
+- Files:
+  - `src/data/topology.ts`: blocks `ubec2`, `o-vservo1`, `o-vservo2`,
+    `pw-ubec2`, `pw-cn804`, `pw-cn805`, `pw-servos2` (removed `o-xt30`,
+    `pw-xt30`); links `s-esc-ubec2`, `s-ubec2-fc`, `pw-esc-ubec2`,
+    `pw-ubec-cn804`, `pw-ubec2-cn805`, `pw-cn804-servo`, `pw-cn805-servo`
+    (removed `pw-ubec-xt30`, `pw-xt30-servo`); `b-servo-sense` selects the
+    PA5 row; the PA4 entry in `pinsNotOnDiagram`.
+  - `src/data/places.ts`: the new positions, zones and `lineAt`.
+  - `src/data/index.ts`: bus `v6` label "Servo rail".
+  - `src/features/power/index.tsx`: `railStyle` for `+VSERVO1` and
+    `+VSERVO2`.
+  - `src/styles/theme.css`, `HANDOFF.md`: rail colour note and table.
+  - Checks: `npm run check`, `npm run build` and `npm run test:ui` pass
+    (`UI_BROWSER=` with the bundled Chromium; Edge is not installed on
+    this Mac). Screenshots of Overview, System, Power, Power budget and
+    Pinout at 1440 px dark and light and 390 px dark.
+
+## 2026-11-24 T2: F100 pin labels inside the drawing
+
+- What: two F100 pin labels ran off the LQFP48 drawing: PB2 ("BOOT1: no
+  resistor, not connected", cut at the bottom) and PA8 ("TIM1_CH1 input
+  capture", cut at the right). A pin label is now the first word of its
+  Signal cell, so they read "PB2 · BOOT1" and "PA8 · TIM1_CH1". No other
+  label changes on either MCU; the hover title and the table keep the
+  full text. Also on the Power view, the UBEC and input-header columns
+  moved left (1360 and 1740), so each rail label has 140 px between
+  blocks; after T1 widened those blocks to 240 px, the `+VSERVO1` and
+  `+VSERVO2` labels covered CN804, CN805 and the servo blocks.
+- Why: the engineer saw "not connected" clipped on the F100 page.
+- Files:
+  - `src/features/pinout/package-view.tsx`: the label rule.
+  - `src/data/places.ts`: `pw-ubec`, `pw-ubec2`, `pw-cn804`, `pw-cn805`.
+  - `tests/ui.ts`: `pinLabelsInside`, every pin label of both package
+    views inside the drawing's viewBox (rotated labels too). It fails on
+    the build before this fix with PB2 and PA8 and passes after.
+  - Checks: `npm run build` and `npm run test:ui` pass (`UI_BROWSER=`).

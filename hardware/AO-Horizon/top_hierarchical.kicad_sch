@@ -371,6 +371,16 @@
 	)
 	(wire
 		(pts
+			(xy 228.6 209.55) (xy 254 209.55)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a6c3ecac-6a67-48c4-84d1-bc060b01a040")
+	)
+	(wire
+		(pts
 			(xy 228.6 119.38) (xy 254 119.38)
 		)
 		(stroke
@@ -1402,7 +1412,7 @@
 	)
 	(sheet
 		(at 254 177.8)
-		(size 38.1 31.75)
+		(size 38.1 35.56)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -1430,7 +1440,7 @@
 			)
 		)
 		(property "Sheetfile" "conn-actuator.kicad_sch"
-			(at 254 210.1346 0)
+			(at 254 213.9446 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1480,6 +1490,16 @@
 				(justify left)
 			)
 		)
+		(pin "SERVO_V_ADC1_IN5" output
+			(at 254 209.55 180)
+			(uuid "957382fa-b629-40ae-a861-744d8097516f")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
 		(instances
 			(project "AO-Horizon"
 				(path "/76162bf1-0d95-48cb-b65a-4de551455d04/85f6b8f0-e85e-4d9f-8681-ac148f93be5a"
@@ -1490,7 +1510,7 @@
 	)
 	(sheet
 		(at 190.5 177.8)
-		(size 38.1 31.75)
+		(size 38.1 35.56)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -1518,7 +1538,7 @@
 			)
 		)
 		(property "Sheetfile" "mcu-io.kicad_sch"
-			(at 190.5 210.1346 0)
+			(at 190.5 213.9446 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1646,6 +1666,16 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
+			)
+		)
+		(pin "SERVO_V_ADC1_IN5" input
+			(at 228.6 209.55 0)
+			(uuid "6a367f6d-b092-49d4-b79c-6f743856ed01")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
 			)
 		)
 		(instances
