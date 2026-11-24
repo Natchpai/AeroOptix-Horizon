@@ -148,13 +148,14 @@ export const places: Record<Level, Record<string, Place>> = {
     'pw-buck': { x: 1440, y: 270 },
     'pw-ldo': { x: 1440, y: 470, w: 240, h: 180 },
     // one UBEC per servo rail (DEC-114): two rows 88 apart, centred on the
-    // ESC (960), clear of the 5 V ports block above
-    'pw-ubec': { x: 1440, y: 886, w: 240 },
-    'pw-ubec2': { x: 1440, y: 974, w: 240 },
+    // ESC (960), clear of the 5 V ports block above. UBEC and header
+    // columns 140 px apart, so the rail labels clear the blocks
+    'pw-ubec': { x: 1360, y: 886, w: 240 },
+    'pw-ubec2': { x: 1360, y: 974, w: 240 },
 
     'pw-r3v3': { x: 1820, y: 130, w: 120, h: 340 },
-    'pw-cn804': { x: 1800, y: 886, w: 240 },
-    'pw-cn805': { x: 1800, y: 974, w: 240 },
+    'pw-cn804': { x: 1740, y: 886, w: 240 },
+    'pw-cn805': { x: 1740, y: 974, w: 240 },
 
     // loads wide enough for their part numbers in full
     'pw-h743': { x: 2120, y: 145, w: 300, h: 140 },

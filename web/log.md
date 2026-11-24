@@ -506,3 +506,23 @@ One entry per change: what changed, why, and which files were edited.
     (`UI_BROWSER=` with the bundled Chromium; Edge is not installed on
     this Mac). Screenshots of Overview, System, Power, Power budget and
     Pinout at 1440 px dark and light and 390 px dark.
+
+## 2026-11-24 T2: F100 pin labels inside the drawing
+
+- What: two F100 pin labels ran off the LQFP48 drawing: PB2 ("BOOT1: no
+  resistor, not connected", cut at the bottom) and PA8 ("TIM1_CH1 input
+  capture", cut at the right). A pin label is now the first word of its
+  Signal cell, so they read "PB2 · BOOT1" and "PA8 · TIM1_CH1". No other
+  label changes on either MCU; the hover title and the table keep the
+  full text. Also on the Power view, the UBEC and input-header columns
+  moved left (1360 and 1740), so each rail label has 140 px between
+  blocks; after T1 widened those blocks to 240 px, the `+VSERVO1` and
+  `+VSERVO2` labels covered CN804, CN805 and the servo blocks.
+- Why: the engineer saw "not connected" clipped on the F100 page.
+- Files:
+  - `src/features/pinout/package-view.tsx`: the label rule.
+  - `src/data/places.ts`: `pw-ubec`, `pw-ubec2`, `pw-cn804`, `pw-cn805`.
+  - `tests/ui.ts`: `pinLabelsInside`, every pin label of both package
+    views inside the drawing's viewBox (rotated labels too). It fails on
+    the build before this fix with PB2 and PA8 and passes after.
+  - Checks: `npm run build` and `npm run test:ui` pass (`UI_BROWSER=`).
