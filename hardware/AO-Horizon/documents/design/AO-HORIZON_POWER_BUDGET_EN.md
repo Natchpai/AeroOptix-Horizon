@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.40
+**Revision:** 0.41
 **Updated:** 2026-11-24
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012), the 5 V input is a TPS2121 power mux with a 1.5 A limit (DEC-029, DEC-030) and the `+3V3A` LDO is TPS73533DRBR (DEC-027). No other rail, regulator or protection part is approved. Not a verification record.
-**Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006 (closed), OPEN-011, OPEN-021 (servo load, was OPEN-007), OPEN-024 (closed), OPEN-025 (closed; bench check P4-012), OPEN-028, OPEN-041. Decisions: DEC-007, DEC-010, DEC-011, DEC-012, DEC-018, DEC-019, DEC-053, DEC-054, DEC-025, DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-039, DEC-040, DEC-043, DEC-044, DEC-048, DEC-055, DEC-058, DEC-059, DEC-108, DEC-110 to DEC-113 (servo rails). Checklist tasks: P0-017 (done), P2-010 (calculations in sections 5 and 11).
+**Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006 (closed), OPEN-011, OPEN-021 (servo load, was OPEN-007), OPEN-024 (closed), OPEN-025 (closed; bench check P4-012), OPEN-028, OPEN-041. Decisions: DEC-007, DEC-010, DEC-011, DEC-012, DEC-018, DEC-019, DEC-053, DEC-054, DEC-025, DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-039, DEC-040, DEC-043, DEC-044, DEC-048, DEC-055, DEC-058, DEC-059, DEC-108, DEC-110 to DEC-114 (servo rails). Checklist tasks: P0-017 (done), P2-010 (calculations in sections 5 and 11).
 **Decision owner:** Hardware
 
 Single record for rail loads, rail tolerances, brownout thresholds and power protection requirements.
@@ -26,7 +26,7 @@ Fetches to st.com, invensense.tdk.com, te.com and en.benewake.com failed on 2026
 | Item | Value | Source | Label |
 | ---- | ----- | ------ | ----- |
 | Board input (PWR-010) | 4.5 / 5 / 5.5 V min/nom/max, ±10 %, source capacity 2 A | Spec, DEC-007 | `VERIFIED` (requirement) |
-| Servo supply (PWR-011) | Two rails, `+VSERVO1` (4 tilt servos) and `+VSERVO2` (4 surface servos), 6 to 8.4 V each (DEC-110); the DS3235 above its 7.4 V rating is accepted (DEC-113). UBEC through a 1x3 header per rail, CN804 and CN805, XT30 removed (DEC-111); UBEC model, setting and current TBD. The earlier single UBEC reference was 10 A continuous, 15 A instantaneous (UBEC-10A, not an approved part) | Spec, DEC-019, DEC-110, DEC-111, DEC-113 | `VERIFIED` (requirement) |
+| Servo supply (PWR-011) | Two rails, `+VSERVO1` (4 tilt servos) and `+VSERVO2` (4 surface servos), 6 to 8.4 V each (DEC-110); the DS3235 above its 7.4 V rating is accepted (DEC-113). One UBEC per rail (DEC-114), each through a 1x3 header, CN804 and CN805, XT30 removed (DEC-111); UBEC model, setting and current TBD. The earlier single UBEC reference was 10 A continuous, 15 A instantaneous (UBEC-10A, not an approved part) | Spec, DEC-019, DEC-110, DEC-111, DEC-113, DEC-114 | `VERIFIED` (requirement) |
 
 ## 2. Candidate power tree
 
@@ -140,8 +140,8 @@ One number per cell, in mA, copied from the totals table and section 3 above (th
 | 3.3 V_IMU | 2.4 | 2.6 | 500 | TPS73533DRBR rating (DEC-027) | `ESTIMATED` |
 | 3.3 V | 244 | 570 | 600 | `+3V3` design current (DEC-040); the TPS62142RGTR is rated 2 A | `ESTIMATED` |
 | 5 V | 650 | 930 | 1000 | TPS2121 minimum current limit (DEC-030) | `ESTIMATED` |
-| `+VSERVO1` | TBD | 8400 | 10000 | UBEC-10A reference (PWR-011), one UBEC per rail `ASSUMED`; model TBD (DEC-111) | `ESTIMATED` (worst case: 4 tilt servos stalled at 6 V) |
-| `+VSERVO2` | TBD | 4800 | 10000 | UBEC-10A reference (PWR-011), one UBEC per rail `ASSUMED`; model TBD (DEC-111) | `ESTIMATED` (worst case: 4 surface servos stalled at 6 V) |
+| `+VSERVO1` | TBD | 8400 | 10000 | UBEC-10A reference (PWR-011), one UBEC per rail (DEC-114); model TBD | `ESTIMATED` (worst case: 4 tilt servos stalled at 6 V) |
+| `+VSERVO2` | TBD | 4800 | 10000 | UBEC-10A reference (PWR-011), one UBEC per rail (DEC-114); model TBD | `ESTIMATED` (worst case: 4 surface servos stalled at 6 V) |
 
 ## 5. Rail tolerances (PWR-013)
 
@@ -185,7 +185,7 @@ All `TBD`. Items to decide:
 - [ ] 5 V input, still open: reverse polarity; D101 SZSMF5.0A TVS: breakdown voltage 6.4 V, fine at the 5.5 V input (human owner, 2026-11-03); hot-plug peak on the PM02D cable (TI mux section 11 suggests a large capacitance near the input for long cables; since 2026-11-03 IN1 has 2 × 10 µF and a 47 µF 10 V tantalum with 0.25 Ω ESR, DEC-037, kept by DEC-058; bench check P4-013).
 - [x] USB VBUS and PM02D 5 V OR-ing: TPS2121 power mux (DEC-029), reverse current blocking on both channels (TI mux 9.3.6, `VERIFIED`). Source priority: PM02D first, XCOMP switchover (DEC-031 to DEC-034).
 - [ ] 6 V servo bus on the board (DEC-019): board-mount XT30 input, rating against 10 A continuous and 15 A peak `NOT_VERIFIED`; 6 V and servo GND copper; servo GND joined to logic GND at one point away from the sensors; no back-feed from the 6 V bus into the 5 V side (OPEN-021). Drawn (2026-11-19 11:38 save, not decided): CN804 XT30PW-M, C801 and C802 10 µF, C803 47 µF tantalum and D807 SMF7.0A TVS on `+6V` (spec 4.2); D807 clamping voltage against the 7.4 V servo limit `NOT_VERIFIED`. `sch-review` 2026-11-19: C803 is a 10 V solid tantalum (Kyocera AVX TPSB476K010R0250, `Rate` field) at 60 % of its rating at 6 V and 74 % at 7.4 V (`ESTIMATED`) on a hot-plugged 10 A bus, so a surge can short it; use 16 V or more, or a polymer or MLCC part (MAJOR). C801 and C802 are 16 V X7R; the D807 7.0 V standoff (`ASSUMED`) is below the 7.4 V maximum (MINOR) (spec OPEN-021). 13:57 save: D807 is SMF7.5CA (bidirectional, 7.5 V standoff, 12.9 V clamp, CAD Description fields), 0.1 V (1.4 %) above the 7.4 V maximum (`ESTIMATED`); breakdown voltage and leakage `NOT_VERIFIED`. Decided 2026-11-19 (16:03 save): C803 is KEMET T495C686M016ATE250 (named Kyocera AVX before spec 0.63; CAD MFR field KEMET since the 23:17 save, spec OPEN-021), 68 µF 16 V, at 38 % of its rating at 6 V and 46 % at 7.4 V (`ESTIMATED`; DEC-058); D807 is MDD SMF7.5A, unidirectional (DEC-059), breakdown and leakage at 7.4 V `NOT_VERIFIED`. `+6V` bulk on the board is now about 88 µF nominal (`ESTIMATED`). Datasheet checks 2026-11-19 (spec CMP-011, OPEN-021): C803 is a KEMET T495 part, inside the KEMET 50 % voltage guideline at 7.4 V; D807 VRWM 7.5 V, VBR 8.33 V min, IR 50 µA max, VC 12.9 V at 15.5 A; XT30PW-M rated 15 A, 30 A instantaneous (`VERIFIED` via NotebookLM). Bulk since 2026-11-22 (DEC-097, DEC-109; 10:23 save): C801 and C802 68 µF 16 V tantalum (were C803 and C804) and C803 to C806 4 × 22 µF 25 V X7R 1210 (GRM32ER71E226KE15L) for low-ESR bulk, 224 µF nominal; about 204 µF at 6 V with 17 µF per ceramic (human owner value; `ESTIMATED`, no DC-bias loss on the tantalums `ASSUMED`); 7.4 V value `NOT_VERIFIED`. The 10 µF 0805 parts are removed. Since 2026-11-24 (12:47 save; DEC-110 to DEC-113): two rails, `+VSERVO1` and `+VSERVO2`, 6 to 8.4 V; the XT30 is replaced by a 1x3 header per rail, CN804 and CN805, one pin each (rating `NOT_VERIFIED`, accepted); D807 and D808 SMF8.5A (DEC-112); per rail one 68 µF tantalum (C801 or C802, 52.5 % of VR at 8.4 V, accepted) and 2 × 22 µF, 112 µF nominal.
-- [ ] Servo rails: overcurrent behavior; the UBEC per rail, its rating and peak duration (DEC-111). Bulk set by DEC-109 (112 µF nominal per rail since DEC-110).
+- [ ] Servo rails: overcurrent behavior; the UBEC per rail (DEC-114), its rating and peak duration. Bulk set by DEC-109 (112 µF nominal per rail since DEC-110).
 - [x] USB-only power: the bench USB-C port shall supply more than 1 A; brown-out of the external devices on a weaker port is accepted (DEC-038, 2026-11-03). The power mux 1.0 A minimum limit also applies on USB. USB-C CC resistors and the current advertisement are open in P1-006.
 - [ ] External 5 V connectors: short-circuit protection per connector or per group.
 - [ ] ESD on external connectors and USB (SAF-014).

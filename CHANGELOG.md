@@ -280,6 +280,7 @@ Notable changes to this hardware project are documented here.
 - Project library: Samtec TSW-101-22-G-T-RA symbol, footprint and 3D model added; TSW-104-08-F-T-RA footprint F.Fab line ends moved from -1.3 to -1.27 mm.
 - Power budget rev 0.40 and pin allocation rev 0.32 (2026-11-24): servo rails per DEC-110 to DEC-113; F100 PA5 as the `+VSERVO2` sense; `mcu-io` references re-annotated.
 - Website change log (`web/log.md`): example IDs replaced by placeholders.
+- Specification rev 0.93 and checklist rev 0.81 (2026-11-24): DEC-114, PWR-011, OPEN-021, P3-014; power budget rev 0.41; see the change-note.
 
 ### Fixed
 

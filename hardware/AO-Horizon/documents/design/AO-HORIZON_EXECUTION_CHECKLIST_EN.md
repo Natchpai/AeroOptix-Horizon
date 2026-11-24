@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Execution Checklist
 
-**Revision:** 0.80
+**Revision:** 0.81
 **Updated:** 2026-11-24
 **Status:** Active execution tracker; not an approval or verification record
-**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.92
+**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.93
 
 Use the specification for confirmed requirements and decisions. This checklist records the sequence of work and the evidence needed to close each gate. Diagram content is reference material. User-confirmed requirements take precedence. All sensor parts are chosen (DEC-008, DEC-010, DEC-011); their lifecycle and sourcing risks are open.
 
@@ -128,7 +128,7 @@ Firmware task P2-005 does not block the hardware release.
 | P3-011 | Route PWM/actuator outputs and the H743↔F100 USART. Merged into P3-003 on 2026-11-19. | PCB-014, PCB-015 | TBD | N/A | See P3-003 |
 | P3-012 | Close the 5 V Plan B follow-ups (DEC-108, OPEN-041): MBR230LSFT1G ratings and drop, the Plan B population of the U101 resistors and the D103 status LED, and the LCSC check. Default BOM: U101 fitted, D105 and D106 DNP. Left: OPEN-041 items 1 to 5. | PWR-010, PWR-015 | Hardware | OPEN | OPEN-041 closed with datasheet evidence; Plan B BOM variant |
 | P3-013 | Update the PCB from the schematic for the `+6V` capacitors decided in DEC-109 (OPEN-042 closed 2026-11-22): C801 and C802 68 µF tantalum, C803 to C806 4 × 22 µF 25 V 1210 (GRM32ER71E226KE15L), C809 100 nF servo rail sense, as re-annotated in the 2026-11-22 10:23 save. Place C803 to C806 near the servo headers. Left: PCB update and placement. | PWR-011 | Hardware | OPEN | PCB updated from the schematic |
-| P3-014 | Finish the dual servo rail change (DEC-110 to DEC-113; OPEN-043 closed 2026-11-24): re-run ERC on the 2026-11-24 12:47 save (P3-005), then update the PCB from the schematic (CN805, D808, R827, R828, C808, the `mcu-io` re-annotation) and route each rail to its header group. Left: ERC, PCB update. | PWR-002, PWR-011, IF-050, SAF-013, DEC-110, DEC-111, DEC-112, DEC-113 | Hardware | OPEN | ERC report after the 12:47 save; PCB updated from the schematic |
+| P3-014 | Finish the dual servo rail change (DEC-110 to DEC-113; OPEN-043 closed 2026-11-24): re-run ERC on the 2026-11-24 12:47 save (P3-005), then update the PCB from the schematic (CN805, D808, R827, R828, C808, the `mcu-io` re-annotation) and route each rail to its header group. Left: ERC, PCB update. | PWR-002, PWR-011, IF-050, SAF-013, DEC-110, DEC-111, DEC-112, DEC-113, DEC-114 | Hardware | OPEN | ERC report after the 12:47 save; PCB updated from the schematic |
 
 ## P4: Bring-up and validation
 

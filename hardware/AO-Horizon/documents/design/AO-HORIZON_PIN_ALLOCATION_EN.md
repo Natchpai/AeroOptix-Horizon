@@ -147,7 +147,7 @@ Reserved for px4io-v2 functions (F-13). Not used for anything else. The LEDs are
 | PA15 | Servo fault input | Unconnected |
 | PA5, PA12 | RSSI | PA5: `+VSERVO2` sense (ADC1_IN5, DEC-110, DEC-113); px4io reads it only with a firmware change (P2-005). PA12: unconnected (the FS-iA6B gives no analog or PWM RSSI on this board), 10 kΩ pull-down R308 (R313 in spec DEC-088) |
 | PC13, PA10 | Spektrum (PA10 is also USART1_RX) | Unconnected; R307 10 kΩ pull-up to 3.3 V on PA10 (team, review 0.3; DEC-079) |
-| PB10, PB11, PB4 | SBUS | Unconnected; R311 10 kΩ pull-up to 3.3 V on PB11 (team, review 0.3; DEC-079) |
+| PB10, PB11, PB4 | SBUS | Unconnected; R310 10 kΩ pull-up to 3.3 V on PB11 (R311 before the 2026-11-24 re-annotation) (team, review 0.3; DEC-079) |
 | PC14, PC15 | Board sense, read at boot | Unconnected (team, Q6) |
 
 Console (PA9) and NRST: the drawn F100 debug pads have neither (spec OPEN-029). Since the 2026-11-18 16:52 save CN603 carries the console; no NRST, reset by B901 (spec DEC-065, 2026-11-19). 2026-11-20 12:36 save (not committed): CN603 removed; the console (PA9 through R609), SWD, VREF, `RESET_B` and GND go to test pads TP601 to TP606, against DEC-065. TP605 is on `RESET_B` since the 12:56 save and reaches both NRST pins through D201 and D301 (spec OPEN-026, OPEN-039). No pin changed.

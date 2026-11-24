@@ -9,7 +9,7 @@
 > **Baseline:** `NOT_ESTABLISHED`
 > **KiCad:** `10.0.8`
 
-> **Draft specification (rev 0.92, 2026-11-24): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
+> **Draft specification (rev 0.93, 2026-11-24): NOT FOR FABRICATION.** Everything below is a design target from the specification, not a verified result. Values not yet decided are shown as `TBD`.
 
 ## Overview
 
@@ -38,7 +38,7 @@ The team website, [natchpai.github.io/AeroOptix-Horizon](https://natchpai.github
 | Sensors | 2× ICM-45686, ICP-20100 + BMP581 (BMP384 fallback), IST8310 (DEC-008, DEC-010, DEC-011) |
 | Board input | 5 V, 4.5 to 5.5 V, 2 A source; power mux limit 1.5 A; overvoltage cut-off 5.5 to 6.2 V (PWR-010, DEC-029, DEC-030, DEC-036, DEC-055) |
 | 3.3 V rails | `+3V3` buck, design current about 0.6 A (DEC-012, DEC-040); `+3V3A` LDO for the sensor VDD pins; sensor VDDIO on `+3V3` (DEC-043, DEC-027) |
-| Servo supply | Two rails, `+VSERVO1` (4 tilt servos) and `+VSERVO2` (4 surface servos), 6 to 8.4 V each; the DS3235 above its 7.4 V rating is accepted (PWR-011, DEC-110, DEC-113). UBEC through a 1x3 header per rail, CN804 and CN805; XT30 removed (DEC-111). Stall at 6 V about 8.4 A and 4.8 A per rail, `ESTIMATED`; one header pin per rail, rating not checked, accepted (DEC-113). Bulk 112 µF nominal per rail (DEC-097, DEC-109); SMF8.5A TVS per rail (DEC-112); copper and GND join set at layout (OPEN-021) |
+| Servo supply | Two rails, `+VSERVO1` (4 tilt servos) and `+VSERVO2` (4 surface servos), 6 to 8.4 V each; the DS3235 above its 7.4 V rating is accepted (PWR-011, DEC-110, DEC-113). One UBEC per rail (DEC-114), each through a 1x3 header, CN804 and CN805; XT30 removed (DEC-111). Stall at 6 V about 8.4 A and 4.8 A per rail, `ESTIMATED`; one header pin per rail, rating not checked, accepted (DEC-113). Bulk 112 µF nominal per rail (DEC-097, DEC-109); SMF8.5A TVS per rail (DEC-112); copper and GND join set at layout (OPEN-021) |
 | Board outline | Under 80 mm each side; exact outline `TBD` (MEC-001, OPEN-009) |
 | Mounting | M3, 3.2 mm holes, soft mount; pattern `TBD` (MEC-002, OPEN-009) |
 | Layers / stackup | Drawn, not decided: 4 copper layers, about 1.6 mm, 0.1 mm track and clearance (PCB-001 to PCB-005, OPEN-040) |
