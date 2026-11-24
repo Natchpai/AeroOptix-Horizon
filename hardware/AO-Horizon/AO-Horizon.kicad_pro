@@ -541,7 +541,7 @@
       {
         "name": "+3V3",
         "pcb_color": "rgb(206, 107, 221)",
-        "priority": 15,
+        "priority": 16,
         "schematic_color": "rgb(206, 107, 221)",
         "tuning_profile": "",
         "wire_width": 15
@@ -549,7 +549,7 @@
       {
         "name": "+3V3A",
         "pcb_color": "rgb(115, 125, 222)",
-        "priority": 13,
+        "priority": 14,
         "schematic_color": "rgb(115, 125, 222)",
         "tuning_profile": "",
         "wire_width": 15
@@ -557,7 +557,7 @@
       {
         "name": "+5V",
         "pcb_color": "rgb(206, 163, 20)",
-        "priority": 16,
+        "priority": 17,
         "schematic_color": "rgb(206, 163, 20)",
         "tuning_profile": "",
         "wire_width": 15
@@ -565,15 +565,23 @@
       {
         "name": "+6V",
         "pcb_color": "rgb(229, 106, 20)",
-        "priority": 12,
+        "priority": 13,
         "schematic_color": "rgb(229, 106, 20)",
         "tuning_profile": "",
         "wire_width": 20
       },
       {
+        "name": "ANALOG",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 0,
+        "schematic_color": "rgb(255, 76, 124)",
+        "tuning_profile": "",
+        "wire_width": 12
+      },
+      {
         "name": "DBG",
         "pcb_color": "rgb(100, 116, 139)",
-        "priority": 0,
+        "priority": 1,
         "schematic_color": "rgb(100, 116, 139)",
         "tuning_profile": "",
         "wire_width": 12
@@ -581,7 +589,7 @@
       {
         "name": "ESC",
         "pcb_color": "rgb(205, 95, 147)",
-        "priority": 4,
+        "priority": 5,
         "schematic_color": "rgb(205, 95, 147)",
         "tuning_profile": "",
         "wire_width": 12
@@ -589,7 +597,7 @@
       {
         "name": "GND",
         "pcb_color": "rgb(46, 46, 69)",
-        "priority": 14,
+        "priority": 15,
         "schematic_color": "rgb(46, 46, 69)",
         "tuning_profile": "",
         "wire_width": 15
@@ -597,7 +605,7 @@
       {
         "name": "GPS1",
         "pcb_color": "rgb(108, 128, 197)",
-        "priority": 6,
+        "priority": 7,
         "schematic_color": "rgb(108, 128, 197)",
         "tuning_profile": "",
         "wire_width": 12
@@ -605,7 +613,7 @@
       {
         "name": "I2C2",
         "pcb_color": "rgb(123, 182, 24)",
-        "priority": 1,
+        "priority": 2,
         "schematic_color": "rgb(123, 182, 24)",
         "tuning_profile": "",
         "wire_width": 12
@@ -613,7 +621,7 @@
       {
         "name": "I2C4",
         "pcb_color": "rgb(42, 186, 124)",
-        "priority": 8,
+        "priority": 9,
         "schematic_color": "rgb(42, 186, 124)",
         "tuning_profile": "",
         "wire_width": 12
@@ -621,7 +629,7 @@
       {
         "name": "PPM",
         "pcb_color": "rgb(225, 115, 76)",
-        "priority": 3,
+        "priority": 4,
         "schematic_color": "rgb(225, 115, 76)",
         "tuning_profile": "",
         "wire_width": 12
@@ -629,7 +637,7 @@
       {
         "name": "RNG_UART",
         "pcb_color": "rgb(147, 51, 234)",
-        "priority": 7,
+        "priority": 8,
         "schematic_color": "rgb(147, 51, 234)",
         "tuning_profile": "",
         "wire_width": 12
@@ -637,7 +645,7 @@
       {
         "name": "SDMMC",
         "pcb_color": "rgb(15, 173, 159)",
-        "priority": 11,
+        "priority": 12,
         "schematic_color": "rgb(15, 173, 159)",
         "tuning_profile": "",
         "wire_width": 12
@@ -645,7 +653,7 @@
       {
         "name": "SERVO",
         "pcb_color": "rgb(217, 87, 82)",
-        "priority": 5,
+        "priority": 6,
         "schematic_color": "rgb(217, 87, 82)",
         "tuning_profile": "",
         "wire_width": 12
@@ -653,7 +661,7 @@
       {
         "name": "SPI",
         "pcb_color": "rgb(50, 143, 235)",
-        "priority": 2,
+        "priority": 3,
         "schematic_color": "rgb(50, 143, 235)",
         "tuning_profile": "",
         "wire_width": 12
@@ -661,7 +669,7 @@
       {
         "name": "TEL_UART",
         "pcb_color": "rgb(194, 77, 234)",
-        "priority": 9,
+        "priority": 10,
         "schematic_color": "rgb(194, 77, 234)",
         "tuning_profile": "",
         "wire_width": 12
@@ -669,7 +677,7 @@
       {
         "name": "USB_FS",
         "pcb_color": "rgb(33, 177, 226)",
-        "priority": 10,
+        "priority": 11,
         "schematic_color": "rgb(33, 177, 226)",
         "tuning_profile": "USB_FS",
         "wire_width": 12
@@ -680,6 +688,12 @@
     },
     "net_colors": {},
     "netclass_assignments": {
+      "/Top/Connector - Actuator/+VSERVO1": [
+        "+6V"
+      ],
+      "/Top/Connector - Actuator/+VSERVO2": [
+        "+6V"
+      ],
       "/Top/Connector - Actuator/AUX1": [
         "SERVO"
       ],
@@ -944,16 +958,8 @@
     },
     "netclass_patterns": [
       {
-        "netclass": "+5V",
-        "pattern": "+5V"
-      },
-      {
         "netclass": "+3V3",
         "pattern": "+3V3"
-      },
-      {
-        "netclass": "GND",
-        "pattern": "GND"
       },
       {
         "netclass": "+3V3A",
@@ -961,11 +967,27 @@
       },
       {
         "netclass": "+5V",
-        "pattern": "+VIN"
+        "pattern": "+5V"
       },
       {
         "netclass": "+6V",
         "pattern": "+6V"
+      },
+      {
+        "netclass": "+5V",
+        "pattern": "+VIN"
+      },
+      {
+        "netclass": "GND",
+        "pattern": "GND"
+      },
+      {
+        "netclass": "ANALOG",
+        "pattern": "/Top/MCU - IO/F1_ADC*"
+      },
+      {
+        "netclass": "ANALOG",
+        "pattern": "*SERVO_V_ADC*"
       }
     ]
   },
@@ -1255,7 +1277,7 @@
         "uuid": "76162bf1-0d95-48cb-b65a-4de551455d04"
       }
     ],
-    "used_designators": "#FLG1,#FLG101-106,#FLG201,#FLG301,#FLG801,#PWR1-20,#PWR101-122,#PWR201-218,#PWR301-320,#PWR401-410,#PWR501-522,#PWR601-617,#PWR701-725,#PWR801-813,#PWR901-906,B901-902,C101-121,C201-218,C301-311,C401-404,C501-507,C601-603,C701-706,C801-809,CN101,CN601-603,CN701-710,CN801-804,D101-106,D201,D301,D701-707,D709,D801-807,D901-906,H901-904,L101-102,NT501-502,Q901-903,R101-108,R115,R201-211,R301-313,R501-512,R601-613,R701-714,R716-721,R801-826,R901-909,SD201,TP601-605,U101-103,U201,U301,U303,U401-402,U501-503,U601",
+    "used_designators": "#FLG1,#FLG101-106,#FLG201,#FLG301,#FLG801-802,#PWR1-20,#PWR101-122,#PWR201-218,#PWR301-320,#PWR401-410,#PWR501-522,#PWR601-617,#PWR701-725,#PWR801-813,#PWR901-906,B901-902,C101-121,C201-218,C301-312,C401-404,C501-507,C601-603,C701-706,C801-809,CN101,CN601-603,CN701-710,CN801-805,D101-106,D201,D301,D701-707,D709,D801-808,D901-906,H901-904,L101-102,NT501-502,Q901-903,R101-108,R115,R201-211,R301-314,R501-512,R601-613,R701-714,R716-721,R801-828,R901-909,SD201,TP601-605,U101-103,U201,U301,U303,U401-402,U501-503,U601",
     "variants": []
   },
   "sheets": [
