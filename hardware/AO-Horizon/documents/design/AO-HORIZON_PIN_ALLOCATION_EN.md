@@ -1,8 +1,8 @@
 # AeroOptix-Horizon: MCU Pin Allocation
 
-**Revision:** 0.31
-**Updated:** 2026-11-21
-**Status:** `ALLOCATED`, not `VERIFIED`: signed off by the human owner on 2026-11-21 (section 6; checklist P1 closed). The software team's answers (pinmap review 0.2 and 0.3, decisions file) are applied. The IO MCU is the STM32F100C8T6B (DEC-002). Partly drawn in the schematic (spec 4.2 "Schematic state"); the drawn labels match this allocation (F-19). HSE from CMOS oscillators (DEC-044, DEC-045). Actuator outputs per DEC-050 and DEC-051 (F100 MAIN 1 to 8, H743 AUX 1 to 4); no pin changed. DMA and interrupt priority checks are firmware work (P2-005); timer clocks are part of the pin review (P1-001). Not a verification record.
+**Revision:** 0.32
+**Updated:** 2026-11-24
+**Status:** `ALLOCATED`, not `VERIFIED`: signed off by the human owner on 2026-11-21 (section 6; checklist P1 closed). The software team's answers (pinmap review 0.2 and 0.3, decisions file) are applied. The IO MCU is the STM32F100C8T6B (DEC-002). Partly drawn in the schematic (spec 4.2 "Schematic state"); the drawn labels match this allocation (F-19). HSE from CMOS oscillators (DEC-044, DEC-045). Actuator outputs per DEC-050 and DEC-051 (F100 MAIN 1 to 8, H743 AUX 1 to 4); no pin changed. Since 2026-11-24, F100 PA5 is the second servo rail sense (DEC-110, DEC-113), and the `mcu-io` resistors are re-annotated (spec 4.2 F100 row). DMA and interrupt priority checks are firmware work (P2-005); timer clocks are part of the pin review (P1-001). Not a verification record.
 **Requirement refs:** IF-010 to IF-024, IF-030 to IF-037, IF-040 to IF-051, SEN-001 to SEN-003, DEC-002, DEC-014 to DEC-018, DEC-043 to DEC-047, DEC-050, DEC-051, DEC-053, DEC-054, DEC-056, DEC-057, DEC-060, DEC-068, DEC-069, DEC-079. Checklist tasks: P1-001 (partial), P1-003 (partial).
 **Decision owner:** Hardware
 
@@ -123,9 +123,10 @@ Output numbers and the first actuator mapping follow spec DEC-051. The team sets
 | H743 link | IF-024 | USART2_RX | PA3 | 13 | match, default |
 | px4io console | IF-051 | USART1_TX | PA9 | 30 | match, default |
 | RC IN, PPM (DEC-053), net `RCIN_TIM1_CH1` | IF-038 | TIM1_CH1 input capture | PA8 | 29 | FT; F100 DS Table 4 lists TIM1_CH1 as default; driven by the RC IN buffer U303 SN74LVC1G34DCKR (DEC-056, DEC-057, F-21) |
-| Safety button | IF-049 | GPIO input | PB5 | 41 | R310 10 kΩ to `GND` (drawn, not decided; F-22) |
+| Safety button | IF-049 | GPIO input | PB5 | 41 | R309 10 kΩ to `GND` (R310 before the 2026-11-24 re-annotation; F-22) |
 | Safety LED | IF-049 | GPIO output, open drain, active low | PB13 | 26 | net `GPS1_SAFETY_LED_B` since the 2026-11-19 15:20 save |
-| Servo rail sense | IF-050 | ADC1_IN4 (3:1 divider) | PA4 | 14 | not checked |
+| Servo rail 1 sense (`+VSERVO1`) | IF-050 | ADC1_IN4 (3:1 divider) | PA4 | 14 | not checked |
+| Servo rail 2 sense (`+VSERVO2`) | IF-050 | ADC1_IN5 (3:1 divider), net `F1_ADC1_IN5` (DEC-110, DEC-113) | PA5 | 15 | not checked |
 | SWD | IF-051 | SWDIO | PA13 | 34 | match (row text) |
 | SWD | IF-051 | SWCLK | PA14 | 37 | match (row text) |
 | Reset (one button, DEC-046; since the 2026-11-20 13:01 save on `F1_RESET_B`, to B901 through D301, drawn, not decided, spec OPEN-026) | IF-051 | NRST | NRST | 7 | - |
@@ -144,8 +145,8 @@ Reserved for px4io-v2 functions (F-13). Not used for anything else. The LEDs are
 | PB15 | Amber LED (`LED_AMBER`) | Fitted (team, Q20) as a red LED in place of amber: D904, net `LED_IO_RED_B` (DEC-079) |
 | PA11 | Green LED | Fitted (team, Q20): D906, net `LED_IO_GREEN_B`; off when armed with active-low wiring (DEC-079) |
 | PA15 | Servo fault input | Unconnected |
-| PA5, PA12 | RSSI | Unconnected (the FS-iA6B gives no analog or PWM RSSI on this board); PA12 has a 10 kΩ pull-down, R313 (spec DEC-088) |
-| PC13, PA10 | Spektrum (PA10 is also USART1_RX) | Unconnected; R312 10 kΩ pull-up to 3.3 V on PA10 (team, review 0.3; DEC-079) |
+| PA5, PA12 | RSSI | PA5: `+VSERVO2` sense (ADC1_IN5, DEC-110, DEC-113); px4io reads it only with a firmware change (P2-005). PA12: unconnected (the FS-iA6B gives no analog or PWM RSSI on this board), 10 kΩ pull-down R308 (R313 in spec DEC-088) |
+| PC13, PA10 | Spektrum (PA10 is also USART1_RX) | Unconnected; R307 10 kΩ pull-up to 3.3 V on PA10 (team, review 0.3; DEC-079) |
 | PB10, PB11, PB4 | SBUS | Unconnected; R311 10 kΩ pull-up to 3.3 V on PB11 (team, review 0.3; DEC-079) |
 | PC14, PC15 | Board sense, read at boot | Unconnected (team, Q6) |
 
@@ -170,7 +171,7 @@ Closed findings stay listed with their outcome.
 | F-20 | MINOR | H743 PC0, PC1; F100 PA4 | `VERIFIED` | Drawn 2026-11-17 (16:14 save): each pin has a 22 Ω series resistor and 10 nF to `GND`. The H743 PC0 and PC1 parts were removed in the 2026-11-21 17:53 save (spec DEC-107); PC0 and PC1 are unused. The servo rail sense row asks for a 3:1 divider on PA4 (IF-050), which is not drawn; PA4 is not 5 V tolerant (F-03). Values not decided (spec OPEN-033). The 3:1 divider is drawn since the 2026-11-18 16:52 save: R813 46.4 kΩ, R814 23.2 kΩ, C804 100 nF (spec 4.2, OPEN-033; now R825, R826 and C805, spec DEC-097). Accepted as drawn 2026-11-19 (spec DEC-066). | `sch-inspect` `net`; spec 4.2 |
 | F-06 | Closed | H743 PA9 | `VERIFIED` | PA9 (OTG_FS_VBUS) is FT_u, and its input maximum is Min(Min(VDD, VDDA, VDD33USB, VBAT) + 4.0, 6 V), so 4 V with VDD at 0 V; above 4 V the internal pull-up or pull-down must be off (Table 11 footnote 4). AN4879 §2.6: "it is mandatory to reduce the voltage on PA9 below 4 V" when the MCU can be unpowered, with a divider (33 kΩ to VBUS, 82 kΩ to GND for VDD 3.0 to 3.6 V). The board drives PA9 from `VBUS` through R603 0 Ω, and VBUS powers `+3V3`, so PA9 sees 5 V before VDD at every USB power-up; PX4 fmu-v6c sets PA9 as an input with pull-down (`board_config.h` line 202). `sch-review` 2026-11-20. Fixed in the 2026-11-20 14:21 save: R603 5k1 from VBUS and R604 10k to GND give PA9 3.12 to 3.50 V (2.81 to 3.28 V with the PX4 pull-down on), `ESTIMATED` (spec DEC-080). | H7 DS12110 Rev 11 Tables 9 and 11, AN4879 §2.6 (NotebookLM); PX4 v1.16.2 fmu-v6c `board_config.h`; `kicad-cli` netlist |
 | F-05 | INFO | H743 PC4 | `VERIFIED` | PC4 (IMU1 INT1) is TT_a, so it is 3.3 V tolerant only, not 5 V. This is fine for a 3.3 V IMU. | H7 DS Table 9 |
-| F-03 | INFO | F100 PA0 to PA7, PB0, PB1, PB5 | `VERIFIED` | These pins are not 5 V tolerant (no FT in the type column). They carry the ESC and servo outputs, the 3.3 V px4io link, the servo rail sense and the safety button (PA5 is unconnected). Keep 5 V off them: the servo rail sense goes through its divider, and the safety button switches to 3.3 V or GND. | F100 DS Table 4 (was F1 DS Table 5 for the F103) |
+| F-03 | INFO | F100 PA0 to PA7, PB0, PB1, PB5 | `VERIFIED` | These pins are not 5 V tolerant (no FT in the type column). They carry the ESC and servo outputs, the 3.3 V px4io link, the servo rail sense and the safety button (PA5 is the `+VSERVO2` sense, DEC-113). Keep 5 V off them: the servo rail sense goes through its divider, and the safety button switches to 3.3 V or GND. | F100 DS Table 4 (was F1 DS Table 5 for the F103) |
 | F-13 | INFO | F100 reserved pins | `VERIFIED` | Stock px4io-v2 also drives or reads PB14, PB15, PA11 (LEDs), PA15 (servo fault), PA5 and PA12 (RSSI), PC13 and PA10 (Spektrum), PB10, PB11, PB4 (SBUS), PA8 (PPM), PC14 and PC15 (board sense). Applied in section 2. Since DEC-053 PA8 carries RC IN (PPM), its px4io function. | PX4 v1.16.2 `boards/px4/io-v2/src/board_config.h` |
 | F-14 | INFO | H743 microSD | `VERIFIED` | `px4/fmu-v6c` puts microSD on SDMMC2, which clashes with GPS1 RX (PD6) and Telemetry 2 (PB14, PB15) here. SDMMC1 on PC8 to PC12 and PD2 is used instead; all six signals are listed in ST XML (checked 2026-10-24). | PX4 v1.16.2 `boards/px4/fmu-v6c/nuttx-config/include/board.h`; ST XML |
 | F-02 | Closed | IF-034 to IF-037 | `VERIFIED` | Spec labels TIM3_CH5 to CH8 did not exist; corrected to TIM3_CH1 to CH4 (team, Q3). | ST XML; F1 DS Table 5 (F103) |
@@ -214,6 +215,6 @@ Closed findings stay listed with their outcome.
 | Reviewer | Human owner (sign-off in chat: "Sign off now") |
 | Date | 2026-11-21 |
 | Scope | Sections 1 and 2 (H743 and F100 pins, alternate functions, timers, reserved and unused pins) at rev 0.29, and the schematic labels on the MCU pins (F-19; ERC 2026-11-21 10:50, 0 errors, 0 warnings) |
-| Conflicts resolved | F-01 to F-12 closed earlier (section 3). F-16 PWM pull-downs: 100 kΩ, spec DEC-073. F-20 servo rail sense divider: spec DEC-066. F-21 PA8 PPM level: U303 buffer, spec DEC-057. F-22 PB0 buzzer and PB5 safety switch: Q701 and R310, spec DEC-057. Boot pins: spec DEC-095. |
+| Conflicts resolved | F-01 to F-12 closed earlier (section 3). F-16 PWM pull-downs: 100 kΩ, spec DEC-073. F-20 servo rail sense divider: spec DEC-066. F-21 PA8 PPM level: U303 buffer, spec DEC-057. F-22 PB0 buzzer and PB5 safety switch: Q701 and R309 (was R310), spec DEC-057. Boot pins: spec DEC-095. |
 | Carried | F-15 motor stop on an H743 hang: bench test P4-011 (spec OPEN-017). DMA streams and interrupt priorities: firmware, P2-005. Datasheet text match on rows marked `not checked` and the critical-pin check against the datasheet figures: P3-009. |
 | Result | `ALLOCATED`. Not `VERIFIED`: no bench or firmware evidence yet. |

@@ -274,6 +274,12 @@ Notable changes to this hardware project are documented here.
 - Schematic (2026-11-22, human owner, `3010c96` and the 10:23 save): the `+6V` ceramics are 4 × 22 µF 25 V X7R 1210 (GRM32ER71E226KE15L, Value `22u`), now C803 to C806; the 68 µF tantalums are re-annotated C801 and C802; the 10 µF 0805 parts are removed. ERC report 10:24, 0 errors, 0 warnings. BOM CSV re-exported to match (59 rows, 249 parts).
 - Specification rev 0.90 and checklist rev 0.78 (2026-11-22): DEC-109, OPEN-042 (closed), CMP-011, P3-002, P3-013, REF-04; power budget rev 0.39; see the change-note.
 - Specification rev 0.91 and checklist rev 0.79 (2026-11-22): cleanup, no new decisions; P3-013 and P4-002 updated for DEC-109; change-note rows 0.1 to 0.80 and closed open items shortened, stale text fixed, verdict rewritten; see the change-note.
+- Specification rev 0.92 and checklist rev 0.80 (2026-11-24): DEC-110 to DEC-113, OPEN-043 (added and closed), OPEN-021, PWR-002, PWR-011, IF-050, SAF-013, TST-005, P2-005, P3-014, P4-002; see the change-note.
+- Schematic (2026-11-24 12:38 and 12:47 saves, human owner): servo supply split into `+VSERVO1` and `+VSERVO2`; CN804 is now a Samtec TSW-101-22-G-T-RA header and CN805 is added (XT30 removed); D807 and D808 SMF8.5A; second rail sense R827, R828 and C808 to F100 PA5 through R306 and C311; `conn-actuator` and `mcu-io` re-annotated. ERC not run.
+- KiCad project: both servo rails in net class `+6V`; new net class `ANALOG` for `F1_ADC*` and `*SERVO_V_ADC*`.
+- Project library: Samtec TSW-101-22-G-T-RA symbol, footprint and 3D model added; TSW-104-08-F-T-RA footprint F.Fab line ends moved from -1.3 to -1.27 mm.
+- Power budget rev 0.40 and pin allocation rev 0.32 (2026-11-24): servo rails per DEC-110 to DEC-113; F100 PA5 as the `+VSERVO2` sense; `mcu-io` references re-annotated.
+- Website change log (`web/log.md`): example IDs replaced by placeholders.
 
 ### Fixed
 

@@ -127,7 +127,8 @@ One entry per change: what changed, why, and which files were edited.
   "Mentioned in": the spec revisions whose change note (spec section 9)
   names that ID, newest first. Each is a revision chip that opens its row
   on Spec history; the URL keeps the revision as a string, so 0.10 stays
-  0.10. The ID must match whole (DEC-030 does not match DEC-0301), and a
+  0.10. The ID must match whole (DEC-030 does not match a longer ID that
+  starts with it), and a
   range such as "IF-030 to IF-043" is not expanded; a muted note says so.
   Up to 12 chips show, then a "+N more" button. An ID no note names shows
   "Not named in any change note."
@@ -288,8 +289,8 @@ One entry per change: what changed, why, and which files were edited.
 
 - What: two fixes from the Known gaps list.
   - A linked `?id=` that names no record now shows one muted line above
-    the table: "DEC-999 is not in the spec." (Decisions, Open items),
-    "P9-999 is not in the checklist." (Checklist), "IF-999 is not a
+    the table: "DEC-nnn is not in the spec." (Decisions, Open items),
+    "Pn-nnn is not in the checklist." (Checklist), "IF-nnn is not a
     requirement in the spec." (Traceability, which lists requirements
     only) and "Revision 9.99 is not in the spec change notes." (Spec
     history, `?rev=`). The check uses every record of the page before
