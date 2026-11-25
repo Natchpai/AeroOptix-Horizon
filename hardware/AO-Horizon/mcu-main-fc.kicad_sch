@@ -4181,7 +4181,7 @@
 		(uuid "1f497103-cb5b-4bd0-bf42-369684336641")
 	)
 	(rectangle
-		(start 102.87 201.93)
+		(start 102.87 199.39)
 		(end 151.13 213.36)
 		(stroke
 			(width 0)
@@ -4433,7 +4433,7 @@
 	)
 	(text "I/O Link"
 		(exclude_from_sim no)
-		(at 102.87 200.66 0)
+		(at 102.87 198.12 0)
 		(effects
 			(font
 				(face "Century Gothic")
@@ -9854,6 +9854,25 @@
 		(dnp no)
 		(polyline
 			(pts
+				(xy 128.27 204.47) (xy 128.27 210.82) (xy 146.05 210.82) (xy 146.05 204.47)
+			)
+			(stroke
+				(width 0)
+				(type dash)
+			)
+			(fill
+				(type none)
+			)
+			(uuid "0d4f47ed-307d-4ef3-871f-ecaa5bbec43f")
+		)
+	)
+	(rule_area
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(polyline
+			(pts
 				(xy 311.15 107.95) (xy 311.15 120.65) (xy 327.66 120.65) (xy 327.66 107.95)
 			)
 			(stroke
@@ -10017,6 +10036,41 @@
 		)
 		(property "Component Class" ""
 			(at -81.28 156.21 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
+	)
+	(netclass_flag ""
+		(length 2.54)
+		(shape round)
+		(at 128.27 204.47 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "dfde0b01-0fa0-4ba6-9eeb-cd7736b0cca0")
+		(property "Netclass" "LINK"
+			(at 128.9685 201.93 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Component Class" ""
+			(at -29.21 148.59 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
