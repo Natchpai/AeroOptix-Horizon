@@ -285,6 +285,9 @@ Notable changes to this hardware project are documented here.
 - PCB (2026-11-28 11:23 save, human owner): updated from the schematic for D901 and D902; D903 to D906 removed.
 - Project library: Kingbright AAA3528LSEEZGKQBKS symbol, footprint (`0_LED_SMD`, 2835) and 3D model added, checked by the human owner (`STATUS` `CHECKED`); generic `0_LED:LED_RAGB` symbol added.
 - Specification rev 0.94 and checklist rev 0.82 (2026-11-28): DEC-115, DEC-067 and DEC-079 (pointers), IF-047, P3-007, REF-04; pin allocation rev 0.33, power budget rev 0.42, software notes rev 0.4; see the change-note.
+- Claude Code setup synced from Hardware-Copilot `6e5310a`: change tiers (`sch-inspect diff`, preflight `tier`), `STATUS` `CHECKED` as human evidence, generated schematic state (`sch_state.py`). `CLAUDE.md`: Git bullet points to `git-workflow.md`; no LED current findings for D901 and D902.
+- `documents/design/schematic-state.md` (generated, 2026-11-28 11:23 save): parts, fields and nets between sheets, per sheet.
+- Specification rev 0.95 (2026-11-28): no new decisions; 4.2 and 4.3 schematic state rows cut to decisions and evidence, parts moved to `schematic-state.md`; see the change-note.
 
 ### Fixed
 
