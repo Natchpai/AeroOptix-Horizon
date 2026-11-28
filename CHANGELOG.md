@@ -281,6 +281,10 @@ Notable changes to this hardware project are documented here.
 - Power budget rev 0.40 and pin allocation rev 0.32 (2026-11-24): servo rails per DEC-110 to DEC-113; F100 PA5 as the `+VSERVO2` sense; `mcu-io` references re-annotated.
 - Website change log (`web/log.md`): example IDs replaced by placeholders.
 - Specification rev 0.93 and checklist rev 0.81 (2026-11-24): DEC-114, PWR-011, OPEN-021, P3-014; power budget rev 0.41; see the change-note.
+- Schematic (2026-11-28 11:23 save, human owner): `user-interface` board LEDs D901 to D906 replaced by two Kingbright AAA3528LSEEZGKQBKS RGB LEDs, D901 (H743) and D902 (F100), with R901 to R906 220 Ω on the cathodes; MCU pins unchanged. ERC (`kicad-cli`, 2026-11-28): 0 errors, 0 warnings.
+- PCB (2026-11-28 11:23 save, human owner): updated from the schematic for D901 and D902; D903 to D906 removed.
+- Project library: Kingbright AAA3528LSEEZGKQBKS symbol, footprint (`0_LED_SMD`, 2835) and 3D model added, checked by the human owner (`STATUS` `CHECKED`); generic `0_LED:LED_RAGB` symbol added.
+- Specification rev 0.94 and checklist rev 0.82 (2026-11-28): DEC-115, DEC-067 and DEC-079 (pointers), IF-047, P3-007, REF-04; pin allocation rev 0.33, power budget rev 0.42, software notes rev 0.4; see the change-note.
 
 ### Fixed
 
