@@ -1,7 +1,7 @@
 # AeroOptix-Horizon: Power Budget
 
-**Revision:** 0.41
-**Updated:** 2026-11-24
+**Revision:** 0.42
+**Updated:** 2026-11-28
 **Status:** Draft record with open `TBD` rows. The main 3.3 V buck is TPS62142RGTR (DEC-012), the 5 V input is a TPS2121 power mux with a 1.5 A limit (DEC-029, DEC-030) and the `+3V3A` LDO is TPS73533DRBR (DEC-027). No other rail, regulator or protection part is approved. Not a verification record.
 **Requirement refs:** PWR-010 to PWR-015, SAF-012 to SAF-014, OPEN-006 (closed), OPEN-011, OPEN-021 (servo load, was OPEN-007), OPEN-024 (closed), OPEN-025 (closed; bench check P4-012), OPEN-028, OPEN-041. Decisions: DEC-007, DEC-010, DEC-011, DEC-012, DEC-018, DEC-019, DEC-053, DEC-054, DEC-025, DEC-027, DEC-028, DEC-029, DEC-030, DEC-031, DEC-032, DEC-033, DEC-034, DEC-035, DEC-036, DEC-037, DEC-038, DEC-039, DEC-040, DEC-043, DEC-044, DEC-048, DEC-055, DEC-058, DEC-059, DEC-108, DEC-110 to DEC-114 (servo rails). Checklist tasks: P0-017 (done), P2-010 (calculations in sections 5 and 11).
 **Decision owner:** Hardware
@@ -77,7 +77,7 @@ Since DEC-043 (2026-11-12), this rail feeds the VDD pins of all sensors. VDDIO (
 | IST8310 (magnetometer, DEC-011) DVDD | 1 | Not stated; at most 1.2 mA at 200 sps (device total, 3.3 V_IMU row) | Not stated | IST8310 V1.8 3.3 | `ESTIMATED` upper bound; at 3.3 V `NOT_VERIFIED` |
 | Clock oscillators U202 (ECS-2520MV-160-CN-TR, 16 MHz) and U302 (ASDDV-24.000MHZ-LC-T, 24 MHz), type decided 2026-11-14 (spec DEC-044), part numbers decided (DEC-048), data checked against the MCU HSE limits (spec CMP-010) | 2 | U202 6.0 mA max (3.3 V, up to 19 MHz); U302 4.0 mA max (3.3 V, 20 to 30 MHz); both into 15 pF | Not stated | ECS-2520MV and Abracon ASDDV datasheets via NotebookLM | `VERIFIED` |
 | I2C pull-ups | TBD | TBD | - | Depends on P1-003 | `TBD` |
-| LEDs: 3 board (IF-047), 3 px4io, safety LED (IF-049) | 7 | TBD (set by the resistors) | - | Resistors not chosen | `TBD` |
+| LEDs: RGB LED D901 (board, IF-047) and RGB LED D902 (px4io), 3 elements each (DEC-115); safety LED (IF-049) | 7 elements | TBD (set by the resistors) | - | 220 Ω per element (DEC-067, DEC-079, DEC-115); LED forward voltage not checked | `TBD` |
 | External 3.3 V devices | TBD | TBD | TBD | Not defined | `TBD` |
 
 ### 5 V (external connectors and regulator input)

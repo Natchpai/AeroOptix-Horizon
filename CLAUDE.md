@@ -22,9 +22,10 @@ AeroOptix-Horizon is a KiCad 10 hardware design for a dual-MCU flight controller
 `.claude/rules/` loads every session and owns the rules: `engineering.md` (design authority, change proposals, evidence labels, datasheet sources), `workflow.md` (phases, Markdown docs, spec, checklist and doc cycle, team messages, open checks), `pdf.md` (reading, generating and datasheet PDFs), `notebooklm.md` (NotebookLM procedure, path-scoped) and `git-workflow.md` (hardware Git notes on top of the global `~/.claude/rules/git-workflow.md`). This repo adds:
 
 - **Protected paths.** The `protect_kicad_v2.py` PreToolUse hook (rules in `.claude/hooks/protect.json`, order deny > ask > allow) and the permission lists in `.claude/settings.json` control edits to KiCad files, `library/` and `templates/`, PDF reads and risky Git commands. The engineer edits both; Hardware-Copilot `tools/check_permissions.py <repo>` checks that they agree. If the hook blocks or asks, report it and do not work around it. A permission `allow` is not design authorization: a KiCad or library change still needs the engineer's approval of that specific change.
-- **Git.** Every Git mutation needs explicit, action-specific approval in chat, even where `settings.json` lets the command run without a prompt. Never merge a PR, force-push or `reset --hard`. Work on `dev`, and open PRs to `main` with `.github/pull_request_template.md`.
+- **Git.** Approval rules are in `git-workflow.md`. Work on `dev`, and open PRs to `main` with `.github/pull_request_template.md`.
 - **External-model providers** (`agent-coworker`: `agy` or `codex`): send them no PDFs, native KiCad files, `library/` contents, secrets or anything on the deny or ask lists. Hooks and `settings.json` do not apply inside a provider.
 - Do not add Co-Authored-By or Generated-with lines in commit messages.
+- **Status LEDs.** Raise no LED current or brightness findings for D901 and D902 (DEC-067, DEC-115); a dim LED is accepted and checked on the bench. Still report wrong connections, polarity or labels.
 
 ## Tools
 

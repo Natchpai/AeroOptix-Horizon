@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: MCU Pin Allocation
 
-**Revision:** 0.32
-**Updated:** 2026-11-24
+**Revision:** 0.33
+**Updated:** 2026-11-28
 **Status:** `ALLOCATED`, not `VERIFIED`: signed off by the human owner on 2026-11-21 (section 6; checklist P1 closed). The software team's answers (pinmap review 0.2 and 0.3, decisions file) are applied. The IO MCU is the STM32F100C8T6B (DEC-002). Partly drawn in the schematic (spec 4.2 "Schematic state"); the drawn labels match this allocation (F-19). HSE from CMOS oscillators (DEC-044, DEC-045). Actuator outputs per DEC-050 and DEC-051 (F100 MAIN 1 to 8, H743 AUX 1 to 4); no pin changed. Since 2026-11-24, F100 PA5 is the second servo rail sense (DEC-110, DEC-113), and the `mcu-io` resistors are re-annotated (spec 4.2 F100 row). DMA and interrupt priority checks are firmware work (P2-005); timer clocks are part of the pin review (P1-001). Not a verification record.
-**Requirement refs:** IF-010 to IF-024, IF-030 to IF-037, IF-040 to IF-051, SEN-001 to SEN-003, DEC-002, DEC-014 to DEC-018, DEC-043 to DEC-047, DEC-050, DEC-051, DEC-053, DEC-054, DEC-056, DEC-057, DEC-060, DEC-068, DEC-069, DEC-079. Checklist tasks: P1-001 (partial), P1-003 (partial).
+**Requirement refs:** IF-010 to IF-024, IF-030 to IF-037, IF-040 to IF-051, SEN-001 to SEN-003, DEC-002, DEC-014 to DEC-018, DEC-043 to DEC-047, DEC-050, DEC-051, DEC-053, DEC-054, DEC-056, DEC-057, DEC-060, DEC-068, DEC-069, DEC-079, DEC-115. Checklist tasks: P1-001 (partial), P1-003 (partial).
 **Decision owner:** Hardware
 
 Single record for the STM32H743VIT6 (LQFP100) and STM32F100C8T6B (LQFP48) pin allocation.
@@ -141,9 +141,9 @@ Reserved for px4io-v2 functions (F-13). Not used for anything else. The LEDs are
 
 | Pin | px4io-v2 function | Plan |
 | --- | ----------------- | ---- |
-| PB14 | Blue LED (also heater output) | Fitted (team, Q20): D905, net `LED_IO_BLUE_B`. PC14 and PC15 unconnected, so px4io drives the LED, not the heater (DEC-079) |
-| PB15 | Amber LED (`LED_AMBER`) | Fitted (team, Q20) as a red LED in place of amber: D904, net `LED_IO_RED_B` (DEC-079) |
-| PA11 | Green LED | Fitted (team, Q20): D906, net `LED_IO_GREEN_B`; off when armed with active-low wiring (DEC-079) |
+| PB14 | Blue LED (also heater output) | Fitted (team, Q20): blue element of RGB LED D902 through R906 (DEC-115), net `LED_IO_BLUE_B`. PC14 and PC15 unconnected, so px4io drives the LED, not the heater (DEC-079) |
+| PB15 | Amber LED (`LED_AMBER`) | Fitted (team, Q20) as a red LED in place of amber: red element of D902 through R904, net `LED_IO_RED_B` (DEC-079, DEC-115) |
+| PA11 | Green LED | Fitted (team, Q20): green element of D902 through R905, net `LED_IO_GREEN_B`; off when armed with active-low wiring (DEC-079, DEC-115) |
 | PA15 | Servo fault input | Unconnected |
 | PA5, PA12 | RSSI | PA5: `+VSERVO2` sense (ADC1_IN5, DEC-110, DEC-113); px4io reads it only with a firmware change (P2-005). PA12: unconnected (the FS-iA6B gives no analog or PWM RSSI on this board), 10 kΩ pull-down R308 (R313 in spec DEC-088) |
 | PC13, PA10 | Spektrum (PA10 is also USART1_RX) | Unconnected; R307 10 kΩ pull-up to 3.3 V on PA10 (team, review 0.3; DEC-079) |

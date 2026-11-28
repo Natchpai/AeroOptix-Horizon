@@ -3824,16 +3824,6 @@
 	)
 	(wire
 		(pts
-			(xy 232.41 119.38) (xy 266.7 119.38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7ed84b42-99db-444f-beb7-15ce6614c1a6")
-	)
-	(wire
-		(pts
 			(xy 184.15 157.48) (xy 191.77 157.48)
 		)
 		(stroke
@@ -4571,6 +4561,16 @@
 			(type default)
 		)
 		(uuid "ecbf7747-c263-4e2c-998c-a11ff535549c")
+	)
+	(wire
+		(pts
+			(xy 232.41 119.38) (xy 266.7 119.38)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ed1894ba-35cf-46f1-8749-9fb575f5d24f")
 	)
 	(wire
 		(pts
@@ -5564,6 +5564,74 @@
 		)
 		(property "Component Class" ""
 			(at -71.12 -3.81 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
+	)
+	(netclass_flag ""
+		(length 2.54)
+		(shape round)
+		(at 262.89 95.25 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e10e77d0-0323-40bf-b606-aeef1f837970")
+		(property "Netclass" "LINK"
+			(at 264.16 92.71 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Component Class" ""
+			(at 105.41 39.37 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
+	)
+	(netclass_flag ""
+		(length 2.54)
+		(shape round)
+		(at 266.7 99.06 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f332b387-2f25-464f-be5c-6aa11be7fdbe")
+		(property "Netclass" "LINK"
+			(at 267.97 96.52 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Component Class" ""
+			(at 109.22 43.18 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects

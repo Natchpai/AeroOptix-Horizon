@@ -1,9 +1,9 @@
 # AeroOptix-Horizon: Execution Checklist
 
-**Revision:** 0.81
+**Revision:** 0.82
 **Updated:** 2026-11-24
 **Status:** Active execution tracker; not an approval or verification record
-**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.93
+**Requirements authority:** [AO-HORIZON_SPEC_EN.md](AO-HORIZON_SPEC_EN.md) rev 0.95
 
 Use the specification for confirmed requirements and decisions. This checklist records the sequence of work and the evidence needed to close each gate. Diagram content is reference material. User-confirmed requirements take precedence. All sensor parts are chosen (DEC-008, DEC-010, DEC-011); their lifecycle and sourcing risks are open.
 
@@ -121,7 +121,7 @@ Firmware task P2-005 does not block the hardware release.
 | P3-004 | Route USB FS and high-sensitivity sensor/debug signals. Merged into P3-003 on 2026-11-19. | PCB-011, PCB-012 | TBD | N/A | See P3-003 |
 | P3-005 | Run DRC and disposition all relevant findings. |  | TBD | OPEN | DRC output and issue disposition |
 | P3-006 | Review thermal/current constraints and manufacturability. Merged into P3-010 on 2026-11-19. | MFG-001 to MFG-003 | TBD | N/A | See P3-010 |
-| P3-007 | Confirm BOM, footprints, alternates, assembly notes, and test-point access. Silkscreen: "RC IN 5V" at CN706 (OPEN-031, from P2-023); label CN704 clearly (TF-Luna; DS-009 has no 4-pin UART port, OPEN-023); LED legends per the `user-interface` notes. Run `/kicad-link-audit` on the new project libraries before the BOM review. | MFG-002 to MFG-004, TST-001 to TST-007 | TBD | OPEN | Controlled BOM and assembly review |
+| P3-007 | Confirm BOM, footprints, alternates, assembly notes, and test-point access. Silkscreen: "RC IN 5V" at CN706 (OPEN-031, from P2-023); label CN704 clearly (TF-Luna; DS-009 has no 4-pin UART port, OPEN-023); LED legends per the `user-interface` notes. Run `/kicad-link-audit` on the new project libraries before the BOM review. RGB LEDs D901 and D902 (DEC-115): set the LED legends. | MFG-002 to MFG-004, TST-001 to TST-007 | TBD | OPEN | Controlled BOM and assembly review |
 | P3-008 | Create a hardware release package. Merged into P3-009 on 2026-11-19. |  | TBD | N/A | See P3-009 |
 | P3-009 | Create the hardware release package (schematic, PCB, BOM, and a release manifest that records firmware integration as deferred) and obtain the human engineering owner's approval for fabrication release. Merged P3-008 on 2026-11-19. | P3-007 | Human | OPEN | Hardware release manifest; explicit approval record |
 | P3-010 | Define PCB fabrication parameters (layer count, stackup, copper weight, trace/space, hole/via, soldermask, finish) and review thermal and current constraints and manufacturability. Merged P3-006 on 2026-11-19. Include the servo copper current and temperature rise (OPEN-021, from P2-016) and the H743 copper (power budget section 11). Stackup and board rules drawn in `a70e6cc`, not decided (OPEN-040). | PCB-001 to PCB-005, MFG-001 to MFG-003, OPEN-040 | TBD | OPEN | Parameter record confirmed by the fabricator; manufacturing and thermal review |

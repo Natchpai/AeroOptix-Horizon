@@ -1296,5 +1296,159 @@ class NetlistCommands(unittest.TestCase):
             self.assertEqual({q.name: q.stat().st_mtime_ns for q in proj.iterdir()}, before)
 
 
+
+class NetlistDiff(unittest.TestCase):
+    """diff: the change tier between a base and a work netlist (fixtures/netlist_small)."""
+
+    def setUp(self):
+        self.text = (FIXTURE / 'netlist_small.xml').read_text(encoding='utf-8')
+
+    def diff(self, work_text, *extra):
+        with tempfile.TemporaryDirectory() as tmp:
+            base, work = Path(tmp) / 'base.xml', Path(tmp) / 'work.xml'
+            base.write_text(self.text, encoding='utf-8')
+            work.write_text(work_text, encoding='utf-8')
+            done = subprocess.run([sys.executable, str(SCRIPT), 'diff', '--project',
+                                   str(FIXTURE / 'netlist_small.kicad_sch'), '--netlist', str(work),
+                                   '--base-netlist', str(base), *extra],
+                                  capture_output=True, text=True, encoding='utf-8', timeout=180)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        out = json.loads(done.stdout)
+        self.assertEqual(out['verification'], 'KICAD_NETLIST_DIFF')
+        return out['results'][0]
+
+    def test_tier0_when_nothing_changed(self):
+        r = self.diff(self.text)
+        self.assertEqual((r['tier'], r['erc_recommended']), (0, False))
+        self.assertEqual(sum(r['counts'].values()), 0)
+
+    def test_tier1_on_value_and_rename(self):
+        work = self.text.replace('<value>10k</value>', '<value>22k</value>', 1)
+        r = self.diff(work)
+        self.assertEqual(r['tier'], 1)
+        self.assertEqual(r['fields_changed'][0], {'reference': 'R1', 'field': 'value', 'base': '10k', 'work': '22k'})
+        self.assertFalse(r['erc_recommended'])
+        renamed = self.text.replace('name="COM"', 'name="COMMON"', 1)
+        r = self.diff(renamed)
+        self.assertEqual((r['tier'], r['nets_renamed']), (1, [['COM', 'COMMON']]))
+
+    def test_tier1_lib_id_recommends_erc(self):
+        r = self.diff(self.text.replace('part="R" description', 'part="R_Small" description', 1))
+        self.assertEqual((r['tier'], r['erc_recommended']), (1, True))
+
+    def test_tier2_on_moved_pin_and_removed_part(self):
+        moved = self.text.replace('<node ref="R3" pin="1"', '<node ref="R3" pin="9"', 1)
+        r = self.diff(moved)
+        self.assertEqual((r['tier'], r['erc_recommended']), (2, True))
+        self.assertIn('/D0', r['nets_changed'])
+        start = self.text.index('<comp ref="R4">')
+        gone = self.text[:start] + self.text[self.text.index('</comp>', start) + len('</comp>'):]
+        r = self.diff(gone)
+        self.assertEqual((r['tier'], r['parts_removed']), (2, ['R4']))
+
+    def test_custom_field_change_is_tier1(self):
+        # A user field such as Rate (voltage rating) must not read as a cosmetic edit.
+        work = self.text.replace('<field name="Description"/>', '<field name="Rate">25V</field>', 1)
+        self.text = self.text.replace('<field name="Description"/>', '<field name="Rate">16V</field>', 1)
+        r = self.diff(work)  # diff() uses self.text as the base
+        self.assertEqual(r['tier'], 1)
+        self.assertIn({'reference': 'R1', 'field': 'Rate', 'base': '16V', 'work': '25V'}, r['fields_changed'])
+
+    def test_base_export_keeps_non_ascii_paths(self):
+        spec = importlib.util.spec_from_file_location('_query_sch_git', SCRIPT)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            proj = repo / '\u0e0a\u0e35\u0e17'  # a Thai folder name
+            proj.mkdir()
+            for name in ('netlist_small.kicad_sch', 'child.kicad_sch', 'netlist_small.kicad_pro'):
+                (proj / name).write_bytes((FIXTURE / name).read_bytes())
+            git = ['git', '-c', 'user.email=t@t', '-c', 'user.name=t']
+            subprocess.run(['git', 'init', '-q'], cwd=repo, check=True)
+            subprocess.run(['git', 'add', '-A'], cwd=repo, check=True)
+            subprocess.run([*git, 'commit', '-qm', 't'], cwd=repo, check=True)
+            seen = {}
+
+            def fake_export(root, cli, sheets=()):
+                seen['root'], seen['sheets'] = Path(root), sorted(Path(s).name for s in sheets)
+                return 'xml'
+            with mock.patch.object(mod, 'export_netlist', side_effect=fake_export):
+                self.assertEqual(mod.export_netlist_at(proj / 'netlist_small.kicad_sch', 'HEAD', 'kicad-cli'), 'xml')
+        self.assertEqual(seen['sheets'], ['child.kicad_sch', 'netlist_small.kicad_sch'])
+        self.assertEqual(seen['root'].parent.name, '\u0e0a\u0e35\u0e17')
+
+    def test_bom_board_flags_and_pin_type_are_tier1(self):
+        flag = self.text.replace('<property name="Sheetname" value="netlist_small"/>',
+                                 '<property name="exclude_from_bom"/><property name="Sheetname" value="netlist_small"/>', 1)
+        r = self.diff(flag)
+        self.assertEqual(r['tier'], 1)
+        self.assertEqual(r['fields_changed'][0]['field'], 'exclude_from_bom')
+        typed = self.text.replace('<node ref="R1" pin="1" pinfunction="~_1" pintype="passive"/>',
+                                  '<node ref="R1" pin="1" pinfunction="~_1" pintype="input"/>', 1)
+        r = self.diff(typed)
+        self.assertEqual((r['tier'], r['erc_recommended']), (1, True))
+        self.assertEqual(r['fields_changed'][0]['field'], 'pin 1 type')
+
+    def test_duplicate_reference_counts(self):
+        start = self.text.index('<comp ref="R4">')
+        block = self.text[start:self.text.index('</comp>', start) + len('</comp>')]
+        r = self.diff(self.text.replace(block, block + block, 1))  # a second R4
+        self.assertEqual(r['tier'], 2)
+        self.assertEqual(r['parts_added'], ['R4 (x2)'])
+
+    def test_power_net_hint_names(self):
+        work = self.text.replace('name="COM"', 'name="VBAT"', 1)
+        self.assertIn('new power net VBAT', self.diff(work)['tier3_hints'])
+
+    def test_status_change_does_not_raise_tier(self):
+        work = self.text.replace('<field name="Description"/>', '<field name="STATUS">CHECKED</field>', 1)
+        r = self.diff(work)
+        self.assertEqual(r['tier'], 0)
+        self.assertEqual(r['status_changed'], [{'reference': 'R1', 'base': '', 'work': 'CHECKED'}])
+
+    def test_tier3_hint_on_new_ic(self):
+        work = self.text.replace('<comp ref="R4">', '<comp ref="U1">', 1).replace('ref="R4"', 'ref="U1"')
+        r = self.diff(work)
+        self.assertEqual(r['tier'], 2)
+        self.assertIn('new IC U1', r['tier3_hints'])
+
+    def test_diff_options_rejected_elsewhere(self):
+        done = subprocess.run([sys.executable, str(SCRIPT), 'summary', '--erc', '--project',
+                               str(FIXTURE / 'netlist_small.kicad_sch')],
+                              capture_output=True, text=True, encoding='utf-8', timeout=60)
+        self.assertEqual(done.returncode, 2)
+        self.assertIn('only supported with diff', json.loads(done.stderr)['error'])
+
+    def test_erc_runs_on_copy_with_project_tables(self):
+        spec = importlib.util.spec_from_file_location('_query_sch_diff', SCRIPT)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        seen = {}
+
+        def fake_run(cmd, **kw):
+            target = Path(cmd[-1])
+            seen['tables'] = sorted(p.name for p in target.parent.iterdir() if p.name.endswith('lib-table'))
+            seen['target'], seen['cmd'] = target, cmd
+            Path(cmd[cmd.index('-o') + 1]).write_text(' ** ERC messages: 3  Errors 1  Warnings 2\n', encoding='utf-8')
+            return subprocess.CompletedProcess(cmd, 0, '', '')
+        with tempfile.TemporaryDirectory() as tmp:
+            proj = Path(tmp) / 'p'
+            proj.mkdir()
+            for name in ('netlist_small.kicad_sch', 'child.kicad_sch', 'netlist_small.kicad_pro'):
+                (proj / name).write_bytes((FIXTURE / name).read_bytes())
+            (proj / 'sym-lib-table').write_text('(sym_lib_table (lib (uri "${KIPRJMOD}/x.kicad_sym")))', encoding='utf-8')
+            with mock.patch.object(mod.subprocess, 'run', side_effect=fake_run):
+                r = mod.run_erc(proj / 'netlist_small.kicad_sch', 'kicad-cli', [proj / 'child.kicad_sch'])
+            self.assertEqual(r, {'messages': 3, 'errors': 1, 'warnings': 2})
+            self.assertNotIn('--severity-all', seen['cmd'])  # exclusions stay out of the count
+            self.assertEqual(mod.outside_sheets(proj / 'netlist_small.kicad_sch', [Path(tmp) / 'x.kicad_sch']),
+                             [str(Path(tmp) / 'x.kicad_sch')])
+            self.assertEqual(seen['tables'], ['sym-lib-table'])
+            self.assertNotEqual(seen['target'].parent, proj)
+            self.assertEqual(sorted(p.name for p in proj.iterdir()),
+                             ['child.kicad_sch', 'netlist_small.kicad_pro', 'netlist_small.kicad_sch', 'sym-lib-table'])
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

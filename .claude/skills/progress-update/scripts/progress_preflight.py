@@ -8,6 +8,10 @@ checks, an optional datasheet pin-text check, and doc checks (em dashes, spec
 IDs, tracker rows or, with no tracker table, a checklist task named in each
 open spec row, relative links), and a review of open items, task status
 and the summary lists (`review:*` findings, INFO only; review_items()).
+The change tier (0 cosmetic, 1 fields, 2 connectivity) comes from the sibling
+sch-inspect `diff` against --since, with ERC when the tier asks for it.
+Parts whose schematic `STATUS` field is `CHECKED` were checked by the human
+(symbol pins, footprint, 3D model): their library checks are skipped.
 Judgement (what changed, DECISION vs DRAWN, doc text, whether to close an
 item) stays with the model and the human. Connectivity is out of scope: use
 sch-inspect for nets and power sources.
@@ -16,11 +20,13 @@ Usage:
     python -I progress_preflight.py [--project <file.kicad_pro>] [--since <ref>]
         [--spec <md>] [--checklist <md>] [--id-prefixes DEC,OPEN,...]
         [--open-prefix OPEN] [--dec-prefix DEC] [--tracker-prefix OI]
-        [--pin-text SYMBOL=fulltext.txt ...] [--findings-only]
+        [--pin-text SYMBOL=fulltext.txt ...] [--findings-only] [--tier-only]
+        [--no-tier] [--verbose]
 """
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import re
@@ -154,6 +160,29 @@ class Ctx:
         self.finds = finds
         self.refs: set = set()       # every placed reference (no "#" power symbols)
         self.fields: dict = {}       # BOM ref -> filled fields among FIELD_NAMES
+        self.part_text: set = set()  # Value and MPN strings of placed parts
+        self.status: dict = defaultdict(set)  # "sym:<nick:name>", "symname:<name>", "fp:<nick:name>" -> STATUS
+        self.status_mtime: dict = {}  # same keys -> oldest save time of a sheet that holds them
+        self.verbose = False
+
+    def nickname(self, path: Path, libs: dict) -> str | None:
+        """Library table nickname whose URI is this file or a folder that holds it."""
+        path = path.resolve()
+        for nick, uri in libs.items():
+            lib = expand(uri, self.proj, self.major)
+            if lib is not None and (lib.resolve() == path or lib.resolve() in path.parents):
+                return nick
+        return None
+
+    def human_checked(self, key: str, lib_file: Path | None = None) -> bool:
+        """Every placed part that uses this library item has STATUS CHECKED, and the
+        library file was not saved after the sheet that holds the check."""
+        vals = self.status.get(key)
+        if not (vals and all(v.upper() == "CHECKED" for v in vals)):
+            return False
+        if lib_file is not None and lib_file.exists() and key in self.status_mtime:
+            return lib_file.stat().st_mtime <= self.status_mtime[key]
+        return True
 
     def footprint_file(self, fp: str) -> tuple[str, Path | None]:
         """("ok"|"no_nickname"|"unknown"|"unresolved"|"missing", path)."""
@@ -166,7 +195,7 @@ class Ctx:
         mod = lib / f"{name}.kicad_mod"
         return ("ok" if mod.exists() else "missing"), mod
 
-    def models(self, mod: Path, owner: str) -> tuple[set, list]:
+    def models(self, mod: Path, owner: str, quiet: bool = False) -> tuple[set, list]:
         fpt = next((n for n in load(mod) if isinstance(n, list)), [])
         missing = []
         for m in children(fpt, "model"):
@@ -174,16 +203,19 @@ class Ctx:
                 continue
             path = expand(m[1], self.proj, self.major)
             if path is None:
-                self.finds.append(["INFO", "model_var_unset", owner, m[1]])
+                if not quiet:
+                    self.finds.append(["INFO", "model_var_unset", owner, m[1]])
             elif not path.exists():
                 missing.append(m[1])
-                self.finds.append(["MINOR", "model_missing", owner, m[1]])
+                if not quiet:
+                    self.finds.append(["MINOR", "model_missing", owner, m[1]])
         pads = {p[1] for p in children(fpt, "pad") if len(p) > 1 and p[1]}
         return pads, missing
 
 
 def check_sheets(files: list[Path], changed: set, ctx: Ctx) -> list[dict]:
     out, lcsc, pwr_flag = [], defaultdict(set), False
+    single_counts = {}
     links = defaultdict(list)  # (severity, check, item, detail) -> refs
     for path in files:
         root = next((n for n in load(path) if head(n) == "kicad_sch"), [])
@@ -202,6 +234,15 @@ def check_sheets(files: list[Path], changed: set, ctx: Ctx) -> list[dict]:
                 continue
             parts.append(ref)
             ctx.refs.add(ref)
+            ctx.part_text |= {v for v in (p.get("Value", ""), pick(p, MPN_KEYS)) if v}
+            status = p.get("STATUS", "").strip()
+            keys = [f"sym:{lib_id}", f"symname:{lib_id.split(':', 1)[-1]}"]
+            if p.get("Footprint"):
+                keys.append(f"fp:{p['Footprint']}")
+            saved = path.stat().st_mtime
+            for k in keys:
+                ctx.status[k].add(status)
+                ctx.status_mtime[k] = min(saved, ctx.status_mtime.get(k, saved))
             in_bom = first(sym, "in_bom")
             bare_pad = "TestPoint" in lib_id or lib_id.endswith(":SolderPad")
             if not (in_bom and in_bom[1] == "no") and not bare_pad:
@@ -228,8 +269,10 @@ def check_sheets(files: list[Path], changed: set, ctx: Ctx) -> list[dict]:
                     links[("MAJOR", "footprint_missing", fp, "footprint file not found")].append(f"{path.name}:{ref}")
         labels = Counter(lb[1] for lb in children(root, "label") if len(lb) > 1)
         single = sorted(n for n, c in labels.items() if c == 1)
-        if single:
+        if single and ctx.verbose:
             ctx.finds.append(["INFO", "single_use_labels", path.name, f"local labels used once (check with sch-inspect): {single}"])
+        elif single:
+            single_counts[path.name] = len(single)
         if unannotated:
             ctx.finds.append(["MINOR", "unannotated", path.name, dict(unannotated)])
         if no_fp:
@@ -241,6 +284,10 @@ def check_sheets(files: list[Path], changed: set, ctx: Ctx) -> list[dict]:
         out.append({"sheet": sheet, "changed": path in changed,
                     "parts": len(parts), "unannotated": dict(unannotated),
                     "power_nets": sorted(power_nets)})
+    if single_counts:
+        # Mostly stub labels on spare pins: one count line unless --verbose asks for names.
+        ctx.finds.append(["INFO", "single_use_labels", f"{len(single_counts)} sheets",
+                          f"{sum(single_counts.values())} local labels used once; names with --verbose"])
     for (sev, check, item, detail), refs in links.items():
         ctx.finds.append([sev, check, item, f"{detail}; used by {refs}"])
     for code, vals in lcsc.items():
@@ -279,21 +326,29 @@ def check_library(sym_files: list[Path], mod_files: list[Path], pin_text: dict, 
         for name, pins, fp, derived in lib_symbols(f):
             entry = {"symbol": name, "file": f.relative_to(ctx.repo).as_posix(), "pins": len(pins), "footprint": fp}
             nums = {p["number"] for p in pins}
+            nick = ctx.nickname(f, ctx.sym_libs)
+            # By nickname when the table names the file; else every placed part with this symbol name.
+            key = f"sym:{nick}:{name}" if nick else f"symname:{name}"
+            checked = ctx.human_checked(key, f)
+            if checked:
+                entry["human_checked"] = True
+            elif ctx.human_checked(key):
+                entry["human_check_older_than_file"] = True  # edited after the check: check again
             if derived:
                 entry["derived"] = True
             elif fp and ":" in fp:
                 state, mod = ctx.footprint_file(fp)
                 if state == "ok":
-                    pads, missing = ctx.models(mod, name)
+                    pads, missing = ctx.models(mod, name, quiet=checked)
                     entry.update(pads=len(pads), models_missing=missing)
-                    if pins and pads != nums:
+                    if pins and pads != nums and not checked:
                         ctx.finds.append(["MAJOR", "pin_pad_mismatch", name,
                                           {"pins_only": sorted(nums - pads), "pads_only": sorted(pads - nums)}])
-                elif state != "unknown":
+                elif state != "unknown" and not checked:
                     ctx.finds.append(["MAJOR", "footprint_unresolved", name, f"{fp}: {state}"])
             else:
                 no_fp.append(name)
-            if name in pin_text:
+            if name in pin_text and not checked:
                 miss = []
                 for p in pins:
                     if not pin_row_found(p["number"], p["name"], pin_text[name]):
@@ -303,8 +358,15 @@ def check_library(sym_files: list[Path], mod_files: list[Path], pin_text: dict, 
                     ctx.finds.append(["MINOR", "pin_text_mismatch", name, f"pin rows not found in datasheet text (heuristic): {miss}"])
             out.append(entry)
     for mod in mod_files:
-        _, missing = ctx.models(mod, mod.stem)
-        out.append({"footprint_file": mod.relative_to(ctx.repo).as_posix(), "models_missing": missing})
+        nick = ctx.nickname(mod, ctx.fp_libs) or mod.parent.name.removesuffix(".pretty")
+        checked = ctx.human_checked(f"fp:{nick}:{mod.stem}", mod)
+        _, missing = ctx.models(mod, mod.stem, quiet=checked)
+        entry = {"footprint_file": mod.relative_to(ctx.repo).as_posix(), "models_missing": missing}
+        if checked:
+            entry["human_checked"] = True
+        elif ctx.human_checked(f"fp:{nick}:{mod.stem}"):
+            entry["human_check_older_than_file"] = True
+        out.append(entry)
     if no_fp:
         ctx.finds.append(["INFO", "no_footprint", f"{len(no_fp)} symbols", f"Footprint property empty (generic parts?): {no_fp}"])
     unmatched = sorted(set(pin_text) - {e.get("symbol") for e in out})
@@ -483,7 +545,8 @@ def row_items(text: str) -> set:
 
 def review_items(spec_text: str, checklist_text: str, readme_text: str | None,
                  refs: set | None, fields: dict | None, rev_of,
-                 open_prefix: str = "OPEN", dec_prefix: str = "DEC") -> tuple[list, int]:
+                 open_prefix: str = "OPEN", dec_prefix: str = "DEC",
+                 part_text: set | None = None) -> tuple[list, int]:
     """Findings that an open item, a task status or a summary line may be stale.
 
     Pure: text and data in, rows out. rev_of(name) returns the header revision of
@@ -575,11 +638,12 @@ def review_items(spec_text: str, checklist_text: str, readme_text: str | None,
 
     # --- ref_missing: still-open text names a reference that is not drawn
     if refs:
-        prefixes = defaultdict(list)
+        prefixes, blocks = defaultdict(list), defaultdict(set)
         for r in refs:
             m = re.fullmatch(r"([A-Z]{1,3})(\d+)", r)
             if m:
                 prefixes[m.group(1)].append(len(m.group(2)))
+                blocks[m.group(1)].add(int(m.group(2)) // 100)
         for oid in open_ids:
             text = ANY_ID_RE.sub("", still_open(opens[oid][0]))
             text = re.sub(r"`[^`]*`", "", text)
@@ -587,8 +651,12 @@ def review_items(spec_text: str, checklist_text: str, readme_text: str | None,
             for pre, num in REF_RE.findall(text):
                 # same digit count as drawn refs of that prefix: "Q10" (a question) and
                 # "C7519" (an LCSC code) are not references when every Q or C ref has 3 digits
+                # "H743" in the value "STM32H743VIT6" is a part name when no H ref is in the
+                # 700s; "C104" in "GRM155R71C104KA88D" stays a ref when C101 is drawn
+                part_name = (int(num) // 100 not in blocks[pre]
+                             and any(f"{pre}{num}" in v for v in (part_text or ())))
                 if (pre in prefixes and min(prefixes[pre]) <= len(num) <= max(prefixes[pre])
-                        and f"{pre}{num}" not in refs):
+                        and f"{pre}{num}" not in refs and not part_name):
                     bad.add(f"{pre}{num}")
             bad |= {f"{pre}?" for pre in UNANNOTATED_RE.findall(text) if pre in prefixes}
             if bad:
@@ -686,6 +754,39 @@ def pick_project(repo: Path, arg: str | None) -> Path:
     raise RuntimeError(f"expected one .kicad_pro, found {[p.relative_to(repo).as_posix() for p in pros]}; pass --project")
 
 
+def compact(rec: dict) -> dict:
+    """Drop empty lists, false flags and all-zero counts from a tier record."""
+    out = {k: v for k, v in rec.items() if not (v is None or v is False or v == [])}  # keep tier 0
+    if isinstance(out.get("counts"), dict) and not any(out["counts"].values()):
+        out.pop("counts")
+    return out
+
+
+def change_tier(root_sch: Path, base: str, sheets: list[Path]) -> dict:
+    """Tier from the sibling sch-inspect `diff` (saved files against `base`), with ERC when it asks."""
+    script = Path(__file__).resolve().parents[2] / "sch-inspect" / "scripts" / "query_sch.py"
+    if not script.is_file():
+        return {"tier": "NOT_VERIFIED", "reason": "sch-inspect skill not installed"}
+    try:
+        spec = importlib.util.spec_from_file_location("_sch_inspect_query", script)
+        q = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(q)
+        outside = q.outside_sheets(root_sch, sheets)
+        if outside:
+            return {"tier": "NOT_VERIFIED", "reason": f"sheets outside the project folder: {outside[:5]}"}
+        cli = q.find_kicad_cli()
+        work = q.export_netlist(root_sch, cli, sheets)
+        old = q.export_netlist_at(root_sch, base, cli)
+        rec = q.diff_netlists(q.parse_netlist(old)[1], q.parse_netlist_parts(old),
+                              q.parse_netlist(work)[1], q.parse_netlist_parts(work), 20)
+        if rec["erc_recommended"]:
+            rec["erc"] = q.run_erc(root_sch, cli, sheets)
+        rec["base"] = base
+        return compact(rec)
+    except Exception as exc:  # any failure leaves the tier open, never blocks the doc checks
+        return {"tier": "NOT_VERIFIED", "reason": f"{type(exc).__name__}: {exc}"[:300]}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--project", help=".kicad_pro file or its folder; default: the only project in the repo")
@@ -700,6 +801,9 @@ def main() -> int:
     ap.add_argument("--pin-text", action="append", default=[], metavar="SYMBOL=FILE",
                     help="datasheet fulltext (e.g. NotebookLM source fulltext) to match pin rows against")
     ap.add_argument("--findings-only", action="store_true")
+    ap.add_argument("--tier-only", action="store_true", help="print only the change tier and stop")
+    ap.add_argument("--no-tier", action="store_true", help="skip the netlist diff (no kicad-cli run)")
+    ap.add_argument("--verbose", action="store_true", help="full lists in INFO findings")
     args = ap.parse_args()
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
@@ -725,6 +829,11 @@ def main() -> int:
         changed_paths += [p for p in untracked if rel == "." or p.startswith(f"{rel}/")]
         changed_set = {(repo / p).resolve() for p in changed_paths}
         status = git(repo, "status", "--short", "--", rel).splitlines()
+        tier = {"tier": "NOT_VERIFIED", "reason": "--no-tier"} if args.no_tier else \
+            change_tier(root_sch, since, sheet_files(root_sch))
+        if args.tier_only:
+            print(json.dumps({"since": since, "uncommitted": status, "tier": tier}, indent=1, ensure_ascii=False))
+            return 0
         pin_text = {}
         for item in args.pin_text:
             sym, _, f = item.partition("=")
@@ -738,6 +847,7 @@ def main() -> int:
         sym_libs.update(lib_table(proj / "sym-lib-table", proj, major))
         finds: list = []
         ctx = Ctx(repo, proj, major, fp_libs, sym_libs, global_tables, finds)
+        ctx.verbose = args.verbose
         sheets = check_sheets(sheet_files(root_sch), changed_set, ctx)
         live = [p for p in sorted(changed_set) if p.exists() and "-backups" not in p.as_posix()]
         library = check_library([p for p in live if p.suffix == ".kicad_sym"],
@@ -756,7 +866,7 @@ def main() -> int:
             spec_text, cl_text = spec.read_text(encoding="utf-8"), checklist.read_text(encoding="utf-8")
             rows, checked = review_items(
                 spec_text, cl_text, readme.read_text(encoding="utf-8") if readme.exists() else None,
-                ctx.refs, ctx.fields, rev_of, args.open_prefix, args.dec_prefix)
+                ctx.refs, ctx.fields, rev_of, args.open_prefix, args.dec_prefix, ctx.part_text)
             rows += register.lint(spec_text, cl_text, rev_of, args.open_prefix, args.dec_prefix)
             finds.extend(rows)
             review = {"items_checked": checked, "findings": len(rows),
@@ -780,6 +890,7 @@ def main() -> int:
         "spec": spec.relative_to(repo).as_posix() if spec else "MISSING",
         "checklist": checklist.relative_to(repo).as_posix() if checklist else "MISSING",
         "since": since,
+        "tier": tier,
         "commits": git(repo, "log", "--oneline", f"{since}..HEAD").splitlines(),
         "changed_by_kind": dict(kinds),
         "uncommitted": status,
@@ -790,7 +901,7 @@ def main() -> int:
         "findings": [dict(zip(("severity", "check", "item", "detail"), f)) for f in finds],
     }
     if args.findings_only:
-        data = {k: data[k] for k in ("since", "kicad_open", "findings")}
+        data = {k: data[k] for k in ("since", "tier", "kicad_open", "findings")}
     print(json.dumps(data, indent=1, ensure_ascii=False))
     return 0
 

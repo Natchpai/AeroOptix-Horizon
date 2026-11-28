@@ -82,23 +82,28 @@ The first argument picks the mode. The rules above apply in every mode.
 
 ## Steps
 
-### 0. Preflight
+### 0. Preflight and tier
 Run the deterministic checks first, from the repo root:
 ```bash
 python -I -X utf8 <skills dir>/progress-update/scripts/progress_preflight.py [--since <ref>]
 ```
-It prints one JSON: project, spec and checklist paths, since point, commits,
-changed files by kind, per-sheet part counts, library checks, doc checks, a
-`review` count and a `findings` list. The review checks every open spec item,
-every checklist task and gate status, and the summary lists against the
-spec, checklist, README and saved schematic fields (`review:*` findings, see
-step 4). Use it for steps 1, 2, the sheet and library parts of 3, the
-listed checks in 4, and 7. Read the JSON, not the KiCad files, for anything it
-covers. The spec and checklist tables are read by `scripts/register.py`:
-columns by header name first, then by position, so a table with extra or
-renamed columns still reads. Options:
-- `--project <file.kicad_pro or folder>` when the repo has several projects
-  (run from inside a project folder also picks it).
+It prints one JSON: paths, since point, commits, changed files, the change
+`tier`, sheet counts, library checks, doc checks and `findings` (`review:*`
+rows, step 4). Use it for steps 1, 2, 3 and 7; read the JSON, not the KiCad
+files, for anything it covers. `tier` comes from `sch-inspect diff` against
+the since point, with ERC when it asks (`tier.erc`). The tier caps the work:
+
+| Tier | Netlist change | Work |
+|---|---|---|
+| 0 | none (wire, label, text, PCB only) | No trace, ERC or doc edit. At commit, one CHANGELOG line: "schematic cleanup, no connectivity change". Stop unless a decision was stated. |
+| 1 | fields or net names only | No trace. Edit only rows that state a changed value. |
+| 2 | parts or pin groups | Trace only the parts and nets the tier lists. |
+| 3 | the human states a decision (`tier3_hints` only suggest one) | All steps. |
+
+`tier: NOT_VERIFIED` (no `kicad-cli` or `sch-inspect`): work as tier 3 and
+say why. `--tier-only` prints just the tier; run it when the human says they
+edited the schematic. Options:
+- `--project <file.kicad_pro or folder>` when the repo has several projects.
 - `--spec <md>` and `--checklist <md>` when the names do not contain `SPEC`
   and `CHECKLIST` (the spec is also found by an H1 that says
   "Specification").
@@ -135,34 +140,25 @@ Done when you know the project folder, root schematic, each doc path (or
 `MISSING`), and the since point.
 
 ### 2. Baseline
-Preflight keys `commits`, `changed_by_kind` and `uncommitted`. By hand:
-```bash
-git log --oneline --since=<date>            # or <ref>..HEAD
-git diff --name-only <ref> -- <project dir>
-git status --short -- <project dir>
-```
-Done when you have the list of changed `.kicad_sch` / `.kicad_pcb` files, lib
-table changes, and new library items.
+Preflight keys `commits`, `changed_by_kind` and `uncommitted`; if preflight
+failed, use `git log`, `git diff --name-only <ref>` and `git status --short`
+on the project folder. Done when you have the changed CAD, library table and
+library files.
 
 ### 3. Collect
-- **Sheets:** preflight `sheets` gives each sheet's part count, unannotated
-  references and power nets, not the part list. For the parts, by
-  hand: `python -I <skills dir>/progress-update/scripts/list_symbols.py <sheet.kicad_sch>`.
-  Then trace each IC and connector with `sch-inspect`
-  (`query_sch.py local-net <ref> --project <root.kicad_sch> --limit 0`). Unannotated
-  refs such as `U?` work as targets; the tool returns every match.
+- **Sheets (tier 1 and up):** regenerate the state record with
+  `python -I <skills dir>/progress-update/scripts/sch_state.py --project <root.kicad_sch> --out <spec dir>/schematic-state.md`.
+  At tier 2, trace only the listed parts and nets with `sch-inspect`
+  (`query_sch.py local-net <ref> --project <root.kicad_sch> --limit 0`).
 - **PCB:** if `.kicad_pcb` changed, run `pcb-inspect` `summary`.
 - **Library:** list new symbol, footprint and 3D model names (preflight
-  `library`: pins against pads, missing 3D models, unresolved links). Suggest
-  `/kicad-link-audit`; leave it to the human to run.
+  `library`). Items marked `human_checked` (schematic `STATUS` `CHECKED`) are
+  not checked again; `human_check_older_than_file` means the file changed
+  after the check. For the rest, suggest `/kicad-link-audit`.
 - **Session:** list each design decision the human stated, with a quote.
 
-`light`: compare against the spec's current "Schematic state" rows and trace
-only the parts and nets that differ from them. If the human only stated a
-decision and no sheet changed since the open revision, skip the sheet trace.
-
-Done when every changed sheet has a state table (block, as drawn, evidence)
-and every part in it is tagged DECISION or DRAWN.
+Done when the state record is current and every changed part is tagged
+DECISION or DRAWN.
 
 ### 4. Findings
 Preflight `findings` already covers: one LCSC code on two values,
@@ -227,8 +223,8 @@ take the next unused ID. Where a doc has no place for a fact, add the smallest
 fitting row or table and mention it in the report.
 
 1. **Spec:** revision and date (open-revision rule in Modes); the confirmed part-number list; decision
-   rows; component-constraint rows for decided parts; a "Schematic state"
-   table under the matching architecture section; open-item rows, each with
+   rows; component-constraint rows for decided parts; a link to
+   `schematic-state.md` (do not copy part lists); open-item rows, each with
    its owner and the checklist task that closes it; change-note row; verdict
    or status summary line.
 2. **Checklist:** follow `hardware-checklist` update rules. Revision and date
@@ -237,9 +233,10 @@ fitting row or table and mention it in the report.
    confirmation); tasks for new work, including one for each new open item
    that no task covers yet; a tracker row for each new open item only if the
    checklist keeps a tracker table; the next-action line.
-3. **Design records:** edit only the ones the change touches (power budget for
-   regulators and rails, selection records for part choices, pin allocation
-   for MCU pins). Change rows; keep their labels.
+3. **Design records:** edit only records that own a changed value (power
+   budget for rails, selection records for part choices, pin allocation for
+   MCU pins). A row that only names a reference is not stale; records cite
+   nets and pins. Keep their labels.
 4. **README:** follow `hw-docs` readme update mode. Sync the spec revision,
    features, specifications table, open-items summary and documentation links.
 5. **CHANGELOG:** follow `hw-docs` changelog mode. Add **one pointer line per
@@ -282,7 +279,7 @@ pointer line, the README summary names the top open items, and every design
 record that owns an affected value is updated.
 
 ### 7. Check
-Run preflight again with `--findings-only` and the same `--since`. It reads
+Run preflight again with `--findings-only --no-tier` and the same `--since`. It reads
 the working tree, so it sees your edits. No `em_dash`, `undefined_id`,
 `no_tracker_row`, `open_without_task`, `broken_link`, `bad_status`,
 `rev_order` or `duplicate_id` row may be new, and
