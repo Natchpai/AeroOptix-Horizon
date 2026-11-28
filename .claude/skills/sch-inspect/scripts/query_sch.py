@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only KiCad schematic discovery and conservative local, hierarchical, project net and bus evidence (v1.4.0).
+"""Read-only KiCad schematic discovery and conservative local, hierarchical, project net and bus evidence (v1.5.0).
 
 Python 3.10+ standard library only. Never modifies project files. The
 netlist commands run kicad-cli (or read an export the user made) and write
@@ -86,6 +86,11 @@ MODES = {
         'Compares component pin sets only; net names differ by design (KiCad uses full sheet paths)',
         'Nets with one component pin (unconnected pins) are not compared',
         'A difference is a finding to read in KiCad, not proof that either tool is wrong']},
+    'diff': {'verification': 'KICAD_NETLIST_DIFF', 'limitations': _NETLIST_LIMITS + [
+        'Compares the saved files with a git ref; unsaved editor changes are not seen',
+        'Net groups are compared as component pin sets; a net with no component pin is not compared',
+        'Tier 3 (a design decision) is never detected; tier3_hints are only hints',
+        'ERC counts only with --erc; ERC PASS does not prove the design is correct']},
 }
 
 
@@ -1694,6 +1699,21 @@ def find_kicad_cli(explicit=None):
                      'or give an exported KiCad XML netlist with --netlist')
 
 
+def _copy_project(root, sheets, work):
+    """Copy the root sheet, `sheets` and the .kicad_pro into `work`; return the copied root."""
+    base = Path(root).resolve().parent
+    for src in {Path(root).resolve(), *(Path(s).resolve() for s in sheets),
+                Path(root).resolve().with_suffix('.kicad_pro')}:
+        try:
+            rel = src.relative_to(base)
+        except ValueError:
+            continue  # outside the project folder: discover() skips it too
+        if src.is_file():
+            (work / rel).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(src, work / rel)
+    return work / Path(root).resolve().relative_to(base)
+
+
 def export_netlist(root, cli, sheets=()):
     """Run kicad-cli on a temp copy of the saved sheets and project file.
 
@@ -1701,20 +1721,9 @@ def export_netlist(root, cli, sheets=()):
     runs on the project folder itself. `sheets` are the discovered sheet files;
     each is copied to the same path relative to the root sheet's folder.
     """
-    base = Path(root).resolve().parent
     with tempfile.TemporaryDirectory(prefix='sch-inspect-') as tmp:
-        work = Path(tmp) / 'project'
-        for src in {Path(root).resolve(), *(Path(s).resolve() for s in sheets),
-                    Path(root).resolve().with_suffix('.kicad_pro')}:
-            try:
-                rel = src.relative_to(base)
-            except ValueError:
-                continue  # outside the project folder: discover() skips it too
-            if src.is_file():
-                (work / rel).parent.mkdir(parents=True, exist_ok=True)
-                shutil.copyfile(src, work / rel)
+        target = _copy_project(root, sheets, Path(tmp) / 'project')
         out = Path(tmp) / 'netlist.xml'
-        target = work / Path(root).resolve().relative_to(base)
         try:
             proc = subprocess.run([cli, 'sch', 'export', 'netlist', '--format', 'kicadxml', '-o', str(out), str(target)],
                                   capture_output=True, text=True, timeout=120)
@@ -1819,6 +1828,169 @@ def netlist_compare(root, data, nets, tool, source, limit, max_instances):
     return [summary] + diffs
 
 
+def _git(args, cwd):
+    try:
+        proc = subprocess.run(['git', *args], cwd=cwd, capture_output=True, timeout=60)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise QueryError(f'git failed: {exc}')
+    if proc.returncode != 0:
+        raise QueryError(f'git {" ".join(args[:2])} failed: {proc.stderr.decode("utf-8", "replace").strip()[:300]}')
+    return proc.stdout
+
+
+def outside_sheets(root, sheets):
+    """Sheets outside the root sheet's folder; a temp copy would leave them out."""
+    base = Path(root).resolve().parent
+    return [str(s) for s in sheets if base not in Path(s).resolve().parents]
+
+
+def export_netlist_at(root, ref, cli):
+    """KiCad XML netlist of the project as committed at git `ref` (sheets and .kicad_pro from git show)."""
+    root = Path(root).resolve()
+    # --show-prefix gives the folder as git stores it, so a wrong-case path on macOS still works
+    folder = _git(['rev-parse', '--show-prefix'], root.parent).decode('utf-8').strip().rstrip('/') or '.'
+    top = Path(_git(['rev-parse', '--show-toplevel'], root.parent).decode('utf-8').strip())
+    # -z: no quoting, so non-ASCII folder names (for example Thai) survive
+    names = _git(['ls-tree', '-r', '-z', '--name-only', ref, '--', folder], top).decode('utf-8').split('\0')
+    names = [n for n in names if n.endswith(('.kicad_sch', '.kicad_pro'))]
+    with tempfile.TemporaryDirectory(prefix='sch-inspect-base-') as tmp:
+        for n in names:
+            dest = Path(tmp) / n
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(_git(['show', f'{ref}:{n}'], top))
+        base_root = Path(tmp) / (folder if folder != '.' else '') / root.name
+        if not base_root.is_file():
+            raise QueryError(f'{root.name} is not in git ref {ref}')
+        return export_netlist(base_root, cli, [Path(tmp) / n for n in names if n.endswith('.kicad_sch')])
+
+
+def run_erc(root, cli, sheets=()):
+    """ERC error and warning counts from kicad-cli on a temp copy of the saved files."""
+    with tempfile.TemporaryDirectory(prefix='sch-inspect-erc-') as tmp:
+        target = _copy_project(root, sheets, Path(tmp) / 'project')
+        # Without the project library tables every symbol and footprint link is
+        # a warning. Copy them with ${KIPRJMOD} pointing at the real folder.
+        real = Path(root).resolve().parent
+        for table in ('sym-lib-table', 'fp-lib-table'):
+            if (real / table).is_file():
+                text = (real / table).read_text(encoding='utf-8')
+                (target.parent / table).write_text(text.replace('${KIPRJMOD}', real.as_posix()), encoding='utf-8')
+        out = Path(tmp) / 'erc.rpt'
+        try:
+            # errors and warnings only: violations the human excluded in KiCad stay out of the count
+            proc = subprocess.run([cli, 'sch', 'erc', '--severity-error', '--severity-warning', '-o', str(out),
+                                   str(target)],
+                                  capture_output=True, text=True, timeout=180)
+        except subprocess.TimeoutExpired:
+            raise QueryError('kicad-cli ERC timed out after 180 s')
+        text = out.read_text(encoding='utf-8') if out.is_file() else ''
+        m = re.search(r'ERC messages:\s*(\d+)\s+Errors\s+(\d+)\s+Warnings\s+(\d+)', text)
+        if not m:
+            raise QueryError(f'kicad-cli ERC gave no summary (exit {proc.returncode}): '
+                             f'{(proc.stderr or proc.stdout).strip()[:300]}')
+        return {'messages': int(m.group(1)), 'errors': int(m.group(2)), 'warnings': int(m.group(3))}
+
+
+DIFF_FIELDS = ('value', 'footprint', 'lib_id', 'dnp', 'exclude_from_bom', 'exclude_from_board')
+# plus every user field (MFR, LCSC, Rate, ...) and each pin's electrical type
+POWER_NET_RE = re.compile(r'^[+-]|^(?:GND|AGND|DGND|PGND|VCC|VDD|VSS|VBAT|VBUS|VIN|VSYS)', re.I)
+FIELD_SKIP = ('Footprint', 'STATUS')  # Footprint is `footprint`; STATUS is reported on its own
+
+
+def parse_netlist_parts(text):
+    """{ref: fields} for every component in a KiCad XML netlist (power symbols skipped)."""
+    try:
+        root = ET.fromstring(text)
+    except ET.ParseError as exc:
+        raise QueryError(f'not a KiCad XML netlist: {exc}')
+    parts = {}
+    for c in root.iter('comp'):
+        ref = c.get('ref') or ''
+        if not ref or ref.startswith('#'):
+            continue
+        if ref in parts:  # duplicate or unannotated (R?): count them, keep the first
+            parts[ref]['count'] += 1
+            continue
+        props = {p.get('name') for p in c.findall('property')}
+        fields = {f.get('name'): (f.text or '').strip() for f in c.iter('field')}
+        lib = c.find('libsource')
+        sp = c.find('sheetpath')
+        parts[ref] = {'value': (c.findtext('value') or '').strip(),
+                      'footprint': (c.findtext('footprint') or '').strip(),
+                      'lib_id': f"{lib.get('lib')}:{lib.get('part')}" if lib is not None else '',
+                      'MFR': fields.get('MFR', ''), 'MFR.P/N': fields.get('MFR.P/N', ''),
+                      'LCSC': fields.get('LCSC', ''),
+                      'dnp': 'dnp' in props, 'exclude_from_bom': 'exclude_from_bom' in props,
+                      'exclude_from_board': 'exclude_from_board' in props, 'count': 1,
+                      'STATUS': fields.get('STATUS', ''),
+                      'fields': {k: v for k, v in fields.items()
+                                 if k and k not in FIELD_SKIP and not k.startswith('Sim.')},  # simulator setup
+                      'sheet': sp.get('names') if sp is not None else ''}
+    return parts
+
+
+def _pin_groups(nets):
+    groups = {}
+    for n in nets:
+        pins = frozenset((x['reference'], str(x['pin_number'])) for x in n['nodes']
+                         if x['reference'] and not x['reference'].startswith('#'))
+        if pins:
+            groups[pins] = n['net_name']
+    return groups
+
+
+def diff_netlists(base_nets, base_parts, work_nets, work_parts, limit=sys.maxsize):
+    """Tier of the change between two netlists.
+
+    0: same pin groups, net names and part fields (cosmetic edit).
+    1: same pin groups; part fields or net names changed.
+    2: parts added or removed, or pin groups changed.
+    A design decision (tier 3) is never detected; tier3_hints only point at likely ones.
+    """
+    added = sorted(set(work_parts) - set(base_parts))
+    removed = sorted(set(base_parts) - set(work_parts))
+    fields, status = [], []
+    for ref in sorted(set(base_parts) & set(work_parts)):
+        b, w = base_parts[ref], work_parts[ref]
+        if b.get('count', 1) != w.get('count', 1):  # one more or one less R? on the sheet
+            (added if w.get('count', 1) > b.get('count', 1) else removed).append(f"{ref} (x{w.get('count', 1)})")
+        for f in DIFF_FIELDS:
+            if b[f] != w[f]:
+                fields.append({'reference': ref, 'field': f, 'base': b[f], 'work': w[f]})
+        bf, wf = b.get('fields', {}), w.get('fields', {})
+        for f in sorted(set(bf) | set(wf)):
+            if bf.get(f, '') != wf.get(f, ''):
+                fields.append({'reference': ref, 'field': f, 'base': bf.get(f, ''), 'work': wf.get(f, '')})
+        if b['STATUS'] != w['STATUS']:
+            status.append({'reference': ref, 'base': b['STATUS'], 'work': w['STATUS']})
+    def pin_types(nets):
+        return {(x['reference'], str(x['pin_number'])): x.get('pin_type', '') for n in nets for x in n['nodes']}
+    bt, wt = pin_types(base_nets), pin_types(work_nets)
+    for key in sorted(set(bt) & set(wt)):
+        if bt[key] != wt[key]:  # a symbol update changed what ERC sees
+            fields.append({'reference': key[0], 'field': f'pin {key[1]} type', 'base': bt[key], 'work': wt[key]})
+    bg, wg = _pin_groups(base_nets), _pin_groups(work_nets)
+    changed = sorted({wg[g] for g in set(wg) - set(bg)} | {bg[g] for g in set(bg) - set(wg)})
+    renamed = sorted((bg[g], wg[g]) for g in set(bg) & set(wg) if bg[g] != wg[g])
+    tier = 2 if (added or removed or changed) else 1 if (fields or renamed) else 0
+    base_names = {n['net_name'] for n in base_nets}
+    hints = [f'new IC {r}' for r in added if re.match(r'U\d', r)]
+    hints += [f'new power net {n}' for n in sorted({n['net_name'] for n in work_nets} - base_names)
+              if POWER_NET_RE.match(n.rsplit('/', 1)[-1])]
+    hints += [f'new sheet {s}' for s in sorted({p['sheet'] for p in work_parts.values()}
+                                               - {p['sheet'] for p in base_parts.values()})]
+    cut = lambda xs: xs[:limit]
+    return {'status': 'NETLIST_DIFF', 'tier': tier,
+            'erc_recommended': tier >= 2 or any(f['field'] == 'lib_id' or f['field'].endswith(' type')
+                                                for f in fields),
+            'parts_added': cut(added), 'parts_removed': cut(removed),
+            'nets_changed': cut(changed), 'nets_renamed': [list(x) for x in cut(renamed)],
+            'fields_changed': cut(fields), 'status_changed': cut(status), 'tier3_hints': cut(hints),
+            'counts': {'parts_added': len(added), 'parts_removed': len(removed), 'nets_changed': len(changed),
+                       'nets_renamed': len(renamed), 'fields_changed': len(fields), 'status_changed': len(status)},
+            'lists_truncated': any(len(x) > limit for x in (added, removed, changed, renamed, fields, status, hints))}
+
+
 class JsonArgumentParser(argparse.ArgumentParser):
     """Argument errors are JSON on stderr, like every other error."""
 
@@ -1848,6 +2020,9 @@ def main(argv=None):
     ap.add_argument('--prefix', help='components only: keep references with this letter prefix, for example U')
     ap.add_argument('--kicad-cli', help='netlist commands only: path of kicad-cli (default: KICAD_CLI, PATH, install folders)')
     ap.add_argument('--netlist', help='netlist commands only: read this KiCad XML netlist instead of running kicad-cli')
+    ap.add_argument('--base', default='HEAD', help='diff only: git ref to compare the saved files with (default HEAD)')
+    ap.add_argument('--base-netlist', help='diff only: read the base KiCad XML netlist from this file instead of git')
+    ap.add_argument('--erc', action='store_true', help='diff only: also run kicad-cli ERC on the saved files')
     args = ap.parse_args(argv)
     _FILES.clear()
     _PROJECT['name'] = None
@@ -1868,18 +2043,35 @@ def main(argv=None):
             raise QueryError('--sheet and --prefix are only supported with components')
         if args.mode == 'components' and args.target:
             raise QueryError('components takes --sheet and --prefix, not a target')
-        if (args.kicad_cli or args.netlist) and not args.mode.startswith('netlist'):
-            raise QueryError('--kicad-cli and --netlist are only supported with netlist and netlist-compare')
-        if args.mode == 'netlist-compare' and args.target:
-            raise QueryError('netlist-compare compares every net and takes no target')
-        if args.mode not in ('summary', 'instances', 'components', 'bus', 'netlist-compare') and not args.target:
+        if (args.kicad_cli or args.netlist) and not (args.mode.startswith('netlist') or args.mode == 'diff'):
+            raise QueryError('--kicad-cli and --netlist are only supported with netlist, netlist-compare and diff')
+        if (args.base_netlist or args.erc or args.base != 'HEAD') and args.mode != 'diff':
+            raise QueryError('--base, --base-netlist and --erc are only supported with diff')
+        if args.mode in ('netlist-compare', 'diff') and args.target:
+            raise QueryError(f'{args.mode} compares the whole project and takes no target')
+        if args.mode not in ('summary', 'instances', 'components', 'bus', 'netlist-compare', 'diff') and not args.target:
             raise QueryError(f'{args.mode} requires a target')
         root = root_file(args.project)
         _PROJECT['name'] = root.stem
         data, missing, outside = discover(root, args.max_files)
         records = []
         warnings = []
-        if args.mode in ('netlist', 'netlist-compare'):
+        if args.mode == 'diff':
+            cli = None if (args.netlist and args.base_netlist and not args.erc) else find_kicad_cli(args.kicad_cli)
+            sheets = [d['file'] for d in data]
+            if outside and not args.netlist:
+                raise QueryError(f'sheets outside the project folder would be left out of the diff: {outside[:5]}')
+            work_text = (Path(args.netlist).read_text(encoding='utf-8') if args.netlist
+                         else export_netlist(root, cli, sheets))
+            base_text = (Path(args.base_netlist).read_text(encoding='utf-8') if args.base_netlist
+                         else export_netlist_at(root, args.base, cli))
+            rec = diff_netlists(parse_netlist(base_text)[1], parse_netlist_parts(base_text),
+                                parse_netlist(work_text)[1], parse_netlist_parts(work_text), limit)
+            rec['base'] = f'file {args.base_netlist}' if args.base_netlist else f'git {args.base}'
+            if args.erc:
+                rec['erc'] = run_erc(root, cli, sheets)
+            records = [rec]
+        elif args.mode in ('netlist', 'netlist-compare'):
             (tool, nets), source = load_netlist(root, data, args.netlist, args.kicad_cli)
             if args.mode == 'netlist':
                 records = netlist_lookup(nets, args.target, tool, source, limit)

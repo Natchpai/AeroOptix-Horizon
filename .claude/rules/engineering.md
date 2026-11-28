@@ -43,6 +43,11 @@ Verify:    how the human can check it (ERC/DRC, calculation, measurement)
   - `ESTIMATED`: calculated or approximated; state the method and margin.
   - `NOT_VERIFIED`: evidence is missing or a check was not run.
 - Component-specific claims need an official source (see Datasheet evidence).
+- `STATUS` = `CHECKED` on a placed schematic part means the human checked its
+  symbol pins, footprint and 3D model. Label those `VERIFIED` (human check)
+  and do not check them again unless asked. It lapses when the library file
+  is saved after the sheet, and it does not cover the circuit around the
+  part.
 - ERC/DRC PASS does not guarantee electrical or functional correctness. Do not
   infer connectivity, clearance compliance or performance from incomplete CAD
   data.

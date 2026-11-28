@@ -6,7 +6,7 @@ description: >-
   Use when the user asks to inspect, trace, or explain schematic circuits,
   connections, or functional blocks. Targeted, read-only; it extracts evidence
   and does not judge the design.
-argument-hint: "[summary | components [--sheet <name>] [--prefix <p>] | component <ref> | pins <ref> | local-net <ref> | hier-net <ref> | connected-pins <ref> | project-net <ref> --pin <n> | net <name> | bus [name] | instances | sheet <name> | netlist <net|ref> | netlist-compare]"
+argument-hint: "[summary | components [--sheet <name>] [--prefix <p>] | component <ref> | pins <ref> | local-net <ref> | hier-net <ref> | connected-pins <ref> | project-net <ref> --pin <n> | net <name> | bus [name] | instances | sheet <name> | netlist <net|ref> | netlist-compare | diff [--base <ref>] [--erc]]"
 ---
 
 # Schematic Inspection (KiCad 10)
@@ -86,6 +86,13 @@ Resolve the script and project paths first; do not assume the working directory.
   the binary (default: the `KICAD_CLI` variable, then `PATH`, then the usual
   install folders); `--netlist <file.xml>` reads an export the user made and
   runs nothing.
+- `diff` sets the change tier. Run it first, without asking, when the user
+  says they edited the schematic, and at the start of `progress-update`. It
+  exports the saved files and the same files at `--base` (default `HEAD`,
+  read with `git show`) and compares them. `--erc` also runs `kicad-cli sch
+  erc` on a temp copy that uses the project library tables.
+  `--base-netlist <file.xml>` reads the base export from a file. A sheet
+  outside the project folder makes `diff` an error, since a copy would miss it.
 
 | Command | Purpose |
 |---|---|
@@ -103,6 +110,7 @@ Resolve the script and project paths first; do not assume the working directory.
 | `bus [name]` | Bus members, the sheets each member reaches, and its pins; no name lists buses and aliases. |
 | `netlist <net|ref>` | KiCad netlist nodes of a net (full name or last path part), or every net on a reference. |
 | `netlist-compare` | Every multi-pin KiCad net against the `project-net` graph; lists the nets where the pin sets differ. |
+| `diff [--base <ref>] [--erc]` | Change tier against a git ref: 0 nothing in the netlist, 1 fields or net names, 2 parts or pin groups. |
 
 Examples (root file `Top.kicad_sch`):
 - `component U103 --project Top.kicad_sch`
@@ -207,6 +215,14 @@ Report the scope actually reached, not the one requested, if expansion failed.
   proof that either tool is wrong. Zero differences is `VERIFIED` evidence
   that the `project-net` graph matches KiCad for every multi-pin net of the
   saved files, not that the design is correct.
+- `diff` returns one `NETLIST_DIFF`: `tier` (0, 1 or 2), `erc_recommended`
+  (tier 2, or a changed `lib_id`), `parts_added`, `parts_removed`,
+  `nets_changed`, `nets_renamed`, `fields_changed` (value, footprint,
+  `lib_id`, DNP, BOM and board flags, pin types, and every user field such
+  as MFR, LCSC or `Rate`; `Sim.*` skipped), `status_changed` (the `STATUS` field;
+  it does not raise the tier), `tier3_hints` (new IC, power net or sheet),
+  `counts`, `lists_truncated`, `base`, and `erc` with `--erc`. Do the work
+  of the tier only. A design decision (tier 3) is never detected.
 - `verification` is set by the command. No value claims the design was
   verified; each one names the kind of partial evidence:
 
@@ -221,6 +237,7 @@ Report the scope actually reached, not the one requested, if expansion failed.
   | `instances` | `HIERARCHICAL_INSTANCE_DISCOVERY_ONLY` |
   | `netlist` | `KICAD_NETLIST_EVIDENCE` |
   | `netlist-compare` | `KICAD_NETLIST_COMPARISON` |
+  | `diff` | `KICAD_NETLIST_DIFF` |
   | any error | `NOT_VERIFIED` |
 
 - `limitations` is also set by the command; report the lines it prints.

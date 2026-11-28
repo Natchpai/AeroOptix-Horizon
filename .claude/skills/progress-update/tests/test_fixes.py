@@ -196,5 +196,128 @@ class SchematicChecks(unittest.TestCase):
             self.assertFalse([f for f in finds if f[1] == "pin_text_mismatch"], text)
 
 
+
+LABEL_SCH = """(kicad_sch (version 20250114) (generator "eeschema")
+ (label "SPARE_A" (at 0 0 0)) (label "SPARE_B" (at 0 0 0))
+ (label "BUS_X" (at 0 0 0)) (label "BUS_X" (at 5 0 0))
+ (symbol (lib_id "Device:R") (at 0 0 0)
+  (property "Reference" "R1" (at 0 0 0)) (property "Value" "10k" (at 0 0 0))
+  (property "STATUS" "CHECKED" (at 0 0 0)))
+ (symbol (lib_id "Device:R") (at 0 0 0)
+  (property "Reference" "R2" (at 0 0 0)) (property "Value" "STM32H743VIT6" (at 0 0 0))
+  (property "STATUS" "checked" (at 0 0 0)))
+ (symbol (lib_id "Device:C") (at 0 0 0)
+  (property "Reference" "C1" (at 0 0 0)) (property "Value" "100n" (at 0 0 0)))
+)
+"""
+
+
+class CostCuts(unittest.TestCase):
+    """Change tiers plan: STATUS CHECKED, label noise, part-name refs, tier record."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.sch = self.root / "a.kicad_sch"
+        self.sch.write_text(LABEL_SCH, encoding="utf-8")
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_single_use_labels_one_count_line(self):
+        finds = []
+        pp.check_sheets([self.sch], set(), make_ctx(self.root, finds))
+        rows = [f for f in finds if f[1] == "single_use_labels"]
+        self.assertEqual(1, len(rows))
+        self.assertIn("2 local labels used once", rows[0][3])
+        finds = []
+        ctx = make_ctx(self.root, finds)
+        ctx.verbose = True
+        pp.check_sheets([self.sch], set(), ctx)
+        self.assertIn("SPARE_A", str([f for f in finds if f[1] == "single_use_labels"]))
+
+    def test_status_checked_collected_per_library_item(self):
+        ctx = make_ctx(self.root, [])
+        pp.check_sheets([self.sch], set(), ctx)
+        self.assertTrue(ctx.human_checked("sym:Device:R"))    # both R parts CHECKED, case ignored
+        self.assertTrue(ctx.human_checked("symname:R"))
+        self.assertFalse(ctx.human_checked("sym:Device:C"))   # C1 has no STATUS
+        self.assertFalse(ctx.human_checked("sym:Other:R"))    # same name, other library: not placed
+        self.assertIn("STM32H743VIT6", ctx.part_text)
+
+    def test_checked_symbol_skips_library_checks(self):
+        sym = self.root / "lib.kicad_sym"
+        sym.write_text(SYM, encoding="utf-8")
+        finds = []
+        ctx = make_ctx(self.root, finds)
+        out = pp.check_library([sym], [], {"IC1": "9 OTHER pin\n"}, ctx)
+        self.assertTrue([f for f in finds if f[1] == "pin_text_mismatch"])
+        finds.clear()
+        ctx.status["symname:IC1"].add("CHECKED")  # no library table: matched by name
+        out = pp.check_library([sym], [], {"IC1": "9 OTHER pin\n"}, ctx)
+        self.assertFalse([f for f in finds if f[1] == "pin_text_mismatch"])
+        self.assertTrue(out["entries"][0]["human_checked"])
+
+    def test_checked_key_uses_library_nickname(self):
+        lib = self.root / "mylib.kicad_symdir"
+        lib.mkdir()
+        sym = lib / "IC1.kicad_sym"
+        sym.write_text(SYM, encoding="utf-8")
+        finds = []
+        ctx = pp.Ctx(self.root, self.root, "", {}, {"MyLib": "${KIPRJMOD}/mylib.kicad_symdir"}, False, finds)
+        ctx.status["sym:OtherLib:IC1"].add("CHECKED")   # a checked IC1 from another library
+        ctx.status["symname:IC1"].add("CHECKED")
+        out = pp.check_library([sym], [], {"IC1": "9 OTHER pin\n"}, ctx)
+        self.assertNotIn("human_checked", out["entries"][0])
+        self.assertTrue([f for f in finds if f[1] == "pin_text_mismatch"])
+        ctx.status["sym:MyLib:IC1"].add("CHECKED")
+        finds.clear()
+        out = pp.check_library([sym], [], {"IC1": "9 OTHER pin\n"}, ctx)
+        self.assertTrue(out["entries"][0]["human_checked"])
+
+    def test_check_expires_when_library_file_is_newer(self):
+        sym = self.root / "lib.kicad_sym"
+        sym.write_text(SYM, encoding="utf-8")
+        ctx = make_ctx(self.root, [])
+        ctx.status["symname:IC1"].add("CHECKED")
+        ctx.status_mtime["symname:IC1"] = sym.stat().st_mtime - 60   # sheet saved a minute before the edit
+        out = pp.check_library([sym], [], {}, ctx)
+        self.assertNotIn("human_checked", out["entries"][0])
+        self.assertTrue(out["entries"][0]["human_check_older_than_file"])
+        ctx.status_mtime["symname:IC1"] = sym.stat().st_mtime + 60
+        self.assertTrue(pp.check_library([sym], [], {}, ctx)["entries"][0]["human_checked"])
+
+    def test_ref_missing_keeps_refs_near_drawn_ones(self):
+        spec = ("| Document revision    | 0.10 |\n\n" + OPEN_HDR +
+                "| OPEN-001 | Still open: remove C104. | - | H / P1-001 |\n")
+        cl = "**Revision:** 0.1\n\n" + TASK_HDR + "| P1-001 | Task. | - | H | OPEN | - |\n"
+        rows, _ = pp.review_items(spec, cl, None, {"C101", "C102"}, {}, {}.get,
+                                  part_text={"GRM155R71C104KA88D"})
+        self.assertIn("C104", next(r[3] for r in rows if r[1] == "review:ref_missing"))
+
+    def test_ref_missing_skips_part_names(self):
+        spec = ("| Document revision    | 0.10 |\n\n" + OPEN_HDR +
+                "| OPEN-001 | Still open: the H743 clock and H905. | - | H / P1-001 |\n")
+        cl = "**Revision:** 0.1\n\n" + TASK_HDR + "| P1-001 | Task. | - | H | OPEN | - |\n"
+        refs = {"H901", "H902"}
+        rows, _ = pp.review_items(spec, cl, None, refs, {}, {}.get)
+        detail = next(r[3] for r in rows if r[1] == "review:ref_missing")
+        self.assertIn("H743", detail)
+        rows, _ = pp.review_items(spec, cl, None, refs, {}, {}.get, part_text={"STM32H743VIT6"})
+        detail = next(r[3] for r in rows if r[1] == "review:ref_missing")
+        self.assertNotIn("H743", detail)
+        self.assertIn("H905", detail)
+
+    def test_compact_keeps_tier_zero(self):
+        rec = {"status": "NETLIST_DIFF", "tier": 0, "erc_recommended": False, "parts_added": [],
+               "counts": {"parts_added": 0}, "base": "HEAD"}
+        self.assertEqual(pp.compact(rec), {"status": "NETLIST_DIFF", "tier": 0, "base": "HEAD"})
+
+    def test_change_tier_failure_is_not_verified(self):
+        rec = pp.change_tier(self.root / "missing.kicad_sch", "HEAD", [])
+        self.assertEqual(rec["tier"], "NOT_VERIFIED")
+        self.assertTrue(rec["reason"])
+
+
 if __name__ == "__main__":
     unittest.main()

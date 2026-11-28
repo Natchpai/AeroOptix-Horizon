@@ -65,13 +65,16 @@ tag or GitHub release remains a separate, explicitly approved Git action.
   the statement, the current state and `Left:`; history goes to the spec
   change-note.
 - Other records (power budget, pin allocation, selection notes) own their
-  values and cite spec IDs. The README and CHANGELOG point to spec IDs and
+  values and cite spec IDs, nets and pins. Reference designators live in the
+  spec and the generated `schematic-state.md`, so a part swap or
+  re-annotation does not make other records stale. The README and CHANGELOG point to spec IDs and
   revisions; they do not copy decision or open-item text.
 
 ## Doc cycle
 1. The human decides; Claude records only what the human stated (quoted) as a
    decision, and what is drawn but not decided as "drawn, not decided" with
-   an open item.
+   an open item. A stated decision goes into the spec and checklist right
+   away (the `light` scope).
 2. `/progress-update light` after decisions or drawing changes in DRAFT or
    PRELIMINARY (spec and checklist only).
 3. `/progress-update sync` before a commit (design records, README, one
@@ -79,6 +82,14 @@ tag or GitHub release remains a separate, explicitly approved Git action.
    mode.
 4. Commit on the working branch and open a PR to the default branch, each Git
    step with the human's approval.
+
+## Change size
+When the human says they edited the schematic, and before any doc update,
+get the change tier first (`progress_preflight.py --tier-only`, or
+`sch-inspect diff`) and do only that tier's work: 0 nothing until the commit
+(one CHANGELOG line), 1 the rows that state a changed value, 2 the changed
+parts and nets with ERC, 3 (a stated decision) the full doc cycle. Do more
+only when the human asks. The tier table is in `progress-update`.
 
 ## Team messages (optional)
 If the project `CLAUDE.md` names a team-messages file, read it at the start of
